@@ -16,7 +16,7 @@ export default function ScopeCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create a new job"
+        heading="创建一个新的作用域"
         links={[
           {
             name: 'Dashboard',

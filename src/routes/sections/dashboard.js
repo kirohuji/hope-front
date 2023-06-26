@@ -46,6 +46,12 @@ const JobDetailsPage = lazy(() => import('src/pages/dashboard/job/details'));
 const JobListPage = lazy(() => import('src/pages/dashboard/job/list'));
 const JobCreatePage = lazy(() => import('src/pages/dashboard/job/new'));
 const JobEditPage = lazy(() => import('src/pages/dashboard/job/edit'));
+
+// SCOPE
+const ScopeDetailsPage = lazy(() => import('src/pages/dashboard/scope/details'));
+const ScopeListPage = lazy(() => import('src/pages/dashboard/scope/list'));
+const ScopeCreatePage = lazy(() => import('src/pages/dashboard/scope/new'));
+const ScopeEditPage = lazy(() => import('src/pages/dashboard/scope/edit'));
 // TOUR
 const TourDetailsPage = lazy(() => import('src/pages/dashboard/tour/details'));
 const TourListPage = lazy(() => import('src/pages/dashboard/tour/list'));
@@ -147,11 +153,11 @@ export const dashboardRoutes = [
       {
         path: 'scope',
         children: [
-          { element: <JobListPage />, index: true },
-          { path: 'list', element: <JobListPage /> },
-          { path: ':id', element: <JobDetailsPage /> },
-          { path: 'new', element: <JobCreatePage /> },
-          { path: ':id/edit', element: <JobEditPage /> },
+          { element: <ScopeListPage />, index: true },
+          { path: 'list', element: <ScopeListPage /> },
+          { path: ':id', element: <ScopeDetailsPage /> },
+          { path: 'new', element: <ScopeCreatePage /> },
+          { path: ':id/edit', element: <ScopeEditPage /> },
         ],
       },
       {

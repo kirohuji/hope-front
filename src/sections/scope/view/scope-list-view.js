@@ -1,6 +1,6 @@
 import orderBy from 'lodash/orderBy';
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -22,11 +22,13 @@ import {
 // assets
 import { countries } from 'src/assets/data';
 // components
+import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
 import EmptyContent from 'src/components/empty-content';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
+import { scopeService } from 'src/composables/context-provider';
 import ScopeList from '../scope-list';
 import ScopeSort from '../scope-sort';
 import ScopeSearch from '../scope-search';
@@ -46,6 +48,10 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function ScopeListView() {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [listData, setListData] = useState([]);
+
   const settings = useSettingsContext();
 
   const openFilters = useBoolean();
@@ -155,10 +161,26 @@ export default function ScopeListView() {
     />
   );
 
+  const getListData = useCallback(async (selector = {}, options = {}) => {
+    try {
+      const response = await scopeService.pagination({
+        selector,
+        options
+      })
+      setListData(response.data);
+    } catch (error) {
+      enqueueSnackbar(error.message);
+    }
+  }, [setListData, enqueueSnackbar]);
+
+  useEffect(() => {
+    getListData()
+  }, [getListData]);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="List"
+        heading="列表"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
@@ -170,11 +192,11 @@ export default function ScopeListView() {
         action={
           <Button
             component={RouterLink}
-            href={paths.dashboard.job.new}
+            href={paths.dashboard.scope.new}
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            New Scope
+            新建
           </Button>
         }
         sx={{
@@ -195,7 +217,7 @@ export default function ScopeListView() {
 
       {notFound && <EmptyContent filled title="No Data" sx={{ py: 10 }} />}
 
-      <ScopeList jobs={dataFiltered} />
+      <ScopeList scopes={dataFiltered} />
     </Container>
   );
 }

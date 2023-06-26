@@ -11,7 +11,7 @@ import ScopeItem from './scope-item';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeList({ jobs }) {
+export default function ScopeList({ scopes }) {
   const router = useRouter();
 
   const handleView = useCallback(
@@ -43,7 +43,7 @@ export default function ScopeList({ jobs }) {
           md: 'repeat(3, 1fr)',
         }}
       >
-        {jobs.map((job) => (
+        {scopes.map((job) => (
           <ScopeItem
             key={job.id}
             job={job}
@@ -54,7 +54,7 @@ export default function ScopeList({ jobs }) {
         ))}
       </Box>
 
-      {jobs.length > 8 && (
+      {scopes.length > 8 && (
         <Pagination
           count={8}
           sx={{
@@ -70,5 +70,6 @@ export default function ScopeList({ jobs }) {
 }
 
 ScopeList.propTypes = {
-  jobs: PropTypes.array,
+  scopes: PropTypes.array,
+  
 };

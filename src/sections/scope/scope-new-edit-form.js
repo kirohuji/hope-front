@@ -45,10 +45,11 @@ import FormProvider, {
   RHFAutocomplete,
   RHFMultiCheckbox,
 } from 'src/components/hook-form';
+import { scopeService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeNewEditForm({ currentScope }) {
+export default function ScopeNewEditForm ({ currentScope }) {
   const router = useRouter();
 
   const mdUp = useResponsive('up', 'md');
@@ -56,27 +57,30 @@ export default function ScopeNewEditForm({ currentScope }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const NewScopeSchema = Yup.object().shape({
-    title: Yup.string().required('Title is required'),
-    content: Yup.string().required('Content is required'),
-    employmentTypes: Yup.array().min(1, 'Choose at least one option'),
-    role: Yup.string().required('Role is required'),
-    skills: Yup.array().min(1, 'Choose at least one option'),
-    workingSchedule: Yup.array().min(1, 'Choose at least one option'),
-    benefits: Yup.array().min(1, 'Choose at least one option'),
-    locations: Yup.array().min(1, 'Choose at least one option'),
-    expiredDate: Yup.mixed().nullable().required('Expired date is required'),
-    salary: Yup.object().shape({
-      type: Yup.string(),
-      price: Yup.number().min(1, 'Price is required'),
-      negotiable: Yup.boolean(),
-    }),
-    experience: Yup.string(),
+    label: Yup.string().required('Title is required'),
+    value: Yup.string().required('Title is required'),
+    description: Yup.string().required('Content is required'),
+    // employmentTypes: Yup.array().min(1, 'Choose at least one option'),
+    // role: Yup.string().required('Role is required'),
+    // skills: Yup.array().min(1, 'Choose at least one option'),
+    // workingSchedule: Yup.array().min(1, 'Choose at least one option'),
+    // benefits: Yup.array().min(1, 'Choose at least one option'),
+    // locations: Yup.array().min(1, 'Choose at least one option'),
+    // expiredDate: Yup.mixed().nullable().required('Expired date is required'),
+    // salary: Yup.object().shape({
+    //   type: Yup.string(),
+    //   price: Yup.number().min(1, 'Price is required'),
+    //   negotiable: Yup.boolean(),
+    // }),
+    // experience: Yup.string(),
+    public: Yup.boolean(),
   });
 
   const defaultValues = useMemo(
     () => ({
-      title: currentScope?.title || '',
-      content: currentScope?.content || '',
+      label: currentScope?.label || '',
+      value: currentScope?.value || '',
+      description: currentScope?.description || '',
       employmentTypes: currentScope?.employmentTypes || [],
       experience: currentScope?.experience || '1 year exp',
       role: currentScope?.role || _roles[1],
@@ -114,11 +118,15 @@ export default function ScopeNewEditForm({ currentScope }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      if (data._id) {
+        await scopeService.patch(data);
+      } else {
+        await scopeService.post(data);
+      }
       reset();
-      enqueueSnackbar(currentScope ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.job.root);
-      console.info('DATA', data);
+      enqueueSnackbar(currentScope ? '更新成功!' : '创建成功!');
+      router.push(paths.dashboard.scope.root);
     } catch (error) {
       console.error(error);
     }
@@ -139,17 +147,22 @@ export default function ScopeNewEditForm({ currentScope }) {
 
       <Grid xs={12} md={8}>
         <Card>
-          {!mdUp && <CardHeader title="Details" />}
+          {!mdUp && <CardHeader label="Details" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Title</Typography>
-              <RHFTextField name="title" placeholder="Ex: Software Engineer..." />
+              <Typography variant="subtitle2">名称</Typography>
+              <RHFTextField name="label" placeholder="Ex: Software Engineer..." />
             </Stack>
 
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Content</Typography>
-              <RHFEditor simple name="content" />
+              <Typography variant="subtitle2">编码</Typography>
+              <RHFTextField name="value" placeholder="Ex: Software Engineer..." />
+            </Stack>
+
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">描述</Typography>
+              <RHFEditor simple name="description" />
             </Stack>
           </Stack>
         </Card>
@@ -172,7 +185,7 @@ export default function ScopeNewEditForm({ currentScope }) {
 
       <Grid xs={12} md={8}>
         <Card>
-          {!mdUp && <CardHeader title="Properties" />}
+          {!mdUp && <CardHeader label="Properties" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1}>
@@ -408,8 +421,7 @@ export default function ScopeNewEditForm({ currentScope }) {
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
         <FormControlLabel
-          control={<Switch defaultChecked />}
-          label="Publish"
+          control={<RHFSwitch name="public" defaultChecked label="发布" />}
           sx={{ flexGrow: 1, pl: 3 }}
         />
 
@@ -420,7 +432,7 @@ export default function ScopeNewEditForm({ currentScope }) {
           loading={isSubmitting}
           sx={{ ml: 2 }}
         >
-          {!currentScope ? 'Create Scope' : 'Save Changes'}
+          {!currentScope ? '创建' : '保存修改'}
         </LoadingButton>
       </Grid>
     </>
@@ -431,7 +443,7 @@ export default function ScopeNewEditForm({ currentScope }) {
       <Grid container spacing={3}>
         {renderDetails}
 
-        {renderProperties}
+        {false && renderProperties}
 
         {renderActions}
       </Grid>
