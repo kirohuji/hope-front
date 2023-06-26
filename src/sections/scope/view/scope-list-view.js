@@ -47,10 +47,10 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function ScopeListView() {
+export default function ScopeListView () {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [listData, setListData] = useState([]);
+  const [tableData, setTableData] = useState([]);
 
   const settings = useSettingsContext();
 
@@ -64,6 +64,22 @@ export default function ScopeListView() {
   });
 
   const [filters, setFilters] = useState(defaultFilters);
+
+  const getTableData = useCallback(async (selector = {}, options = {}) => {
+    try {
+      const response = await scopeService.pagination({
+        ...selector,
+        ...options
+      })
+      setTableData(response.data);
+    } catch (error) {
+      enqueueSnackbar(error.message);
+    }
+  }, [setTableData, enqueueSnackbar]);
+
+  useEffect(() => {
+    getTableData()
+  }, [getTableData]);
 
   const dataFiltered = applyFilter({
     inputData: _jobs,
@@ -87,24 +103,39 @@ export default function ScopeListView() {
   }, []);
 
   const handleSearch = useCallback(
-    (inputValue) => {
+    async (inputValue) => {
       setSearch((prevState) => ({
         ...prevState,
         query: inputValue,
       }));
 
       if (inputValue) {
-        const results = _jobs.filter(
-          (job) => job.title.toLowerCase().indexOf(search.query.toLowerCase()) !== -1
-        );
+        const response = await scopeService.pagination({ label: inputValue })
+        const results = response.data
 
         setSearch((prevState) => ({
           ...prevState,
           results,
         }));
       }
-    },
-    [search.query]
+      // setSearch((prevState) => ({
+      //   ...prevState,
+      //   query: inputValue,
+      // }));
+
+      // if (inputValue) {
+      //   const results = _jobs.filter(
+      //     (job) => job.title.toLowerCase().indexOf(search.query.toLowerCase()) !== -1
+      //   );
+
+      //   setSearch((prevState) => ({
+      //     ...prevState,
+      //     results,
+      //   }));
+      // }
+
+      // }, [search.query]
+    }, []
   );
 
   const handleResetFilters = useCallback(() => {
@@ -125,7 +156,7 @@ export default function ScopeListView() {
         hrefItem={(id) => paths.dashboard.job.details(id)}
       />
 
-      <Stack direction="row" spacing={1} flexShrink={0}>
+      <Stack direction="row" spacing={1} flexShrink={0} style={{ display: 'none' }}>
         <ScopeFilters
           open={openFilters.value}
           onOpen={openFilters.onTrue}
@@ -161,21 +192,6 @@ export default function ScopeListView() {
     />
   );
 
-  const getListData = useCallback(async (selector = {}, options = {}) => {
-    try {
-      const response = await scopeService.pagination({
-        selector,
-        options
-      })
-      setListData(response.data);
-    } catch (error) {
-      enqueueSnackbar(error.message);
-    }
-  }, [setListData, enqueueSnackbar]);
-
-  useEffect(() => {
-    getListData()
-  }, [getListData]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -217,7 +233,7 @@ export default function ScopeListView() {
 
       {notFound && <EmptyContent filled title="No Data" sx={{ py: 10 }} />}
 
-      <ScopeList scopes={dataFiltered} />
+      <ScopeList scopes={tableData} />
     </Container>
   );
 }

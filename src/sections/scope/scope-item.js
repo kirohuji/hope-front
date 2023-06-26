@@ -22,11 +22,10 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeItem({ job, onView, onEdit, onDelete }) {
+export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
   const popover = usePopover();
 
-  const { id, title, company, createdAt, candidates, experience, employmentTypes, salary, role } =
-    job;
+  const { _id, label, logo, createdAt, candidates } = scope;
 
   return (
     <>
@@ -37,8 +36,8 @@ export default function ScopeItem({ job, onView, onEdit, onDelete }) {
 
         <Stack sx={{ p: 3, pb: 2 }}>
           <Avatar
-            alt={company.name}
-            src={company.logo}
+            alt={label}
+            src={logo}
             variant="rounded"
             sx={{ width: 48, height: 48, mb: 2 }}
           />
@@ -46,8 +45,8 @@ export default function ScopeItem({ job, onView, onEdit, onDelete }) {
           <ListItemText
             sx={{ mb: 1 }}
             primary={
-              <Link component={RouterLink} href={paths.dashboard.job.details(id)} color="inherit">
-                {title}
+              <Link component={RouterLink} href={paths.dashboard.job.details(_id)} color="inherit">
+                {label}
               </Link>
             }
             secondary={`Posted date: ${fDate(createdAt)}`}
@@ -69,46 +68,50 @@ export default function ScopeItem({ job, onView, onEdit, onDelete }) {
             sx={{ color: 'primary.main', typography: 'caption' }}
           >
             <Iconify width={16} icon="solar:users-group-rounded-bold" />
-            {candidates.length} Candidates
+            {candidates ? candidates.length : '无'} 参与者
           </Stack>
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
-          {[
-            {
-              label: experience,
-              icon: <Iconify width={16} icon="carbon:skill-level-basic" sx={{ flexShrink: 0 }} />,
-            },
-            {
-              label: employmentTypes.join(', '),
-              icon: <Iconify width={16} icon="solar:clock-circle-bold" sx={{ flexShrink: 0 }} />,
-            },
-            {
-              label: salary.negotiable ? 'Negotiable' : fCurrency(salary.price),
-              icon: <Iconify width={16} icon="solar:wad-of-money-bold" sx={{ flexShrink: 0 }} />,
-            },
-            {
-              label: role,
-              icon: <Iconify width={16} icon="solar:user-rounded-bold" sx={{ flexShrink: 0 }} />,
-            },
-          ].map((item) => (
-            <Stack
-              key={item.label}
-              spacing={0.5}
-              flexShrink={0}
-              direction="row"
-              alignItems="center"
-              sx={{ color: 'text.disabled', minWidth: 0 }}
-            >
-              {item.icon}
-              <Typography variant="caption" noWrap>
-                {item.label}
-              </Typography>
-            </Stack>
-          ))}
-        </Box>
+        {
+          /*
+                <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
+                  {[
+                    {
+                      label: experience,
+                      icon: <Iconify width={16} icon="carbon:skill-level-basic" sx={{ flexShrink: 0 }} />,
+                    },
+                    {
+                      label: employmentTypes.join(', '),
+                      icon: <Iconify width={16} icon="solar:clock-circle-bold" sx={{ flexShrink: 0 }} />,
+                    },
+                    {
+                      label: salary.negotiable ? 'Negotiable' : fCurrency(salary.price),
+                      icon: <Iconify width={16} icon="solar:wad-of-money-bold" sx={{ flexShrink: 0 }} />,
+                    },
+                    {
+                      label: role,
+                      icon: <Iconify width={16} icon="solar:user-rounded-bold" sx={{ flexShrink: 0 }} />,
+                    },
+                  ].map((item) => (
+                    <Stack
+                      key={item.label}
+                      spacing={0.5}
+                      flexShrink={0}
+                      direction="row"
+                      alignItems="center"
+                      sx={{ color: 'text.disabled', minWidth: 0 }}
+                    >
+                      {item.icon}
+                      <Typography variant="caption" noWrap>
+                        {item.label}
+                      </Typography>
+                    </Stack>
+                  ))}
+                </Box>
+          */
+        }
       </Card>
 
       <CustomPopover
@@ -124,7 +127,7 @@ export default function ScopeItem({ job, onView, onEdit, onDelete }) {
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          View
+          查看
         </MenuItem>
 
         <MenuItem
@@ -134,7 +137,7 @@ export default function ScopeItem({ job, onView, onEdit, onDelete }) {
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          编辑
         </MenuItem>
 
         <MenuItem
@@ -145,7 +148,7 @@ export default function ScopeItem({ job, onView, onEdit, onDelete }) {
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+           删除
         </MenuItem>
       </CustomPopover>
     </>
@@ -153,7 +156,7 @@ export default function ScopeItem({ job, onView, onEdit, onDelete }) {
 }
 
 ScopeItem.propTypes = {
-  job: PropTypes.object,
+  scope: PropTypes.object,
   onDelete: PropTypes.func,
   onEdit: PropTypes.func,
   onView: PropTypes.func,

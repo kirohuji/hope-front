@@ -25,7 +25,7 @@ export default function ScopeSort({ sort, onSort, sortOptions }) {
         }
         sx={{ fontWeight: 'fontWeightSemiBold' }}
       >
-        Sort By:
+        排序:
         <Box
           component="span"
           sx={{ ml: 0.5, fontWeight: 'fontWeightBold', textTransform: 'capitalize' }}

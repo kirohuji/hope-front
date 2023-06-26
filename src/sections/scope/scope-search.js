@@ -14,7 +14,7 @@ import SearchNotFound from 'src/components/search-not-found';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeSearch({ query, results, onSearch, hrefItem }) {
+export default function ScopeSearch ({ query, results, onSearch, hrefItem }) {
   const router = useRouter();
 
   const handleClick = (id) => {
@@ -24,9 +24,9 @@ export default function ScopeSearch({ query, results, onSearch, hrefItem }) {
   const handleKeyUp = (event) => {
     if (query) {
       if (event.key === 'Enter') {
-        const selectProduct = results.filter((job) => job.title === query)[0];
+        const selectProduct = results.filter((scope) => scope.title === query)[0];
 
-        handleClick(selectProduct.id);
+        handleClick(selectProduct._id);
       }
     }
   };
@@ -38,14 +38,14 @@ export default function ScopeSearch({ query, results, onSearch, hrefItem }) {
       popupIcon={null}
       options={results}
       onInputChange={(event, newValue) => onSearch(newValue)}
-      getOptionLabel={(option) => option.title}
+      getOptionLabel={(option) => option.label}
       noOptionsText={<SearchNotFound query={query} sx={{ bgcolor: 'unset' }} />}
-      isOptionEqualToValue={(option, value) => option.id === value.id}
+      isOptionEqualToValue={(option, value) => option._id === value._id}
       renderInput={(params) => (
         <TextField
           {...params}
           placeholder="Search..."
-          onKeyUp={handleKeyUp}
+          // onKeyUp={handleKeyUp}
           InputProps={{
             ...params.InputProps,
             startAdornment: (
@@ -56,12 +56,14 @@ export default function ScopeSearch({ query, results, onSearch, hrefItem }) {
           }}
         />
       )}
-      renderOption={(props, job, { inputValue }) => {
-        const matches = match(job.title, inputValue);
-        const parts = parse(job.title, matches);
+      renderOption={(props, scope, { inputValue }) => {
+        const matches = match(scope.label, inputValue);
+        const parts = parse(scope.label, matches);
 
         return (
-          <Box component="li" {...props} onClick={() => handleClick(job.id)} key={job.id}>
+          <Box component="li" {...props}
+            // onClick={() => handleClick(scope._id)} key={scope._id}
+          >
             <div>
               {parts.map((part, index) => (
                 <Typography

@@ -15,21 +15,21 @@ export default function ScopeList({ scopes }) {
   const router = useRouter();
 
   const handleView = useCallback(
-    (id) => {
-      router.push(paths.dashboard.job.details(id));
+    (_id) => {
+      router.push(paths.dashboard.scope.details(_id));
     },
     [router]
   );
 
   const handleEdit = useCallback(
-    (id) => {
-      router.push(paths.dashboard.job.edit(id));
+    (_id) => {
+      router.push(paths.dashboard.scope.edit(_id));
     },
     [router]
   );
 
-  const handleDelete = useCallback((id) => {
-    console.info('DELETE', id);
+  const handleDelete = useCallback((_id) => {
+    console.info('DELETE', _id);
   }, []);
 
   return (
@@ -43,13 +43,13 @@ export default function ScopeList({ scopes }) {
           md: 'repeat(3, 1fr)',
         }}
       >
-        {scopes.map((job) => (
+        {scopes.map((scope) => (
           <ScopeItem
-            key={job.id}
-            job={job}
-            onView={() => handleView(job.id)}
-            onEdit={() => handleEdit(job.id)}
-            onDelete={() => handleDelete(job.id)}
+            key={scope._id}
+            scope={scope}
+            onView={() => handleView(scope._id)}
+            onEdit={() => handleEdit(scope._id)}
+            onDelete={() => handleDelete(scope._id)}
           />
         ))}
       </Box>

@@ -75,9 +75,9 @@ export const JOB_PUBLISH_OPTIONS = [
 ];
 
 export const JOB_SORT_OPTIONS = [
-  { value: 'latest', label: 'Latest' },
-  { value: 'popular', label: 'Popular' },
-  { value: 'oldest', label: 'Oldest' },
+  { value: 'latest', label: '最新' },
+  { value: 'popular', label: '最火' },
+  { value: 'oldest', label: '最老' },
 ];
 
 const CANDIDATES = [...Array(12)].map((_, index) => ({

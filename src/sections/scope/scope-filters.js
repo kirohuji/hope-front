@@ -21,7 +21,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeFilters({
+export default function ScopeFilters ({
   open,
   onOpen,
   onClose,
@@ -87,7 +87,7 @@ export default function ScopeFilters({
       sx={{ py: 2, pr: 1, pl: 2.5 }}
     >
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Filters
+        筛选
       </Typography>
 
       <Tooltip title="Reset">
@@ -263,7 +263,7 @@ export default function ScopeFilters({
         }
         onClick={onOpen}
       >
-        Filters
+        筛选
       </Button>
 
       <Drawer

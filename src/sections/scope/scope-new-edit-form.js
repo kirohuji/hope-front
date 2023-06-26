@@ -119,8 +119,11 @@ export default function ScopeNewEditForm ({ currentScope }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       // await new Promise((resolve) => setTimeout(resolve, 500));
-      if (data._id) {
-        await scopeService.patch(data);
+      if (currentScope._id) {
+        await scopeService.patch({
+          _id: currentScope._id,
+          ...data
+        });
       } else {
         await scopeService.post(data);
       }
