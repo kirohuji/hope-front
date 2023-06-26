@@ -166,6 +166,16 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/job/${MOCK_ID}/edit`,
       },
     },
+    scope: {
+      root: `${ROOTS.DASHBOARD}/scope`,
+      new: `${ROOTS.DASHBOARD}/scope/new`,
+      details: (id) => `${ROOTS.DASHBOARD}/scope/${id}`,
+      edit: (id) => `${ROOTS.DASHBOARD}/scope/${id}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/scope/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/scope/${MOCK_ID}/edit`,
+      },
+    },
     tour: {
       root: `${ROOTS.DASHBOARD}/tour`,
       new: `${ROOTS.DASHBOARD}/tour/new`,

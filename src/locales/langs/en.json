@@ -1,6 +1,7 @@
 {
   "app": "app",
   "job": "job",
+  "scope": "scope",
   "user": "user",
   "list": "list",
   "edit": "edit",

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
 // utils
-import axios, { endpoints } from 'src/utils/axios';
+// import axios, { endpoints } from 'src/utils/axios';
 //
 import { authService, userService } from 'src/composables/context-provider';
 import { AuthContext } from './auth-context';

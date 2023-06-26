@@ -47,7 +47,7 @@ const ICONS = {
 
 // ----------------------------------------------------------------------
 
-export function useNavData() {
+export function useNavData () {
   const { t } = useLocales();
 
   const data = useMemo(
@@ -146,6 +146,18 @@ export function useNavData() {
               { title: t('details'), path: paths.dashboard.job.demo.details },
               { title: t('create'), path: paths.dashboard.job.new },
               { title: t('edit'), path: paths.dashboard.job.demo.edit },
+            ],
+          },
+          // SCOPE
+          {
+            title: t('scope'),
+            path: paths.dashboard.scope.root,
+            icon: ICONS.job,
+            children: [
+              { title: t('list'), path: paths.dashboard.scope.root },
+              { title: t('details'), path: paths.dashboard.scope.demo.details },
+              { title: t('create'), path: paths.dashboard.scope.new },
+              { title: t('edit'), path: paths.dashboard.scope.demo.edit },
             ],
           },
 

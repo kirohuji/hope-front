@@ -145,6 +145,16 @@ export const dashboardRoutes = [
         ],
       },
       {
+        path: 'scope',
+        children: [
+          { element: <JobListPage />, index: true },
+          { path: 'list', element: <JobListPage /> },
+          { path: ':id', element: <JobDetailsPage /> },
+          { path: 'new', element: <JobCreatePage /> },
+          { path: ':id/edit', element: <JobEditPage /> },
+        ],
+      },
+      {
         path: 'tour',
         children: [
           { element: <TourListPage />, index: true },
