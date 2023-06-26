@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useCallback,useEffect, useState  } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -26,6 +26,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
+import { useSnackbar } from 'src/components/snackbar';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
@@ -37,6 +38,8 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+// service
+import { userService } from 'src/composables/context-provider';
 //
 import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';
@@ -44,14 +47,15 @@ import UserTableFiltersResult from '../user-table-filters-result';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
+const STATUS_OPTIONS = [{ value: 'all', label: '全部' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'phoneNumber', label: 'Phone Number', width: 180 },
-  { id: 'company', label: 'Company', width: 220 },
-  { id: 'role', label: 'Role', width: 180 },
-  { id: 'status', label: 'Status', width: 100 },
+  { id: 'name', label: '账户' },
+  { id: 'displayName', label: '用户' },
+  { id: 'phoneNumber', label: '手机号', width: 180 },
+  { id: 'address', label: '地址', width: 220 },
+  // { id: 'role', label: 'Role', width: 180 },
+  { id: 'status', label: '状态', width: 100 },
   { id: '', width: 88 },
 ];
 
@@ -63,7 +67,10 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function UserListView() {
+export default function UserListView () {
+
+  const { enqueueSnackbar } = useSnackbar();
+
   const table = useTable();
 
   const settings = useSettingsContext();
@@ -72,7 +79,7 @@ export default function UserListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_userList);
+  const [tableData, setTableData] = useState([]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -92,6 +99,23 @@ export default function UserListView() {
   const canReset = !isEqual(defaultFilters, filters);
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+
+  const getTableData = useCallback(async (selector = {}, options = {}) => {
+    try {
+      const response = await userService.pagination({
+        selector,
+        options
+      })
+      setTableData(response.data);
+      table.setPage(Math.ceil(response.total / table.rowsPerPage) - 1)
+    } catch (error) {
+      enqueueSnackbar(error.message);
+    }
+  }, [setTableData, table, enqueueSnackbar]);
+
+  useEffect(() => {
+    getTableData()
+  }, [getTableData]);
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -336,7 +360,7 @@ export default function UserListView() {
 
 // ----------------------------------------------------------------------
 
-function applyFilter({ inputData, comparator, filters }) {
+function applyFilter ({ inputData, comparator, filters }) {
   const { name, status, role } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
