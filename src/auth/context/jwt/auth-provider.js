@@ -3,9 +3,9 @@ import { useEffect, useReducer, useCallback, useMemo } from 'react';
 // utils
 import axios, { endpoints } from 'src/utils/axios';
 //
+import { authService, userService } from 'src/composables/context-provider';
 import { AuthContext } from './auth-context';
 import { isValidToken, setSession } from './utils';
-
 // ----------------------------------------------------------------------
 
 // NOTE:
@@ -51,30 +51,42 @@ const reducer = (state, action) => {
 
 const STORAGE_KEY = 'accessToken';
 
-export function AuthProvider({ children }) {
+export function AuthProvider ({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const initialize = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(STORAGE_KEY);
+      const accessToken = localStorage.getItem(STORAGE_KEY);
 
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        const response = await axios.get(endpoints.auth.me);
+        // const response = await axios.get(endpoints.auth.me);
 
-        const { user } = response.data;
+        // const { user } = response.data;
+        // 获取用户信息
+        const { user, profile, roles, permissions } = await userService.info()
 
         dispatch({
           type: 'INITIAL',
           payload: {
-            user,
+            isAuthenticated: true,
+            user: {
+              ...user,
+              ...profile,
+              permissions,
+              roles
+            }
           },
+          // payload: {
+          //   user,
+          // },
         });
       } else {
         dispatch({
           type: 'INITIAL',
           payload: {
+            isAuthenticated: false,
             user: null,
           },
         });
@@ -84,6 +96,7 @@ export function AuthProvider({ children }) {
       dispatch({
         type: 'INITIAL',
         payload: {
+          isAuthenticated: false,
           user: null,
         },
       });
@@ -101,39 +114,68 @@ export function AuthProvider({ children }) {
       password,
     };
 
-    const response = await axios.post(endpoints.auth.login, data);
+    // const response = await axios.post(endpoints.auth.login, data);
 
-    const { accessToken, user } = response.data;
+    // const { accessToken, user } = response.data;
+
+    const response = await authService.login(data);
+
+    const { authToken: accessToken } = response;
 
     setSession(accessToken);
+
+    const { user, profile, roles, permissions } = await userService.info()
 
     dispatch({
       type: 'LOGIN',
       payload: {
-        user,
+        user: {
+          ...user,
+          ...profile,
+          permissions,
+          roles
+        }
       },
     });
   }, []);
 
   // REGISTER
-  const register = useCallback(async (email, password, firstName, lastName) => {
-    const data = {
+  const register = useCallback(async (email, password, firstName, lastName, username) => {
+    // const data = {
+    //   email,
+    //   password,
+    //   firstName,
+    //   lastName,
+    // };
+
+    await userService.register({
+      email,
+      username,
+      password,
+    })
+
+    // const response = await axios.post(endpoints.auth.register, data);
+
+    // const { accessToken, user } = response.data;
+
+    const { authToken: accessToken } = await authService.login({
       email,
       password,
-      firstName,
-      lastName,
-    };
+    })
 
-    const response = await axios.post(endpoints.auth.register, data);
+    localStorage.setItem(STORAGE_KEY, accessToken);
 
-    const { accessToken, user } = response.data;
-
-    sessionStorage.setItem(STORAGE_KEY, accessToken);
+    const { user, profile, roles, permissions } = await userService.info()
 
     dispatch({
       type: 'REGISTER',
       payload: {
-        user,
+        user: {
+            ...user,
+            ...profile,
+            permissions,
+            roles
+          },
       },
     });
   }, []);
