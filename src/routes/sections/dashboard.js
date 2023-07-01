@@ -52,9 +52,10 @@ const ScopeDetailsPage = lazy(() => import('src/pages/dashboard/scope/details'))
 const ScopeListPage = lazy(() => import('src/pages/dashboard/scope/list'));
 const ScopeCreatePage = lazy(() => import('src/pages/dashboard/scope/new'));
 const ScopeEditPage = lazy(() => import('src/pages/dashboard/scope/edit'));
-
 // Access
 const AccessPage = lazy(() => import('src/pages/dashboard/access'));
+// Dictionary
+const DictionaryPage = lazy(() => import('src/pages/dashboard/dictionary'));
 // TOUR
 const TourDetailsPage = lazy(() => import('src/pages/dashboard/tour/details'));
 const TourListPage = lazy(() => import('src/pages/dashboard/tour/list'));
@@ -167,6 +168,12 @@ export const dashboardRoutes = [
         path: 'access',
         children: [
           { element: <AccessPage />, index: true}
+        ]
+      },
+      {
+        path: 'dictionary',
+        children: [
+          { element: <DictionaryPage />, index: true}
         ]
       },
       {

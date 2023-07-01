@@ -3,8 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
-// _mock
-import { _jobs } from 'src/_mock';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import { useParams } from 'src/routes/hook';

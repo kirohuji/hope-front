@@ -166,6 +166,12 @@ export function useNavData () {
             path: paths.dashboard.access.root,
             icon: ICONS.mail,
           },
+          // DICTIONARY
+          {
+            title: t('dictionary'),
+            path: paths.dashboard.dictionary.root,
+            icon: ICONS.mail,
+          },
           // TOUR
           {
             title: t('tour'),

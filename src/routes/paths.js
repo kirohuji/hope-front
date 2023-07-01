@@ -179,6 +179,9 @@ export const paths = {
     access: {
       root: `${ROOTS.DASHBOARD}/access`,
     },
+    dictionary: {
+      root: `${ROOTS.DASHBOARD}/dictionary`,
+    },
     tour: {
       root: `${ROOTS.DASHBOARD}/tour`,
       new: `${ROOTS.DASHBOARD}/tour/new`,

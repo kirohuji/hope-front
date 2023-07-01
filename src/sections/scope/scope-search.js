@@ -21,6 +21,7 @@ export default function ScopeSearch ({ query, results, onSearch, hrefItem }) {
     router.push(hrefItem(id));
   };
 
+  // eslint-disable-next-line no-unused-vars
   const handleKeyUp = (event) => {
     if (query) {
       if (event.key === 'Enter') {
