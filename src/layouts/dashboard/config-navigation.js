@@ -160,7 +160,12 @@ export function useNavData () {
               { title: t('edit'), path: paths.dashboard.scope.demo.edit },
             ],
           },
-
+          // ACCESS
+          {
+            title: t('access'),
+            path: paths.dashboard.access.root,
+            icon: ICONS.mail,
+          },
           // TOUR
           {
             title: t('tour'),

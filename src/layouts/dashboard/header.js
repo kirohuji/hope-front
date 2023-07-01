@@ -23,6 +23,7 @@ import {
   LanguagePopover,
   ContactsPopover,
   NotificationsPopover,
+  ScopePopover
 } from '../_common';
 
 // ----------------------------------------------------------------------
@@ -64,6 +65,8 @@ export default function Header({ onOpenNav }) {
         <LanguagePopover />
 
         <NotificationsPopover />
+        
+        <ScopePopover />
 
         <ContactsPopover />
 

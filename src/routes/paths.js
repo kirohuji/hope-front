@@ -176,6 +176,9 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/scope/${MOCK_ID}/edit`,
       },
     },
+    access: {
+      root: `${ROOTS.DASHBOARD}/access`,
+    },
     tour: {
       root: `${ROOTS.DASHBOARD}/tour`,
       new: `${ROOTS.DASHBOARD}/tour/new`,
