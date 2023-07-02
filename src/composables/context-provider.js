@@ -11,7 +11,7 @@ import RoleService from "../modules/roles";
 import EventService from "../modules/events";
 import DictionaryService from "../modules/dictionaries";
 import DictionaryOptionService from "../modules/dictionaries_options";
-import ArtcleService from "../modules/artcles";
+import ArticleService from "../modules/articles";
 // export const serviceContainer = {
 //   authService: new AuthService({ api: api, model: 'auth' })
 // };
@@ -27,4 +27,4 @@ export const eventService = new EventService({ api, model: 'events' })
 export const scopeService = new ScopeService({ api, model: 'scopes' })
 export const dictionaryService = new DictionaryService({ api, model: 'dictionaries' })
 export const dictionaryOptionService = new DictionaryOptionService({ api, model: 'dictionaries/options' })
-export const artcleService = new ArtcleService({ api, model: 'artcles' })
+export const articleService = new ArticleService({ api, model: 'articles' })

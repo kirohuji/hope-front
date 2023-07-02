@@ -52,6 +52,19 @@ const ScopeDetailsPage = lazy(() => import('src/pages/dashboard/scope/details'))
 const ScopeListPage = lazy(() => import('src/pages/dashboard/scope/list'));
 const ScopeCreatePage = lazy(() => import('src/pages/dashboard/scope/new'));
 const ScopeEditPage = lazy(() => import('src/pages/dashboard/scope/edit'));
+
+// BOOK
+const BookDetailsPage = lazy(() => import('src/pages/dashboard/book/details'));
+const BookListPage = lazy(() => import('src/pages/dashboard/book/list'));
+const BookCreatePage = lazy(() => import('src/pages/dashboard/book/new'));
+const BookEditPage = lazy(() => import('src/pages/dashboard/book/edit'));
+
+// ARTICLE
+const ArticleListPage = lazy(() => import('src/pages/dashboard/article/list'));
+const ArticleDetailPage = lazy(() => import('src/pages/dashboard/article/details'));
+const ArticleCreatePage = lazy(() => import('src/pages/dashboard/article/new'));
+const ArticleEditPage = lazy(() => import('src/pages/dashboard/article/edit'));
+
 // Access
 const AccessPage = lazy(() => import('src/pages/dashboard/access'));
 // Dictionary
@@ -162,6 +175,26 @@ export const dashboardRoutes = [
           { path: ':id', element: <ScopeDetailsPage /> },
           { path: 'new', element: <ScopeCreatePage /> },
           { path: ':id/edit', element: <ScopeEditPage /> },
+        ],
+      },
+      {
+        path: 'book',
+        children: [
+          { element: <BookListPage />, index: true },
+          { path: 'list', element: <BookListPage /> },
+          { path: ':id', element: <BookDetailsPage /> },
+          { path: 'new', element: <BookCreatePage /> },
+          { path: ':id/edit', element: <BookEditPage /> },
+        ],
+      },
+      {
+        path: 'article',
+        children: [
+          { element: <ArticleListPage />, index: true },
+          { path: 'list', element: <ArticleListPage /> },
+          { path: ':title', element: <ArticleDetailPage /> },
+          { path: ':title/edit', element: <ArticleEditPage /> },
+          { path: 'new', element: <ArticleCreatePage /> },
         ],
       },
       {

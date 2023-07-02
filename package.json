@@ -70,6 +70,7 @@
     "i18next-browser-languagedetector": "^7.0.2",
     "lodash": "^4.17.21",
     "mapbox-gl": "^2.15.0",
+    "moment": "^2.29.4",
     "mui-one-time-password-input": "^1.1.1",
     "notistack": "^3.0.1",
     "nprogress": "^0.2.0",

@@ -76,7 +76,7 @@ export const JOB_PUBLISH_OPTIONS = [
 
 export const JOB_SORT_OPTIONS = [
   { value: 'latest', label: '最新' },
-  { value: 'popular', label: '最火' },
+  { value: 'popular', label: '流行' },
   { value: 'oldest', label: '最老' },
 ];
 

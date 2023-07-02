@@ -18,8 +18,16 @@ export const scopePersistConfig = {
   keyPrefix: 'redux-'
 };
 
+export const bookPersistConfig = {
+  key: 'book',
+  storage,
+  keyPrefix: 'redux-'
+};
+
+
 
 export const rootReducer = combineReducers({
   checkout: persistReducer(checkoutPersistConfig, checkoutReducer),
   scope: persistReducer(scopePersistConfig, scopeReducer),
+  book: persistReducer(bookPersistConfig, scopeReducer),
 });

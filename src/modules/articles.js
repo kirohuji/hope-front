@@ -1,6 +1,6 @@
 import { Service } from './base'
 
-export default class ArtcleService extends Service {
+export default class ArticleService extends Service {
     addWithCurrentUser (target) {
         return this.api.post(`${this.model}/users/current`, target)
     }
@@ -10,12 +10,12 @@ export default class ArtcleService extends Service {
     }
 
     pagination (selector, options) {
-        return this.api.post(`${this.model}/posts/pagination`, {
+        return this.api.post(`${this.model}/pagination`, {
             selector, options
         })
     }
 
     get (target) {
-        return this.api.get(`${this.model}/posts/${target._id}`)
+        return this.api.get(`${this.model}/${target._id}`)
     }
 }

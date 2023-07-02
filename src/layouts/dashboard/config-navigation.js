@@ -160,6 +160,30 @@ export function useNavData () {
               { title: t('edit'), path: paths.dashboard.scope.demo.edit },
             ],
           },
+          // BOOK
+          {
+            title: t('book'),
+            path: paths.dashboard.book.root,
+            icon: ICONS.job,
+            children: [
+              { title: t('list'), path: paths.dashboard.book.root },
+              { title: t('details'), path: paths.dashboard.book.demo.details },
+              { title: t('create'), path: paths.dashboard.book.new },
+              { title: t('edit'), path: paths.dashboard.book.demo.edit },
+            ],
+          },
+          // ATRICLE
+          {
+            title: t('article'),
+            path: paths.dashboard.article.root,
+            icon: ICONS.blog,
+            children: [
+              { title: t('list'), path: paths.dashboard.article.root },
+              { title: t('details'), path: paths.dashboard.article.demo.details },
+              { title: t('create'), path: paths.dashboard.article.new },
+              { title: t('edit'), path: paths.dashboard.article.demo.edit },
+            ],
+          },
           // ACCESS
           {
             title: t('access'),

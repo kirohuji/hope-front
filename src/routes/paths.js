@@ -172,8 +172,28 @@ export const paths = {
       details: (id) => `${ROOTS.DASHBOARD}/scope/${id}`,
       edit: (id) => `${ROOTS.DASHBOARD}/scope/${id}/edit`,
       demo: {
-        details: `${ROOTS.DASHBOARD}/scope/${MOCK_ID}`,
-        edit: `${ROOTS.DASHBOARD}/scope/${MOCK_ID}/edit`,
+        details: `${ROOTS.DASHBOARD}/job/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/job/${MOCK_ID}/edit`,
+      },
+    },
+    book: {
+      root: `${ROOTS.DASHBOARD}/book`,
+      new: `${ROOTS.DASHBOARD}/book/new`,
+      details: (id) => `${ROOTS.DASHBOARD}/book/${id}`,
+      edit: (id) => `${ROOTS.DASHBOARD}/book/${id}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/book/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/book/${MOCK_ID}/edit`,
+      },
+    },
+    article: {
+      root: `${ROOTS.DASHBOARD}/article`,
+      new: `${ROOTS.DASHBOARD}/article/new`,
+      details: (title) => `${ROOTS.DASHBOARD}/article/${title}`,
+      edit: (title) => `${ROOTS.DASHBOARD}/poarticlest/${title}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/article/${paramCase(MOCK_TITLE)}`,
+        edit: `${ROOTS.DASHBOARD}/article/${paramCase(MOCK_TITLE)}/edit`,
       },
     },
     access: {
