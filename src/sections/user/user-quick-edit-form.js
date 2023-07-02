@@ -13,8 +13,6 @@ import MenuItem from '@mui/material/MenuItem';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-// _mock
-import { USER_STATUS_OPTIONS } from 'src/_mock';
 // assets
 import { countries } from 'src/assets/data';
 // components
@@ -22,36 +20,55 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
+import { profileService, userService, fileService } from 'src/composables/context-provider';
+
 // ----------------------------------------------------------------------
 
-export default function UserQuickEditForm({ currentUser, open, onClose }) {
+export const USER_STATUS_OPTIONS = [
+  { value: 'active', label: '激活' },
+  { value: 'banned', label: '禁用' },
+];
+export default function UserQuickEditForm ({ currentUser, open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    address: Yup.string().required('Address is required'),
-    country: Yup.string().required('Country is required'),
-    company: Yup.string().required('Company is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    role: Yup.string().required('Role is required'),
+    username: Yup.string().required('请输入名字'),
+    displayName: Yup.string().required('请输入展示名'),
+    email: Yup.string().required('请输入电子邮件').email('Email must be a valid email address'),
+    phoneNumber: Yup.string().required('请输入手机号'),
+    address: Yup.string().required('请选择地址'),
+    age: Yup.string().required('请选择年龄'),
+    gender: Yup.string().required('请选择性别'),
+    status: Yup.string(),
+    baptized: Yup.boolean().required('请选择是否受洗'),
+    // country: Yup.string().required('Country is required'),
+    // company: Yup.string().required('Company is required'),
+    // state: Yup.string().required('State is required'),
+    // city: Yup.string().required('City is required'),
+    // role: Yup.string().required('Role is required'),
+    // photoURL: Yup.mixed().required('请选择头像'),
   });
 
   const defaultValues = useMemo(
     () => ({
-      name: currentUser?.name || '',
+      username: currentUser?.username || '',
+      displayName: currentUser?.displayName || '',
       email: currentUser?.email || '',
       phoneNumber: currentUser?.phoneNumber || '',
       address: currentUser?.address || '',
-      country: currentUser?.country || '',
-      state: currentUser?.state || '',
-      city: currentUser?.city || '',
-      zipCode: currentUser?.zipCode || '',
-      status: currentUser?.status,
-      company: currentUser?.company || '',
-      role: currentUser?.role || '',
+      age: currentUser?.age || '',
+      gender: currentUser?.gender || '',
+      status: currentUser?.status || '',
+      baptized: currentUser?.baptized || false,
+      // country: currentUser?.country || '',
+      // state: currentUser?.state || '',
+      // city: currentUser?.city || '',
+      // zipCode: currentUser?.zipCode || '',
+      // photoURL: currentUser?.photoURL || null,
+      // isVerified: currentUser?.isVerified || true,
+      // status: currentUser?.status,
+      // company: currentUser?.company || '',
+      // role: currentUser?.role || '',
     }),
     [currentUser]
   );
@@ -69,11 +86,17 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await userService.patch({
+        _id: currentUser._id,
+        ...data
+      });
+      await profileService.patch({
+        _id: currentUser._id,
+        ...data
+      });
       reset();
       onClose();
-      enqueueSnackbar('Update success!');
-      console.info('DATA', data);
+      enqueueSnackbar('更新成功!');
     } catch (error) {
       console.error(error);
     }
@@ -90,7 +113,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>Quick Update</DialogTitle>
+        <DialogTitle>快速更新</DialogTitle>
 
         <DialogContent>
           <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
@@ -106,7 +129,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
               sm: 'repeat(2, 1fr)',
             }}
           >
-            <RHFSelect name="status" label="Status">
+            <RHFSelect name="status" label="状态">
               {USER_STATUS_OPTIONS.map((status) => (
                 <MenuItem key={status.value} value={status.value}>
                   {status.label}
@@ -116,54 +139,39 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
 
             <Box sx={{ display: { xs: 'none', sm: 'block' } }} />
 
-            <RHFTextField name="name" label="Full Name" />
-            <RHFTextField name="email" label="Email Address" />
-            <RHFTextField name="phoneNumber" label="Phone Number" />
+            <RHFTextField name="username" label="用户名" />
+            <RHFTextField name="displayName" label="展示名" />
+            <RHFTextField name="age" label=" 年龄" />
 
-            <RHFAutocomplete
-              name="country"
-              label="Country"
-              options={countries.map((country) => country.label)}
-              getOptionLabel={(option) => option}
-              renderOption={(props, option) => {
-                const { code, label, phone } = countries.filter(
-                  (country) => country.label === option
-                )[0];
-
-                if (!label) {
-                  return null;
-                }
-
-                return (
-                  <li {...props} key={label}>
-                    <Iconify
-                      key={label}
-                      icon={`circle-flags:${code.toLowerCase()}`}
-                      width={28}
-                      sx={{ mr: 1 }}
-                    />
-                    {label} ({code}) +{phone}
-                  </li>
-                );
-              }}
-            />
-
-            <RHFTextField name="state" label="State/Region" />
-            <RHFTextField name="city" label="City" />
-            <RHFTextField name="address" label="Address" />
-            <RHFTextField name="zipCode" label="Zip/Code" />
-            <RHFTextField name="company" label="Company" />
-            <RHFTextField name="role" label="Role" />
+            <RHFSelect name="gender" label="性别" placeholder="性别">
+              <MenuItem value="male">
+                男
+              </MenuItem>
+              <MenuItem value="female">
+                女
+              </MenuItem>
+            </RHFSelect>
+            <RHFTextField name="email" label="电子邮件" />
+            <RHFTextField name="phoneNumber" label="手机号" />
+            <RHFSelect name="baptized" label="是否受洗" placeholder="是否受洗">
+              <MenuItem value="true">
+                是
+              </MenuItem>
+              <MenuItem value="false">
+                否
+              </MenuItem>
+            </RHFSelect>
+            <RHFTextField name="address" label="地址" />
           </Box>
         </DialogContent>
 
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            Cancel
+            取消
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Update
+            更新
           </LoadingButton>
         </DialogActions>
       </FormProvider>

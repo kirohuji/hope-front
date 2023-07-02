@@ -1,5 +1,5 @@
-import isEqual from 'lodash/isEqual';
-import { useCallback,useEffect, useState } from 'react';
+import _ from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -17,7 +17,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
 // _mock
-import { _userList, _roles, USER_STATUS_OPTIONS } from 'src/_mock';
+import { _userList, _roles } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components
@@ -30,7 +30,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
-  getComparator,
+  // getComparator,
   emptyRows,
   TableNoData,
   TableEmptyRows,
@@ -47,20 +47,28 @@ import UserTableFiltersResult from '../user-table-filters-result';
 
 // ----------------------------------------------------------------------
 
+
+const USER_STATUS_OPTIONS = [
+  { value: 'active', label: '激活' },
+  { value: 'banned', label: '禁用' },
+];
+
+
 const STATUS_OPTIONS = [{ value: 'all', label: '全部' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'name', label: '账户' },
-  { id: 'displayName', label: '用户' },
-  { id: 'phoneNumber', label: '手机号', width: 180 },
-  { id: 'address', label: '地址', width: 220 },
+  { id: 'username', label: '账户', width: 180 },
+  { id: 'displayName', label: '用户', width: 100 },
+  { id: 'phoneNumber', label: '手机号', width: 150 },
+  { id: 'baptized', label: ' 受洗情况', width: 90 },
+  { id: 'address', label: '地址', width: 250 },
   // { id: 'role', label: 'Role', width: 180 },
   { id: 'status', label: '状态', width: 100 },
   { id: '', width: 88 },
 ];
 
 const defaultFilters = {
-  name: '',
+  username: '',
   role: [],
   status: 'all',
 };
@@ -71,9 +79,12 @@ export default function UserListView () {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const table = useTable();
+  const table = useTable({
+    defaultCurrentPage: 0,
+  });
 
   const settings = useSettingsContext();
+
 
   const router = useRouter();
 
@@ -81,73 +92,82 @@ export default function UserListView () {
 
   const [tableData, setTableData] = useState([]);
 
+  const [tableDataCount, setTableDataCount] = useState(0);
+
   const [filters, setFilters] = useState(defaultFilters);
 
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-  });
+  // applyFilter({
+  //   inputData: tableData,
+  //   comparator: getComparator(table.order, table.orderBy),
+  //   filters,
+  // });
 
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
+  // const dataInPage = dataFiltered.slice(
+  //   table.page * table.rowsPerPage,
+  //   table.page * table.rowsPerPage + table.rowsPerPage
+  // );
 
   const denseHeight = table.dense ? 52 : 72;
 
-  const canReset = !isEqual(defaultFilters, filters);
+  const canReset = !_.isEqual(defaultFilters, filters);
 
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  const notFound = (!tableDataCount && canReset) || !tableDataCount;
 
   const getTableData = useCallback(async (selector = {}, options = {}) => {
     try {
-      const response = await userService.pagination({
-        selector,
+      const response = await userService.pagination(
+        {
+          ...selector,
+          ..._.pickBy(_.omit(filters, ["status", "role"]))
+        },
         options
-      })
+      )
       setTableData(response.data);
-      table.setPage(Math.ceil(response.total / table.rowsPerPage) - 1)
+      setTableDataCount(response.total);
     } catch (error) {
-      enqueueSnackbar(error.message);
+      enqueueSnackbar(error.message)
     }
-  }, [setTableData, table, enqueueSnackbar]);
+  }, [filters, setTableData, setTableDataCount, enqueueSnackbar]);
 
   useEffect(() => {
     getTableData()
   }, [getTableData]);
 
   const handleFilters = useCallback(
-    (name, value) => {
+    (username, value) => {
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
-        [name]: value,
+        [username]: value,
       }));
     },
     [table]
   );
 
   const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-      setTableData(deleteRow);
+    async (id) => {
+      // const deleteRow = tableData.filter((row) => row.id !== id);
+      // setTableData(deleteRow);
 
-      table.onUpdatePageDeleteRow(dataInPage.length);
+      // table.onUpdatePageDeleteRow(dataInPage.length);
+      await userService.delete({
+        _id: id
+      })
+      getTableData();
     },
-    [dataInPage.length, table, tableData]
+    [getTableData]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
+  // const handleDeleteRows = useCallback(() => {
+  //   const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+  //   setTableData(deleteRows);
 
-    table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+  //   table.onUpdatePageDeleteRows({
+  //     totalRows: tableData.length,
+  //     totalRowsInPage: dataInPage.length,
+  //     totalRowsFiltered: dataFiltered.length,
+  //   });
+  // }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
   const handleEditRow = useCallback(
     (id) => {
@@ -184,7 +204,7 @@ export default function UserListView () {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New User
+              新用户
             </Button>
           }
           sx={{
@@ -214,7 +234,7 @@ export default function UserListView () {
                     }
                     color={
                       (tab.value === 'active' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
+                      // (tab.value === 'pending' && 'warning') ||
                       (tab.value === 'banned' && 'error') ||
                       'default'
                     }
@@ -246,10 +266,8 @@ export default function UserListView () {
             <UserTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
-              //
               onResetFilters={handleResetFilters}
-              //
-              results={dataFiltered.length}
+              results={tableDataCount}
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
@@ -292,19 +310,16 @@ export default function UserListView () {
                 />
 
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
+                  {tableData
                     .map((row) => (
                       <UserTableRow
-                        key={row.id}
+                        key={row._id}
                         row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
+                        onClose={() => getTableData()}
+                        selected={table.selected.includes(row._id)}
+                        onSelectRow={() => table.onSelectRow(row._id)}
+                        onDeleteRow={() => handleDeleteRow(row._id)}
+                        onEditRow={() => handleEditRow(row._id)}
                       />
                     ))}
 
@@ -320,7 +335,7 @@ export default function UserListView () {
           </TableContainer>
 
           <TablePaginationCustom
-            count={dataFiltered.length}
+            count={tableDataCount}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
@@ -335,10 +350,10 @@ export default function UserListView () {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title="删除"
         content={
           <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
+            你确定要删除 <strong> {table.selected.length} </strong> 项目?
           </>
         }
         action={
@@ -346,11 +361,11 @@ export default function UserListView () {
             variant="contained"
             color="error"
             onClick={() => {
-              handleDeleteRows();
+              // handleDeleteRows();
               confirm.onFalse();
             }}
           >
-            Delete
+            删除
           </Button>
         }
       />

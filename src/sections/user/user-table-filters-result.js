@@ -34,13 +34,13 @@ export default function UserTableFiltersResult({
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          results found
+          没有发现
         </Box>
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {filters.status !== 'all' && (
-          <Block label="Status:">
+          <Block label="状态:">
             <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
           </Block>
         )}
@@ -58,7 +58,7 @@ export default function UserTableFiltersResult({
           onClick={onResetFilters}
           startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
-          Clear
+          清除
         </Button>
       </Stack>
     </Stack>

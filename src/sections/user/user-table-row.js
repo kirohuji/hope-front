@@ -21,8 +21,8 @@ import UserQuickEditForm from './user-quick-edit-form';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { name, avatarUrl, company, status, email, phoneNumber } = row;
+export default function UserTableRow ({ row, selected, onClose, onEditRow, onSelectRow, onDeleteRow }) {
+  const { username, displayName, baptized, gender, age, avatarUrl, company, status, email, phoneNumber } = row;
 
   const confirm = useBoolean();
 
@@ -38,10 +38,10 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
         </TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={name} src={avatarUrl} sx={{ mr: 2 }} />
+          <Avatar alt={username} src={avatarUrl} sx={{ mr: 2 }} />
 
           <ListItemText
-            primary={name}
+            primary={username}
             secondary={email}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
@@ -50,14 +50,16 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
 
         <TableCell>
           <ListItemText
-            primary={name}
-            secondary={email}
+            primary={displayName}
+            secondary={`${gender === 'male' ? '男' : '女'}(${age})`}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
           />
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNumber}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{baptized ? "是" : "否"}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{company}</TableCell>
 
@@ -68,17 +70,17 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
             variant="soft"
             color={
               (status === 'active' && 'success') ||
-              (status === 'pending' && 'warning') ||
+              // (status === 'pending' && 'warning') ||
               (status === 'banned' && 'error') ||
               'default'
             }
           >
-            {status}
+            {status === 'active' ? '激活' : '注销'}
           </Label>
         </TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <Tooltip title="Quick Edit" placement="top" arrow>
+          <Tooltip title="快速编辑" placement="top" arrow>
             <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
               <Iconify icon="solar:pen-bold" />
             </IconButton>
@@ -90,7 +92,10 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
         </TableCell>
       </TableRow>
 
-      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={() => {
+        quickEdit.onFalse()
+        onClose()
+      }} />
 
       <CustomPopover
         open={popover.open}
@@ -106,7 +111,7 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          删除
         </MenuItem>
 
         <MenuItem
@@ -116,18 +121,18 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          编辑
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title="删除"
+        content="你确认要删除吗?"
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            删除
           </Button>
         }
       />
@@ -137,6 +142,7 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
 
 UserTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
+  onClose: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,
   row: PropTypes.object,

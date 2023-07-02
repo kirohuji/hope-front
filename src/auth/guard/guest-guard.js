@@ -11,13 +11,13 @@ import { useAuthContext } from '../hooks';
 export default function GuestGuard({ children }) {
   const router = useRouter();
 
-  const { authenticated } = useAuthContext();
+  const { isAuthenticated, authenticated } = useAuthContext();
 
   const check = useCallback(() => {
-    if (authenticated) {
+    if (isAuthenticated) {
       router.replace(paths.dashboard.root);
     }
-  }, [authenticated, router]);
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     check();

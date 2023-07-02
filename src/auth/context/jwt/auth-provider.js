@@ -15,6 +15,8 @@ import { isValidToken, setSession } from './utils';
 // ----------------------------------------------------------------------
 
 const initialState = {
+  isInitialized: false,
+  isAuthenticated: false,
   user: null,
   loading: true,
 };
@@ -22,6 +24,8 @@ const initialState = {
 const reducer = (state, action) => {
   if (action.type === 'INITIAL') {
     return {
+      isInitialized: true,
+      isAuthenticated: action.payload.isAuthenticated,
       loading: false,
       user: action.payload.user,
     };
@@ -29,18 +33,21 @@ const reducer = (state, action) => {
   if (action.type === 'LOGIN') {
     return {
       ...state,
+      isAuthenticated: true,
       user: action.payload.user,
     };
   }
   if (action.type === 'REGISTER') {
     return {
       ...state,
+      isAuthenticated: true,
       user: action.payload.user,
     };
   }
   if (action.type === 'LOGOUT') {
     return {
       ...state,
+      isAuthenticated: false,
       user: null,
     };
   }
@@ -58,7 +65,8 @@ export function AuthProvider ({ children }) {
     try {
       const accessToken = localStorage.getItem(STORAGE_KEY);
 
-      if (accessToken && isValidToken(accessToken)) {
+      // if (accessToken && isValidToken(accessToken)) {
+      if (accessToken) {
         setSession(accessToken);
 
         // const response = await axios.get(endpoints.auth.me);
@@ -201,12 +209,14 @@ export function AuthProvider ({ children }) {
       loading: status === 'loading',
       authenticated: status === 'authenticated',
       unauthenticated: status === 'unauthenticated',
+      isInitialized: state.isInitialized,
+      isAuthenticated: state.isAuthenticated,
       //
       login,
       register,
       logout,
     }),
-    [login, logout, register, state.user, status]
+    [login, logout, register, state.isAuthenticated, state.isInitialized, state.user, status]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

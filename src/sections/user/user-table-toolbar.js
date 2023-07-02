@@ -17,7 +17,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({
+export default function UserTableToolbar ({
   filters,
   onFilters,
   //
@@ -27,7 +27,7 @@ export default function UserTableToolbar({
 
   const handleFilterName = useCallback(
     (event) => {
-      onFilters('name', event.target.value);
+      onFilters('username', event.target.value);
     },
     [onFilters]
   );
@@ -62,7 +62,7 @@ export default function UserTableToolbar({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Role</InputLabel>
+          <InputLabel>角色</InputLabel>
 
           <Select
             multiple
@@ -78,7 +78,7 @@ export default function UserTableToolbar({
           >
             {roleOptions.map((option) => (
               <MenuItem key={option} value={option}>
-                <Checkbox disableRipple size="small" checked={filters.role.includes(option)} />
+                <Checkbox disableRipple size="small" checked={filters.role && filters.role.includes(option)} />
                 {option}
               </MenuItem>
             ))}
@@ -90,7 +90,7 @@ export default function UserTableToolbar({
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder="Search..."
+            placeholder="请输入..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -118,7 +118,7 @@ export default function UserTableToolbar({
           }}
         >
           <Iconify icon="solar:printer-minimalistic-bold" />
-          Print
+          打印
         </MenuItem>
 
         <MenuItem
@@ -127,7 +127,7 @@ export default function UserTableToolbar({
           }}
         >
           <Iconify icon="solar:import-bold" />
-          Import
+          导入
         </MenuItem>
 
         <MenuItem
@@ -136,7 +136,7 @@ export default function UserTableToolbar({
           }}
         >
           <Iconify icon="solar:export-bold" />
-          Export
+          导出
         </MenuItem>
       </CustomPopover>
     </>
