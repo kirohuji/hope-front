@@ -22,7 +22,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function BookItem ({ book, onView, onContentEdit, onEdit, onDelete }) {
+export default function BookItem ({ book, onView, onEdit, onDelete }) {
   const popover = usePopover();
 
   const { _id, id, label, logo, title, company, createdAt, candidates, experience, employmentTypes, salary, role } =
@@ -46,7 +46,7 @@ export default function BookItem ({ book, onView, onContentEdit, onEdit, onDelet
           <ListItemText
             sx={{ mb: 1 }}
             primary={
-              <Link component={RouterLink} href={paths.dashboard.book.details(_id)} color="inherit">
+              <Link component={RouterLink} href={paths.dashboard.book.details.root(_id)} color="inherit">
                 {label}
               </Link>
             }
@@ -142,16 +142,6 @@ export default function BookItem ({ book, onView, onContentEdit, onEdit, onDelet
         <MenuItem
           onClick={() => {
             popover.onClose();
-            onContentEdit();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          内容编辑
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
             onDelete();
           }}
           sx={{ color: 'error.main' }}
@@ -167,7 +157,6 @@ export default function BookItem ({ book, onView, onContentEdit, onEdit, onDelet
 BookItem.propTypes = {
   book: PropTypes.object,
   onDelete: PropTypes.func,
-  onContentEdit: PropTypes.func,
   onEdit: PropTypes.func,
   onView: PropTypes.func,
 };

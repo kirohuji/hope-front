@@ -17,9 +17,9 @@ import Markdown from 'src/components/markdown';
 
 // ----------------------------------------------------------------------
 
-export default function BookDetailsContent({ book }) {
+export default function BookDetailsContent ({ book }) {
   const {
-    title,
+    label,
     skills,
     salary,
     content,
@@ -32,7 +32,7 @@ export default function BookDetailsContent({ book }) {
 
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
-      <Typography variant="h4">{title}</Typography>
+      <Typography variant="h4">{label}</Typography>
 
       <Markdown children={content} />
 
@@ -106,28 +106,28 @@ export default function BookDetailsContent({ book }) {
     </Stack>
   );
 
-  const renderCompany = (
-    <Stack
-      component={Paper}
-      variant="outlined"
-      spacing={2}
-      direction="row"
-      sx={{ p: 3, borderRadius: 2, mt: 3 }}
-    >
-      <Avatar
-        alt={book.company.name}
-        src={book.company.logo}
-        variant="rounded"
-        sx={{ width: 64, height: 64 }}
-      />
+  // const renderCompany = (
+  //   <Stack
+  //     component={Paper}
+  //     variant="outlined"
+  //     spacing={2}
+  //     direction="row"
+  //     sx={{ p: 3, borderRadius: 2, mt: 3 }}
+  //   >
+  //     <Avatar
+  //       alt={book.company.name}
+  //       src={book.company.logo}
+  //       variant="rounded"
+  //       sx={{ width: 64, height: 64 }}
+  //     />
 
-      <Stack spacing={1}>
-        <Typography variant="subtitle1">{book.company.name}</Typography>
-        <Typography variant="body2">{book.company.fullAddress}</Typography>
-        <Typography variant="body2">{book.company.phoneNumber}</Typography>
-      </Stack>
-    </Stack>
-  );
+  //     <Stack spacing={1}>
+  //       <Typography variant="subtitle1">{book.company.name}</Typography>
+  //       <Typography variant="body2">{book.company.fullAddress}</Typography>
+  //       <Typography variant="body2">{book.company.phoneNumber}</Typography>
+  //     </Stack>
+  //   </Stack>
+  // );
 
   return (
     <Grid container spacing={3}>
@@ -138,7 +138,7 @@ export default function BookDetailsContent({ book }) {
       <Grid xs={12} md={4}>
         {renderOverview}
 
-        {renderCompany}
+        {/** renderCompany * */}
       </Grid>
     </Grid>
   );

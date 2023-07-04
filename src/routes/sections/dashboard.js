@@ -183,8 +183,11 @@ export const dashboardRoutes = [
           { element: <BookListPage />, index: true },
           { path: 'list', element: <BookListPage /> },
           { path: ':id', element: <BookDetailsPage /> },
+          { path: ':id/tab/:tabId', element: <BookDetailsPage /> },
           { path: 'new', element: <BookCreatePage /> },
           { path: ':id/edit', element: <BookEditPage /> },
+          { path: ':id/article/new', element: <ArticleCreatePage /> },
+          { path: ':id/article/:articleId/edit', element: <ArticleEditPage /> },
         ],
       },
       {

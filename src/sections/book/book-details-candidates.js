@@ -23,7 +23,7 @@ export default function BookDetailsCandidates({ candidates }) {
         md: 'repeat(3, 1fr)',
       }}
     >
-      {candidates.map((candidate) => (
+      {candidates && candidates.map((candidate) => (
         <Stack component={Card} direction="row" spacing={2} key={candidate.id} sx={{ p: 3 }}>
           <IconButton sx={{ position: 'absolute', top: 8, right: 8 }}>
             <Iconify icon="eva:more-vertical-fill" />

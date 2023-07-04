@@ -139,7 +139,7 @@ export default function BookListView() {
         query={search.query}
         results={search.results}
         onSearch={handleSearch}
-        hrefItem={(id) => paths.dashboard.book.details(id)}
+        hrefItem={(id) => paths.dashboard.book.details.root(id)}
       />
 
       <Stack direction="row" spacing={1} flexShrink={0}>

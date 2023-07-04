@@ -7,10 +7,10 @@ import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // redux
-import {
-  setActive
-} from 'src/redux/slices/book';
-import { useDispatch } from 'src/redux/store';
+// import {
+//   setActive
+// } from 'src/redux/slices/book';
+// import { useDispatch } from 'src/redux/store';
 import BookItem from './book-item';
 
 // ----------------------------------------------------------------------
@@ -18,11 +18,9 @@ import BookItem from './book-item';
 export default function BookList ({ books }) {
   const router = useRouter();
 
-  const dispatch = useDispatch();
-
   const handleView = useCallback(
     (id) => {
-      router.push(paths.dashboard.book.details(id));
+      router.push(paths.dashboard.book.details.root(id));
     },
     [router]
   );
@@ -32,14 +30,6 @@ export default function BookList ({ books }) {
       router.push(paths.dashboard.book.edit(id));
     },
     [router]
-  );
-
-  const handleContentEdit = useCallback(
-    (id) => {
-      dispatch(setActive(id))
-      router.push(paths.dashboard.article.list);
-    },
-    [router,dispatch]
   );
 
 
@@ -62,7 +52,6 @@ export default function BookList ({ books }) {
           <BookItem
             key={book._id}
             book={book}
-            onContentEdit={() => handleContentEdit(book._id)}
             onView={() => handleView(book._id)}
             onEdit={() => handleEdit(book._id)}
             onDelete={() => handleDelete(book._id)}

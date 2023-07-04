@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 // @mui
@@ -8,6 +8,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Dialog from '@mui/material/Dialog'
 import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -32,13 +33,19 @@ import FormProvider, {
   RHFAutocomplete,
 } from 'src/components/hook-form';
 //
-import { articleService, fileService } from 'src/composables/context-provider';
+import { articleService, bookService, fileService } from 'src/composables/context-provider';
 import ArticleDetailsPreview from './article-details-preview';
-
+import CheckoutSteps from './article-checkout-steps';
+import QuestionnareCards from './questionnaire/cards/index';
+import QuestionnareCardForm from './questionnaire/cards/CardForm';
 
 // ----------------------------------------------------------------------
+const STEPS = ['阅读环节', '问答环节'];
 
-export default function ArticleNewEditForm({ currentArticle }) {
+export default function ArticleNewEditForm ({ book, currentArticle }) {
+
+  const [activeStep, setActiveStep] = useState(0);
+
   const router = useRouter();
 
   const isEdit = !!currentArticle;
@@ -47,6 +54,12 @@ export default function ArticleNewEditForm({ currentArticle }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const preview = useBoolean();
+
+  const formDialog = useBoolean();
+
+  const [question, setQuestion] = useState(null);
+  const [questions, setQuestions] = useState([]);
+
 
   const NewBlogSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -95,21 +108,37 @@ export default function ArticleNewEditForm({ currentArticle }) {
     }
   }, [currentArticle, defaultValues, reset]);
 
+  const onNextStep = () => {
+    setActiveStep(activeStep + 1)
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-      if (!isEdit) {
-        await articleService.post(data);
-      } else {
-        await articleService.patch({
-          _id: currentArticle._id,
-          ...data
-        });
-      }
-      reset();
       preview.onFalse();
-      enqueueSnackbar(currentArticle ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.article.root);
+      onNextStep();
+      if (activeStep === 0) {
+        preview.onFalse();
+        onNextStep();
+      } else {
+        if (!isEdit) {
+          const id = await articleService.post(data);
+          if(book){
+            await bookService.addBookArticle({
+              book_id: book._id,
+              article_id:id
+            })
+          }
+        } else {
+          await articleService.patch({
+            _id: currentArticle._id,
+            ...data
+          });
+        }
+        reset();
+        preview.onFalse();
+        enqueueSnackbar(currentArticle ? '更新成功!' : '创建成功!');
+        router.push(paths.dashboard.article.root);
+      }
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
@@ -261,7 +290,7 @@ export default function ArticleNewEditForm({ currentArticle }) {
               }
             />
 
-            {/**   <FormControlLabel control={<Switch defaultChecked />} label="Enable comments" /> * */} 
+            {/**   <FormControlLabel control={<Switch defaultChecked />} label="Enable comments" /> * */}
             <RHFSwitch name="comments" label="Enable comments" />
           </Stack>
         </Card>
@@ -273,15 +302,17 @@ export default function ArticleNewEditForm({ currentArticle }) {
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
-        <FormControlLabel
-          control={<Switch name="public" defaultChecked />}
-          label="Publish"
-          name="public" 
-          sx={{ flexGrow: 1, pl: 3 }}
-        />
+        {activeStep === 0 &&
+          <FormControlLabel
+            control={<Switch name="public" defaultChecked />}
+            label="发布"
+            name="public"
+            sx={{ flexGrow: 1, pl: 3 }}
+          />
 
+        }
         <Button color="inherit" variant="outlined" size="large" onClick={preview.onTrue}>
-          Preview
+          预览
         </Button>
 
         <LoadingButton
@@ -291,40 +322,103 @@ export default function ArticleNewEditForm({ currentArticle }) {
           loading={isSubmitting}
           sx={{ ml: 2 }}
         >
-          {!currentArticle ? 'Create Article' : 'Save Changes'}
+          {!currentArticle && (activeStep === 0 ? '下一步' : '保存')}
+          {currentArticle && (activeStep === 0 ? '下一步' : '新建')}
         </LoadingButton>
       </Grid>
     </>
   );
 
-  return (
-    <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid container spacing={3}>
-        {renderDetails}
-
-        {renderProperties}
-
-        {renderActions}
+  const renderQuestionnaire = (
+    <>
+      {mdUp && (
+        <Grid md={4}>
+          <Typography variant="h6" sx={{ mb: 0.5 }}>
+            Questionnaire
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            Additional functions and attributes...
+          </Typography>
+        </Grid>
+      )}
+      <Grid xs={12} md={8}>
+        {!mdUp && <CardHeader title="Questionnaire" />}
+        <Stack spacing={3} sx={{ p: 3 }}>
+          <QuestionnareCards
+            questions={questions}
+            onAdd={() => {
+              setQuestion({})
+              formDialog.onTrue();
+            }}
+            onEdit={(obj) => {
+              setQuestion(obj)
+              formDialog.onTrue();
+            }}
+            onDelete={(obj) => {
+              setQuestions(questions.filter((row) => row._id !== obj._id));
+            }}
+          />
+        </Stack>
       </Grid>
+    </>
+  );
 
-      <ArticleDetailsPreview
-        title={values.title}
-        content={values.content}
-        description={values.description}
-        coverUrl={
-          typeof values.coverUrl === 'string' ? values.coverUrl : `${values.coverUrl?.preview}`
-        }
-        //
-        open={preview.value}
-        isValid={isValid}
-        isSubmitting={isSubmitting}
-        onClose={preview.onFalse}
-        onSubmit={onSubmit}
-      />
-    </FormProvider>
+  return (
+    <>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        <Grid container spacing={2}>
+          <Grid xs={12} md={12}>
+            <CheckoutSteps activeStep={activeStep} steps={STEPS} />
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={3}>
+          {activeStep === 0 && renderDetails}
+
+          {activeStep === 0 && renderProperties}
+
+          {activeStep === 0 && renderActions}
+
+          {activeStep === 1 && renderQuestionnaire}
+
+          {activeStep === 1 && renderActions}
+
+        </Grid>
+
+        <ArticleDetailsPreview
+          title={values.title}
+          content={values.content}
+          description={values.description}
+          coverUrl={
+            typeof values.coverUrl === 'string' ? values.coverUrl : `${values.coverUrl?.preview}`
+          }
+          //
+          open={preview.value}
+          isValid={isValid}
+          isSubmitting={isSubmitting}
+          onClose={preview.onFalse}
+          onSubmit={onSubmit}
+        />
+      </FormProvider>
+      <Dialog fullWidth maxWidth="sm" open={formDialog.value} onClose={formDialog.onFalse}>
+        {formDialog.value && <QuestionnareCardForm
+          item={question}
+          onClose={formDialog.onFalse}
+          onCreate={(data) => {
+            questions.push({
+              ...data,
+              _id: Math.random() * 100
+            });
+            setQuestions(questions);
+            formDialog.onFalse();
+          }}
+        />}
+      </Dialog>
+    </>
   );
 }
 
 ArticleNewEditForm.propTypes = {
   currentArticle: PropTypes.object,
+  book: PropTypes.any
 };

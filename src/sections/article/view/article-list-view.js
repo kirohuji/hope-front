@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import orderBy from 'lodash/orderBy';
-import { useCallback,useEffect,  useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -33,9 +34,14 @@ const defaultFilters = {
   publish: 'all',
 };
 
+ArticleListView.propTypes = {
+  book: PropTypes.object,
+}
+
 // ----------------------------------------------------------------------
 
-export default function ArticleListView() {
+// eslint-disable-next-line react/prop-types
+export default function ArticleListView ({ book }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const settings = useSettingsContext();
@@ -104,8 +110,8 @@ export default function ArticleListView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
-        heading="List"
+      {!book ? <CustomBreadcrumbs
+        heading="文章列表"
         links={[
           {
             name: 'Dashboard',
@@ -126,13 +132,31 @@ export default function ArticleListView() {
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            New Article
+            新建文章
           </Button>
         }
         sx={{
           mb: { xs: 3, md: 5 },
         }}
-      />
+      /> :
+        <Stack
+          spacing={3}
+          justifyContent="flex-end"
+          alignItems={{ xs: 'flex-end', sm: 'center' }}
+          direction={{ xs: 'column', sm: 'row' }}
+          sx={{
+            mb: { xs: 3, md: 5 },
+          }}
+        >
+          <Button
+            component={RouterLink}
+            href={paths.dashboard.book.article.new(book._id)}
+            variant="contained"
+            startIcon={<Iconify icon="mingcute:add-line" />}
+          >
+            新建文章
+          </Button>
+        </Stack>}
 
       <Stack
         spacing={3}

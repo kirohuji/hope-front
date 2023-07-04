@@ -179,8 +179,15 @@ export const paths = {
     book: {
       root: `${ROOTS.DASHBOARD}/book`,
       new: `${ROOTS.DASHBOARD}/book/new`,
-      details: (id) => `${ROOTS.DASHBOARD}/book/${id}`,
+      details: {
+        root: (id) => `${ROOTS.DASHBOARD}/book/${id}`,
+        tab: (id,tabId) => `${ROOTS.DASHBOARD}/book/${id}/tab/${tabId}`,
+      },
       edit: (id) => `${ROOTS.DASHBOARD}/book/${id}/edit`,
+      article: {
+        new: (id) => `${ROOTS.DASHBOARD}/book/${id}/article/new`,
+        edit: (id, articleId) => `${ROOTS.DASHBOARD}/book/${id}/article/${articleId}/edit`,
+      },
       demo: {
         details: `${ROOTS.DASHBOARD}/book/${MOCK_ID}`,
         edit: `${ROOTS.DASHBOARD}/book/${MOCK_ID}/edit`,
