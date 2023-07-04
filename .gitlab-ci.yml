@@ -1,0 +1,17 @@
+cache:
+  paths:
+    - node_modules
+stages:
+  - build
+build:
+  image: node:latest    
+  stage: build
+  variables: 
+    # Replace this with your site URL
+    PUBLIC_URL: http://124.221.67.248:8929/hope-front-end/  
+  script:
+    - yarn install      
+    - yarn build
+  artifacts:
+    paths:
+      - build/       
