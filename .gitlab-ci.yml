@@ -10,6 +10,7 @@ build:
     # Replace this with your site URL
     PUBLIC_URL: http://124.221.67.248:8929/hope-front-end/  
   script:
+    - yarn config set registry https://registry.npmmirror.com/
     - yarn install      
     - yarn build
   artifacts:
