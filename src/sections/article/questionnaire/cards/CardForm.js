@@ -5,13 +5,11 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import {
-  Box,
   Stack,
   Button,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Divider,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // assets

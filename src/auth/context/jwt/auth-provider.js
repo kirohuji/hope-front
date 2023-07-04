@@ -5,7 +5,7 @@ import { useEffect, useReducer, useCallback, useMemo } from 'react';
 //
 import { authService, userService } from 'src/composables/context-provider';
 import { AuthContext } from './auth-context';
-import { isValidToken, setSession } from './utils';
+import { setSession } from './utils';
 // ----------------------------------------------------------------------
 
 // NOTE:

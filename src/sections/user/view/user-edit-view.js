@@ -9,7 +9,7 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 // redux
 // import { useSelector } from 'src/redux/store';
-import { userService, roleService } from 'src/composables/context-provider';
+import { userService } from 'src/composables/context-provider';
 import UserNewEditForm from '../user-new-edit-form';
 
 // ----------------------------------------------------------------------

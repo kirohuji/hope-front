@@ -375,32 +375,32 @@ export default function UserListView () {
 
 // ----------------------------------------------------------------------
 
-function applyFilter ({ inputData, comparator, filters }) {
-  const { name, status, role } = filters;
+// function applyFilter ({ inputData, comparator, filters }) {
+//   const { name, status, role } = filters;
 
-  const stabilizedThis = inputData.map((el, index) => [el, index]);
+//   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
+//   stabilizedThis.sort((a, b) => {
+//     const order = comparator(a[0], b[0]);
+//     if (order !== 0) return order;
+//     return a[1] - b[1];
+//   });
 
-  inputData = stabilizedThis.map((el) => el[0]);
+//   inputData = stabilizedThis.map((el) => el[0]);
 
-  if (name) {
-    inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
-  }
+//   if (name) {
+//     inputData = inputData.filter(
+//       (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+//     );
+//   }
 
-  if (status !== 'all') {
-    inputData = inputData.filter((user) => user.status === status);
-  }
+//   if (status !== 'all') {
+//     inputData = inputData.filter((user) => user.status === status);
+//   }
 
-  if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.role));
-  }
+//   if (role.length) {
+//     inputData = inputData.filter((user) => role.includes(user.role));
+//   }
 
-  return inputData;
-}
+//   return inputData;
+// }

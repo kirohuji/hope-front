@@ -4,7 +4,7 @@ import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
 // _mock
-import { _jobs } from 'src/_mock';
+// import { _jobs } from 'src/_mock';
 // components
 import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';

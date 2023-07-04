@@ -164,17 +164,17 @@ export default function BookNewEditForm({ currentBook }) {
     [setValue]
   );
 
-  const handleRemoveFile = useCallback(
-    (inputFile) => {
-      const filtered = values.images && values.images?.filter((file) => file !== inputFile);
-      setValue('cover', filtered);
-    },
-    [setValue, values.images]
-  );
+  // const handleRemoveFile = useCallback(
+  //   (inputFile) => {
+  //     const filtered = values.images && values.images?.filter((file) => file !== inputFile);
+  //     setValue('cover', filtered);
+  //   },
+  //   [setValue, values.images]
+  // );
 
-  const handleRemoveAllFiles = useCallback(() => {
-    setValue('images', []);
-  }, [setValue]);
+  // const handleRemoveAllFiles = useCallback(() => {
+  //   setValue('images', []);
+  // }, [setValue]);
 
   const renderDetails = (
     <>

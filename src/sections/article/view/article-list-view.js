@@ -15,7 +15,7 @@ import { useDebounce } from 'src/hooks/use-debounce';
 // _mock
 import { POST_SORT_OPTIONS } from 'src/_mock';
 // api
-import { useGetPosts, useSearchPosts } from 'src/api/blog';
+import { useSearchPosts } from 'src/api/blog';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import Label from 'src/components/label';
@@ -62,11 +62,11 @@ export default function ArticleListView ({ book }) {
 
   const { searchResults, searchLoading } = useSearchPosts(debouncedQuery);
 
-  const dataFiltered = applyFilter({
-    inputData: articles,
-    filters,
-    sortBy,
-  });
+  // const dataFiltered = applyFilter({
+  //   inputData: articles,
+  //   filters,
+  //   sortBy,
+  // });
 
   const getTableData = useCallback(async (selector = {}, options = {}) => {
     try {

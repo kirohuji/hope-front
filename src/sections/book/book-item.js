@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 // @mui
-import Box from '@mui/material/Box';
+// import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -8,11 +8,11 @@ import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
+// import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 // utils
 import { fDate } from 'src/utils/format-time';
-import { fCurrency } from 'src/utils/format-number';
+// import { fCurrency } from 'src/utils/format-number';
 // routes
 import { paths } from 'src/routes/paths';
 // components
@@ -25,7 +25,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 export default function BookItem ({ book, onView, onEdit, onDelete }) {
   const popover = usePopover();
 
-  const { _id, id, label, logo, title, company, createdAt, candidates, experience, employmentTypes, salary, role } =
+  const { _id, label, logo,createdAt, candidates} =
     book;
 
   return (
