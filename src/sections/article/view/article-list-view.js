@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import orderBy from 'lodash/orderBy';
+// import orderBy from 'lodash/orderBy';
 import { useCallback, useEffect, useState } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
@@ -215,24 +215,24 @@ export default function ArticleListView ({ book }) {
 
 // ----------------------------------------------------------------------
 
-const applyFilter = ({ inputData, filters, sortBy }) => {
-  const { publish } = filters;
+// const applyFilter = ({ inputData, filters, sortBy }) => {
+//   const { publish } = filters;
 
-  if (sortBy === 'latest') {
-    inputData = orderBy(inputData, ['createdAt'], ['desc']);
-  }
+//   if (sortBy === 'latest') {
+//     inputData = orderBy(inputData, ['createdAt'], ['desc']);
+//   }
 
-  if (sortBy === 'oldest') {
-    inputData = orderBy(inputData, ['createdAt'], ['asc']);
-  }
+//   if (sortBy === 'oldest') {
+//     inputData = orderBy(inputData, ['createdAt'], ['asc']);
+//   }
 
-  if (sortBy === 'popular') {
-    inputData = orderBy(inputData, ['totalViews'], ['desc']);
-  }
+//   if (sortBy === 'popular') {
+//     inputData = orderBy(inputData, ['totalViews'], ['desc']);
+//   }
 
-  if (publish !== 'all') {
-    inputData = inputData.filter((article) => article.publish === publish);
-  }
+//   if (publish !== 'all') {
+//     inputData = inputData.filter((article) => article.publish === publish);
+//   }
 
-  return inputData;
-};
+//   return inputData;
+// };

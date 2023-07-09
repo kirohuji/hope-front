@@ -113,7 +113,7 @@ export default function BookNewEditForm({ currentBook }) {
   });
 
   const {
-    watch,
+    // watch,
     reset,
     control,
     setValue,
@@ -121,7 +121,7 @@ export default function BookNewEditForm({ currentBook }) {
     formState: { isSubmitting },
   } = methods;
 
-  const values = watch();
+  // const values = watch();
 
   useEffect(() => {
     if (currentBook) {

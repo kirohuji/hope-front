@@ -11,7 +11,7 @@ import { useAuthContext } from '../hooks';
 export default function GuestGuard({ children }) {
   const router = useRouter();
 
-  const { isAuthenticated, authenticated } = useAuthContext();
+  const { isAuthenticated } = useAuthContext();
 
   const check = useCallback(() => {
     if (isAuthenticated) {
