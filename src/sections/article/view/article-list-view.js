@@ -208,7 +208,7 @@ export default function ArticleListView ({ book }) {
         ))}
       </Tabs>
 
-      <ArticleListHorizontal articles={articles} loading={loading} />
+      <ArticleListHorizontal onRefresh={()=> getTableData()} book={book} articles={articles} loading={loading} />
     </Container>
   );
 }

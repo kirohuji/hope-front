@@ -27,8 +27,8 @@ service.interceptors.response.use(
 export default service
 
 export const fileService = axios.create({
-  baseURL: 'http://124.221.67.248:5005/api/v1/',
-  timeout: 3000,
+  baseURL: 'http://124.221.67.248:6000/api/v1/',
+  timeout: 10000,
   headers: {
     "Content-Type": "multipart/form-data"
   },

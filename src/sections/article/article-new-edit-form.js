@@ -58,16 +58,16 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
   const formDialog = useBoolean();
 
   const [question, setQuestion] = useState(null);
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState(currentArticle?.questions || []);
 
 
   const NewBlogSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
     description: Yup.string().required('Description is required'),
     content: Yup.string().required('Content is required'),
-    coverUrl: Yup.mixed().nullable().required('Cover is required'),
-    tags: Yup.array().min(2, 'Must have at least 2 tags'),
-    metaKeywords: Yup.array().min(1, 'Meta keywords is required'),
+    coverUrl: Yup.mixed().nullable(),
+    tags: Yup.array(),
+    metaKeywords: Yup.array(),
     // not required
     metaTitle: Yup.string(),
     metaDescription: Yup.string(),
@@ -122,22 +122,27 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
       } else {
         if (!isEdit) {
           const id = await articleService.post(data);
-          if(book){
+          if (book) {
             await bookService.addBookArticle({
               book_id: book._id,
-              article_id:id
+              article_id: id
             })
           }
         } else {
           await articleService.patch({
             _id: currentArticle._id,
-            ...data
+            ...data,
+            questions
           });
         }
         reset();
         preview.onFalse();
         enqueueSnackbar(currentArticle ? '更新成功!' : '创建成功!');
-        router.push(paths.dashboard.article.root);
+        if (book) {
+          router.push(paths.dashboard.book.details.tab(book._id, "chapter"));
+        } else {
+          router.push(paths.dashboard.article.root);
+        }
       }
       console.info('DATA', data);
     } catch (error) {
@@ -322,8 +327,8 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
           loading={isSubmitting}
           sx={{ ml: 2 }}
         >
-          {!currentArticle && (activeStep === 0 ? '下一步' : '保存')}
-          {currentArticle && (activeStep === 0 ? '下一步' : '新建')}
+          {isEdit && (activeStep === 0 ? '下一步' : '保存')}
+          {!isEdit && (activeStep === 0 ? '下一步' : '新建')}
         </LoadingButton>
       </Grid>
     </>

@@ -195,8 +195,8 @@ export const dashboardRoutes = [
         children: [
           { element: <ArticleListPage />, index: true },
           { path: 'list', element: <ArticleListPage /> },
-          { path: ':title', element: <ArticleDetailPage /> },
-          { path: ':title/edit', element: <ArticleEditPage /> },
+          { path: ':id', element: <ArticleDetailPage /> },
+          { path: ':id/edit', element: <ArticleEditPage /> },
           { path: 'new', element: <ArticleCreatePage /> },
         ],
       },

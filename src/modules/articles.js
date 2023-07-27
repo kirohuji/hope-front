@@ -14,8 +14,4 @@ export default class ArticleService extends Service {
             selector, options
         })
     }
-
-    get (target) {
-        return this.api.get(`${this.model}/${target._id}`)
-    }
 }

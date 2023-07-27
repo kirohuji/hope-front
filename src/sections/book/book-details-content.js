@@ -39,7 +39,7 @@ export default function BookDetailsContent ({ book }) {
       <Stack spacing={2}>
         <Typography variant="h6">Skills</Typography>
         <Stack direction="row" alignItems="center" spacing={1}>
-          {skills.map((skill) => (
+          {skills && skills.map((skill) => (
             <Chip key={skill} label={skill} variant="soft" />
           ))}
         </Stack>
@@ -48,7 +48,7 @@ export default function BookDetailsContent ({ book }) {
       <Stack spacing={2}>
         <Typography variant="h6">Benefits</Typography>
         <Stack direction="row" alignItems="center" spacing={1}>
-          {benefits.map((benefit) => (
+          {benefits && benefits.map((benefit) => (
             <Chip key={benefit} label={benefit} variant="soft" />
           ))}
         </Stack>
@@ -64,11 +64,11 @@ export default function BookDetailsContent ({ book }) {
           value: fDate(createdAt),
           icon: <Iconify icon="solar:calendar-date-bold" />,
         },
-        {
-          label: 'Expiration date',
-          value: fDate(expiredDate),
-          icon: <Iconify icon="solar:calendar-date-bold" />,
-        },
+        // {
+        //   label: 'Expiration date',
+        //   value: fDate(expiredDate),
+        //   icon: <Iconify icon="solar:calendar-date-bold" />,
+        // },
         {
           label: 'Employment type',
           value: employmentTypes,
@@ -76,7 +76,7 @@ export default function BookDetailsContent ({ book }) {
         },
         {
           label: 'Offered salary',
-          value: salary.negotiable ? 'Negotiable' : fCurrency(salary.price),
+          value: salary && salary.negotiable ? 'Negotiable' : salary && fCurrency(salary.price),
           icon: <Iconify icon="solar:wad-of-money-bold" />,
         },
         {

@@ -196,8 +196,8 @@ export const paths = {
     article: {
       root: `${ROOTS.DASHBOARD}/article`,
       new: `${ROOTS.DASHBOARD}/article/new`,
-      details: (title) => `${ROOTS.DASHBOARD}/article/${title}`,
-      edit: (title) => `${ROOTS.DASHBOARD}/poarticlest/${title}/edit`,
+      details: (id) => `${ROOTS.DASHBOARD}/article/${id}`,
+      edit: (id) => `${ROOTS.DASHBOARD}/article/${id}/edit`,
       demo: {
         details: `${ROOTS.DASHBOARD}/article/${paramCase(MOCK_TITLE)}`,
         edit: `${ROOTS.DASHBOARD}/article/${paramCase(MOCK_TITLE)}/edit`,

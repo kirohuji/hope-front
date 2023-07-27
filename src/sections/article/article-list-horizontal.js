@@ -8,7 +8,7 @@ import ArticleItemHorizontal from './article-item-horizontal';
 
 // ----------------------------------------------------------------------
 
-export default function ArticleListHorizontal({ articles, loading }) {
+export default function ArticleListHorizontal({ onRefresh, book, articles, loading }) {
   const renderSkeleton = (
     <>
       {[...Array(16)].map((_, index) => (
@@ -20,7 +20,7 @@ export default function ArticleListHorizontal({ articles, loading }) {
   const renderList = (
     <>
       {articles.map((article) => (
-        <ArticleItemHorizontal key={article._id} article={article} />
+        <ArticleItemHorizontal key={article._id} book={book} article={article} onRefresh={onRefresh}/>
       ))}
     </>
   );
@@ -54,6 +54,8 @@ export default function ArticleListHorizontal({ articles, loading }) {
 }
 
 ArticleListHorizontal.propTypes = {
+  onRefresh: PropTypes.func,
   loading: PropTypes.bool,
   articles: PropTypes.array,
+  book: PropTypes.object,
 };

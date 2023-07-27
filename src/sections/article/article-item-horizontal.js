@@ -22,10 +22,11 @@ import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import TextMaxLine from 'src/components/text-max-line';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { articleService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
-export default function ArticleItemHorizontal ({ article }) {
+export default function ArticleItemHorizontal ({ onRefresh,article,book }) {
   const popover = usePopover();
 
   const router = useRouter();
@@ -42,6 +43,7 @@ export default function ArticleItemHorizontal ({ article }) {
     totalShares,
     totalComments,
     description,
+    _id
   } = article;
 
   return (
@@ -133,27 +135,32 @@ export default function ArticleItemHorizontal ({ article }) {
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          View
+          查看
         </MenuItem>
 
         <MenuItem
           onClick={() => {
             popover.onClose();
-            router.push(paths.dashboard.article.edit(title));
+            router.push(paths.dashboard.article.edit(_id));
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          编辑
         </MenuItem>
 
         <MenuItem
-          onClick={() => {
+          onClick={async () => {
+            await articleService.delete({
+              _id
+            })
+            onRefresh()
             popover.onClose();
+
           }}
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          删除
         </MenuItem>
       </CustomPopover>
     </>
@@ -161,6 +168,8 @@ export default function ArticleItemHorizontal ({ article }) {
 }
 
 ArticleItemHorizontal.propTypes = {
+  onRefresh: PropTypes.func,
+  book: PropTypes.object,
   article: PropTypes.shape({
     author: PropTypes.object,
     coverUrl: PropTypes.string,
@@ -171,5 +180,6 @@ ArticleItemHorizontal.propTypes = {
     totalComments: PropTypes.number,
     totalShares: PropTypes.number,
     totalViews: PropTypes.number,
+    _id: PropTypes.string,
   }),
 };
