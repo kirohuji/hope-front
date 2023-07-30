@@ -8,6 +8,7 @@ WORKDIR /app
 COPY . /app/
 
 # Prepare the container for building React
+RUN npm config set registry https://registry.npmmirror.com/
 RUN npm install
 RUN npm install react-scripts@3.0.1 -g
 # We want the production version
