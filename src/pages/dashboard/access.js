@@ -13,9 +13,6 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
 import Button from '@mui/material/Button';
 
-// routes
-import { paths } from 'src/routes/paths';
-
 // components
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -34,6 +31,9 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { find } from 'lodash'
 import { roleService } from 'src/composables/context-provider';
 // sections
+
+// routes
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 

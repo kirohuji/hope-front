@@ -1,5 +1,11 @@
 # Set the base image to node:12-alpine
-FROM node:latest as build
+FROM node:16.15.0 as build
+
+# Prepare the container for building React
+COPY package.json /tmp/package.json
+RUN npm config set registry https://registry.npmmirror.com/
+RUN cd /tmp && npm install
+RUN mkdir -p /app && cp -a /tmp/node_modules /app/
 
 # Specify where our app will live in the container
 WORKDIR /app
@@ -7,10 +13,6 @@ WORKDIR /app
 # Copy the React App to the container
 COPY . /app/
 
-# Prepare the container for building React
-RUN npm config set registry https://registry.npmmirror.com/
-RUN npm install
-RUN npm install react-scripts@3.0.1 -g
 # We want the production version
 RUN npm run build
 
