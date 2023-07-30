@@ -26,7 +26,7 @@ export default function BookDetailsContent ({ book }) {
     benefits,
     createdAt,
     experience,
-    expiredDate,
+    // expiredDate,
     employmentTypes,
   } = book;
 
