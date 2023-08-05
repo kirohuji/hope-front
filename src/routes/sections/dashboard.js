@@ -85,6 +85,8 @@ const KanbanPage = lazy(() => import('src/pages/dashboard/kanban'));
 const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission'));
 // BLANK PAGE
 const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
+// ORGANIZATION PAGE
+const UserOrganizationPage = lazy(() => import('src/pages/dashboard/user/organization'))
 
 // ----------------------------------------------------------------------
 
@@ -117,6 +119,7 @@ export const dashboardRoutes = [
           { path: 'new', element: <UserCreatePage /> },
           { path: ':id/edit', element: <UserEditPage /> },
           { path: 'account', element: <UserAccountPage /> },
+          { path: 'organization', element: <UserOrganizationPage /> },
         ],
       },
       {
@@ -203,13 +206,13 @@ export const dashboardRoutes = [
       {
         path: 'access',
         children: [
-          { element: <AccessPage />, index: true}
+          { element: <AccessPage />, index: true }
         ]
       },
       {
         path: 'dictionary',
         children: [
-          { element: <DictionaryPage />, index: true}
+          { element: <DictionaryPage />, index: true }
         ]
       },
       {

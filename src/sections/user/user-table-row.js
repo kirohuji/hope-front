@@ -22,7 +22,7 @@ import UserQuickEditForm from './user-quick-edit-form';
 // ----------------------------------------------------------------------
 
 export default function UserTableRow ({ row, selected, onClose, onEditRow, onSelectRow, onDeleteRow }) {
-  const { username, displayName, baptized, gender, age, avatarUrl, company, status, email, phoneNumber } = row;
+  const { username, displayName, baptized, gender, age, photoURL, company, status, email, phoneNumber } = row;
 
   const confirm = useBoolean();
 
@@ -38,7 +38,7 @@ export default function UserTableRow ({ row, selected, onClose, onEditRow, onSel
         </TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={username} src={avatarUrl} sx={{ mr: 2 }} />
+          <Avatar alt={username} src={photoURL} sx={{ mr: 2 }} />
 
           <ListItemText
             primary={username}

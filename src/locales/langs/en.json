@@ -2,6 +2,7 @@
   "app": "app",
   "job": "job",
   "scope": "scope",
+  "organization": "organization",
   "book": "book",
   "user": "user",
   "list": "list",

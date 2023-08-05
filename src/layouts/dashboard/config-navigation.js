@@ -83,6 +83,7 @@ export function useNavData () {
               { title: t('create'), path: paths.dashboard.user.new },
               { title: t('edit'), path: paths.dashboard.user.demo.edit },
               { title: t('account'), path: paths.dashboard.user.account },
+              { title: t('organization'), path: paths.dashboard.user.organization },
             ],
           },
 

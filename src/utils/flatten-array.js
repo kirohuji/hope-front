@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------
 
-export function flattenArray(list, key = 'children') {
+export default function flattenArray(list, key = 'children') {
   let children = [];
 
   const flatten = list?.map((item) => {
