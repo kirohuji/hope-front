@@ -84,7 +84,7 @@ export default function Header ({
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Dense">
+            <Tooltip title="紧密">
               <IconButton onClick={onToggleDense}>
                 <Iconify icon="eva:collapse-fill" />
               </IconButton>

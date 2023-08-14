@@ -13,6 +13,7 @@ SimpleNode.propTypes = {
 export default function SimpleNode({ node, sx }) {
   return (
     <Card
+    className='card'
       sx={{
         p: 2,
         boxShadow: 0,

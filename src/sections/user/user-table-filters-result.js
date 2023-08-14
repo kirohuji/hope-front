@@ -9,7 +9,13 @@ import Stack from '@mui/material/Stack';
 // components
 import Iconify from 'src/components/iconify';
 
+import _ from 'lodash'
 // ----------------------------------------------------------------------
+
+const USER_STATUS_OPTIONS = [
+  { value: 'active', label: '激活' },
+  { value: 'banned', label: '禁用' },
+];
 
 export default function UserTableFiltersResult({
   filters,
@@ -39,14 +45,14 @@ export default function UserTableFiltersResult({
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {filters.status !== 'all' && (
+        {filters.status && filters.status !== 'all' && (
           <Block label="状态:">
-            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
+            <Chip size="small" label={_.find(USER_STATUS_OPTIONS, ["value",filters.status])?.label} onDelete={handleRemoveStatus} />
           </Block>
         )}
 
         {!!filters.role.length && (
-          <Block label="Role:">
+          <Block label="角色:">
             {filters.role.map((item) => (
               <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
             ))}

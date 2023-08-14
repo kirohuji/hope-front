@@ -16,17 +16,17 @@ export default function UserCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create a new user"
+        heading="创建一个用户"
         links={[
+          // {
+          //   name: 'Dashboard',
+          //   href: paths.dashboard.root,
+          // },
           {
-            name: 'Dashboard',
-            href: paths.dashboard.root,
-          },
-          {
-            name: 'User',
+            name: '用户',
             href: paths.dashboard.user.root,
           },
-          { name: 'New user' },
+          { name: '新用户' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

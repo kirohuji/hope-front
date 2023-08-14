@@ -29,6 +29,7 @@ export default function StandardNode({ node, onEdit, onDelete, sx }) {
   return (
     <>
       <Card
+      className='card'
         sx={{
           p: 2,
           minWidth: 200,

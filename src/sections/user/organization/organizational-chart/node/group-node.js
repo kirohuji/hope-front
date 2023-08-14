@@ -54,7 +54,7 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
   const isGrMarketing = node.group === 'marketing';
 
   return (
-    <Stack sx={{ position: 'relative', display: 'inline-flex', cursor: 'pointer' }} alignItems="center">
+    <Stack sx={{ position: 'relative', display: 'inline-flex', cursor: 'pointer' }} alignItems="center" className='card'>
       {!isLabel && false && (
         <Avatar
           alt={node.name}

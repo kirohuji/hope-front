@@ -44,7 +44,7 @@ import FormProvider, {
   RHFAutocomplete,
   RHFMultiCheckbox,
 } from 'src/components/hook-form';
-import { scopeService } from 'src/composables/context-provider';
+import { roleService, scopeService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
@@ -124,7 +124,13 @@ export default function ScopeNewEditForm ({ currentScope }) {
           ...data
         });
       } else {
-        await scopeService.post(data);
+        const result = await scopeService.post(data);
+        await roleService.post({
+          ...result,
+          scope: result._id,
+          type: "org",
+          root: true,
+        })
       }
       reset();
       enqueueSnackbar(currentScope ? '更新成功!' : '创建成功!');

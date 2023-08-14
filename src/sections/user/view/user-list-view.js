@@ -118,7 +118,7 @@ export default function UserListView () {
       const response = await userService.pagination(
         {
           ...selector,
-          ..._.pickBy(_.omit(filters, ["status", "role"]))
+          ..._.pickBy(_.omit(filters, ["role"]))
         },
         options
       )
@@ -191,11 +191,11 @@ export default function UserListView () {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading="列表"
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'User', href: paths.dashboard.user.root },
-            { name: 'List' },
+            // { name: 'Dashboard', href: paths.dashboard.root },
+            { name: '用户', href: paths.dashboard.user.root },
+            { name: '列表' },
           ]}
           action={
             <Button
@@ -227,30 +227,6 @@ export default function UserListView () {
                 iconPosition="end"
                 value={tab.value}
                 label={tab.label}
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                    }
-                    color={
-                      (tab.value === 'active' && 'success') ||
-                      // (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'banned' && 'error') ||
-                      'default'
-                    }
-                  >
-                    {tab.value === 'all' && _userList.length}
-                    {tab.value === 'active' &&
-                      _userList.filter((user) => user.status === 'active').length}
-
-                    {tab.value === 'pending' &&
-                      _userList.filter((user) => user.status === 'pending').length}
-                    {tab.value === 'banned' &&
-                      _userList.filter((user) => user.status === 'banned').length}
-                    {tab.value === 'rejected' &&
-                      _userList.filter((user) => user.status === 'rejected').length}
-                  </Label>
-                }
               />
             ))}
           </Tabs>

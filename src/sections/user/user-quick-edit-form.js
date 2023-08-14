@@ -117,7 +117,7 @@ export default function UserQuickEditForm ({ currentUser, open, onClose }) {
 
         <DialogContent>
           <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
-            Account is waiting for confirmation
+            更新基本信息
           </Alert>
 
           <Box

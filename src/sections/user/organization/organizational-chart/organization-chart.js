@@ -89,7 +89,7 @@ export default function OrganizationalChart ({ type, data, variant = 'simple', s
         }
         {...other}
       >
-        {data.children.map((list) => (
+        {data.children && data.children.map((list) => (
           <List key={list.name} depth={1} data={list} variant={variant} sx={sx} />
         ))}
       </Tree>

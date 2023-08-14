@@ -10500,6 +10500,13 @@ react-markdown@^8.0.7:
     unist-util-visit "^4.0.0"
     vfile "^5.0.0"
 
+react-minimap@^0.7.4:
+  version "0.7.4"
+  resolved "https://registry.npmmirror.com/react-minimap/-/react-minimap-0.7.4.tgz#8ba3b21629fd4c954adcd91570e3c798d835126f"
+  integrity sha512-U/qHs0QKc6oyuPlroRQ9ymM8HvM2N2hmmv59Y2nyQ2+obqZlTPhB/t/FBfxn4B2lv2f28MoC5NBXEVDjw/cilw==
+  dependencies:
+    lodash "^4.17.4"
+
 react-native-get-random-values@^1.4.0:
   version "1.9.0"
   resolved "https://registry.npmmirror.com/react-native-get-random-values/-/react-native-get-random-values-1.9.0.tgz"

@@ -19,6 +19,7 @@ export default function TablePaginationCustom({
       <TablePagination
         rowsPerPageOptions={rowsPerPageOptions}
         component="div"
+        labelRowsPerPage="每页/项" 
         {...other}
         sx={{
           borderTopColor: 'transparent',
@@ -27,7 +28,7 @@ export default function TablePaginationCustom({
 
       {onChangeDense && (
         <FormControlLabel
-          label="Dense"
+          label="紧密"
           control={<Switch checked={dense} onChange={onChangeDense} />}
           sx={{
             pl: 2,
