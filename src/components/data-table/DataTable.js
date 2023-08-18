@@ -121,7 +121,7 @@ export default function DataTable ({ server, columns, importFile, onInsert, chil
             // checkboxSelection
             disableSelectionOnClick
             columns={columns}
-            pageSizeOptions={[10, 20, 50, 100]}
+            pageSizeOptions={[5, 10, 20, 50, 100]}
             pagination
             getRowId={(row) => row._id}
             filterMode="server"

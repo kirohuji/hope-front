@@ -233,7 +233,7 @@ export default function ScopeListView () {
 
       {notFound && <EmptyContent filled title="No Data" sx={{ py: 10 }} />}
 
-      <ScopeList scopes={tableData} />
+      <ScopeList scopes={tableData} onRefresh={()=> getTableData()}/>
     </Container>
   );
 }

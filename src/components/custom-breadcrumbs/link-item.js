@@ -7,7 +7,7 @@ import { RouterLink } from 'src/routes/components';
 
 // ----------------------------------------------------------------------
 
-export default function BreadcrumbsLink({ link, activeLast, disabled }) {
+export default function BreadcrumbsLink({ link, activeLast, disabled, onClick }) {
   const { name, href, icon } = link;
 
   const styles = {
@@ -17,7 +17,7 @@ export default function BreadcrumbsLink({ link, activeLast, disabled }) {
     display: 'inline-flex',
     ...(disabled &&
       !activeLast && {
-        cursor: 'default',
+        cursor: 'pointer',
         pointerEvents: 'none',
         color: 'text.disabled',
       }),
@@ -50,12 +50,13 @@ export default function BreadcrumbsLink({ link, activeLast, disabled }) {
     );
   }
 
-  return <Box sx={styles}> {renderContent} </Box>;
+  return <Box sx={styles} onClick={()=> onClick(link)}> {renderContent} </Box>;
 }
 
 BreadcrumbsLink.propTypes = {
   activeLast: PropTypes.bool,
   disabled: PropTypes.bool,
+  onClick: PropTypes.func,
   link: PropTypes.shape({
     href: PropTypes.string,
     icon: PropTypes.node,

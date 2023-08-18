@@ -225,7 +225,7 @@ export default function DictionaryView () {
                         levels && levels.length > 0 && <CustomBreadcrumbs
                             links={levels}
                             sx={{ m: 1 }}
-                            toLink={(link) => {
+                            onClick={(link) => {
                                 if (link.root) {
                                     setParent(current);
                                     setLevels([
@@ -237,7 +237,7 @@ export default function DictionaryView () {
                                     ])
                                 } else {
                                     const index = findIndex(levels, ["to", link.to])
-                                    console.log(index)
+                                    console.log(link)
                                     setLevels(chunk(levels, index + 1)[0])
                                     setParent({
                                         _id: link.to

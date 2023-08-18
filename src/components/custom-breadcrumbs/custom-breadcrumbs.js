@@ -17,9 +17,10 @@ export default function CustomBreadcrumbs({
   moreLink,
   activeLast,
   sx,
+  onClick,
   ...other
 }) {
-  const lastLink = links[links.length - 1].name;
+  const lastLink = links[links.length - 1].to;
 
   return (
     <Box sx={{ ...sx }}>
@@ -35,12 +36,13 @@ export default function CustomBreadcrumbs({
           {/* BREADCRUMBS */}
           {!!links.length && (
             <Breadcrumbs separator={<Separator />} {...other}>
-              {links.map((link) => (
+              {links.map((link,index) => (
                 <LinkItem
                   key={link.name || ''}
                   link={link}
+                  onClick={onClick}
                   activeLast={activeLast}
-                  disabled={link.name === lastLink}
+                  disabled={link.to === lastLink}
                 />
               ))}
             </Breadcrumbs>
@@ -77,6 +79,7 @@ CustomBreadcrumbs.propTypes = {
   links: PropTypes.array,
   heading: PropTypes.string,
   moreLink: PropTypes.array,
+  onClick: PropTypes.func,
   activeLast: PropTypes.bool,
 };
 

@@ -127,8 +127,16 @@ export default function ScopeNewEditForm ({ currentScope }) {
         const result = await scopeService.post(data);
         await roleService.post({
           ...result,
+          _id: `${result}-org`,
           scope: result._id,
           type: "org",
+          root: true,
+        })
+        await roleService.post({
+          ...result,
+          _id: `${result}-role`,
+          scope: result._id,
+          type: "role",
           root: true,
         })
       }

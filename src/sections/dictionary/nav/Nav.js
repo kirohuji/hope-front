@@ -33,7 +33,8 @@ export default function Nav ({ items, openNav, onCloseNav, onSelect, onRefresh }
   const [openForm, setOpenForm] = useState(false);;
   const isDesktop = useResponsive('up', 'md');
   const { enqueueSnackbar } = useSnackbar();
-  const isLoading = !items.length;
+  // const isLoading = !items.length;
+  const isLoading = false;
   const [active, setActive] = useState(-1);
   const handleCloseFormModal = () => {
     setOpenForm(false)

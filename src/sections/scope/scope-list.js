@@ -6,12 +6,13 @@ import Pagination, { paginationClasses } from '@mui/material/Pagination';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
+import { scopeService } from 'src/composables/context-provider';
 //
 import ScopeItem from './scope-item';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeList({ scopes }) {
+export default function ScopeList({ scopes ,onRefresh}) {
   const router = useRouter();
 
   const handleView = useCallback(
@@ -28,9 +29,12 @@ export default function ScopeList({ scopes }) {
     [router]
   );
 
-  const handleDelete = useCallback((_id) => {
-    console.info('DELETE', _id);
-  }, []);
+  const handleDelete = useCallback(async (_id) => {
+    await scopeService.delete({
+      _id
+    })
+    onRefresh()
+  }, [onRefresh]);
 
   return (
     <>
@@ -71,5 +75,5 @@ export default function ScopeList({ scopes }) {
 
 ScopeList.propTypes = {
   scopes: PropTypes.array,
-  
+  onRefresh: PropTypes.func
 };

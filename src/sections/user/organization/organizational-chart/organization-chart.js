@@ -58,6 +58,7 @@ export default function OrganizationalChart ({ type, data, variant = 'simple', s
     enqueueSnackbar('删除成功');
     onFlash()
     handleCloseDeleteConfirm();
+    setOpenManager(false);
   }
   return (
     <userContext.Provider value={providerValue}>
@@ -193,6 +194,7 @@ export function List ({ data, depth, variant, sx }) {
                 setItem(data);
                 setParent(null);
                 setOpenDeleteConfirm(true)
+                setOpenManager(false);
               }}
               length={flattenArray(data.children, 'children')?.length}
             />
