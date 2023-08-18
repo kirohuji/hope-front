@@ -84,6 +84,7 @@ export function useNavData () {
               { title: t('edit'), path: paths.dashboard.user.demo.edit },
               { title: t('account'), path: paths.dashboard.user.account },
               { title: t('organization'), path: paths.dashboard.user.organization },
+              { title: t('permission'), path: paths.dashboard.user.permission},
             ],
           },
 

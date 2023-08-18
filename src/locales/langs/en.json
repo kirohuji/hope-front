@@ -3,6 +3,7 @@
   "job": "job",
   "scope": "scope",
   "organization": "organization",
+  "permission": "permission",
   "book": "book",
   "user": "user",
   "list": "list",

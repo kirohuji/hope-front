@@ -1,4 +1,3 @@
-import { Helmet } from 'react-helmet-async';
 import { useState, useCallback, useEffect } from 'react';
 // @mui
 import { Stack, Container } from '@mui/material';
@@ -88,11 +87,7 @@ export default function UserOrganizationView () {
   }, [getData]);
 
   return (
-    <>
-      <Helmet>
-        <title> 组织/角色架构 | Hope Family</title>
-      </Helmet>
-      <Container maxWidth={themeStretch ? false : 'lg'}>
+    <Container maxWidth={themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
           heading="组织/角色架构"
           links={[
@@ -116,7 +111,5 @@ export default function UserOrganizationView () {
         }
 
       </Container>
-    </>
-
   )
 }

@@ -4,3 +4,4 @@ export { default as UserCardsView } from './user-cards-view';
 export { default as UserCreateView } from './user-create-view';
 export { default as UserProfileView } from './user-profile-view';
 export { default as UserOranizationView } from './user-organization-view';
+export { default as UserPermissionView } from './user-permission-view';

@@ -88,6 +88,8 @@ const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
 // ORGANIZATION PAGE
 const UserOrganizationPage = lazy(() => import('src/pages/dashboard/user/organization'))
 
+const UserPermissionPage = lazy(() => import('src/pages/dashboard/user/permission'))
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -120,6 +122,7 @@ export const dashboardRoutes = [
           { path: ':id/edit', element: <UserEditPage /> },
           { path: 'account', element: <UserAccountPage /> },
           { path: 'organization', element: <UserOrganizationPage /> },
+          { path: 'permission', element: <UserPermissionPage /> },
         ],
       },
       {
