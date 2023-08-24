@@ -1,4 +1,5 @@
 // ----------------------------------------------------------------------
+import _ from 'lodash'
 
 export default function flattenArray(list, key = 'children') {
   let children = [];
@@ -10,5 +11,5 @@ export default function flattenArray(list, key = 'children') {
     return item;
   });
 
-  return flatten?.concat(children.length ? flattenArray(children, key) : children);
+  return flatten?.concat(_.compact(children).length ? flattenArray(_.compact(children), key) : _.compact(children));
 }

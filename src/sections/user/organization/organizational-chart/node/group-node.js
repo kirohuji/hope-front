@@ -18,10 +18,11 @@ GroupNode.propTypes = {
   onCreate: PropTypes.func,
   onToggle: PropTypes.func,
   onManager: PropTypes.func,
+  onPermission: PropTypes.func,
   onClick: PropTypes.func,
 };
 
-export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, onCreate, onToggle, onManager, onClick }) {
+export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, onCreate, onToggle, onPermission,onManager, onClick }) {
   const [openPopover, setOpenPopover] = useState(null);
 
   const handleOpenPopover = (event) => {
@@ -168,6 +169,17 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
           >
             <Iconify icon="eva:edit-fill" />
             编辑
+          </MenuItem>
+        )}
+        {onPermission && (
+          <MenuItem
+            onClick={() => {
+              handleClosePopover();
+              onPermission();
+            }}
+          >
+            <Iconify icon="eva:edit-fill" />
+            配置权限
           </MenuItem>
         )}
         {onCreate && isGrDevelopment && (

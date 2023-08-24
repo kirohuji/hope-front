@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect,useCallback } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -10,24 +10,41 @@ import { useParams } from 'src/routes/hook';
 import { _jobs, JOB_PUBLISH_OPTIONS, JOB_DETAILS_TABS } from 'src/_mock';
 // components
 import Label from 'src/components/label';
+import { useSnackbar } from 'src/components/snackbar';
 import { useSettingsContext } from 'src/components/settings';
 //
+import { scopeService } from 'src/composables/context-provider';
 import ScopeDetailsToolbar from '../scope-details-toolbar';
 import ScopeDetailsContent from '../scope-details-content';
 import ScopeDetailsCandidates from '../scope-details-candidates';
-
 // ----------------------------------------------------------------------
 
 export default function ScopeDetailsView() {
+  const { enqueueSnackbar } = useSnackbar();
   const settings = useSettingsContext();
 
   const params = useParams();
 
   const { id } = params;
 
-  const currentScope = _jobs.filter((job) => job.id === id)[0];
+  const [currentScope, setCurrentScope] = useState(null);
+  
 
   const [publish, setPublish] = useState(currentScope?.publish);
+  const getCurrentScope = useCallback(async (selector = {}, options = {}) => {
+    try {
+      const response = await scopeService.get({
+        _id: id
+      })
+      setCurrentScope(response);
+    } catch (error) {
+      enqueueSnackbar(error.message);
+    }
+  }, [id, setCurrentScope, enqueueSnackbar]);
+
+  useEffect(() => {
+    getCurrentScope()
+  }, [getCurrentScope]);
 
   const [currentTab, setCurrentTab] = useState('content');
 
@@ -55,7 +72,7 @@ export default function ScopeDetailsView() {
           label={tab.label}
           icon={
             tab.value === 'candidates' ? (
-              <Label variant="filled">{currentScope?.candidates.length}</Label>
+              <Label variant="filled">{currentScope?.candidates?.length}</Label>
             ) : (
               ''
             )
@@ -77,9 +94,9 @@ export default function ScopeDetailsView() {
       />
       {renderTabs}
 
-      {currentTab === 'content' && <ScopeDetailsContent job={currentScope} />}
+      {currentTab === 'content' && currentScope && <ScopeDetailsContent scope={currentScope} />}
 
-      {currentTab === 'candidates' && <ScopeDetailsCandidates candidates={currentScope?.candidates} />}
+      {currentTab === 'candidates' && currentScope && <ScopeDetailsCandidates scope={currentScope}/>}
     </Container>
   );
 }

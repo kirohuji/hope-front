@@ -19,6 +19,10 @@ import { fData } from 'src/utils/format-number';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
+
+// redux
+import { useSelector } from 'src/redux/store';
+
 // components
 import Label from 'src/components/label';
 import { useSnackbar } from 'src/components/snackbar';
@@ -33,7 +37,7 @@ import { profileService, userService, fileService } from 'src/composables/contex
 export default function UserNewEditForm ({ currentUser }) {
   const router = useRouter();
   const isEdit = !!currentUser;
-
+  const scope = useSelector((state) => state.scope);
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
@@ -45,6 +49,7 @@ export default function UserNewEditForm ({ currentUser }) {
     age: Yup.string().required('请选择年龄'),
     gender: Yup.string().required('请选择性别'),
     status: Yup.string(),
+    scope: Yup.string().required('请选择组织'),
     baptized: Yup.boolean().required('请选择是否受洗'),
     // country: Yup.string().required('Country is required'),
     // company: Yup.string().required('Company is required'),
@@ -65,6 +70,7 @@ export default function UserNewEditForm ({ currentUser }) {
       age: currentUser?.age || '',
       gender: currentUser?.gender || '',
       status: currentUser?.status || '',
+      scope: currentUser?.scope || '',
       baptized: currentUser?.baptized || false,
       // country: currentUser?.country || '',
       // state: currentUser?.state || '',
@@ -98,7 +104,7 @@ export default function UserNewEditForm ({ currentUser }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (!isEdit) {
-        const user = await userService.post({
+        const user = await userService.register({
           ...data,
         });
         await profileService.patch({
@@ -254,6 +260,13 @@ export default function UserNewEditForm ({ currentUser }) {
                 </MenuItem>
               </RHFSelect>
               <RHFTextField name="address" label="地址" />
+              <RHFSelect name="scope" label="所属组织" placeholder="请选择组织架构">
+                {scope.scopes.map((option) =>
+                  <MenuItem key={option._id} value={option._id}>
+                    {option.label}
+                  </MenuItem>
+                )}
+              </RHFSelect>
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

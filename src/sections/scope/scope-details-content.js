@@ -17,9 +17,9 @@ import Markdown from 'src/components/markdown';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeDetailsContent({ job }) {
+export default function ScopeDetailsContent({ scope }) {
   const {
-    title,
+    label,
     skills,
     salary,
     content,
@@ -28,11 +28,11 @@ export default function ScopeDetailsContent({ job }) {
     experience,
     expiredDate,
     employmentTypes,
-  } = job;
+  } = scope;
 
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
-      <Typography variant="h4">{title}</Typography>
+      <Typography variant="h4">{label}</Typography>
 
       <Markdown children={content} />
 
@@ -115,16 +115,16 @@ export default function ScopeDetailsContent({ job }) {
       sx={{ p: 3, borderRadius: 2, mt: 3 }}
     >
       <Avatar
-        alt={job.company.name}
-        src={job.company.logo}
+        alt={scope.name}
+        src={scope.logo}
         variant="rounded"
         sx={{ width: 64, height: 64 }}
       />
 
       <Stack spacing={1}>
-        <Typography variant="subtitle1">{job.company.name}</Typography>
-        <Typography variant="body2">{job.company.fullAddress}</Typography>
-        <Typography variant="body2">{job.company.phoneNumber}</Typography>
+        <Typography variant="subtitle1">{scope.name}</Typography>
+        <Typography variant="body2">{scope.fullAddress}</Typography>
+        <Typography variant="body2">{scope.phoneNumber}</Typography>
       </Stack>
     </Stack>
   );
@@ -145,5 +145,5 @@ export default function ScopeDetailsContent({ job }) {
 }
 
 ScopeDetailsContent.propTypes = {
-  job: PropTypes.object,
+  scope: PropTypes.object,
 };

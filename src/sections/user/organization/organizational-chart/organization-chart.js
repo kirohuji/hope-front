@@ -3,6 +3,8 @@ import { Tree, TreeNode } from 'react-organizational-chart';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Button, DialogTitle, Dialog, DialogContent } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+import Divider from '@mui/material/Divider';
 // utils
 import { useState, createContext, useMemo } from 'react';
 import flattenArray from 'src/utils/flatten-array';
@@ -13,6 +15,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import OrganDetailsDrawer from '../organ-details-drawer';
 import { SimpleNode, StandardNode, GroupNode } from './node';
 import OrganNewEditForm from '../organ-new-edit-form';
+import PermissionPanel from '../../permission/permission-panel';
 // ----------------------------------------------------------------------
 
 OrganizationalChart.propTypes = {
@@ -31,15 +34,19 @@ const userContext = createContext({ item: {}, setOpenForm: null, setItem: null, 
 export default function OrganizationalChart ({ type, data, variant = 'simple', sx, onFlash, ...other }) {
   const theme = useTheme();
   const [openManager, setOpenManager] = useState(false);
+  const [openPermission, setOpenPermission] = useState(false);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [openForm, setOpenForm] = useState(false);
   const [item, setItem] = useState({});
   const [parent, setParent] = useState({});
   const { enqueueSnackbar } = useSnackbar();
-  const providerValue = useMemo(() => ({ setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm }), [setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm]);
+  const providerValue = useMemo(() => ({ setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, setOpenPermission }), [setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, setOpenPermission]);
   const handleCloseModal = () => {
     onFlash()
     setOpenForm(false);
+  };
+  const handleClosePermissionModal = () => {
+    setOpenPermission(false);
   };
   const handleCloseManagerModal = () => {
     setOpenManager(false);
@@ -132,6 +139,14 @@ export default function OrganizationalChart ({ type, data, variant = 'simple', s
           </Button>
         }
       />
+      <Dialog fullWidth maxWidth="md" open={openPermission} onClose={handleClosePermissionModal}>
+        <DialogTitle>权限配置</DialogTitle>
+        <DialogContent dividers>
+          <Grid container direction="row" alignItems="center" sx={{ p: 1 }}>
+            <PermissionPanel current={item} onClose={handleClosePermissionModal}  />
+          </Grid>
+        </DialogContent>
+      </Dialog>
     </userContext.Provider>
   );
 }
@@ -154,7 +169,7 @@ export function List ({ data, depth, variant, sx }) {
   const hasChild = data.children && !!data.children && data.children.length;
   return (
     <userContext.Consumer>
-      {({ setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm }) => <TreeNode
+      {({ setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, setOpenPermission }) => <TreeNode
         label={
           (variant === 'simple' && <SimpleNode sx={sx} node={data} />) ||
           (variant === 'standard' && (
@@ -189,6 +204,11 @@ export function List ({ data, depth, variant, sx }) {
                 setItem(data);
                 setParent(null);
                 setOpenManager(true)
+              }}
+              onPermission={() => {
+                setItem(data);
+                setParent(null);
+                setOpenPermission(true)
               }}
               onDelete={() => {
                 setItem(data);

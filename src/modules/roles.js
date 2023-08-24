@@ -145,6 +145,22 @@ export default class RoleService extends Service {
     });
   }
 
+  getChildrenRoleNames (target) {
+    return this.api.request({
+      url: `${this.model}/getChildrenRoleNames`,
+      method: 'POST',
+      data: target,
+    });
+  }
+
+  getInheritedRoleNames (target) {
+    return this.api.request({
+      url: `${this.model}/getInheritedRoleNames`,
+      method: 'POST',
+      data: target,
+    });
+  }
+
   permissions (target) {
     return this.api.request({
       url: `${this.model}/permissions`,

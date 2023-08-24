@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 // @mui
 import { Stack, Container } from '@mui/material';
 // components
-import { find } from 'lodash'
+import { find,compact } from 'lodash'
 import OrganizationalChart from 'src/sections/user/organization/organizational-chart';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -33,7 +33,7 @@ function getTree (data) {
       if (list[i]) {
         const item = find(data, ['_id', list[i]._id]);
         if (item && item.children) {
-          if (item.children.length) {
+          if (compact(item.children).length) {
             serverArray(item.children, item);
           } else {
             delete item.children;

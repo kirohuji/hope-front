@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useCallback, useEffect, useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -10,10 +11,34 @@ import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 // components
 import Iconify from 'src/components/iconify';
-
+import { useSnackbar } from 'src/components/snackbar';
+// service
+import { userService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
-export default function ScopeDetailsCandidates({ candidates }) {
+export default function ScopeDetailsCandidates({ scope }) {
+  const { enqueueSnackbar } = useSnackbar();
+  const [candidates, setCandidates] = useState([]);
+  const getCandidates = useCallback(async (selector = {}, options = {}) => {
+    try {
+      const response = await userService.pagination(
+        {
+          ...selector,
+        },
+        options
+      )
+      setCandidates(response.data);
+    } catch (error) {
+      enqueueSnackbar(error.message)
+    }
+  }, [setCandidates,enqueueSnackbar]);
+
+  useEffect(() => {
+    getCandidates({
+      scope: scope._id
+    })
+  }, [getCandidates,scope]);
+
   return (
     <Box
       gap={3}
@@ -29,12 +54,12 @@ export default function ScopeDetailsCandidates({ candidates }) {
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
 
-          <Avatar alt={candidate.name} src={candidate.avatarUrl} sx={{ width: 48, height: 48 }} />
+          <Avatar alt={candidate.username} src={candidate.photoURL} sx={{ width: 48, height: 48 }} />
 
           <Stack spacing={2}>
             <ListItemText
-              primary={candidate.name}
-              secondary={candidate.role}
+              primary={candidate.displayName}
+              secondary={candidate.username}
               secondaryTypographyProps={{
                 mt: 0.5,
                 component: 'span',
@@ -110,5 +135,5 @@ export default function ScopeDetailsCandidates({ candidates }) {
 }
 
 ScopeDetailsCandidates.propTypes = {
-  candidates: PropTypes.array,
+  scope: PropTypes.object,
 };
