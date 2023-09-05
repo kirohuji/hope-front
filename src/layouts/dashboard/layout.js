@@ -12,7 +12,7 @@ import Header from './header';
 import NavMini from './nav-mini';
 import NavVertical from './nav-vertical';
 import NavHorizontal from './nav-horizontal';
-
+import DashboardFooter from './footer';
 // ----------------------------------------------------------------------
 
 export default function DashboardLayout({ children }) {
@@ -78,6 +78,9 @@ export default function DashboardLayout({ children }) {
         {renderNavVertical}
 
         <Main>{children}</Main>
+        {
+          !lgUp &&<DashboardFooter />
+        }
       </Box>
     </>
   );

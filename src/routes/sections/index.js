@@ -1,14 +1,30 @@
 import { Navigate, useRoutes } from 'react-router-dom';
+import { lazy } from 'react';
 // layouts
 import MainLayout from 'src/layouts/main';
 // config
 // import { PATH_AFTER_LOGIN } from 'src/config-global';
 //
+import ReturnLayout from 'src/layouts/return';
 import { mainRoutes, HomePage } from './main';
 import { authRoutes } from './auth';
 import { authDemoRoutes } from './auth-demo';
 import { dashboardRoutes } from './dashboard';
 import { componentsRoutes } from './components';
+
+
+const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'))
+
+const TrainingSearchPage = lazy(() => import('src/pages/dashboard/training/search'))
+
+const TrainingSearchDetailPage = lazy(() => import('src/pages/dashboard/training/searchDetail'))
+
+const TrainingDetailPage = lazy(() => import('src/pages/dashboard/training/detail'))
+
+const UserProfilePage = lazy(() => import('src/pages/dashboard/user/profile'));
+
+const UserAccountPage = lazy(() => import('src/pages/dashboard/user/account'));
+
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +60,25 @@ export default function Router() {
 
     // Components routes
     ...componentsRoutes,
-
+    {
+      element: <ReturnLayout />,
+      children: [
+        {
+          path: 'training', element: <TrainingPage />
+        },
+        {
+          path: 'training/detail', element: <TrainingDetailPage />
+        },
+        {
+          path: 'training/search', element: <TrainingSearchPage />
+        },
+        {
+          path: 'training/search/detail/:id', element: <TrainingSearchDetailPage />
+        },
+        { path: 'account', element: <UserAccountPage /> },
+        { path: 'profile', element: <UserProfilePage /> },
+      ]
+    },
     // No match 404
     { path: '*', element: <Navigate to="/404" replace /> },
   ]);

@@ -85,7 +85,6 @@ export function getTree (data) {
       if (parent && parent.children) {
         if (item) {
           parent.children[i] = {
-            parent: parent._id,
             ...item,
           };
           root = root.filter((r) => r._id !== item._id)
@@ -99,7 +98,6 @@ export function getTree (data) {
   serverArray(root, null);
   return root;
 }
-
 
 const StyledTreeView = styled(TreeView)({
   height: 500,
@@ -128,6 +126,7 @@ function StyledTreeItem (props) {
     selectedNodesNotChild,
     label,
     node,
+    maxRole,
     isRoot,
     handleNodeSelect,
     ...other
@@ -139,6 +138,7 @@ function StyledTreeItem (props) {
           !isRoot && <Checkbox
             checked={selectedNodes && selectedNodes.indexOf(node._id) !== -1 || selectedNodesNotChild && selectedNodesNotChild.indexOf(node._id) !== -1}
             tabIndex={-1}
+            // disabled={maxRole._id !== node._id}
             color={
               // eslint-disable-next-line no-nested-ternary
               (selectedNodes && selectedNodes.indexOf(node._id) !== -1) ? 'primary' :
@@ -161,6 +161,7 @@ StyledTreeItem.propTypes = {
   selectedNodesNotChild: PropTypes.array,
   label: PropTypes.string,
   node: PropTypes.object,
+  maxRole: PropTypes.object,
   isRoot: PropTypes.bool,
   handleNodeSelect: PropTypes.func
 }
@@ -174,11 +175,12 @@ export function List ({ data }) {
   const hasChild = data.children && !!data.children && data.children.length;
   return (
     <userContext.Consumer>
-      {({ selectedNodes, selectedNodesNotChild, handleNodeSelect }) =>
+      {({ maxRole,selectedNodes, selectedNodesNotChild, handleNodeSelect }) =>
         <StyledTreeItem
           nodeId={data._id}
           label={data.label}
           node={data}
+          maxRole={maxRole}
           selectedNodesNotChild={selectedNodesNotChild}
           handleNodeSelect={handleNodeSelect}
           selectedNodes={selectedNodes}
@@ -205,10 +207,11 @@ export function SubList ({ data }) {
 
 PermissionPanel.propTypes = {
   current: PropTypes.object,
+  maxRole: PropTypes.object,
   onClose: PropTypes.func,
 };
 
-export default function PermissionPanel ({ current, onClose }) {
+export default function PermissionPanel ({ maxRole,current, onClose }) {
   const { active } = useSelector((state) => state.scope);
   const { enqueueSnackbar } = useSnackbar();
   const [selectedNodes, setSelectedNodes] = useState([]);
@@ -221,7 +224,8 @@ export default function PermissionPanel ({ current, onClose }) {
   const [parent, setParent] = useState({});
   const getData = useCallback(async () => {
     const response = await roleService.getRoleWithUser({
-      scope: active._id
+      scope: active._id,
+      type: "permission"
     });
     const children = await roleService.getChildrenRoleNames({
       _id: current._id,
@@ -271,7 +275,7 @@ export default function PermissionPanel ({ current, onClose }) {
     setIsSubmitting(false)
     enqueueSnackbar('更新成功!');
   }
-  const providerValue = useMemo(() => ({ selectedNodes, selectedNodesNotChild, handleNodeSelect, setOpenForm, setItem, setParent, setOpenDeleteConfirm }), [selectedNodes, selectedNodesNotChild, handleNodeSelect, setOpenForm, setItem, setParent, setOpenDeleteConfirm]);
+  const providerValue = useMemo(() => ({ maxRole,selectedNodes, selectedNodesNotChild, handleNodeSelect, setOpenForm, setItem, setParent, setOpenDeleteConfirm }), [maxRole,selectedNodes, selectedNodesNotChild, handleNodeSelect, setOpenForm, setItem, setParent, setOpenDeleteConfirm]);
   return (
     <userContext.Provider value={providerValue}>
       <Card sx={{ width: '100%' }}>

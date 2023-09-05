@@ -28,7 +28,7 @@ import {
 
 // ----------------------------------------------------------------------
 
-export default function Header({ onOpenNav }) {
+export default function Header ({ onOpenNav }) {
   const theme = useTheme();
 
   const settings = useSettingsContext();
@@ -47,13 +47,15 @@ export default function Header({ onOpenNav }) {
     <>
       {lgUp && isNavHorizontal && <Logo sx={{ mr: 2.5 }} />}
 
-      {!lgUp && (
+      {!lgUp && false && (
         <IconButton onClick={onOpenNav}>
           <SvgColor src="/assets/icons/navbar/ic_menu_item.svg" />
         </IconButton>
       )}
 
-      <Searchbar />
+      {
+        false && <Searchbar />
+      }
 
       <Stack
         flexGrow={1}
@@ -62,10 +64,11 @@ export default function Header({ onOpenNav }) {
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
       >
-        <LanguagePopover />
-
+        {
+          false && <LanguagePopover />
+        }
         <NotificationsPopover />
-        
+
         <ScopePopover />
 
         <ContactsPopover />

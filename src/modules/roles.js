@@ -153,6 +153,14 @@ export default class RoleService extends Service {
     });
   }
 
+  getChildrenRoleNamesWithUser (target) {
+    return this.api.request({
+      url: `${this.model}/getChildrenRoleNamesWithUser`,
+      method: 'POST',
+      data: target,
+    });
+  }
+
   getInheritedRoleNames (target) {
     return this.api.request({
       url: `${this.model}/getInheritedRoleNames`,
@@ -172,6 +180,14 @@ export default class RoleService extends Service {
   getRoleWithUser (target ) {
     return this.api.request({
       url: `${this.model}/getRoleWithUser`,
+      method: 'post',
+      data: target,
+    });
+  }
+  
+  getMaxRole (target ) {
+    return this.api.request({
+      url: `${this.model}/getMaxRole`,
       method: 'post',
       data: target,
     });

@@ -179,11 +179,11 @@ export function AuthProvider ({ children }) {
       type: 'REGISTER',
       payload: {
         user: {
-            ...user,
-            ...profile,
-            permissions,
-            roles
-          },
+          ...user,
+          ...profile,
+          permissions,
+          roles
+        },
       },
     });
   }, []);
@@ -211,6 +211,8 @@ export function AuthProvider ({ children }) {
       unauthenticated: status === 'unauthenticated',
       isInitialized: state.isInitialized,
       isAuthenticated: state.isAuthenticated,
+      permissions: state.user?.permissions?.map(item=>item.value),
+      isAdmin: state.user?.roles?.map(item=>item._id).indexOf("admin")!==-1,
       //
       login,
       register,

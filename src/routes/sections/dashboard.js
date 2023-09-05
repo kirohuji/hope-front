@@ -90,6 +90,8 @@ const UserOrganizationPage = lazy(() => import('src/pages/dashboard/user/organiz
 
 const UserPermissionPage = lazy(() => import('src/pages/dashboard/user/permission'))
 
+const TrainingDashboardPage = lazy(() => import('src/pages/dashboard/training/dashboard'))
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -111,6 +113,9 @@ export const dashboardRoutes = [
       { path: 'banking', element: <OverviewBankingPage /> },
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
+      {
+        path: 'training/dashboard', element: <TrainingDashboardPage />
+      },
       {
         path: 'user',
         children: [

@@ -73,6 +73,13 @@ export const paths = {
       login: `${ROOTS.AUTH}/auth0/login`,
     },
   },
+  training: {
+    root: `/training`,
+    dashboard: `${ROOTS.DASHBOARD}/training/dashboard`,
+    search: `$/training/search`,
+    searchDetail: (id)=> `/training/search/detail/${id}`,
+    detail:`/training/detail/`,
+  },
   authDemo: {
     classic: {
       login: `${ROOTS.AUTH_DEMO}/classic/login`,

@@ -52,6 +52,10 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
 
   const isGrDevelopment = node.group === 'development';
 
+  // const isGrMarketing = node.group === 'marketing';
+
+  const {isMaxRole} = node
+
   const isGrMarketing = node.group === 'marketing';
 
   return (
@@ -80,7 +84,10 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
           textTransform: 'capitalize',
           ...(isLabel && { py: 2 }),
           ...(isLabel && isGrProduct && styles('primary')),
-          ...(isLabel && isGrDevelopment && styles('info')),
+          ...(isLabel && isGrProduct && styles('primary')),
+          ...(isLabel && isMaxRole && {
+            background: `red`,
+          }),
           ...(isLabel && isGrMarketing && styles('warning')),
           ...sx,
         }}

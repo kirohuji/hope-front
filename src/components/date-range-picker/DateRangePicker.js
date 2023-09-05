@@ -1,20 +1,35 @@
 import PropTypes from 'prop-types';
 // @mui
+import {
+  Paper,
+  Stack,
+  Dialog,
+  Button,
+  TextField,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  FormHelperText,
+} from '@mui/material';
 import { DatePicker, CalendarPicker } from '@mui/x-date-pickers';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import FormHelperText from '@mui/material/FormHelperText';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 
 // ----------------------------------------------------------------------
 
-export default function CustomDateRangePicker({
+DateRangePicker.propTypes = {
+  open: PropTypes.bool,
+  isError: PropTypes.bool,
+  onClose: PropTypes.func,
+  title: PropTypes.string,
+  onChangeEndDate: PropTypes.func,
+  onChangeStartDate: PropTypes.func,
+  variant: PropTypes.oneOf(['input', 'calendar']),
+  startDate: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.instanceOf(Date)]),
+  endDate: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.instanceOf(Date)]),
+};
+
+export default function DateRangePicker({
   title = 'Select date range',
   variant = 'input',
   //
@@ -27,9 +42,9 @@ export default function CustomDateRangePicker({
   open,
   onClose,
   //
-  error,
+  isError,
 }) {
-  const mdUp = useResponsive('up', 'md');
+  const isDesktop = useResponsive('up', 'md');
 
   const isCalendarView = variant === 'calendar';
 
@@ -52,16 +67,23 @@ export default function CustomDateRangePicker({
       <DialogContent
         sx={{
           ...(isCalendarView &&
-            mdUp && {
+            isDesktop && {
               overflow: 'unset',
             }),
         }}
       >
         <Stack
-          justifyContent="center"
           spacing={isCalendarView ? 3 : 2}
-          direction={isCalendarView && mdUp ? 'row' : 'column'}
-          sx={{ pt: 1 }}
+          direction={isCalendarView && isDesktop ? 'row' : 'column'}
+          justifyContent="center"
+          sx={{
+            pt: 1,
+            '& .MuiCalendarPicker-root': {
+              ...(!isDesktop && {
+                width: 'auto',
+              }),
+            },
+          }}
         >
           {isCalendarView ? (
             <>
@@ -69,26 +91,36 @@ export default function CustomDateRangePicker({
                 variant="outlined"
                 sx={{ borderRadius: 2, borderColor: 'divider', borderStyle: 'dashed' }}
               >
-                <CalendarPicker value={startDate} onChange={onChangeStartDate} />
+                <CalendarPicker date={startDate} onChange={onChangeStartDate} />
               </Paper>
 
               <Paper
                 variant="outlined"
                 sx={{ borderRadius: 2, borderColor: 'divider', borderStyle: 'dashed' }}
               >
-                <CalendarPicker value={endDate} onChange={onChangeEndDate} />
+                <CalendarPicker date={endDate} onChange={onChangeEndDate} />
               </Paper>
             </>
           ) : (
             <>
-              <DatePicker label="Start date" value={startDate} onChange={onChangeStartDate} />
+              <DatePicker
+                label="Start date"
+                value={startDate}
+                onChange={onChangeStartDate}
+                renderInput={(params) => <TextField {...params} />}
+              />
 
-              <DatePicker label="End date" value={endDate} onChange={onChangeEndDate} />
+              <DatePicker
+                label="End date"
+                value={endDate}
+                onChange={onChangeEndDate}
+                renderInput={(params) => <TextField {...params} />}
+              />
             </>
           )}
         </Stack>
 
-        {error && (
+        {isError && (
           <FormHelperText error sx={{ px: 2 }}>
             End date must be later than start date
           </FormHelperText>
@@ -100,22 +132,10 @@ export default function CustomDateRangePicker({
           Cancel
         </Button>
 
-        <Button disabled={error} variant="contained" onClick={onClose}>
+        <Button disabled={isError} variant="contained" onClick={onClose}>
           Apply
         </Button>
       </DialogActions>
     </Dialog>
   );
 }
-
-CustomDateRangePicker.propTypes = {
-  error: PropTypes.bool,
-  onChangeEndDate: PropTypes.func,
-  onChangeStartDate: PropTypes.func,
-  onClose: PropTypes.func,
-  open: PropTypes.bool,
-  title: PropTypes.string,
-  variant: PropTypes.oneOf(['input', 'calendar']),
-  startDate: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.instanceOf(Date)]),
-  endDate: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.instanceOf(Date)]),
-};

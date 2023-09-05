@@ -103,13 +103,13 @@ export default function OrganNewEditForm ({ type, isEdit = false, current, onClo
         await roleService.post({
           ...data,
           _id: uuid,
-          
           key: uuid,
           type,
-          root: false,
+          root: parent.isScope,
           scope: active._id,
         });
-        if (parent) {
+        console.log(parent)
+        if (parent&&!parent.isScope) {
           await roleService.addRolesToParent({
             rolesNames: uuid,
             parentName: parent._id,

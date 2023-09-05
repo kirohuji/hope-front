@@ -18,7 +18,7 @@ const icon = (name) => (
   // https://www.streamlinehq.com/icons
 );
 
-const ICONS = {
+export const ICONS = {
   job: icon('ic_job'),
   blog: icon('ic_blog'),
   chat: icon('ic_chat'),
@@ -74,17 +74,18 @@ export function useNavData () {
           // USER
           {
             title: t('user'),
+            auth: ['User','UserList','UserPermission','UserOrganization','UserListAddButton','UserListRemoveButton','UserListEditButton'],
             path: paths.dashboard.user.root,
             icon: ICONS.user,
             children: [
               { title: t('profile'), path: paths.dashboard.user.root },
               { title: t('cards'), path: paths.dashboard.user.cards },
-              { title: t('list'), path: paths.dashboard.user.list },
+              { title: t('list'), path: paths.dashboard.user.list, auth: ['UserList'] },
               { title: t('create'), path: paths.dashboard.user.new },
               { title: t('edit'), path: paths.dashboard.user.demo.edit },
               { title: t('account'), path: paths.dashboard.user.account },
-              { title: t('organization'), path: paths.dashboard.user.organization },
-              { title: t('permission'), path: paths.dashboard.user.permission},
+              { title: t('organization'), path: paths.dashboard.user.organization, auth: ['UserOrganization'] },
+              { title: t('permission'), path: paths.dashboard.user.permission , auth: ['UserPermission']},
             ],
           },
 
@@ -153,6 +154,7 @@ export function useNavData () {
           // SCOPE
           {
             title: t('scope'),
+            auth: ['Scope'],
             path: paths.dashboard.scope.root,
             icon: ICONS.job,
             children: [
@@ -165,6 +167,7 @@ export function useNavData () {
           // BOOK
           {
             title: t('book'),
+            auth: ['Book'],
             path: paths.dashboard.book.root,
             icon: ICONS.job,
             children: [
@@ -177,6 +180,7 @@ export function useNavData () {
           // ATRICLE
           {
             title: t('article'),
+            auth: ['Article'],
             path: paths.dashboard.article.root,
             icon: ICONS.blog,
             children: [
@@ -243,6 +247,7 @@ export function useNavData () {
           // KANBAN
           {
             title: t('kanban'),
+            auth: ['Kanban'],
             path: paths.dashboard.kanban,
             icon: ICONS.kanban,
           },

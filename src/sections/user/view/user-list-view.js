@@ -27,6 +27,7 @@ import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import { useSnackbar } from 'src/components/snackbar';
+import Restricted from 'src/auth/guard/restricted';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
@@ -198,14 +199,16 @@ export default function UserListView () {
             { name: '列表' },
           ]}
           action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.user.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              新用户
-            </Button>
+            <Restricted to={["UserListAddButton"]}>
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.user.new}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+              >
+                新用户
+              </Button>
+            </Restricted>
           }
           sx={{
             mb: { xs: 3, md: 5 },

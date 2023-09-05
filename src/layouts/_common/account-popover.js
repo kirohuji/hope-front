@@ -26,16 +26,16 @@ import { useSelector } from 'src/redux/store';
 // ----------------------------------------------------------------------
 
 const OPTIONS = [
+  // {
+  //   label: 'Home',
+  //   linkTo: '/',
+  // },
   {
-    label: 'Home',
-    linkTo: '/',
-  },
-  {
-    label: 'Profile',
+    label: '个人中心',
     linkTo: paths.dashboard.user.profile,
   },
   {
-    label: 'Settings',
+    label: '设置',
     linkTo: paths.dashboard.user.account,
   },
 ];

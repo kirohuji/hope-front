@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 // slices
 import checkoutReducer from './slices/checkout';
 import scopeReducer from './slices/scope';
+import dashboardReducer from './slices/dashboard';
 // ----------------------------------------------------------------------
 
 const checkoutPersistConfig = {
@@ -24,9 +25,14 @@ export const bookPersistConfig = {
   keyPrefix: 'redux-'
 };
 
-
+export const dashboardPersistConfig = {
+  key: 'dashboard',
+  storage,
+  keyPrefix: 'redux-'
+};
 
 export const rootReducer = combineReducers({
+  dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
   checkout: persistReducer(checkoutPersistConfig, checkoutReducer),
   scope: persistReducer(scopePersistConfig, scopeReducer),
   book: persistReducer(bookPersistConfig, scopeReducer),

@@ -6,11 +6,13 @@ import Collapse from '@mui/material/Collapse';
 import { usePathname } from 'src/routes/hook';
 import { useActiveLink } from 'src/routes/hook/use-active-link';
 //
+import Restricted from 'src/auth/guard/restricted';
 import NavItem from './nav-item';
+
 
 // ----------------------------------------------------------------------
 
-export default function NavList({ data, depth, hasChild, config }) {
+export default function NavList ({ data, depth, hasChild, config }) {
   const pathname = usePathname();
 
   const active = useActiveLink(data.path, hasChild);
@@ -36,16 +38,17 @@ export default function NavList({ data, depth, hasChild, config }) {
 
   return (
     <>
-      <NavItem
-        item={data}
-        depth={depth}
-        open={open}
-        active={active}
-        externalLink={externalLink}
-        onClick={handleToggle}
-        config={config}
-      />
-
+      <Restricted to={data.auth}>
+        <NavItem
+          item={data}
+          depth={depth}
+          open={open}
+          active={active}
+          externalLink={externalLink}
+          onClick={handleToggle}
+          config={config}
+        />
+      </Restricted>
       {hasChild && (
         <Collapse in={open} unmountOnExit>
           <NavSubList data={data.children} depth={depth} config={config} />
@@ -64,7 +67,7 @@ NavList.propTypes = {
 
 // ----------------------------------------------------------------------
 
-function NavSubList({ data, depth, config }) {
+function NavSubList ({ data, depth, config }) {
   return (
     <>
       {data.map((list) => (

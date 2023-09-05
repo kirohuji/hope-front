@@ -22,6 +22,10 @@ import { useResponsive } from 'src/hooks/use-responsive';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
+
+// redux
+import { useDispatch } from 'src/redux/store';
+
 // _mock
 import {
   _roles,
@@ -44,13 +48,14 @@ import FormProvider, {
   RHFAutocomplete,
   RHFMultiCheckbox,
 } from 'src/components/hook-form';
-import { roleService, scopeService } from 'src/composables/context-provider';
+import { scopeService } from 'src/composables/context-provider';
+import { getScopes } from 'src/redux/slices/scope';
 
 // ----------------------------------------------------------------------
 
 export default function ScopeNewEditForm ({ currentScope }) {
   const router = useRouter();
-
+  const dispatch = useDispatch();
   const mdUp = useResponsive('up', 'md');
 
   const { enqueueSnackbar } = useSnackbar();
@@ -124,22 +129,24 @@ export default function ScopeNewEditForm ({ currentScope }) {
           ...data
         });
       } else {
-        const result = await scopeService.post(data);
-        await roleService.post({
-          ...result,
-          _id: `${result}-org`,
-          scope: result._id,
-          type: "org",
-          root: true,
-        })
-        await roleService.post({
-          ...result,
-          _id: `${result}-role`,
-          scope: result._id,
-          type: "role",
-          root: true,
-        })
+        await scopeService.post(data);
+        // const result = await scopeService.post(data);
+        // await roleService.post({
+        //   ...result,
+        //   _id: `${result}-org`,
+        //   scope: result._id,
+        //   type: "org",
+        //   root: true,
+        // })
+        // await roleService.post({
+        //   ...result,
+        //   _id: `${result}-role`,
+        //   scope: result._id,
+        //   type: "role",
+        //   root: true,
+        // })
       }
+      dispatch(getScopes());
       reset();
       enqueueSnackbar(currentScope ? '更新成功!' : '创建成功!');
       router.push(paths.dashboard.scope.root);

@@ -20,6 +20,7 @@ import PermissionPanel from '../../permission/permission-panel';
 
 OrganizationalChart.propTypes = {
   sx: PropTypes.object,
+  maxRole: PropTypes.object,
   variant: PropTypes.string,
   type: PropTypes.any,
   data: PropTypes.shape({
@@ -31,7 +32,7 @@ OrganizationalChart.propTypes = {
 const userContext = createContext({ item: {}, setOpenForm: null, setItem: null, openForm: false });
 
 
-export default function OrganizationalChart ({ type, data, variant = 'simple', sx, onFlash, ...other }) {
+export default function OrganizationalChart ({ maxRole, type, data, variant = 'simple', sx, onFlash, ...other }) {
   const theme = useTheme();
   const [openManager, setOpenManager] = useState(false);
   const [openPermission, setOpenPermission] = useState(false);
@@ -143,7 +144,7 @@ export default function OrganizationalChart ({ type, data, variant = 'simple', s
         <DialogTitle>权限配置</DialogTitle>
         <DialogContent dividers>
           <Grid container direction="row" alignItems="center" sx={{ p: 1 }}>
-            <PermissionPanel current={item} onClose={handleClosePermissionModal}  />
+            <PermissionPanel maxRole={maxRole} current={item} onClose={handleClosePermissionModal} />
           </Grid>
         </DialogContent>
       </Dialog>
@@ -257,7 +258,7 @@ SubList.propTypes = {
 function SubList ({ data, depth, variant, sx }) {
   return (
     <>
-      {data.map((list) => (
+      {data.map((list) => list.name && (
         <List key={list.name || list._id} data={list} depth={depth + 1} variant={variant} sx={sx} />
       ))}
     </>

@@ -12,7 +12,7 @@ import NavList from './nav-list';
 
 // ----------------------------------------------------------------------
 
-function NavSectionVertical({ data, config, sx, ...other }) {
+function NavSectionVertical ({ data, config, sx, ...other }) {
   return (
     <Stack sx={sx} {...other}>
       {data.map((group, index) => (
@@ -37,23 +37,21 @@ export default memo(NavSectionVertical);
 
 // ----------------------------------------------------------------------
 
-function Group({ subheader, items, config }) {
+function Group ({ subheader, items, config }) {
   const [open, setOpen] = useState(true);
-
   const handleToggle = useCallback(() => {
     setOpen((prev) => !prev);
   }, []);
 
   const renderContent = items.map((list) => (
-    <NavList
-      key={list.title + list.path}
-      data={list}
-      depth={1}
-      hasChild={!!list.children}
-      config={config}
-    />
+      <NavList
+        key={list.title + list.path}
+        data={list}
+        depth={1}
+        hasChild={!!list.children}
+        config={config}
+      />
   ));
-
   return (
     <List disablePadding sx={{ px: 2 }}>
       {subheader ? (
