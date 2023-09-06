@@ -30,10 +30,10 @@ const OPTIONS = [
   //   label: 'Home',
   //   linkTo: '/',
   // },
-  {
-    label: '个人中心',
-    linkTo: paths.dashboard.user.profile,
-  },
+  // {
+  //   label: '个人中心',
+  //   linkTo: paths.dashboard.user.profile,
+  // },
   {
     label: '设置',
     linkTo: paths.dashboard.user.account,
@@ -126,7 +126,7 @@ export default function AccountPopover() {
           onClick={handleLogout}
           sx={{ m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
         >
-          Logout
+          退出
         </MenuItem>
       </CustomPopover>
     </>

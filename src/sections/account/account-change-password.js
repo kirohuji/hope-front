@@ -13,6 +13,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { userService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
@@ -22,16 +23,16 @@ export default function AccountChangePassword() {
   const password = useBoolean();
 
   const ChangePassWordSchema = Yup.object().shape({
-    oldPassword: Yup.string().required('Old Password is required'),
+    oldPassword: Yup.string().required('请输入旧密码'),
     newPassword: Yup.string()
-      .required('New Password is required')
-      .min(6, 'Password must be at least 6 characters')
+      .required('请输入新密码')
+      .min(6, '密码必须大于位数')
       .test(
         'no-match',
-        'New password must be different than old password',
+        '新密码必须和旧密码不一样',
         (value, { parent }) => value !== parent.oldPassword
       ),
-    confirmNewPassword: Yup.string().oneOf([Yup.ref('newPassword')], 'Passwords must match'),
+    confirmNewPassword: Yup.string().oneOf([Yup.ref('newPassword')], '密码必须一致'),
   });
 
   const defaultValues = {
@@ -53,10 +54,10 @@ export default function AccountChangePassword() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      await userService.changePassword(data)
       reset();
-      enqueueSnackbar('Update success!');
-      console.info('DATA', data);
+      enqueueSnackbar('更新 成功!');
     } catch (error) {
       console.error(error);
     }
@@ -68,7 +69,7 @@ export default function AccountChangePassword() {
         <RHFTextField
           name="oldPassword"
           type={password.value ? 'text' : 'password'}
-          label="Old Password"
+          label="老密码"
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -82,7 +83,7 @@ export default function AccountChangePassword() {
 
         <RHFTextField
           name="newPassword"
-          label="New Password"
+          label="新密码"
           type={password.value ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
@@ -95,8 +96,8 @@ export default function AccountChangePassword() {
           }}
           helperText={
             <Stack component="span" direction="row" alignItems="center">
-              <Iconify icon="eva:info-fill" width={16} sx={{ mr: 0.5 }} /> Password must be minimum
-              6+
+              <Iconify icon="eva:info-fill" width={16} sx={{ mr: 0.5 }} /> 密码至少大于
+              6位
             </Stack>
           }
         />
@@ -104,7 +105,7 @@ export default function AccountChangePassword() {
         <RHFTextField
           name="confirmNewPassword"
           type={password.value ? 'text' : 'password'}
-          label="Confirm New Password"
+          label="确认新密码"
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -117,7 +118,7 @@ export default function AccountChangePassword() {
         />
 
         <LoadingButton type="submit" variant="contained" loading={isSubmitting} sx={{ ml: 'auto' }}>
-          Save Changes
+          保存修改
         </LoadingButton>
       </Stack>
     </FormProvider>

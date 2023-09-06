@@ -12,4 +12,8 @@ export default class UserService extends Service {
   register(target) {
     return this.api.post(`${this.model}/register`, target)
   }
+
+  changePassword(target) {
+    return this.api.post(`${this.model}/changePassword`, target)
+  }
 }

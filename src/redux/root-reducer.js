@@ -5,6 +5,7 @@ import storage from 'redux-persist/lib/storage';
 import checkoutReducer from './slices/checkout';
 import scopeReducer from './slices/scope';
 import dashboardReducer from './slices/dashboard';
+import calendarReducer from './slices/calendar';
 // ----------------------------------------------------------------------
 
 const checkoutPersistConfig = {
@@ -32,6 +33,7 @@ export const dashboardPersistConfig = {
 };
 
 export const rootReducer = combineReducers({
+  calendar: calendarReducer,
   dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
   checkout: persistReducer(checkoutPersistConfig, checkoutReducer),
   scope: persistReducer(scopePersistConfig, scopeReducer),

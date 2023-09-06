@@ -10,8 +10,8 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-// hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+// auth
+import { useAuthContext } from 'src/auth/hooks';
 // utils
 import { fData } from 'src/utils/format-number';
 // assets
@@ -26,26 +26,28 @@ import FormProvider, {
   RHFAutocomplete,
 } from 'src/components/hook-form';
 
+import { profileService, fileService } from 'src/composables/context-provider'
+
 // ----------------------------------------------------------------------
 
-export default function AccountGeneral() {
+export default function AccountGeneral () {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useMockedUser();
+  const { user } = useAuthContext();
 
   const UpdateUserSchema = Yup.object().shape({
-    displayName: Yup.string().required('Name is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    photoURL: Yup.mixed().nullable().required('Avatar is required'),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    country: Yup.string().required('Country is required'),
-    address: Yup.string().required('Address is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    zipCode: Yup.string().required('Zip code is required'),
-    about: Yup.string().required('About is required'),
-    // not required
-    isPublic: Yup.boolean(),
+    displayName: Yup.string().required('请输入名字'),
+    email: Yup.string().required('请输入邮件').email('必须是一个有效的邮件地址'),
+    // photoURL: Yup.mixed().nullable().required('Avatar is required'),
+    // phoneNumber: Yup.string().required('Phone number is required'),
+    // country: Yup.string().required('Country is required'),
+    // address: Yup.string().required('Address is required'),
+    // state: Yup.string().required('State is required'),
+    // city: Yup.string().required('City is required'),
+    // zipCode: Yup.string().required('Zip code is required'),
+    // about: Yup.string().required('About is required'),
+    // // not required
+    // isPublic: Yup.boolean(),
   });
 
   const defaultValues = {
@@ -75,8 +77,12 @@ export default function AccountGeneral() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      enqueueSnackbar('Update success!');
+      await profileService.patch({
+        _id: user._id,
+        ...data,
+        photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL
+      })
+      enqueueSnackbar('更新 成功!');
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
@@ -84,15 +90,18 @@ export default function AccountGeneral() {
   });
 
   const handleDrop = useCallback(
-    (acceptedFiles) => {
+    async (acceptedFiles) => {
       const file = acceptedFiles[0];
-
-      const newFile = Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      });
-
+      const formData = new FormData();
+      formData.append('file', file);
+      const { link } = await fileService.avatar(formData)
       if (file) {
-        setValue('photoURL', newFile, { shouldValidate: true });
+        setValue(
+          'photoURL',
+          Object.assign(file, {
+            preview: link
+          })
+        );
       }
     },
     [setValue]
@@ -118,22 +127,25 @@ export default function AccountGeneral() {
                     color: 'text.disabled',
                   }}
                 >
-                  Allowed *.jpeg, *.jpg, *.png, *.gif
-                  <br /> max size of {fData(3145728)}
+                  允许 *.jpeg, *.jpg, *.png, *.gif
+                  <br /> 最大限制 {fData(3145728)}
                 </Typography>
               }
             />
+            {
+              false && <div>
+                <RHFSwitch
+                  name="isPublic"
+                  labelPlacement="start"
+                  label="是否公开"
+                  sx={{ mt: 5 }}
+                />
 
-            <RHFSwitch
-              name="isPublic"
-              labelPlacement="start"
-              label="Public Profile"
-              sx={{ mt: 5 }}
-            />
-
-            <Button variant="soft" color="error" sx={{ mt: 3 }}>
-              Delete User
-            </Button>
+                <Button variant="soft" color="error" sx={{ mt: 3 }}>
+                  Delete User
+                </Button>
+              </div>
+            }
           </Card>
         </Grid>
 
@@ -148,14 +160,14 @@ export default function AccountGeneral() {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="displayName" label="Name" />
-              <RHFTextField name="email" label="Email Address" />
-              <RHFTextField name="phoneNumber" label="Phone Number" />
-              <RHFTextField name="address" label="Address" />
+              <RHFTextField name="displayName" label="昵称" />
+              <RHFTextField name="email" label="电子邮件" />
+              <RHFTextField name="phoneNumber" label="手机号码" />
+              <RHFTextField name="address" label="详细地址" />
 
               <RHFAutocomplete
                 name="country"
-                label="Country"
+                label="请选择国家"
                 options={countries.map((country) => country.label)}
                 getOptionLabel={(option) => option}
                 renderOption={(props, option) => {
@@ -181,16 +193,16 @@ export default function AccountGeneral() {
                 }}
               />
 
-              <RHFTextField name="state" label="State/Region" />
-              <RHFTextField name="city" label="City" />
-              <RHFTextField name="zipCode" label="Zip/Code" />
+              <RHFTextField name="state" label="省份" />
+              <RHFTextField name="city" label="城市" />
+              <RHFTextField name="zipCode" label="邮政编码" />
             </Box>
 
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              <RHFTextField name="about" multiline rows={4} label="About" />
+              <RHFTextField name="about" multiline rows={4} label="结束" />
 
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                Save Changes
+                保存修改
               </LoadingButton>
             </Stack>
           </Card>

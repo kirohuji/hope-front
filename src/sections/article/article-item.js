@@ -30,7 +30,7 @@ export default function ArticleItem({ article, index }) {
 
   const mdUp = useResponsive('up', 'md');
 
-  const { coverUrl, title, totalViews, totalComments, totalShares, author, createdAt } = article;
+  const { _id, coverUrl, title, totalViews, totalComments, totalShares, author, createdAt } = article;
 
   const latestArticle = index === 0 || index === 1 || index === 2;
 
@@ -49,6 +49,7 @@ export default function ArticleItem({ article, index }) {
         />
 
         <ArticleContent
+          id={_id}
           title={title}
           createdAt={createdAt}
           totalViews={totalViews}
@@ -116,10 +117,10 @@ ArticleItem.propTypes = {
 
 // ----------------------------------------------------------------------
 
-export function ArticleContent({ title, createdAt, totalViews, totalShares, totalComments, index }) {
+export function ArticleContent({ id, title, createdAt, totalViews, totalShares, totalComments, index }) {
   const mdUp = useResponsive('up', 'md');
 
-  const linkTo = paths.article.details(title);
+  const linkTo = paths.article.details(id);
 
   const latestArticleLarge = index === 0;
 
@@ -196,6 +197,7 @@ export function ArticleContent({ title, createdAt, totalViews, totalShares, tota
 ArticleContent.propTypes = {
   createdAt: PropTypes.string,
   index: PropTypes.number,
+  id: PropTypes.number,
   title: PropTypes.string,
   totalComments: PropTypes.number,
   totalShares: PropTypes.number,

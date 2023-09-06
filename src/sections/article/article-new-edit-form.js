@@ -25,6 +25,11 @@ import { useRouter } from 'src/routes/hook';
 import { _tags } from 'src/_mock';
 // components
 import { useSnackbar } from 'src/components/snackbar';
+import {
+  StaticDatePicker
+} from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import FormProvider, {
   RHFEditor,
   RHFUpload,
@@ -76,6 +81,7 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
   const defaultValues = useMemo(
     () => ({
       title: currentArticle?.title || '',
+      date: currentArticle?.date || '',
       description: currentArticle?.description || '',
       content: currentArticle?.content || '',
       coverUrl: currentArticle?.coverUrl || null,
@@ -121,7 +127,7 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
         onNextStep();
       } else {
         if (!isEdit) {
-          const id = await articleService.post(data);
+          const id = await articleService.addWithCurrentUser(data);
           if (book) {
             await bookService.addBookArticle({
               book_id: book._id,
@@ -180,6 +186,26 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             Title, short description, image...
           </Typography>
+          <div>
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale="zh-cn">
+              <StaticDatePicker
+                orientation="portrait"
+                className="whiteBg"
+                openTo="day"
+                name="date"
+                value={values.date}
+                view="day"
+                displayStaticWrapperAs="desktop"
+                onChange={(newValue) => {
+                  setValue('date', newValue);
+                }}
+                renderInput={() => null}
+              />
+            </LocalizationProvider>
+
+          </div>
         </Grid>
       )}
 

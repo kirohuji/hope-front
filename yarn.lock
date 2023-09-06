@@ -2388,6 +2388,13 @@
   resolved "https://registry.npmmirror.com/@fullcalendar/list/-/list-6.1.8.tgz"
   integrity sha512-10N0T/vCtId1cE3JGLpnbAivWVnaWCCkVO7wmbsyr5Y+I939kr/zq4BUNwBoP/xSFVVxx59FETh3iyA+MkV8Fw==
 
+"@fullcalendar/multimonth@^6.1.8":
+  version "6.1.8"
+  resolved "https://registry.npmmirror.com/@fullcalendar/multimonth/-/multimonth-6.1.8.tgz#f28bbe35b8114d09969357d4cc9077d9fb17fe24"
+  integrity sha512-3F0NlncQTfeE9x5ICxh/M9DaSdY6XjgM1NazY8k+d6ukd1jthHI7vs6j7tXJI9eGUKs3DNNEyzN/LoP06SIyKw==
+  dependencies:
+    "@fullcalendar/daygrid" "~6.1.8"
+
 "@fullcalendar/premium-common@~6.1.8":
   version "6.1.8"
   resolved "https://registry.npmmirror.com/@fullcalendar/premium-common/-/premium-common-6.1.8.tgz"

@@ -25,39 +25,60 @@ import Iconify from 'src/components/iconify';
 import Markdown from 'src/components/markdown';
 import EmptyContent from 'src/components/empty-content';
 //
+import { articleService } from 'src/composables/context-provider';
 import ArticleDetailsHero from '../article-details-hero';
 import ArticleCommentList from '../article-comment-list';
 import ArticleCommentForm from '../article-comment-form';
 import { ArticleDetailsSkeleton } from '../article-skeleton';
 import ArticleDetailsToolbar from '../article-details-toolbar';
-
 // ----------------------------------------------------------------------
 
-export default function ArticleDetailsView() {
+export default function ArticleDetailsView () {
   const params = useParams();
 
-  const { title } = params;
+  const { id } = params;
 
   const [publish, setPublish] = useState('');
 
-  const { article, postLoading, postError } = useGetPost(`${title}`);
+  const [recentPosts, setRecentPosts] = useState([]);
+
+  const [article, setArticle] = useState(null);
+
+  const [loadingPost, setLoadingPost] = useState(true);
+
+  const [errorMsg, setErrorMsg] = useState(null);
+
+
+  const getPost = useCallback(async () => {
+    try {
+      const response = await articleService.get({
+        _id: id
+      })
+
+      setArticle(response);
+      setLoadingPost(false);
+    } catch (error) {
+      console.error(error);
+      setLoadingPost(false);
+      setErrorMsg(error.message);
+    }
+  }, [id]);
+  useEffect(() => {
+    if (id) {
+      getPost();
+    }
+  }, [getPost, id]);
 
   const handleChangePublish = useCallback((newValue) => {
     setPublish(newValue);
   }, []);
-
-  useEffect(() => {
-    if (article) {
-      setPublish(article?.publish);
-    }
-  }, [article]);
 
   const renderSkeleton = <ArticleDetailsSkeleton />;
 
   const renderError = (
     <EmptyContent
       filled
-      title={`${postError?.message}`}
+      title={errorMsg}
       action={
         <Button
           component={RouterLink}
@@ -79,7 +100,7 @@ export default function ArticleDetailsView() {
       <ArticleDetailsToolbar
         backLink={paths.dashboard.article.root}
         editLink={paths.dashboard.article.edit(`${article?.title}`)}
-        liveLink={paths.article.details(`${article?.title}`)}
+        // liveLink={paths.article.details(`${article?.title}`)}
         publish={publish || ''}
         onChangePublish={handleChangePublish}
         publishOptions={POST_PUBLISH_OPTIONS}
@@ -108,11 +129,13 @@ export default function ArticleDetailsView() {
             borderBottom: (theme) => `dashed 1px ${theme.palette.divider}`,
           }}
         >
-          <Stack direction="row" flexWrap="wrap" spacing={1}>
-            {article.tags.map((tag) => (
-              <Chip key={tag} label={tag} variant="soft" />
-            ))}
-          </Stack>
+          {
+            false && <Stack direction="row" flexWrap="wrap" spacing={1}>
+              {article.tags.map((tag) => (
+                <Chip key={tag} label={tag} variant="soft" />
+              ))}
+            </Stack>
+          }
 
           <Stack direction="row" alignItems="center">
             <FormControlLabel
@@ -129,43 +152,49 @@ export default function ArticleDetailsView() {
               sx={{ mr: 1 }}
             />
 
-            <AvatarGroup
-              sx={{
-                [`& .${avatarGroupClasses.avatar}`]: {
-                  width: 32,
-                  height: 32,
-                },
-              }}
-            >
-              {article.favoritePerson.map((person) => (
-                <Avatar key={person.name} alt={person.name} src={person.avatarUrl} />
-              ))}
-            </AvatarGroup>
+            {
+              false && <AvatarGroup
+                sx={{
+                  [`& .${avatarGroupClasses.avatar}`]: {
+                    width: 32,
+                    height: 32,
+                  },
+                }}
+              >
+                {article.favoritePerson.map((person) => (
+                  <Avatar key={person.name} alt={person.name} src={person.avatarUrl} />
+                ))}
+              </AvatarGroup>
+            }
           </Stack>
         </Stack>
+        {
+          false &&
+          <Stack direction="row" sx={{ mb: 3, mt: 5 }}>
+            <Typography variant="h4">Comments</Typography>
 
-        <Stack direction="row" sx={{ mb: 3, mt: 5 }}>
-          <Typography variant="h4">Comments</Typography>
+            <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
+              ({article.comments.length})
+            </Typography>
+          </Stack>
 
-          <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-            ({article.comments.length})
-          </Typography>
-        </Stack>
-
+        }
         <ArticleCommentForm />
 
         <Divider sx={{ mt: 5, mb: 2 }} />
 
-        <ArticleCommentList comments={article.comments} />
+        {
+          false && <ArticleCommentList comments={article.comments} />
+        }
       </Stack>
     </>
   );
 
   return (
     <Container maxWidth={false}>
-      {postLoading && renderSkeleton}
+      {loadingPost && renderSkeleton}
 
-      {postError && renderError}
+      {errorMsg && renderError}
 
       {article && renderArticle}
     </Container>

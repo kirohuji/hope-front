@@ -17,9 +17,6 @@ export default function DashboardFooter () {
       <BottomNavigation
         showLabels
         value={dashboard.bottomNavigationActionValue}
-        sx={{
-          background: 'none'
-        }}
         onChange={(event, newValue) => {
           dispatch(updateBottomNavigationActionValue(newValue));
         }}

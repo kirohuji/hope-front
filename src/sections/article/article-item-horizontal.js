@@ -66,7 +66,7 @@ export default function ArticleItemHorizontal ({ onRefresh,article,book }) {
           </Stack>
 
           <Stack spacing={1} flexGrow={1}>
-            <Link color="inherit" component={RouterLink} href={paths.dashboard.article.details(title)}>
+            <Link color="inherit" component={RouterLink} href={paths.dashboard.article.details(_id)}>
               <TextMaxLine variant="subtitle2" line={2}>
                 {title}
               </TextMaxLine>
@@ -131,7 +131,7 @@ export default function ArticleItemHorizontal ({ onRefresh,article,book }) {
         <MenuItem
           onClick={() => {
             popover.onClose();
-            router.push(paths.dashboard.article.details(title));
+            router.push(paths.dashboard.article.details(_id));
           }}
         >
           <Iconify icon="solar:eye-bold" />
