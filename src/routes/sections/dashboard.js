@@ -92,6 +92,9 @@ const UserPermissionPage = lazy(() => import('src/pages/dashboard/user/permissio
 
 const TrainingDashboardPage = lazy(() => import('src/pages/dashboard/training/dashboard'))
 
+
+
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [

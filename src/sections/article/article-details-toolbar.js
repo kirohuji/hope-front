@@ -43,7 +43,7 @@ export default function ArticleDetailsToolbar({
           href={backLink}
           startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
         >
-          Back
+          返回
         </Button>
 
         <Box sx={{ flexGrow: 1 }} />
@@ -56,7 +56,7 @@ export default function ArticleDetailsToolbar({
           </Tooltip>
         )}
 
-        <Tooltip title="Edit">
+        <Tooltip title="编辑">
           <IconButton component={RouterLink} href={editLink}>
             <Iconify icon="solar:pen-bold" />
           </IconButton>

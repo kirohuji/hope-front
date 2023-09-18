@@ -381,6 +381,7 @@ export default function BookNewEditForm({ currentBook }) {
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
                     {...field}
+                    renderInput={()=>{}}
                     format="dd/MM/yyyy"
                     slotProps={{
                       textField: {

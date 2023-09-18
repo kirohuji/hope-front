@@ -9,6 +9,7 @@ import ArticleItemHorizontal from './article-item-horizontal';
 // ----------------------------------------------------------------------
 
 export default function ArticleListHorizontal({ onRefresh, book, articles, loading }) {
+  console.log('book',book)
   const renderSkeleton = (
     <>
       {[...Array(16)].map((_, index) => (

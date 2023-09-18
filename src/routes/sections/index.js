@@ -25,10 +25,11 @@ const UserProfilePage = lazy(() => import('src/pages/dashboard/user/profile'));
 
 const UserAccountPage = lazy(() => import('src/pages/dashboard/user/account'));
 
+const ArticleDetailPage = lazy(() => import('src/pages/dashboard/article/details'));
 
 // ----------------------------------------------------------------------
 
-export default function Router() {
+export default function Router () {
   return useRoutes([
     // SET INDEX PAGE WITH SKIP HOME PAGE
     // {
@@ -47,7 +48,14 @@ export default function Router() {
         </MainLayout>
       ),
     },
-
+    {
+      path: 'reading', element: <ReturnLayout />,
+      children: [
+        {
+          path: 'root/:id', element: <ArticleDetailPage />
+        },
+      ]
+    },
     // Auth routes
     ...authRoutes,
     ...authDemoRoutes,

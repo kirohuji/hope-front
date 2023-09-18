@@ -6,6 +6,7 @@ import checkoutReducer from './slices/checkout';
 import scopeReducer from './slices/scope';
 import dashboardReducer from './slices/dashboard';
 import calendarReducer from './slices/calendar';
+import articleReducer from './slices/article';
 // ----------------------------------------------------------------------
 
 const checkoutPersistConfig = {
@@ -32,10 +33,18 @@ export const dashboardPersistConfig = {
   keyPrefix: 'redux-'
 };
 
+export const articlePersistConfig = {
+  key: 'article',
+  storage,
+  keyPrefix: 'redux-',
+  whitelist: ['sortBy', 'checkout'],
+};
+
 export const rootReducer = combineReducers({
   calendar: calendarReducer,
   dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
   checkout: persistReducer(checkoutPersistConfig, checkoutReducer),
   scope: persistReducer(scopePersistConfig, scopeReducer),
+  article: persistReducer(articlePersistConfig, articleReducer),
   book: persistReducer(bookPersistConfig, scopeReducer),
 });

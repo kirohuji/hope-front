@@ -8,16 +8,22 @@ import { paths } from 'src/routes/paths';
 
 import { useSettingsContext } from 'src/components/settings';
 import { bookService } from "src/composables/context-provider";
-
+import { useSnackbar } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
 export default function TrainingDashboardView () {
+
+  const { enqueueSnackbar } = useSnackbar();
     const { themeStretch } = useSettingsContext();
     const navigate = useNavigate();
     
     const onStart = async () => {
         const response = await bookService.startWithCurrentUser()
-        navigate(paths.reading.root(response._id));
+        if(response){
+            navigate(paths.reading(response.article_id));
+        } else {
+            enqueueSnackbar('今日没有灵修!')
+        }
     }
     return (
         <>

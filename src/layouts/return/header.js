@@ -9,11 +9,11 @@ import { HEADER } from 'src/config-global';
 import { bgBlur } from 'src/theme/css';
 // routes
 import { IconButtonAnimate } from 'src/components/animate';
+import { useRouter } from 'src/routes/hook';
 import { paths } from '../../routes/paths';
 // components
 import Logo from '../../components/logo';
 import Iconify from '../../components/iconify';
-
 // ----------------------------------------------------------------------
 
 Header.propTypes = {
@@ -22,7 +22,7 @@ Header.propTypes = {
 
 export default function Header ({ isOffset }) {
   const theme = useTheme();
-
+  const router = useRouter();
   return (
     <AppBar color="transparent" sx={{ boxShadow: 0 }} position="static">
       <Toolbar
@@ -47,7 +47,9 @@ export default function Header ({ isOffset }) {
         }}
       >
         <div style={{ position: 'absolute', top: '14px', left: 0 }}>
-          <IconButtonAnimate sx={{ mr: 1, color: 'text.primary' }} component={Link} to="dashboard/training/dashboard" >
+          <IconButtonAnimate sx={{ mr: 1, color: 'text.primary' }} onClick={()=> {
+            router.back()
+          }} >
             <Iconify icon="eva:arrow-ios-back-fill" />
           </IconButtonAnimate>
         </div>

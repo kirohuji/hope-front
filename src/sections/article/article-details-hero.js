@@ -30,7 +30,8 @@ export default function ArticleDetailsHero({ title, author, coverUrl, createdAt 
   return (
     <Box
       sx={{
-        height: 480,
+        // height: 480,
+        height: 200,
         overflow: 'hidden',
         ...bgGradient({
           imgUrl: coverUrl,

@@ -9,7 +9,7 @@ import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
-import { articleService } from 'src/composables/context-provider';
+import { articleService, bookService } from 'src/composables/context-provider';
 import ArticleNewEditForm from '../article-new-edit-form';
 // ----------------------------------------------------------------------
 
@@ -17,25 +17,36 @@ export default function ArticleEditView () {
   const settings = useSettingsContext();
   const [article, setArticle] = useState(null)
   const params = useParams();
+  const [book, setBook] = useState(null)
 
-  const { id } = params;
-  console.log('id',id)
+  const { id, articleId } = params;
   // const { article: currentArticle } = useGetPost(`${title}`);
 
   const getData = useCallback(async () => {
     try {
-      const response = await articleService.get({
-        _id: id
-      })
-      setArticle(response)
+      if (articleId) {
+        const articleRes = await articleService.get({
+          _id: articleId
+        })
+        setArticle(articleRes)
+        const response = await bookService.get({
+          _id: id
+        })
+        setBook(response)
+      } else {
+        const articleRes = await articleService.get({
+          _id: id
+        })
+        setArticle(articleRes)
+      }
     } catch (error) {
       console.log(error)
     }
-  }, [id, setArticle])
+  }, [id, setArticle, setBook, articleId])
 
   useEffect(() => {
     if (id) {
-      getData(id)
+      getData()
     }
   }, [getData, id]);
 
@@ -61,7 +72,7 @@ export default function ArticleEditView () {
         }}
       />
 
-      {article && <ArticleNewEditForm currentArticle={article} />}
+      {article && <ArticleNewEditForm currentArticle={article} book={book} />}
     </Container>
   );
 }

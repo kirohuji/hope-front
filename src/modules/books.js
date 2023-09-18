@@ -9,6 +9,10 @@ export default class BookService extends Service {
         return this.api.post(`${this.model}/${target.book_id}/article`, target)
     }
 
+    updateBookArticle  (target) {
+        return this.api.post(`${this.model}/${target.book_id}/article/update`, target)
+    }
+
     updateBookPost (target) {
         return this.api.patch(`${this.model}/${target.book_id}/post/${target._id}`, target)
     }

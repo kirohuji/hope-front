@@ -26,11 +26,12 @@ import { articleService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
-export default function ArticleItemHorizontal ({ onRefresh,article,book }) {
+export default function ArticleItemHorizontal ({ onRefresh, article, book }) {
   const popover = usePopover();
 
   const router = useRouter();
 
+  console.log('book',book)
   const mdUp = useResponsive('up', 'md');
 
   const {
@@ -141,7 +142,11 @@ export default function ArticleItemHorizontal ({ onRefresh,article,book }) {
         <MenuItem
           onClick={() => {
             popover.onClose();
-            router.push(paths.dashboard.article.edit(_id));
+            if (book) {
+              router.push(paths.dashboard.book.article.edit(book._id, _id));
+            } else {
+              router.push(paths.dashboard.article.edit(_id));
+            }
           }}
         >
           <Iconify icon="solar:pen-bold" />

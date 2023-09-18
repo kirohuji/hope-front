@@ -26,6 +26,7 @@ import Markdown from 'src/components/markdown';
 import EmptyContent from 'src/components/empty-content';
 //
 import { articleService } from 'src/composables/context-provider';
+import { useSettingsContext } from 'src/components/settings';
 import ArticleDetailsHero from '../article-details-hero';
 import ArticleCommentList from '../article-comment-list';
 import ArticleCommentForm from '../article-comment-form';
@@ -34,6 +35,8 @@ import ArticleDetailsToolbar from '../article-details-toolbar';
 // ----------------------------------------------------------------------
 
 export default function ArticleDetailsView () {
+  const { themeStretch } = useSettingsContext();
+
   const params = useParams();
 
   const { id } = params;
@@ -56,6 +59,7 @@ export default function ArticleDetailsView () {
       })
 
       setArticle(response);
+      setPublish(response.public ? 'published' : 'draft')
       setLoadingPost(false);
     } catch (error) {
       console.error(error);
@@ -97,14 +101,16 @@ export default function ArticleDetailsView () {
 
   const renderArticle = article && (
     <>
-      <ArticleDetailsToolbar
-        backLink={paths.dashboard.article.root}
-        editLink={paths.dashboard.article.edit(`${article?.title}`)}
-        // liveLink={paths.article.details(`${article?.title}`)}
-        publish={publish || ''}
-        onChangePublish={handleChangePublish}
-        publishOptions={POST_PUBLISH_OPTIONS}
-      />
+      {
+        false && <ArticleDetailsToolbar
+          backLink={paths.dashboard.article.root}
+          editLink={paths.dashboard.article.edit(`${article?.title}`)}
+          // liveLink={paths.dashboard.article.details(`${article?._id}`)}
+          publish={publish}
+          onChangePublish={handleChangePublish}
+          publishOptions={POST_PUBLISH_OPTIONS}
+        />
+      }
 
       <ArticleDetailsHero title={article.title} coverUrl={article.coverUrl} />
 
@@ -191,7 +197,7 @@ export default function ArticleDetailsView () {
   );
 
   return (
-    <Container maxWidth={false}>
+    <Container maxWidth={themeStretch ? false : 'lg'}>
       {loadingPost && renderSkeleton}
 
       {errorMsg && renderError}

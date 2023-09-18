@@ -42,6 +42,7 @@ ArticleListView.propTypes = {
 
 // eslint-disable-next-line react/prop-types
 export default function ArticleListView ({ book }) {
+  console.log('book',book)
   const { enqueueSnackbar } = useSnackbar();
 
   const settings = useSettingsContext();

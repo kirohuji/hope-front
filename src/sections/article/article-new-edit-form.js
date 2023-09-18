@@ -86,6 +86,7 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
       content: currentArticle?.content || '',
       coverUrl: currentArticle?.coverUrl || null,
       tags: currentArticle?.tags || [],
+      public: currentArticle?.public || null,
       metaKeywords: currentArticle?.metaKeywords || [],
       metaTitle: currentArticle?.metaTitle || '',
       metaDescription: currentArticle?.metaDescription || '',
@@ -131,10 +132,18 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
           if (book) {
             await bookService.addBookArticle({
               book_id: book._id,
-              article_id: id
+              article_id: id,
+              date: data.date
             })
           }
         } else {
+          if (book) {
+            await bookService.updateBookArticle({
+              book_id: book._id,
+              article_id: currentArticle._id,
+              date: data.date
+            })
+          }
           await articleService.patch({
             _id: currentArticle._id,
             ...data,
@@ -322,7 +331,7 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
             />
 
             {/**   <FormControlLabel control={<Switch defaultChecked />} label="Enable comments" /> * */}
-            <RHFSwitch name="comments" label="Enable comments" />
+            <RHFSwitch name="comments" label="可以评论" />
           </Stack>
         </Card>
       </Grid>
@@ -333,15 +342,7 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
-        {activeStep === 0 &&
-          <FormControlLabel
-            control={<Switch name="public" defaultChecked />}
-            label="发布"
-            name="public"
-            sx={{ flexGrow: 1, pl: 3 }}
-          />
-
-        }
+        {activeStep === 0 && <div style={{ flexGrow: 1, pl: 3 }}> <RHFSwitch name="public" label="是否发布" /></div>}
         <Button color="inherit" variant="outlined" size="large" onClick={preview.onTrue}>
           预览
         </Button>

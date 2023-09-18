@@ -1,0 +1,1 @@
+export { default as ReadingDetailsView } from './reading-details-view';

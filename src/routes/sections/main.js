@@ -28,6 +28,7 @@ const ProductCheckoutPage = lazy(() => import('src/pages/product/checkout'));
 const PostListPage = lazy(() => import('src/pages/post/list'));
 const PostDetailsPage = lazy(() => import('src/pages/post/details'));
 
+const ReadingPage = lazy(() => import('src/pages/dashboard/reading'))
 // ----------------------------------------------------------------------
 
 export const mainRoutes = [
@@ -73,6 +74,7 @@ export const mainRoutes = [
     children: [
       { path: 'pricing', element: <PricingPage /> },
       { path: 'payment', element: <PaymentPage /> },
+      { path: '403', element: <Page403 /> },
     ],
   },
   {
@@ -84,11 +86,11 @@ export const mainRoutes = [
       </CompactLayout>
     ),
     children: [
+      // { path: 'reading/:id', element: <ReadingPage /> },
       { path: 'coming-soon', element: <ComingSoonPage /> },
       { path: 'maintenance', element: <MaintenancePage /> },
       { path: '500', element: <Page500 /> },
       { path: '404', element: <Page404 /> },
-      { path: '403', element: <Page403 /> },
     ],
   },
 ];
