@@ -31,15 +31,14 @@ export default function ArticleItemHorizontal ({ onRefresh, article, book }) {
 
   const router = useRouter();
 
-  console.log('book',book)
+  console.log('book', book)
   const mdUp = useResponsive('up', 'md');
 
   const {
     title,
     author,
-    publish,
     coverUrl,
-    createdAt,
+    date,
     totalViews,
     totalShares,
     totalComments,
@@ -57,12 +56,12 @@ export default function ArticleItemHorizontal ({ onRefresh, article, book }) {
           }}
         >
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-            <Label variant="soft" color={(publish === 'published' && 'info') || 'default'}>
-              {publish}
+            <Label variant="soft" color={article.public ? 'info' : 'default'}>
+              {article.public ? "已发布" : "未发布"}
             </Label>
 
             <Box component="span" sx={{ typography: 'caption', color: 'text.disabled' }}>
-              {fDate(createdAt)}
+              {fDate(date)}
             </Box>
           </Stack>
 
@@ -83,31 +82,33 @@ export default function ArticleItemHorizontal ({ onRefresh, article, book }) {
               <Iconify icon="eva:more-horizontal-fill" />
             </IconButton>
 
-            <Stack
-              spacing={1.5}
-              flexGrow={1}
-              direction="row"
-              justifyContent="flex-end"
-              sx={{
-                typography: 'caption',
-                color: 'text.disabled',
-              }}
-            >
-              <Stack direction="row" alignItems="center">
-                <Iconify icon="eva:message-circle-fill" width={16} sx={{ mr: 0.5 }} />
-                {fShortenNumber(totalComments)}
-              </Stack>
+            {
+              false && <Stack
+                spacing={1.5}
+                flexGrow={1}
+                direction="row"
+                justifyContent="flex-end"
+                sx={{
+                  typography: 'caption',
+                  color: 'text.disabled',
+                }}
+              >
+                <Stack direction="row" alignItems="center">
+                  <Iconify icon="eva:message-circle-fill" width={16} sx={{ mr: 0.5 }} />
+                  {fShortenNumber(totalComments)}
+                </Stack>
 
-              <Stack direction="row" alignItems="center">
-                <Iconify icon="solar:eye-bold" width={16} sx={{ mr: 0.5 }} />
-                {fShortenNumber(totalViews)}
-              </Stack>
+                <Stack direction="row" alignItems="center">
+                  <Iconify icon="solar:eye-bold" width={16} sx={{ mr: 0.5 }} />
+                  {fShortenNumber(totalViews)}
+                </Stack>
 
-              <Stack direction="row" alignItems="center">
-                <Iconify icon="solar:share-bold" width={16} sx={{ mr: 0.5 }} />
-                {fShortenNumber(totalShares)}
+                <Stack direction="row" alignItems="center">
+                  <Iconify icon="solar:share-bold" width={16} sx={{ mr: 0.5 }} />
+                  {fShortenNumber(totalShares)}
+                </Stack>
               </Stack>
-            </Stack>
+            }
           </Stack>
         </Stack>
 
@@ -178,9 +179,9 @@ ArticleItemHorizontal.propTypes = {
   article: PropTypes.shape({
     author: PropTypes.object,
     coverUrl: PropTypes.string,
-    createdAt: PropTypes.instanceOf(Date),
+    date: PropTypes.instanceOf(Date),
     description: PropTypes.string,
-    publish: PropTypes.string,
+    public: PropTypes.bool,
     title: PropTypes.string,
     totalComments: PropTypes.number,
     totalShares: PropTypes.number,

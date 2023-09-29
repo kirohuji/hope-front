@@ -14,4 +14,12 @@ export default class ArticleService extends Service {
             selector, options
         })
     }
+
+    updateArticleCurrentUser (target) {
+        return this.api.post(`${this.model}/users/current`, target)
+    }
+
+    getArticleCurrentUser (target) {
+        return this.api.get(`${this.model}/users/current/${target._id}`, target)
+    }
 }

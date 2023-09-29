@@ -18,7 +18,7 @@ export default function ArticleEditView () {
   const [article, setArticle] = useState(null)
   const params = useParams();
   const [book, setBook] = useState(null)
-
+  const [dates, setDates] = useState([]);
   const { id, articleId } = params;
   // const { article: currentArticle } = useGetPost(`${title}`);
 
@@ -33,6 +33,10 @@ export default function ArticleEditView () {
           _id: id
         })
         setBook(response)
+        const getDates = await bookService.dates({
+          _id: id
+        })
+        setDates(getDates)
       } else {
         const articleRes = await articleService.get({
           _id: id
@@ -42,7 +46,7 @@ export default function ArticleEditView () {
     } catch (error) {
       console.log(error)
     }
-  }, [id, setArticle, setBook, articleId])
+  }, [id, setArticle,setDates,setBook, articleId])
 
   useEffect(() => {
     if (id) {
@@ -72,7 +76,7 @@ export default function ArticleEditView () {
         }}
       />
 
-      {article && <ArticleNewEditForm currentArticle={article} book={book} />}
+      {article && <ArticleNewEditForm currentArticle={article} book={book} currentDates={dates} />}
     </Container>
   );
 }

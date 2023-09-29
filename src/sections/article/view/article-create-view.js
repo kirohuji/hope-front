@@ -20,17 +20,21 @@ export default function ArticleCreateView () {
   const params = useParams();
   const [book, setBook] = useState(null)
   const { id } = params;
-
+  const [dates, setDates] = useState([]);
   const getData = useCallback(async () => {
     try {
       const response = await bookService.get({
         _id: id
       })
+      const getDates = await bookService.dates({
+        _id: id
+      })
+      setDates(getDates)
       setBook(response)
     } catch (error) {
       console.log(error)
     }
-  }, [id, setBook])
+  }, [id, setBook, setDates])
 
   useEffect(() => {
     if (id) {
@@ -71,7 +75,7 @@ export default function ArticleCreateView () {
         }}
       />
       }
-      {book && <ArticleNewEditForm book={book} />}
+      {book && <ArticleNewEditForm book={book} currentDates={dates}/>}
     </Container>
   );
 }

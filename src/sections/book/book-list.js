@@ -11,11 +11,11 @@ import { useRouter } from 'src/routes/hook';
 //   setActive
 // } from 'src/redux/slices/book';
 // import { useDispatch } from 'src/redux/store';
+import { bookService } from 'src/composables/context-provider';
 import BookItem from './book-item';
-
 // ----------------------------------------------------------------------
 
-export default function BookList ({ books }) {
+export default function BookList ({ books, refresh }) {
   const router = useRouter();
 
   const handleView = useCallback(
@@ -33,9 +33,12 @@ export default function BookList ({ books }) {
   );
 
 
-  const handleDelete = useCallback((id) => {
-    console.info('DELETE', id);
-  }, []);
+  const handleDelete = useCallback(async (id) => {
+    await bookService.delete({
+      _id: id
+    })
+    refresh()
+  }, [refresh]);
 
   return (
     <>
@@ -76,4 +79,5 @@ export default function BookList ({ books }) {
 
 BookList.propTypes = {
   books: PropTypes.array,
+  refresh: PropTypes.func
 };

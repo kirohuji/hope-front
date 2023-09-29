@@ -42,10 +42,10 @@ export default function TrainingDashboardView () {
                     color: '#007B55'
                 }}
             >
-                <Box sx={{ marginLeft: '15px', width: '100%' }}>
+                <Box sx={{ margin: '15px', width: '100%' }}>
                     <Typography align="left" variant="h5" gutterBottom >凡有爱心的，都是由神而生，并且认识神，没有爱心的，就不认识神，因为神就是爱。</Typography>
                 </Box>
-                <Box sx={{ marginLeft: '15px', width: '100%' }}>
+                <Box sx={{ margin: '0 15px', width: '100%' }}>
                     <Typography align="right" variant="h5" gutterBottom >（约壹4：78）</Typography>
                 </Box>
             </Stack>
@@ -73,7 +73,7 @@ export default function TrainingDashboardView () {
                         fontSize: '15px',
                         fontWeight: '700',
                     }}>
-                        开始灵修
+                        今日灵修
                     </div>
                 </Button>
 
@@ -94,7 +94,7 @@ export default function TrainingDashboardView () {
                         fontSize: '15px',
                         fontWeight: '700',
                     }}>
-                        我的进度
+                        灵修进度
                     </div>
                 </Button>
             </Stack>

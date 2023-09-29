@@ -25,7 +25,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 export default function BookItem ({ book, onView, onEdit, onDelete }) {
   const popover = usePopover();
 
-  const { _id, label, logo,createdAt, candidates} =
+  const { _id, label, cover,createdAt, candidates} =
     book;
 
   return (
@@ -38,7 +38,7 @@ export default function BookItem ({ book, onView, onEdit, onDelete }) {
         <Stack sx={{ p: 3, pb: 2 }}>
           <Avatar
             alt={label}
-            src={logo}
+            src={cover}
             variant="rounded"
             sx={{ width: 48, height: 48, mb: 2 }}
           />

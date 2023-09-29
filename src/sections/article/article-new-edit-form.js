@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
+import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -15,6 +16,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -47,7 +49,27 @@ import QuestionnareCardForm from './questionnaire/cards/CardForm';
 // ----------------------------------------------------------------------
 const STEPS = ['阅读环节', '问答环节'];
 
-export default function ArticleNewEditForm ({ book, currentArticle }) {
+const CustomPickersDay = styled(PickersDay, {
+  shouldForwardProp: (prop) =>
+      prop !== 'isContain',
+})(({ theme, isContain }) => ({
+  backgroundColor: 'none',
+  ...(isContain && {
+      borderRadius: 0,
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.common.white,
+      '&:hover, &:focus': {
+          backgroundColor: theme.palette.primary.dark,
+      },
+  }),
+  borderTopLeftRadius: '50%',
+  borderBottomLeftRadius: '50%',
+  borderTopRightRadius: '50%',
+  borderBottomRightRadius: '50%',
+}));
+
+
+export default function ArticleNewEditForm ({ book, currentDates, currentArticle }) {
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -159,12 +181,32 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
           router.push(paths.dashboard.article.root);
         }
       }
-      console.info('DATA', data);
     } catch (error) {
       console.error(error);
     }
   });
 
+  const renderPickerDay = (date, selectedDates, pickersDayProps, dates) => {
+    if (!values.date) {
+        return <PickersDay {...pickersDayProps} />;
+    }
+    // eslint-disable-next-line no-plusplus
+    // for (let i = 0; i < dates.length; i++) {
+    //     if (date.isSame(dates[i], 'day')) {
+    //         return <CustomPickersDay
+    //             isContain
+    //             {...pickersDayProps}
+    //             disabled
+    //         />
+    //     }
+    // }
+    return (
+        <CustomPickersDay
+            isContain={false}
+            {...pickersDayProps}
+        />
+    );
+};
   const handleDrop = useCallback(
     async (acceptedFiles) => {
       const file = acceptedFiles[0];
@@ -206,6 +248,7 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
                 name="date"
                 value={values.date}
                 view="day"
+                renderDay={(date, selectedDates, pickersDayProps) => renderPickerDay(date, selectedDates, pickersDayProps, currentDates.map(item=> new Date(item)))}
                 displayStaticWrapperAs="desktop"
                 onChange={(newValue) => {
                   setValue('date', newValue);
@@ -452,5 +495,6 @@ export default function ArticleNewEditForm ({ book, currentArticle }) {
 
 ArticleNewEditForm.propTypes = {
   currentArticle: PropTypes.object,
-  book: PropTypes.any
+  book: PropTypes.any,
+  currentDates: PropTypes.array
 };

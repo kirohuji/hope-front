@@ -35,6 +35,7 @@ import { SkeletonPostItem } from 'src/components/skeleton';
 import TrainingCard from 'src/sections/training/training-card'
 import Image from 'src/components/image';
 import { bookService } from 'src/composables/context-provider';
+import _ from 'lodash'
 
 dayjs.extend(isBetweenPlugin);
 
@@ -84,6 +85,27 @@ TabPanel.propTypes = {
 
 const Transition = forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
+const defaultBook = {
+    "_id": "YctPoepmauJSeAdZP",
+    "label": "没选择灵修本! ",
+    "description": "<p>当前没有选择灵修本!</p>",
+    "cover": "http://localhost:5005/images/avatars/uW7stSkCa9PJG5Mwv/original/uW7stSkCa9PJG5Mwv.jpg",
+    "title": "",
+    "content": "",
+    "employmentTypes": [],
+    "experience": "1 year exp",
+    "role": "Data Analyst",
+    "skills": [],
+    "workingSchedule": [],
+    "locations": [],
+    "benefits": [],
+    "expiredDate": "20230805",
+    "salary": {
+        "type": "Hourly",
+        "price": 0,
+        "negotiable": false
+    }
+}
 export default function TrainingProcessPage () {
     const { themeStretch } = useSettingsContext();
     const [scrollable, setScrollable] = useState('one');
@@ -91,16 +113,29 @@ export default function TrainingProcessPage () {
     const [value, setValue] = useState(new Date());
     const [open, setOpen] = useState(false);
     const [books, setBooks] = useState([]);
+    const [bookSummarize, setBookSummarize] = useState([]);
 
     const getBooks = useCallback(async () => {
         try {
-            const response = await bookService.getBooksWithCurrentUser();
-            setBooks(response)
+            const booksData = await bookService.getBooksWithCurrentUser();
+            setBooks(booksData)
+            const bookData = _.find(booksData, ["currentStatus", "active"])
+            if (bookData) {
+                const bookSummarizeData = await bookService.getBooksWithCurrentUserBySummarize({
+                    bookId: bookData._id
+                });
+                setBookSummarize(bookSummarizeData)
+            }
+            // BooksData.forEach(book => {
+            //     if (book.currentStatus === "acitve") {
+
+            //     }
+            // });
         } catch (error) {
             // setLoadingPost(false);
             // setErrorMsg(error.message);
         }
-    }, [setBooks])
+    }, [setBooks, setBookSummarize])
 
     useEffect(() => {
         getBooks()
@@ -184,46 +219,43 @@ export default function TrainingProcessPage () {
                     }}
                 >
                     <Box sx={{ display: 'flex', position: "relative" }}>
-                        {books.map((book, index) =>
-                            book ? (
-                                <TrainingCard post={book} index={index} key={index} />
-                            ) : (
-                                <SkeletonPostItem key={index} />
-                            )
-                        )}
-
-                        <Iconify
+                        {books.length ? books.map((book, index) => <TrainingCard post={book} index={index} key={index} />) : <TrainingCard post={defaultBook} />}
+                        {
+                            false &&                         <Iconify
                             icon="ic:outline-more-vert"
                             style={{
                                 mr: 1, color: 'text.primary', position: "absolute", right: "8px", top: '8px'
                             }} />
+                        }
                     </Box>
-                    <Box sx={{ padding: '15px' }}>
-                        <div>
-                            <LinearProgress
-                                variant="determinate"
-                                value={30}
-                                sx={{ width: 1 }} />
-                        </div>
-                        <div style={{
-                            fontSize: '14px',
-                            marginTop: '8px',
-                            display: "flex",
-                            justifyContent: "space-between"
-                        }}>
+                    {
+                        books.length ? <Box sx={{ padding: '15px' }}>
                             <div>
-                                已完成 5天
+                                <LinearProgress
+                                    variant="determinate"
+                                    value={(bookSummarize.inProcess/bookSummarize.total)*100}
+                                    sx={{ width: 1 }} />
                             </div>
-                            <div> 总共30天</div>
-                        </div>
-                    </Box>
+                            <div style={{
+                                fontSize: '14px',
+                                marginTop: '8px',
+                                display: "flex",
+                                justifyContent: "space-between"
+                            }}>
+                                <div>
+                                    已完成 {bookSummarize.inProcess}天
+                                </div>
+                                <div> 总共{bookSummarize.total}天</div>
+                            </div>
+                        </Box> : <div />
+                    }
                 </Box>
 
                 <Box sx={{ marginLeft: '15px' }}>
                     <Typography variant="h4" gutterBottom >我的进程</Typography>
                 </Box>
                 {
-                    false && 
+                    false &&
                     <Box
                         sx={{
                             bgcolor: 'background.neutral',
@@ -360,7 +392,7 @@ export default function TrainingProcessPage () {
                         </Button>
                     </DialogActions>
                 </Dialog>
-            </TabPanel >
+            </TabPanel>
         </>
     )
 }

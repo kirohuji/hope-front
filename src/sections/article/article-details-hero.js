@@ -22,7 +22,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function ArticleDetailsHero({ title, author, coverUrl, createdAt }) {
+export default function ArticleDetailsHero ({ title, author, coverUrl, createdAt }) {
   const theme = useTheme();
 
   const smUp = useResponsive('up', 'sm');
@@ -88,27 +88,29 @@ export default function ArticleDetailsHero({ title, author, coverUrl, createdAt 
             </Stack>
           )}
 
-          <SpeedDial
-            direction={smUp ? 'left' : 'up'}
-            ariaLabel="Share article"
-            icon={<Iconify icon="solar:share-bold" />}
-            FabProps={{ size: 'medium' }}
-            sx={{
-              position: 'absolute',
-              bottom: { xs: 32, md: 64 },
-              right: { xs: 16, md: 24 },
-            }}
-          >
-            {_socials.map((action) => (
-              <SpeedDialAction
-                key={action.name}
-                icon={<Iconify icon={action.icon} sx={{ color: action.color }} />}
-                tooltipTitle={action.name}
-                tooltipPlacement="top"
-                FabProps={{ color: 'default' }}
-              />
-            ))}
-          </SpeedDial>
+          {
+            false && <SpeedDial
+              direction={smUp ? 'left' : 'up'}
+              ariaLabel="Share article"
+              icon={<Iconify icon="solar:share-bold" />}
+              FabProps={{ size: 'medium' }}
+              sx={{
+                position: 'absolute',
+                bottom: { xs: 32, md: 64 },
+                right: { xs: 16, md: 24 },
+              }}
+            >
+              {_socials.map((action) => (
+                <SpeedDialAction
+                  key={action.name}
+                  icon={<Iconify icon={action.icon} sx={{ color: action.color }} />}
+                  tooltipTitle={action.name}
+                  tooltipPlacement="top"
+                  FabProps={{ color: 'default' }}
+                />
+              ))}
+            </SpeedDial>
+          }
         </Stack>
       </Container>
     </Box>

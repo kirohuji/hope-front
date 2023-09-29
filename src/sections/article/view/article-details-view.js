@@ -3,6 +3,7 @@ import { useEffect, useCallback, useState } from 'react';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import Checkbox from '@mui/material/Checkbox';
@@ -27,9 +28,11 @@ import EmptyContent from 'src/components/empty-content';
 //
 import { articleService } from 'src/composables/context-provider';
 import { useSettingsContext } from 'src/components/settings';
+import { useSnackbar } from 'src/components/snackbar';
 import ArticleDetailsHero from '../article-details-hero';
 import ArticleCommentList from '../article-comment-list';
 import ArticleCommentForm from '../article-comment-form';
+import ArticleQuestionForm from '../article-question-form';
 import { ArticleDetailsSkeleton } from '../article-skeleton';
 import ArticleDetailsToolbar from '../article-details-toolbar';
 // ----------------------------------------------------------------------
@@ -43,14 +46,21 @@ export default function ArticleDetailsView () {
 
   const [publish, setPublish] = useState('');
 
+  const [articleUser, setArticleUser] = useState({
+    answers: []
+  });
+  const [answers, setAnswers] = useState([]);
+
   const [recentPosts, setRecentPosts] = useState([]);
 
   const [article, setArticle] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [loadingPost, setLoadingPost] = useState(true);
 
   const [errorMsg, setErrorMsg] = useState(null);
 
+  const { enqueueSnackbar } = useSnackbar();
 
   const getPost = useCallback(async () => {
     try {
@@ -58,7 +68,12 @@ export default function ArticleDetailsView () {
         _id: id
       })
 
+      const getArticleUser = await articleService.getArticleCurrentUser({
+        _id: id
+      })
       setArticle(response);
+      setArticleUser(getArticleUser);
+      setAnswers(getArticleUser.answers)
       setPublish(response.public ? 'published' : 'draft')
       setLoadingPost(false);
     } catch (error) {
@@ -79,6 +94,17 @@ export default function ArticleDetailsView () {
 
   const renderSkeleton = <ArticleDetailsSkeleton />;
 
+  const onSubmit = async () => {
+    setIsSubmitting(true)
+    await articleService.updateArticleCurrentUser({
+      _id: articleUser._id,
+      article_id: article._id,
+      answers
+    })
+    setIsSubmitting(false)
+    enqueueSnackbar('提交成功!');
+    
+  }
   const renderError = (
     <EmptyContent
       filled
@@ -118,62 +144,68 @@ export default function ArticleDetailsView () {
         sx={{
           maxWidth: 720,
           mx: 'auto',
-          mt: { xs: 5, md: 10 },
+          mt: { xs: 2, md: 4 },
         }}
       >
-        <Typography variant="subtitle1" sx={{ mb: 5 }}>
+        <Typography variant="subtitle1" sx={{ mb: 1 }}>
           {article.description}
         </Typography>
-
+        <Divider sx={{ mt: 1, mb: 1 }} />
+        <Stack direction="row" sx={{ mb: 1, mt: 1 }}>
+          <Typography variant="h4">阅读经文</Typography>
+        </Stack>
         <Markdown children={article.content} />
+        {
+          false && <Stack
+            spacing={3}
+            sx={{
+              py: 3,
+              borderTop: (theme) => `dashed 1px ${theme.palette.divider}`,
+              borderBottom: (theme) => `dashed 1px ${theme.palette.divider}`,
+            }}
+          >
+            {
+              false && <Stack direction="row" flexWrap="wrap" spacing={1}>
+                {article.tags.map((tag) => (
+                  <Chip key={tag} label={tag} variant="soft" />
+                ))}
+              </Stack>
+            }
 
-        <Stack
-          spacing={3}
-          sx={{
-            py: 3,
-            borderTop: (theme) => `dashed 1px ${theme.palette.divider}`,
-            borderBottom: (theme) => `dashed 1px ${theme.palette.divider}`,
-          }}
-        >
-          {
-            false && <Stack direction="row" flexWrap="wrap" spacing={1}>
-              {article.tags.map((tag) => (
-                <Chip key={tag} label={tag} variant="soft" />
-              ))}
-            </Stack>
-          }
-
-          <Stack direction="row" alignItems="center">
-            <FormControlLabel
-              control={
-                <Checkbox
-                  defaultChecked
-                  size="small"
-                  color="error"
-                  icon={<Iconify icon="solar:heart-bold" />}
-                  checkedIcon={<Iconify icon="solar:heart-bold" />}
+            <Stack direction="row" alignItems="center">
+              {
+                false && <FormControlLabel
+                  control={
+                    <Checkbox
+                      defaultChecked
+                      size="small"
+                      color="error"
+                      icon={<Iconify icon="solar:heart-bold" />}
+                      checkedIcon={<Iconify icon="solar:heart-bold" />}
+                    />
+                  }
+                  label={fShortenNumber(article.totalFavorites)}
+                  sx={{ mr: 1 }}
                 />
               }
-              label={fShortenNumber(article.totalFavorites)}
-              sx={{ mr: 1 }}
-            />
 
-            {
-              false && <AvatarGroup
-                sx={{
-                  [`& .${avatarGroupClasses.avatar}`]: {
-                    width: 32,
-                    height: 32,
-                  },
-                }}
-              >
-                {article.favoritePerson.map((person) => (
-                  <Avatar key={person.name} alt={person.name} src={person.avatarUrl} />
-                ))}
-              </AvatarGroup>
-            }
+              {
+                false && <AvatarGroup
+                  sx={{
+                    [`& .${avatarGroupClasses.avatar}`]: {
+                      width: 32,
+                      height: 32,
+                    },
+                  }}
+                >
+                  {article.favoritePerson.map((person) => (
+                    <Avatar key={person.name} alt={person.name} src={person.avatarUrl} />
+                  ))}
+                </AvatarGroup>
+              }
+            </Stack>
           </Stack>
-        </Stack>
+        }
         {
           false &&
           <Stack direction="row" sx={{ mb: 3, mt: 5 }}>
@@ -185,13 +217,29 @@ export default function ArticleDetailsView () {
           </Stack>
 
         }
-        <ArticleCommentForm />
-
-        <Divider sx={{ mt: 5, mb: 2 }} />
+        <Stack direction="row" sx={{ mb: 1, mt: 1 }}>
+          <Typography variant="h4">思考交互</Typography>
+        </Stack>
+        {false && <ArticleCommentForm />}
 
         {
           false && <ArticleCommentList comments={article.comments} />
         }
+        <Stack sx={{ mb: 3 }}>
+          {
+            article.questions.map((q, i) => <div key={i} >
+              <Divider sx={{ mt: 1, mb: 1 }} />
+              <ArticleQuestionForm item={q} comment={articleUser.answers[i]} onChangeComment={(e) => {
+                answers[i] = e.target.value;
+                setAnswers(answers)
+              }} />
+            </div>)
+          }
+          <Divider sx={{ mt: 1, mb: 1 }} />
+          <LoadingButton onClick={() => onSubmit()} variant="contained" loading={isSubmitting}>
+            保存回答
+          </LoadingButton>
+        </Stack>
       </Stack>
     </>
   );

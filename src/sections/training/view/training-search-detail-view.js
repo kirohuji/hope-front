@@ -5,10 +5,10 @@ import { useParams } from 'react-router-dom';
 import TrainingCard from 'src/sections/training/training-card'
 import Iconify from 'src/components/iconify'
 import { bookService } from 'src/composables/context-provider';
-import TrainingCardData from './Untitled-1.json'
 
 export default function TrainingSearchDetailView () {
   const [book, setBook] = useState({});
+  const [bookUser, setBookUser] = useState({});
   const [posts, setPosts] = useState([]);
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
@@ -18,7 +18,15 @@ export default function TrainingSearchDetailView () {
         selector: {
           book_id: id
         }
-      })]).then(([bookData, postsData]) => {
+      })]).then(async ([bookData, postsData]) => {
+        const bookUsers = await bookService.getBooksWithCurrentUser({
+          book_id: bookData._id,
+        })
+        if(bookUsers.length){
+          setBookUser(bookUsers[0])
+        } else {
+          setBookUser({})
+        }
         setBook(bookData);
         setPosts(postsData.data);
         setIsLoading(false);
@@ -28,7 +36,7 @@ export default function TrainingSearchDetailView () {
       // setErrorMsg(error.message);
       console.log(error)
     }
-  }, [id, setBook, setPosts, setIsLoading])
+  }, [id, setBook, setBookUser,setPosts, setIsLoading])
 
   useEffect(() => {
     if (id) {
@@ -37,18 +45,26 @@ export default function TrainingSearchDetailView () {
       setIsLoading(false);
     }
   }, [getDetail, id])
-  const onActive=async ()=>{
+  const onActive = async () => {
     await bookService.addBookCurrentUser({
       book_id: id
     });
     await bookService.activeBookWithCurrentUser({
       book_id: id
     });
+    getDetail();
   }
-  const onSelect=()=>{
+  const onDeactive = async () => {
+    await bookService.deactiveBookWithCurrentUser({
+      book_id: id
+    });
+    getDetail();
+  }
+  const onSelect = () => {
     bookService.addBookCurrentUser({
       book_id: id
     });
+    getDetail();
   }
   return (
     <>
@@ -57,7 +73,7 @@ export default function TrainingSearchDetailView () {
         <Box>
           <div style={{ display: 'flex' }}>
             <div style={{ width: '142px' }}>
-              <TrainingCard post={TrainingCardData.posts[0]} />
+              <TrainingCard post={book} />
             </div>
             <div style={{ margin: "15px 0px", width: 'calc(100% - 142px' }}>
               <Typography variant="h9" style={{ fontWeight: '700' }}>{book.label}</Typography>
@@ -71,8 +87,11 @@ export default function TrainingSearchDetailView () {
           display: 'flex',
           justifyContent: 'space-evenly'
         }}>
-          <Button variant="text" onClick={()=> onActive()}>选择为当前</Button>
-          <Button variant="text"  onClick={()=> onSelect()}>添加到列表</Button>
+          {
+            bookUser.currentStatus === "active" ? <Button variant="text" color="error" onClick={() => onDeactive()}> 退出(正在灵修中)</Button> :
+              <Button variant="text" onClick={() => onActive()}>开始灵修</Button>
+          }
+          <Button variant="text" onClick={() => onSelect()}>添加到列表</Button>
         </div>
         <Divider />
         <Box sx={{ margin: '15px 0', color: 'black' }}>

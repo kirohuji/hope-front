@@ -27,7 +27,7 @@ export default service
 
 export const fileService = axios.create({
   baseURL: 'http://localhost:5005/api/v1/',
-  timeout: 10000,
+  timeout: 100000,
   headers: {
     "Content-Type": "multipart/form-data"
   },

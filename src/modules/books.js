@@ -37,8 +37,8 @@ export default class BookService extends Service {
         return this.api.post(`${this.model}/${target._id}/publish`, target)
     }
 
-    getBooksWithCurrentUser () {
-        return this.api.get(`${this.model}/users/current`)
+    getBooksWithCurrentUser (target) {
+        return target?.book_id ? this.api.get(`${this.model}/users/current/${target.book_id}`) : this.api.get(`${this.model}/users/current`)
     }
 
     addBookCurrentUser (target) {
@@ -54,6 +54,15 @@ export default class BookService extends Service {
         })
     }
 
+    deactiveBookWithCurrentUser (target) {
+
+        // return this.api.patch(`${this.model}/users/current`, {
+        //     book_id: target.book_id,
+        //     status: 'deactive'
+        // })
+        return this.api.delete(`${this.model}/users/current/${target.book_id}`)
+    }
+
     startWithCurrentUser (){
         return this.api.post(`${this.model}/users/current/start`,{
             date: new Date()
@@ -63,4 +72,13 @@ export default class BookService extends Service {
     submitWithCurrentUser (target){
         return this.api.post(`${this.model}/users/current/${target._id}/submit`)
     }
+
+    dates(target){
+        return this.api.post(`${this.model}/${target._id}/dates`)
+    }
+
+    getBooksWithCurrentUserBySummarize (target) {
+        return this.api.get(`${this.model}/users/current/${target.bookId}/summarize`)
+    }
+
 }

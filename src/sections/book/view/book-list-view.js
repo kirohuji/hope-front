@@ -1,6 +1,6 @@
 import orderBy from 'lodash/orderBy';
 import isEqual from 'lodash/isEqual';
-import { useState, useEffect,useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -48,7 +48,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function BookListView() {
+export default function BookListView () {
   const { enqueueSnackbar } = useSnackbar();
 
   const settings = useSettingsContext();
@@ -218,7 +218,7 @@ export default function BookListView() {
 
       {notFound && <EmptyContent filled title="No Data" sx={{ py: 10 }} />}
 
-      <BookList books={tableData} />
+      <BookList books={tableData} refresh={() => getTableData()} />
     </Container>
   );
 }

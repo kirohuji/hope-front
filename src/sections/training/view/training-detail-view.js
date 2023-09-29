@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { Helmet } from "react-helmet-async";
-import { useState, forwardRef } from 'react';
+import { useCallback, useEffect, useState, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import 'dayjs/locale/zh-cn';
 
@@ -31,7 +31,8 @@ import { useSettingsContext } from 'src/components/settings';
 import Iconify from 'src/components/iconify'
 import { SkeletonPostItem } from 'src/components/skeleton';
 import TrainingCard from 'src/sections/training/training-card'
-import TrainingCardData from './Untitled-1.json'
+import { bookService } from "src/composables/context-provider";
+// import TrainingCardData from './Untitled-1.json'
 
 dayjs.extend(isBetweenPlugin);
 
@@ -87,6 +88,30 @@ export default function TrainingPage () {
     const [click, setCLick] = useState(null);
     const [value, setValue] = useState(new Date());
     const [open, setOpen] = useState(false);
+    const [books, setBooks] = useState([]);
+
+    const getBooks = useCallback(async () => {
+        const response = bookService.getBooksWithCurrentUser();
+        console.log('response',response)
+        setBooks(response)
+        // try {
+        //   const response = await userService.pagination(
+        //     {
+        //       ...selector,
+        //       ..._.pickBy(_.omit(filters, ["role"]))
+        //     },
+        //     options
+        //   )
+        //   setTableData(response.data);
+        //   setTableDataCount(response.total);
+        // } catch (error) {
+        //   enqueueSnackbar(error.message)
+        // }
+      }, [setBooks]);
+    
+      useEffect(() => {
+        getBooks()
+      }, [getBooks]);
 
     const handleDialogOpen = () => {
         setOpen(true);
@@ -166,14 +191,7 @@ export default function TrainingPage () {
                     }}
                 >
                     <Box sx={{ display: 'flex', position: "relative" }}>
-                        {TrainingCardData.posts.map((post, index) =>
-                            post ? (
-                                <TrainingCard post={post} index={index} key={index} />
-                            ) : (
-                                <SkeletonPostItem key={index} />
-                            )
-                        )}
-
+                        {books.length>0 ? books.map((book, index) =>  <TrainingCard post={book} index={index} key={index} />) : <SkeletonPostItem />}
                         <Iconify
                             icon="ic:outline-more-vert"
                             style={{

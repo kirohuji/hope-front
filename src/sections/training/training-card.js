@@ -38,7 +38,7 @@ TrainingCard.propTypes = {
 export default function TrainingCard ({ post, index }) {
     const isDesktop = useResponsive('up', 'md');
 
-    const { cover, title, view, comment, share, author, createdAt } = post;
+    const { cover, label, view, comment, share, author, createdAt } = post;
 
     const latestPost = index === 0 || index === 1 || index === 2;
 
@@ -58,7 +58,7 @@ export default function TrainingCard ({ post, index }) {
                     />
                 }
                 <PostContent
-                    title={title}
+                    label={label}
                     view={view}
                     comment={comment}
                     share={share}
@@ -87,7 +87,7 @@ export default function TrainingCard ({ post, index }) {
                 padding: "8px",
                 fontSize: "14px"
             }}>
-                {title}
+                {label}
             </Stack>
         </Card>
     );
@@ -99,15 +99,15 @@ PostContent.propTypes = {
     view: PropTypes.number,
     index: PropTypes.number,
     share: PropTypes.number,
-    title: PropTypes.string,
+    label: PropTypes.string,
     comment: PropTypes.number,
     createdAt: PropTypes.string,
 };
 
-export function PostContent ({ title, view, comment, share, createdAt, index }) {
+export function PostContent ({ label, view, comment, share, createdAt, index }) {
     const isDesktop = useResponsive('up', 'md');
 
-    const linkTo = paths.post.view(title);
+    const linkTo = paths.post.view(label);
 
     const latestPostLarge = index === 0;
 
@@ -154,7 +154,7 @@ export function PostContent ({ title, view, comment, share, createdAt, index }) 
                     line={2}
                     persistent
                 >
-                    {title}
+                    {label}
                 </TextMaxLine>
             </Link>
 
