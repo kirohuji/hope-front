@@ -75,7 +75,7 @@ export default function NotificationsPopover() {
   const renderHead = (
     <Stack direction="row" alignItems="center" sx={{ py: 2, pl: 2.5, pr: 1, minHeight: 68 }}>
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Notifications
+        消息通知
       </Typography>
 
       {!!totalUnRead && (

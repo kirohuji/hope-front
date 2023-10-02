@@ -1,17 +1,21 @@
 // ----------------------------------------------------------------------
 
-export default function useGetNavItem({ currentUserId, conversation }) {
+export default function useGetNavItem({ currentUserId, conversation, user }) {
   const { messages, participants } = conversation;
 
-  const participantsInConversation = participants.filter(
-    (participant) => participant.id !== currentUserId
-  );
+  const participantsInConversation = participants?.filter(
+    (participant) => participant._id !== currentUserId
+  ) || [{
+    ...conversation,
+    username: conversation.name || conversation.username,
+    photoURL: conversation?.avatarUrl?.preview || conversation.photoURL,
+  }];
 
-  const lastMessage = messages[messages.length - 1];
+  const lastMessage = messages ? messages[messages.length - 1] : { body: ''};
 
-  const group = participantsInConversation.length > 1;
+  const group = participantsInConversation.length > 2;
 
-  const displayName = participantsInConversation.map((participant) => participant.name).join(', ');
+  const displayName = group ? participantsInConversation.map((participant) => participant.username).join(', ') : participantsInConversation[0].username;
 
   const hasOnlineInGroup = group
     ? participantsInConversation.map((item) => item.status).includes('online')
@@ -20,9 +24,9 @@ export default function useGetNavItem({ currentUserId, conversation }) {
   let displayText = '';
 
   if (lastMessage) {
-    const sender = lastMessage.senderId === currentUserId ? 'You: ' : '';
+    const sender = lastMessage.senderId === currentUserId ? ' 你: ' : '';
 
-    const message = lastMessage.contentType === 'image' ? 'Sent a photo' : lastMessage.body;
+    const message = lastMessage.contentType === 'image' ? '发送了一张照片' : lastMessage.body;
 
     displayText = `${sender}${message}`;
   }
@@ -30,9 +34,10 @@ export default function useGetNavItem({ currentUserId, conversation }) {
   return {
     group,
     displayName,
+    type: conversation.type,
     displayText,
     participants: participantsInConversation,
-    lastActivity: lastMessage.createdAt,
+    lastActivity: lastMessage?.createdAt,
     hasOnlineInGroup,
   };
 }

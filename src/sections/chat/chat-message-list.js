@@ -7,10 +7,9 @@ import Lightbox, { useLightBox } from 'src/components/lightbox';
 //
 import { useMessagesScroll } from './hooks';
 import ChatMessageItem from './chat-message-item';
-
 // ----------------------------------------------------------------------
 
-export default function ChatMessageList({ messages = [], participants }) {
+export default function ChatMessageList ({ onRefresh, messages = [], participants }) {
   const { messagesEndRef } = useMessagesScroll(messages);
 
   const slides = messages
@@ -22,16 +21,16 @@ export default function ChatMessageList({ messages = [], participants }) {
   return (
     <>
       <Scrollbar ref={messagesEndRef} sx={{ px: 3, py: 5, height: 1 }}>
-        <Box>
-          {messages.map((message) => (
-            <ChatMessageItem
-              key={message.id}
-              message={message}
-              participants={participants}
-              onOpenLightbox={() => lightbox.onOpen(message.body)}
-            />
-          ))}
-        </Box>
+          <Box sx={{ height: 1 }}>
+            {messages.map((message, index) => (
+              <ChatMessageItem
+                key={index}
+                message={message}
+                participants={participants}
+                onOpenLightbox={() => lightbox.onOpen(message.body)}
+              />
+            ))}
+          </Box>
       </Scrollbar>
 
       <Lightbox
@@ -46,5 +45,6 @@ export default function ChatMessageList({ messages = [], participants }) {
 
 ChatMessageList.propTypes = {
   messages: PropTypes.array,
+  onRefresh: PropTypes.func,
   participants: PropTypes.array,
 };

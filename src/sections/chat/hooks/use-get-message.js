@@ -1,17 +1,17 @@
 // ----------------------------------------------------------------------
 
-export default function useGetMessage({ message, participants, currentUserId }) {
-  const sender = participants.find((participant) => participant.id === message.senderId);
+export default function useGetMessage ({ message, participants, currentUserId }) {
+  const sender = participants.find((participant) => participant._id === message.senderId);
 
   const senderDetails =
     message.senderId === currentUserId
       ? {
-          type: 'me',
-        }
+        type: 'me',
+      }
       : {
-          avatarUrl: sender?.avatarUrl,
-          firstName: sender?.name.split(' ')[0],
-        };
+        photoURL: sender?.photoURL,
+        username: sender?.username
+      };
 
   const me = senderDetails.type === 'me';
 

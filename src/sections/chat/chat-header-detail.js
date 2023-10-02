@@ -13,10 +13,10 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function ChatHeaderDetail({ participants }) {
-  const group = participants.length > 1;
+export default function ChatHeaderDetail ({ participants }) {
+  const group = participants.length > 2;
 
-  const singleParticipant = participants[0];
+  const singleParticipant = participants[0] || {};
 
   const renderGroup = (
     <AvatarGroup
@@ -29,7 +29,7 @@ export default function ChatHeaderDetail({ participants }) {
       }}
     >
       {participants.map((participant) => (
-        <Avatar key={participant.id} alt={participant.name} src={participant.avatarUrl} />
+        <Avatar key={participant._id} alt={participant.username} src={participant.photoURL} />
       ))}
     </AvatarGroup>
   );
@@ -40,11 +40,11 @@ export default function ChatHeaderDetail({ participants }) {
         variant={singleParticipant.status}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Avatar src={singleParticipant.avatarUrl} alt={singleParticipant.name} />
+        <Avatar src={singleParticipant.photoURL} alt={singleParticipant.username} />
       </Badge>
 
       <ListItemText
-        primary={singleParticipant.name}
+        primary={singleParticipant.username}
         secondary={
           singleParticipant.status === 'offline'
             ? fToNow(singleParticipant.lastActivity)
@@ -65,16 +65,19 @@ export default function ChatHeaderDetail({ participants }) {
       {group ? renderGroup : renderSingle}
 
       <Stack flexGrow={1} />
-
-      <IconButton>
-        <Iconify icon="solar:phone-bold" />
-      </IconButton>
-      <IconButton>
-        <Iconify icon="solar:videocamera-record-bold" />
-      </IconButton>
-      <IconButton>
-        <Iconify icon="eva:more-vertical-fill" />
-      </IconButton>
+      {
+        false && <div>
+          <IconButton>
+            <Iconify icon="solar:phone-bold" />
+          </IconButton>
+          <IconButton>
+            <Iconify icon="solar:videocamera-record-bold" />
+          </IconButton>
+          <IconButton>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
+        </div>
+      }
     </>
   );
 }

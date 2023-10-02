@@ -9,17 +9,23 @@ import IconButton from '@mui/material/IconButton';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+import { useAuthContext } from 'src/auth/hooks';
 // utils
 import uuidv4 from 'src/utils/uuidv4';
-// api
-import { sendMessage, createConversation } from 'src/api/chat';
+
+// redux
+import { useDispatch } from 'src/redux/store';
+import {
+  sendMessage,
+} from 'src/redux/slices/chat';
 // components
 import Iconify from 'src/components/iconify';
+import moment from 'moment';
+import { fileService, messagingService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
-export default function ChatMessageInput({
+export default function ChatMessageInput ({
   recipients,
   onAddRecipients,
   //
@@ -28,21 +34,26 @@ export default function ChatMessageInput({
 }) {
   const router = useRouter();
 
-  const { user } = useMockedUser();
+  const dispatch = useDispatch();
+
+  const { user } = useAuthContext();
 
   const fileRef = useRef(null);
 
   const [message, setMessage] = useState('');
 
+  const [type, setType] = useState('text');
+
   const myContact = useMemo(
     () => ({
-      id: user.id,
+      _id: user._id,
       role: user.role,
       email: user.email,
       address: user.address,
       name: user.displayName,
+      username: user.username,
       lastActivity: new Date(),
-      avatarUrl: user.photoURL,
+      photoURL: user.photoURL,
       phoneNumber: user.phoneNumber,
       status: 'online',
     }),
@@ -52,13 +63,16 @@ export default function ChatMessageInput({
   const messageData = useMemo(
     () => ({
       id: uuidv4(),
+      conversationId: selectedConversationId,
       attachments: [],
       body: message,
-      contentType: 'text',
-      createdAt: sub(new Date(), { minutes: 1 }),
-      senderId: myContact.id,
+      message,
+      contentType: type,
+      // createdAt: sub(new Date(), { minutes: 1 }),
+      createdAt: moment(new Date()).format("YYYY/MM/DD hh:mm:ss"),
+      senderId: myContact._id,
     }),
-    [message, myContact.id]
+    [message, type, selectedConversationId, myContact._id]
   );
 
   const conversationData = useMemo(
@@ -79,20 +93,35 @@ export default function ChatMessageInput({
   }, []);
 
   const handleChangeMessage = useCallback((event) => {
-    setMessage(event.target.value);
+    if (event.key !== 'Enter' && !event.shiftKey) {
+      setMessage(event.target.value);
+    }
   }, []);
 
+  const createConversation = useCallback(async () => {
+    let conversationKey = await messagingService.findExistingConversationWithUsers({
+      users: recipients.map(recipient => recipient._id)
+    })
+    console.log('conversationKey', conversationKey)
+    if (!conversationKey) {
+      conversationKey = await messagingService.room({
+        participants: recipients.map(recipient => recipient._id)
+      })
+    }
+    return conversationKey;
+  }, [recipients])
   const handleSendMessage = useCallback(
     async (event) => {
       try {
-        if (event.key === 'Enter') {
+        console.log('event', event.shiftKey)
+        if (event.shiftKey && event.key === 'Enter') {
           if (message) {
             if (selectedConversationId) {
-              await sendMessage(selectedConversationId, messageData);
+              setType('text')
+              await dispatch(sendMessage(selectedConversationId, messageData));
             } else {
-              const res = await createConversation(conversationData);
-
-              router.push(`${paths.dashboard.chat}?id=${res.conversation.id}`);
+              const conversationKey = await createConversation(conversationData);
+              router.push(`${paths.chat}?id=${conversationKey}`);
 
               onAddRecipients([]);
             }
@@ -103,9 +132,23 @@ export default function ChatMessageInput({
         console.error(error);
       }
     },
-    [conversationData, message, messageData, onAddRecipients, router, selectedConversationId]
+    [conversationData, message, messageData, dispatch, createConversation, onAddRecipients, router, selectedConversationId]
   );
 
+  const uploadImage = async () => {
+    if (fileRef.current) {
+      const file = fileRef.current.files[0]
+      const formData = new FormData();
+      formData.append('file', file);
+      const { link } = await fileService.avatar(formData)
+      await dispatch(sendMessage(selectedConversationId, {
+        ...messageData,
+        body: link,
+        message: link,
+        contentType: 'image'
+      }));
+    }
+  }
   return (
     <>
       <InputBase
@@ -114,8 +157,10 @@ export default function ChatMessageInput({
         onChange={handleChangeMessage}
         placeholder="Type a message"
         disabled={disabled}
+        maxRows={3}
+        multiline
         startAdornment={
-          <IconButton>
+          false && <IconButton>
             <Iconify icon="eva:smiling-face-fill" />
           </IconButton>
         }
@@ -124,23 +169,27 @@ export default function ChatMessageInput({
             <IconButton onClick={handleAttach}>
               <Iconify icon="solar:gallery-add-bold" />
             </IconButton>
-            <IconButton onClick={handleAttach}>
-              <Iconify icon="eva:attach-2-fill" />
-            </IconButton>
-            <IconButton>
-              <Iconify icon="solar:microphone-bold" />
-            </IconButton>
+            {
+              false && <IconButton onClick={handleAttach}>
+                <Iconify icon="eva:attach-2-fill" />
+              </IconButton>
+            }
+            {
+              false && <IconButton>
+                <Iconify icon="solar:microphone-bold" />
+              </IconButton>
+            }
           </Stack>
         }
         sx={{
           px: 1,
-          height: 56,
+          margin: '4px 0',
           flexShrink: 0,
           borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
         }}
       />
 
-      <input type="file" ref={fileRef} style={{ display: 'none' }} />
+      <input onChange={uploadImage} type="file" ref={fileRef} style={{ display: 'none' }} />
     </>
   );
 }

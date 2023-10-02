@@ -11,15 +11,15 @@ import ListItemText from '@mui/material/ListItemText';
 import Badge, { badgeClasses } from '@mui/material/Badge';
 import Select from '@mui/material/Select';
 // hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+import { useAuthContext } from 'src/auth/hooks';
 // components
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function ChatNavAccount() {
-  const { user } = useMockedUser();
+export default function ChatNavAccount () {
+  const { user } = useAuthContext();
 
   const popover = usePopover();
 
@@ -56,12 +56,14 @@ export default function ChatNavAccount() {
             secondary={user?.email}
             secondaryTypographyProps={{ component: 'span' }}
           />
-
-          <Tooltip title="Log out">
-            <IconButton color="error">
-              <Iconify icon="ic:round-power-settings-new" />
-            </IconButton>
-          </Tooltip>
+          {
+            false &&
+            <Tooltip title="Log out">
+              <IconButton color="error">
+                <Iconify icon="ic:round-power-settings-new" />
+              </IconButton>
+            </Tooltip>
+          }
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
@@ -98,16 +100,20 @@ export default function ChatNavAccount() {
               ))}
             </Select>
           </MenuItem>
-
-          <MenuItem>
-            <Iconify icon="solar:user-id-bold" width={24} />
-            Profile
-          </MenuItem>
-
-          <MenuItem>
-            <Iconify icon="eva:settings-2-fill" width={24} />
-            Settings
-          </MenuItem>
+          {
+            false &&
+            <MenuItem>
+              <Iconify icon="solar:user-id-bold" width={24} />
+              Profile
+            </MenuItem>
+          }
+          {
+            false &&
+            <MenuItem>
+              <Iconify icon="eva:settings-2-fill" width={24} />
+              Settings
+            </MenuItem>
+          }
         </Stack>
       </CustomPopover>
     </>

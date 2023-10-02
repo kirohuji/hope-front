@@ -51,16 +51,16 @@ const STEPS = ['阅读环节', '问答环节'];
 
 const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) =>
-      prop !== 'isContain',
+    prop !== 'isContain',
 })(({ theme, isContain }) => ({
   backgroundColor: 'none',
   ...(isContain && {
-      borderRadius: 0,
-      backgroundColor: theme.palette.primary.main,
-      color: theme.palette.common.white,
-      '&:hover, &:focus': {
-          backgroundColor: theme.palette.primary.dark,
-      },
+    borderRadius: 0,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    '&:hover, &:focus': {
+      backgroundColor: theme.palette.primary.dark,
+    },
   }),
   borderTopLeftRadius: '50%',
   borderBottomLeftRadius: '50%',
@@ -188,7 +188,7 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
 
   const renderPickerDay = (date, selectedDates, pickersDayProps, dates) => {
     if (!values.date) {
-        return <PickersDay {...pickersDayProps} />;
+      return <PickersDay {...pickersDayProps} />;
     }
     // eslint-disable-next-line no-plusplus
     // for (let i = 0; i < dates.length; i++) {
@@ -201,12 +201,12 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
     //     }
     // }
     return (
-        <CustomPickersDay
-            isContain={false}
-            {...pickersDayProps}
-        />
+      <CustomPickersDay
+        isContain={false}
+        {...pickersDayProps}
+      />
     );
-};
+  };
   const handleDrop = useCallback(
     async (acceptedFiles) => {
       const file = acceptedFiles[0];
@@ -232,10 +232,10 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
       {mdUp && (
         <Grid md={4}>
           <Typography variant="h6" sx={{ mb: 0.5 }}>
-            Details
+            基本描述
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Title, short description, image...
+            标题, 基本描述, 图片...
           </Typography>
           <div>
             <LocalizationProvider
@@ -248,7 +248,7 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
                 name="date"
                 value={values.date}
                 view="day"
-                renderDay={(date, selectedDates, pickersDayProps) => renderPickerDay(date, selectedDates, pickersDayProps, currentDates.map(item=> new Date(item)))}
+                renderDay={(date, selectedDates, pickersDayProps) => renderPickerDay(date, selectedDates, pickersDayProps, currentDates.map(item => new Date(item)))}
                 displayStaticWrapperAs="desktop"
                 onChange={(newValue) => {
                   setValue('date', newValue);
@@ -266,17 +266,17 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
           {!mdUp && <CardHeader title="Details" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
-            <RHFTextField name="title" label="Article Title" />
+            <RHFTextField name="title" label="标题" />
 
-            <RHFTextField name="description" label="Description" multiline rows={3} />
+            <RHFTextField name="description" label="描述" multiline rows={3} />
 
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Content</Typography>
+              <Typography variant="subtitle2">内容</Typography>
               <RHFEditor simple name="content" />
             </Stack>
 
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Cover</Typography>
+              <Typography variant="subtitle2">封面</Typography>
               <RHFUpload
                 name="coverUrl"
                 maxSize={3145728}
@@ -295,22 +295,22 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
       {mdUp && (
         <Grid md={4}>
           <Typography variant="h6" sx={{ mb: 0.5 }}>
-            Properties
+            属性
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Additional functions and attributes...
+            额外的功能和属性
           </Typography>
         </Grid>
       )}
 
       <Grid xs={12} md={8}>
         <Card>
-          {!mdUp && <CardHeader title="Properties" />}
+          {!mdUp && <CardHeader title="属性" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
             <RHFAutocomplete
               name="tags"
-              label="Tags"
+              label="标签"
               placeholder="+ Tags"
               multiple
               freeSolo
@@ -334,45 +334,48 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
                 ))
               }
             />
+            {
+              false && <div>
+                <RHFTextField name="metaTitle" label="Meta title" />
 
-            <RHFTextField name="metaTitle" label="Meta title" />
+                <RHFTextField
+                  name="metaDescription"
+                  label="Meta description"
+                  fullWidth
+                  multiline
+                  rows={3}
+                />
 
-            <RHFTextField
-              name="metaDescription"
-              label="Meta description"
-              fullWidth
-              multiline
-              rows={3}
-            />
+                <RHFAutocomplete
+                  name="metaKeywords"
+                  label="Meta keywords"
+                  placeholder="+ Keywords"
+                  multiple
+                  freeSolo
+                  disableCloseOnSelect
+                  options={_tags.map((option) => option)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => (
+                    <li {...props} key={option}>
+                      {option}
+                    </li>
+                  )}
+                  renderTags={(selected, getTagProps) =>
+                    selected.map((option, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={option}
+                        label={option}
+                        size="small"
+                        color="info"
+                        variant="soft"
+                      />
+                    ))
+                  }
+                />
 
-            <RHFAutocomplete
-              name="metaKeywords"
-              label="Meta keywords"
-              placeholder="+ Keywords"
-              multiple
-              freeSolo
-              disableCloseOnSelect
-              options={_tags.map((option) => option)}
-              getOptionLabel={(option) => option}
-              renderOption={(props, option) => (
-                <li {...props} key={option}>
-                  {option}
-                </li>
-              )}
-              renderTags={(selected, getTagProps) =>
-                selected.map((option, index) => (
-                  <Chip
-                    {...getTagProps({ index })}
-                    key={option}
-                    label={option}
-                    size="small"
-                    color="info"
-                    variant="soft"
-                  />
-                ))
-              }
-            />
-
+              </div>
+            }
             {/**   <FormControlLabel control={<Switch defaultChecked />} label="Enable comments" /> * */}
             <RHFSwitch name="comments" label="可以评论" />
           </Stack>
@@ -389,7 +392,12 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
         <Button color="inherit" variant="outlined" size="large" onClick={preview.onTrue}>
           预览
         </Button>
-
+        {isEdit && activeStep !== 0 && <Button  sx={{ ml: 2 }} color="inherit" variant="outlined" size="large" onClick={()=> {
+          setActiveStep(activeStep -1)
+        }}>
+          上一步
+        </Button>
+        }
         <LoadingButton
           type="submit"
           variant="contained"
@@ -409,10 +417,10 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
       {mdUp && (
         <Grid md={4}>
           <Typography variant="h6" sx={{ mb: 0.5 }}>
-            Questionnaire
+            问答环节
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Additional functions and attributes...
+            提出一些阅读相关的问题...
           </Typography>
         </Grid>
       )}

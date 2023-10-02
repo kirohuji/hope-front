@@ -36,7 +36,7 @@ export default function ChatRoomAttachments({ attachments }) {
       }}
     >
       <Box component="span" sx={{ flexGrow: 1 }}>
-        Attachments ({totalAttachments})
+        附件 ({totalAttachments})
       </Box>
       <Iconify
         width={16}

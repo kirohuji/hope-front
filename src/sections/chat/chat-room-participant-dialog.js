@@ -21,8 +21,8 @@ export default function ChatRoomParticipantDialog({ participant, open, onClose }
 
       <DialogContent sx={{ py: 5, px: 3, display: 'flex' }}>
         <Avatar
-          alt={participant.name}
-          src={participant.avatarUrl}
+          alt={participant.username}
+          src={participant.photoURL}
           sx={{ width: 96, height: 96, mr: 3 }}
         />
 
@@ -31,7 +31,7 @@ export default function ChatRoomParticipantDialog({ participant, open, onClose }
             {participant.role}
           </Typography>
 
-          <Typography variant="subtitle1">{participant.name}</Typography>
+          <Typography variant="subtitle1">{participant.username}</Typography>
 
           <Stack direction="row" sx={{ typography: 'caption', color: 'text.disabled' }}>
             <Iconify

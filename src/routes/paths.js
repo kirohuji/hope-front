@@ -74,6 +74,7 @@ export const paths = {
       login: `${ROOTS.AUTH}/auth0/login`,
     },
   },
+  chat: '/chat',
   training: {
     root: `/training`,
     dashboard: `${ROOTS.DASHBOARD}/training/dashboard`,

@@ -106,7 +106,7 @@ export default function ChatRoom({ participants, conversation }) {
 
   return (
     <Box sx={{ position: 'relative' }}>
-      {renderToggleBtn}
+      {participants && participants.length > 0 &&  renderToggleBtn}
 
       {lgUp ? (
         <Stack

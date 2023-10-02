@@ -29,11 +29,11 @@ export default function ChatHeaderCompose({ contacts, onAddRecipients }) {
   return (
     <>
       <Typography variant="subtitle2" sx={{ color: 'text.primary', mr: 2 }}>
-        To:
+        和:
       </Typography>
 
       <Autocomplete
-        sx={{ minWidth: 320 }}
+        sx={{ minWidth: 290 }}
         multiple
         limitTags={3}
         popupIcon={null}
@@ -42,13 +42,13 @@ export default function ChatHeaderCompose({ contacts, onAddRecipients }) {
         onChange={(event, newValue) => handleAddRecipients(newValue)}
         onInputChange={(event, newValue) => setSearchRecipients(newValue)}
         options={contacts}
-        getOptionLabel={(recipient) => recipient.name}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
-        renderInput={(params) => <TextField {...params} placeholder="+ Recipients" />}
+        getOptionLabel={(recipient) => recipient.username}
+        isOptionEqualToValue={(option, value) => option._id === value._id}
+        renderInput={(params) => <TextField {...params} placeholder="+ 联系人" />}
         renderOption={(props, recipient, { selected }) => (
-          <li {...props} key={recipient.id}>
+          <li {...props} key={recipient._id}>
             <Box
-              key={recipient.id}
+              key={recipient._id}
               sx={{
                 mr: 1,
                 width: 32,
@@ -58,7 +58,7 @@ export default function ChatHeaderCompose({ contacts, onAddRecipients }) {
                 position: 'relative',
               }}
             >
-              <Avatar alt={recipient.name} src={recipient.avatarUrl} sx={{ width: 1, height: 1 }} />
+              <Avatar alt={recipient.username} src={recipient.photoURL} sx={{ width: 1, height: 1 }} />
               <Stack
                 alignItems="center"
                 justifyContent="center"
@@ -85,16 +85,16 @@ export default function ChatHeaderCompose({ contacts, onAddRecipients }) {
               </Stack>
             </Box>
 
-            {recipient.name}
+            {recipient.username}
           </li>
         )}
         renderTags={(selected, getTagProps) =>
           selected.map((recipient, index) => (
             <Chip
               {...getTagProps({ index })}
-              key={recipient.id}
-              label={recipient.name}
-              avatar={<Avatar alt={recipient.name} src={recipient.avatarUrl} />}
+              key={recipient._id}
+              label={recipient.username}
+              avatar={<Avatar alt={recipient.username} src={recipient.photoURL} />}
               size="small"
               variant="soft"
             />

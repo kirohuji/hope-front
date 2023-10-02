@@ -181,10 +181,10 @@ export default function BookNewEditForm({ currentBook }) {
       {mdUp && (
         <Grid md={4}>
           <Typography variant="h6" sx={{ mb: 0.5 }}>
-            Details
+            基本描述
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Title, short description, image...
+            标题, 基本描述, 背景...
           </Typography>
         </Grid>
       )}

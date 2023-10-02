@@ -14,45 +14,44 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+import { useAuthContext } from 'src/auth/hooks';
 import { useResponsive } from 'src/hooks/use-responsive';
-// api
-import { clickConversation } from 'src/api/chat';
 //
 import { useGetNavItem } from './hooks';
 
 // ----------------------------------------------------------------------
 
-export default function ChatNavItem({ selected, collapse, conversation, onCloseMobile }) {
-  const { user } = useMockedUser();
+export default function ChatNavItem ({ selected, onChildren, collapse, conversation, onCloseMobile }) {
+  const { user } = useAuthContext();
 
   const mdUp = useResponsive('up', 'md');
 
   const router = useRouter();
 
-  const { group, displayName, displayText, participants, lastActivity, hasOnlineInGroup } =
+  const { group, displayName, displayText, type, participants, lastActivity, hasOnlineInGroup } =
     useGetNavItem({
       conversation,
-      currentUserId: user.id,
+      currentUserId: user._id,
     });
 
   const singleParticipant = participants[0];
 
-  const { name, avatarUrl, status } = singleParticipant;
+  const { username, photoURL, status } = singleParticipant;
 
   const handleClickConversation = useCallback(async () => {
-    try {
-      if (!mdUp) {
-        onCloseMobile();
+    if (type === "org") {
+      onChildren(conversation)
+    } else {
+      try {
+        if (!mdUp) {
+          onCloseMobile();
+        }
+        router.push(`${paths.chat}?id=${conversation._id}`);
+      } catch (error) {
+        console.error(error);
       }
-
-      await clickConversation(conversation.id);
-
-      router.push(`${paths.dashboard.chat}?id=${conversation.id}`);
-    } catch (error) {
-      console.error(error);
     }
-  }, [conversation.id, mdUp, onCloseMobile, router]);
+  }, [conversation, type, onChildren, mdUp, onCloseMobile, router]);
 
   const renderGroup = (
     <Badge
@@ -61,7 +60,7 @@ export default function ChatNavItem({ selected, collapse, conversation, onCloseM
     >
       <AvatarGroup variant="compact" sx={{ width: 48, height: 48 }}>
         {participants.slice(0, 2).map((participant) => (
-          <Avatar key={participant.id} alt={participant.name} src={participant.avatarUrl} />
+          <Avatar key={participant._id} alt={participant.username} src={participant.photoURL} />
         ))}
       </AvatarGroup>
     </Badge>
@@ -69,7 +68,7 @@ export default function ChatNavItem({ selected, collapse, conversation, onCloseM
 
   const renderSingle = (
     <Badge key={status} variant={status} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-      <Avatar alt={name} src={avatarUrl} sx={{ width: 48, height: 48 }} />
+      <Avatar alt={username} src={photoURL} sx={{ width: 48, height: 48 }} />
     </Badge>
   );
 
@@ -90,7 +89,7 @@ export default function ChatNavItem({ selected, collapse, conversation, onCloseM
         overlap="circular"
         badgeContent={collapse ? conversation.unreadCount : 0}
       >
-        {group ? renderGroup : renderSingle}
+        {group && participants ? renderGroup : renderSingle}
       </Badge>
 
       {!collapse && (
@@ -110,27 +109,28 @@ export default function ChatNavItem({ selected, collapse, conversation, onCloseM
               color: conversation.unreadCount ? 'text.primary' : 'text.secondary',
             }}
           />
+          {
+            lastActivity && <Stack alignItems="flex-end" sx={{ ml: 2, height: 44 }}>
+              <Typography
+                noWrap
+                variant="body2"
+                component="span"
+                sx={{
+                  mb: 1.5,
+                  fontSize: 12,
+                  color: 'text.disabled',
+                }}
+              >
+                {formatDistanceToNowStrict(new Date(lastActivity), {
+                  addSuffix: false,
+                })}
+              </Typography>
 
-          <Stack alignItems="flex-end" sx={{ ml: 2, height: 44 }}>
-            <Typography
-              noWrap
-              variant="body2"
-              component="span"
-              sx={{
-                mb: 1.5,
-                fontSize: 12,
-                color: 'text.disabled',
-              }}
-            >
-              {formatDistanceToNowStrict(new Date(lastActivity), {
-                addSuffix: false,
-              })}
-            </Typography>
-
-            {!!conversation.unreadCount && (
-              <Box sx={{ width: 8, height: 8, bgcolor: 'info.main', borderRadius: '50%' }} />
-            )}
-          </Stack>
+              {!!conversation.unreadCount && (
+                <Box sx={{ width: 8, height: 8, bgcolor: 'info.main', borderRadius: '50%' }} />
+              )}
+            </Stack>
+          }
         </>
       )}
     </ListItemButton>
@@ -138,6 +138,7 @@ export default function ChatNavItem({ selected, collapse, conversation, onCloseM
 }
 
 ChatNavItem.propTypes = {
+  onChildren: PropTypes.func,
   collapse: PropTypes.bool,
   conversation: PropTypes.object,
   onCloseMobile: PropTypes.func,

@@ -22,7 +22,7 @@ export default function ChatNavSearchResults({ query, results, onClickResult }) 
           px: 2.5,
         }}
       >
-        Contacts ({totalResults})
+        联系人 ({totalResults})
       </Typography>
 
       {notFound ? (
@@ -39,7 +39,7 @@ export default function ChatNavSearchResults({ query, results, onClickResult }) 
         <>
           {results.map((result) => (
             <ListItemButton
-              key={result.id}
+              key={result._id}
               onClick={() => onClickResult(result)}
               sx={{
                 px: 2.5,
@@ -47,8 +47,8 @@ export default function ChatNavSearchResults({ query, results, onClickResult }) 
                 typography: 'subtitle2',
               }}
             >
-              <Avatar alt={result.name} src={result.avatarUrl} sx={{ mr: 2 }} />
-              {result.name}
+              <Avatar alt={result.username} src={result. photoURL} sx={{ mr: 2 }} />
+              {result.username}
             </ListItemButton>
           ))}
         </>

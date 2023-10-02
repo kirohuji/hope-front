@@ -47,7 +47,7 @@ export default function ChatRoomGroup({ participants }) {
       }}
     >
       <Box component="span" sx={{ flexGrow: 1 }}>
-        In room ({totalParticipants})
+        参与列表 ({totalParticipants})
       </Box>
       <Iconify
         width={16}
@@ -59,17 +59,17 @@ export default function ChatRoomGroup({ participants }) {
   const renderContent = (
     <Scrollbar sx={{ height: 56 * 4 }}>
       {participants.map((participant) => (
-        <ListItemButton key={participant.id} onClick={() => handleOpen(participant)}>
+        <ListItemButton key={participant._id} onClick={() => handleOpen(participant)}>
           <Badge
             variant={participant.status}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           >
-            <Avatar alt={participant.name} src={participant.avatarUrl} />
+            <Avatar alt={participant.username} src={participant.photoURL} />
           </Badge>
 
           <ListItemText
             sx={{ ml: 2 }}
-            primary={participant.name}
+            primary={participant.username}
             secondary={participant.role}
             primaryTypographyProps={{
               noWrap: true,

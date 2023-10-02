@@ -12,7 +12,7 @@ import { authDemoRoutes } from './auth-demo';
 import { dashboardRoutes } from './dashboard';
 import { componentsRoutes } from './components';
 
-
+const ChatPage = lazy(() => import('src/pages/dashboard/chat'));
 const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'))
 
 const TrainingSearchPage = lazy(() => import('src/pages/dashboard/training/search'))
@@ -71,6 +71,7 @@ export default function Router () {
     {
       element: <ReturnLayout />,
       children: [
+        { path: 'chat', element: <ChatPage /> },
         {
           path: 'training', element: <TrainingPage />
         },

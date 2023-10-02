@@ -16,12 +16,12 @@ import Iconify from 'src/components/iconify';
 export default function ChatRoomSingle({ participant }) {
   const collapse = useBoolean(true);
 
-  const { name, avatarUrl, role, address, phoneNumber, email } = participant;
+  const { username, photoURL, role, address, phoneNumber, email } = participant;
 
   const renderInfo = (
     <Stack alignItems="center" sx={{ py: 5 }}>
-      <Avatar alt={name} src={avatarUrl} sx={{ width: 96, height: 96, mb: 2 }} />
-      <Typography variant="subtitle1">{name}</Typography>
+      <Avatar alt={username} src={photoURL} sx={{ width: 96, height: 96, mb: 2 }} />
+      <Typography variant="subtitle1">{username}</Typography>
       <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
         {role}
       </Typography>
@@ -43,7 +43,7 @@ export default function ChatRoomSingle({ participant }) {
       }}
     >
       <Box component="span" sx={{ flexGrow: 1 }}>
-        Information
+        主要信息
       </Box>
       <Iconify
         width={16}

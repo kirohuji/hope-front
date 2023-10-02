@@ -7,24 +7,25 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+import { useAuthContext } from 'src/auth/hooks';
 // components
 import Iconify from 'src/components/iconify';
 //
+import { zhCN } from 'date-fns/locale';
 import { useGetMessage } from './hooks';
 
 // ----------------------------------------------------------------------
 
-export default function ChatMessageItem({ message, participants, onOpenLightbox }) {
-  const { user } = useMockedUser();
+export default function ChatMessageItem ({ message, participants, onOpenLightbox }) {
+  const { user } = useAuthContext();
 
   const { me, senderDetails, hasImage } = useGetMessage({
     message,
     participants,
-    currentUserId: user.id,
+    currentUserId: user._id,
   });
 
-  const { firstName, avatarUrl } = senderDetails;
+  const { username, photoURL } = senderDetails;
 
   const { body, createdAt } = message;
 
@@ -40,9 +41,10 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox 
         }),
       }}
     >
-      {!me && `${firstName},`} &nbsp;
+      {!me && `${username},`} &nbsp;
       {formatDistanceToNowStrict(new Date(createdAt), {
         addSuffix: true,
+        locale: zhCN
       })}
     </Typography>
   );
@@ -82,7 +84,8 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox 
           }}
         />
       ) : (
-        body
+        // eslint-disable-next-line react/no-danger
+        <div style={{ whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: body }} />
       )}
     </Stack>
   );
@@ -121,9 +124,9 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox 
 
   return (
     <Stack direction="row" justifyContent={me ? 'flex-end' : 'unset'} sx={{ mb: 5 }}>
-      {!me && <Avatar alt={firstName} src={avatarUrl} sx={{ width: 32, height: 32, mr: 2 }} />}
+      {!me && <Avatar alt={username} src={photoURL} sx={{ width: 32, height: 32, mr: 2 }} />}
 
-      <Stack alignItems="flex-end">
+      <Stack alignItems={me ? "flex-end" : "flex-start"}>
         {renderInfo}
 
         <Stack
