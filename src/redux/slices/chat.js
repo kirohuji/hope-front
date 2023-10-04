@@ -275,6 +275,20 @@ export function getConversation (conversationKey) {
   };
 }
 
+export function deleteConversation (conversationKey) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      await messagingService.deleteConversation({ _id: conversationKey })
+      const data = await messagingService.usersAndConversations()
+      dispatch(slice.actions.getConversationsSuccess(data));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+
 // ----------------------------------------------------------------------
 
 export function markConversationAsRead (conversationId) {

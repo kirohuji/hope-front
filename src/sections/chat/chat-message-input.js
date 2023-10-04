@@ -28,6 +28,7 @@ import { fileService, messagingService } from 'src/composables/context-provider'
 export default function ChatMessageInput ({
   recipients,
   onAddRecipients,
+  sendMessageToOpenVidu,
   //
   disabled,
   selectedConversationId,
@@ -119,6 +120,7 @@ export default function ChatMessageInput ({
             if (selectedConversationId) {
               setType('text')
               await dispatch(sendMessage(selectedConversationId, messageData));
+              sendMessageToOpenVidu(message)
             } else {
               const conversationKey = await createConversation(conversationData);
               router.push(`${paths.chat}?id=${conversationKey}`);
@@ -132,7 +134,7 @@ export default function ChatMessageInput ({
         console.error(error);
       }
     },
-    [conversationData, message, messageData, dispatch, createConversation, onAddRecipients, router, selectedConversationId]
+    [conversationData, message, sendMessageToOpenVidu, messageData, dispatch, createConversation, onAddRecipients, router, selectedConversationId]
   );
 
   const uploadImage = async () => {
@@ -198,5 +200,6 @@ ChatMessageInput.propTypes = {
   disabled: PropTypes.bool,
   onAddRecipients: PropTypes.func,
   recipients: PropTypes.array,
+  sendMessageToOpenVidu: PropTypes.func,
   selectedConversationId: PropTypes.string,
 };

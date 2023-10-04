@@ -14,9 +14,9 @@ export default class FileService {
         const token = localStorage.getItem('accessToken')
         if (token) {
             return this.api.post(`${this.model}/avatar?authToken=${token}`, target)
-        } 
-            return this.api.post(`${this.model}/avatar`, target)
-        
+        }
+        return this.api.post(`${this.model}/avatar`, target)
+
         // return fetch('http://localhost:5005/api/v1/avatar', {
         //     method: 'POST',
         //     headers: {
@@ -30,9 +30,9 @@ export default class FileService {
         const token = localStorage.getItem('accessToken')
         if (token) {
             return this.api.post(`${this.model}/excel?authToken=${token}`, target)
-        } 
-            return this.api.post(`${this.model}/excel`, target)
-        
+        }
+        return this.api.post(`${this.model}/excel`, target)
+
         // return fetch('http://localhost:5005/api/v1/avatar', {
         //     method: 'POST',
         //     headers: {
@@ -40,5 +40,29 @@ export default class FileService {
         //     },
         //     body: target
         // })
+    }
+
+    createSession (target) {
+        return this.api.post(`${this.model}/sessions`, target, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+        })
+    }
+
+    createToken (target) {
+        return this.api.post(`${this.model}/sessions/${target.customSessionId}/connections`, target, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+        })
+    }
+
+    getToken (target) {
+        return this.api.post(`${this.model}/conversations/${target.customSessionId}`, target, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+        })
     }
 }

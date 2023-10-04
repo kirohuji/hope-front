@@ -24,15 +24,13 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getContacts, getOrganizations } from 'src/redux/slices/chat';
+import { getContacts, getOrganizations, deleteConversation } from 'src/redux/slices/chat';
 import _ from 'lodash'
 import { useCollapseNav } from './hooks';
 import ChatNavItem from './chat-nav-item';
 import ChatNavAccount from './chat-nav-account';
 import { ChatNavItemSkeleton } from './chat-skeleton';
 import ChatNavSearchResults from './chat-nav-search-results';
-
-
 
 
 // ----------------------------------------------------------------------
@@ -64,6 +62,8 @@ export default function ChatNav ({ loading, contacts, conversations, selectedCon
   const theme = useTheme();
 
   const router = useRouter();
+
+  const dispatch = useDispatch()
 
   const mdUp = useResponsive('up', 'md');
 
@@ -293,6 +293,7 @@ export default function ChatNav ({ loading, contacts, conversations, selectedCon
       {currentTab === "conversations" && conversations.allIds.map((conversationId) => (
         <ChatNavItem
           key={conversationId}
+          deleteConversation={()=>dispatch(deleteConversation(conversationId))}
           collapse={collapseDesktop}
           conversation={conversations.byId[conversationId]}
           selected={conversationId === selectedConversationId}
@@ -359,7 +360,7 @@ export default function ChatNav ({ loading, contacts, conversations, selectedCon
 
         {loading && renderSkeleton}
 
-        {!searchContacts.query && !!conversations.allIds.length && renderList}
+        {!searchContacts.query && renderList}
       </Scrollbar>
     </>
   );

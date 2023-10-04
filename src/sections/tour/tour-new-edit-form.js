@@ -261,6 +261,7 @@ export default function TourNewEditForm({ currentTour }) {
                     <DatePicker
                       {...field}
                       format="dd/MM/yyyy"
+                      renderInput={()=> {}}
                       slotProps={{
                         textField: {
                           fullWidth: true,
@@ -278,6 +279,7 @@ export default function TourNewEditForm({ currentTour }) {
                     <DatePicker
                       {...field}
                       format="dd/MM/yyyy"
+                      renderInput={()=> {}}
                       slotProps={{
                         textField: {
                           fullWidth: true,

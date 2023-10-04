@@ -37,4 +37,8 @@ export default class MessagingService {
     room(target){
         return this.api.post(`${this.model}/conversations/room`, target)
     }
+
+    deleteConversation(target){
+        return this.api.delete(`${this.model}/conversations/${target._id}`, target)
+    }
 }
