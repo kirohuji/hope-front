@@ -103,7 +103,7 @@ export default function Upload({
       <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
         {onRemoveAll && (
           <Button color="inherit" variant="outlined" size="small" onClick={onRemoveAll}>
-            Remove All
+            删除全部
           </Button>
         )}
 
@@ -114,7 +114,7 @@ export default function Upload({
             onClick={onUpload}
             startIcon={<Iconify icon="eva:cloud-upload-fill" />}
           >
-            Upload
+            上传
           </Button>
         )}
       </Stack>

@@ -74,6 +74,12 @@ const TourDetailsPage = lazy(() => import('src/pages/dashboard/tour/details'));
 const TourListPage = lazy(() => import('src/pages/dashboard/tour/list'));
 const TourCreatePage = lazy(() => import('src/pages/dashboard/tour/new'));
 const TourEditPage = lazy(() => import('src/pages/dashboard/tour/edit'));
+
+// BROADCAST
+const BroadcastDetailsPage = lazy(() => import('src/pages/dashboard/broadcast/details'));
+const BroadcastListPage = lazy(() => import('src/pages/dashboard/broadcast/list'));
+const BroadcastCreatePage = lazy(() => import('src/pages/dashboard/broadcast/new'));
+const BroadcastEditPage = lazy(() => import('src/pages/dashboard/broadcast/edit'));
 // FILE MANAGER
 const FileManagerPage = lazy(() => import('src/pages/dashboard/file-manager'));
 // APP
@@ -234,6 +240,16 @@ export const dashboardRoutes = [
           { path: ':id', element: <TourDetailsPage /> },
           { path: 'new', element: <TourCreatePage /> },
           { path: ':id/edit', element: <TourEditPage /> },
+        ],
+      },
+      {
+        path: 'broadcast',
+        children: [
+          { element: <BroadcastListPage />, index: true },
+          { path: 'list', element: <BroadcastListPage /> },
+          { path: ':id', element: <BroadcastDetailsPage /> },
+          { path: 'new', element: <BroadcastCreatePage /> },
+          { path: ':id/edit', element: <BroadcastEditPage /> },
         ],
       },
       { path: 'file-manager', element: <FileManagerPage /> },

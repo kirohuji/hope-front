@@ -230,5 +230,15 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}/edit`,
       },
     },
+    broadcast: {
+      root: `${ROOTS.DASHBOARD}/broadcast`,
+      new: `${ROOTS.DASHBOARD}/broadcast/new`,
+      details: (id) => `${ROOTS.DASHBOARD}/broadcast/${id}`,
+      edit: (id) => `${ROOTS.DASHBOARD}/broadcast/${id}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/broadcast/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/broadcast/${MOCK_ID}/edit`,
+      },
+    },
   },
 };

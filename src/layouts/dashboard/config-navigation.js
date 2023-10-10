@@ -27,6 +27,7 @@ export const ICONS = {
   file: icon('ic_file'),
   lock: icon('ic_lock'),
   tour: icon('ic_tour'),
+  broadcast: icon('ic_tour'),
   order: icon('ic_order'),
   label: icon('ic_label'),
   blank: icon('ic_blank'),
@@ -212,6 +213,18 @@ export function useNavData () {
               { title: t('details'), path: paths.dashboard.tour.demo.details },
               { title: t('create'), path: paths.dashboard.tour.new },
               { title: t('edit'), path: paths.dashboard.tour.demo.edit },
+            ],
+          },
+
+          {
+            title: t('broadcast'),
+            path: paths.dashboard.broadcast.root,
+            icon: ICONS.broadcast,
+            children: [
+              { title: t('list'), path: paths.dashboard.broadcast.root },
+              { title: t('details'), path: paths.dashboard.broadcast.demo.details },
+              { title: t('create'), path: paths.dashboard.broadcast.new },
+              { title: t('edit'), path: paths.dashboard.broadcast.demo.edit },
             ],
           },
 

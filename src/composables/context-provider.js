@@ -2,6 +2,7 @@ import api, { fileService as fileApi } from "../utils/request";
 import AuthService from "../modules/auth";
 import UserService from "../modules/users";
 import BookService from "../modules/books";
+import BroadcastService from "../modules/broadcasts";
 import ProfileService from "../modules/profiles";
 import FlieService from "../modules/files";
 import FriendService from "../modules/friends";
@@ -28,3 +29,4 @@ export const scopeService = new ScopeService({ api, model: 'scopes' })
 export const dictionaryService = new DictionaryService({ api, model: 'dictionaries' })
 export const dictionaryOptionService = new DictionaryOptionService({ api, model: 'dictionaries/options' })
 export const articleService = new ArticleService({ api, model: 'articles' })
+export const broadcastService = new BroadcastService({ api, model: 'broadcasts' })

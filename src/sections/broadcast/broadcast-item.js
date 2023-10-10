@@ -21,23 +21,23 @@ import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
 // ----------------------------------------------------------------------
 
-export default function TourItem({ tour, onView, onEdit, onDelete }) {
+export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) {
   const popover = usePopover();
 
   const {
-    id,
-    name,
+    _id,
+    label,
     price,
     images,
-    bookers,
+    participants,
     createdAt,
     available,
     priceSale,
     destination,
     ratingNumber,
-  } = tour;
+  } = broadcast;
 
-  const shortLabel = shortDateLabel(available.startDate, available.endDate);
+  const shortLabel = shortDateLabel(new Date(available.startDate), new Date(available.endDate));
 
   const renderRating = (
     <Stack
@@ -94,12 +94,14 @@ export default function TourItem({ tour, onView, onEdit, onDelete }) {
       <Stack flexGrow={1} sx={{ position: 'relative' }}>
         {renderPrice}
         {renderRating}
-        <Image alt={images[0]} src={images[0]} sx={{ borderRadius: 1, height: 164, width: 1 }} />
+        {images[0] && <Image alt={images[0].preview || ""} src={images[0].preview || ""} sx={{ borderRadius: 1, height: 164, w_idth: 1 }} />}
       </Stack>
-      <Stack spacing={0.5}>
-        <Image alt={images[1]} src={images[1]} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
-        <Image alt={images[2]} src={images[2]} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
-      </Stack>
+      {
+        images[1] && <Stack spacing={0.5}>
+          <Image alt={images[1] || ""} src={images[1] || ""} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
+          <Image alt={images[2] || ""} src={images[2] || ""} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
+        </Stack>
+      }
     </Stack>
   );
 
@@ -110,8 +112,8 @@ export default function TourItem({ tour, onView, onEdit, onDelete }) {
       }}
       primary={`Posted date: ${fDateTime(createdAt)}`}
       secondary={
-        <Link component={RouterLink} href={paths.dashboard.tour.details(id)} color="inherit">
-          {name}
+        <Link component={RouterLink} href={paths.dashboard.broadcast.details(_id)} color="inherit">
+          {label}
         </Link>
       }
       primaryTypographyProps={{
@@ -150,12 +152,12 @@ export default function TourItem({ tour, onView, onEdit, onDelete }) {
           icon: <Iconify icon="solar:clock-circle-bold" sx={{ color: 'info.main' }} />,
         },
         {
-          label: `${bookers.length} 参与者`,
+          label: `${participants.length} 参与者`,
           icon: <Iconify icon="solar:users-group-rounded-bold" sx={{ color: 'primary.main' }} />,
         },
-      ].map((item) => (
+      ].map((item, i) => (
         <Stack
-          key={item.label}
+          key={i}
           spacing={1}
           direction="row"
           alignItems="center"
@@ -219,9 +221,9 @@ export default function TourItem({ tour, onView, onEdit, onDelete }) {
   );
 }
 
-TourItem.propTypes = {
+BroadcastItem.propTypes = {
   onDelete: PropTypes.func,
   onEdit: PropTypes.func,
   onView: PropTypes.func,
-  tour: PropTypes.object,
+  broadcast: PropTypes.object,
 };
