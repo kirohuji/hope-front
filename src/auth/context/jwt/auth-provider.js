@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import DDPClient from 'ddp';
+
 // utils
 // import axios, { endpoints } from 'src/utils/axios';
 //
@@ -74,6 +73,9 @@ const reducer = (state, action) => {
 // ----------------------------------------------------------------------
 
 const STORAGE_KEY = 'accessToken';
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+const DDPClient = require('ddp')
 
 export function AuthProvider ({ children }) {
 
