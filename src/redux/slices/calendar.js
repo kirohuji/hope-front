@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import _ from 'lodash'
 import { eventService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
@@ -64,8 +65,9 @@ export function getEvents () {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await eventService.getAll()
-      dispatch(slice.actions.getEventsSuccess(response.map(item=> ({
+      const response = await eventService.getWithCurrentUser()
+      console.log('response',response)
+      dispatch(slice.actions.getEventsSuccess(_.compact(response).map(item=> ({
           ...item,
           id: item._id,
           start: new Date(item.start).toISOString(),
@@ -86,7 +88,7 @@ export function createEvent (newEvent) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await eventService.post(newEvent)
+      const response = await eventService.createCurrentUser(newEvent)
       dispatch(slice.actions.createEventSuccess(response));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
@@ -100,7 +102,7 @@ export function updateEvent (eventId, event) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await eventService.patch({
+      const response = await eventService.updateCurrentUser({
         _id: eventId,
         ...event
       })
@@ -117,7 +119,7 @@ export function deleteEvent (eventId) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      await eventService.delete({
+      await eventService.deleteCurrentUser({
         _id: eventId
       })
       dispatch(slice.actions.deleteEventSuccess(eventId));

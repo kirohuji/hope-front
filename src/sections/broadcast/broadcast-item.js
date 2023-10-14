@@ -35,11 +35,31 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
     priceSale,
     destination,
     ratingNumber,
+    type,
   } = broadcast;
 
   const shortLabel = shortDateLabel(new Date(available.startDate), new Date(available.endDate));
 
-  const renderRating = (
+  // const renderRating = (
+  //   <Stack
+  //     direction="row"
+  //     alignItems="center"
+  //     sx={{
+  //       top: 8,
+  //       right: 8,
+  //       zIndex: 9,
+  //       borderRadius: 1,
+  //       position: 'absolute',
+  //       p: '2px 6px 2px 4px',
+  //       typography: 'subtitle2',
+  //       bgcolor: 'warning.lighter',
+  //     }}
+  //   >
+  //     <Iconify icon="eva:star-fill" sx={{ color: 'warning.main', mr: 0.25 }} /> {ratingNumber}
+  //   </Stack>
+  // );
+
+  const renderType = (
     <Stack
       direction="row"
       alignItems="center"
@@ -54,7 +74,7 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
         bgcolor: 'warning.lighter',
       }}
     >
-      <Iconify icon="eva:star-fill" sx={{ color: 'warning.main', mr: 0.25 }} /> {ratingNumber}
+     {type === "activity" ? '活动通知' : "消息通告"}
     </Stack>
   );
 
@@ -93,7 +113,7 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
     >
       <Stack flexGrow={1} sx={{ position: 'relative' }}>
         {renderPrice}
-        {renderRating}
+        {renderType}
         {images[0] && <Image alt={images[0].preview || ""} src={images[0].preview || ""} sx={{ borderRadius: 1, height: 164, w_idth: 1 }} />}
       </Stack>
       {
@@ -110,7 +130,7 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
       sx={{
         p: (theme) => theme.spacing(2.5, 2.5, 2, 2.5),
       }}
-      primary={`Posted date: ${fDateTime(createdAt)}`}
+      primary={`发布时间: ${fDateTime(createdAt)}`}
       secondary={
         <Link component={RouterLink} href={paths.dashboard.broadcast.details(_id)} color="inherit">
           {label}
@@ -193,7 +213,7 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          View
+          查看
         </MenuItem>
 
         <MenuItem
@@ -203,7 +223,7 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          编辑
         </MenuItem>
 
         <MenuItem
@@ -214,7 +234,7 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          删除
         </MenuItem>
       </CustomPopover>
     </>

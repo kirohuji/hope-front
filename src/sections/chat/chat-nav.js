@@ -90,7 +90,8 @@ export default function ChatNav ({ loading, contacts, conversations, selectedCon
       levels.push(level);
       setCurrentOrganization([...organization.children, ...organization.users.map(item => ({
         name: item.account.username,
-        photoURL: item.profile.photoURL
+        photoURL: item.profile.photoURL,
+        _id: item.profile._id
       }))])
       setLevels(levels)
     }

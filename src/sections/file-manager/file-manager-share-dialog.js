@@ -30,7 +30,7 @@ export default function FileManagerShareDialog({
 
   return (
     <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose} {...other}>
-      <DialogTitle> Invite </DialogTitle>
+      <DialogTitle> 邀请 </DialogTitle>
 
       <DialogContent sx={{ overflow: 'unset' }}>
         {onChangeInvite && (
@@ -48,7 +48,7 @@ export default function FileManagerShareDialog({
                     disabled={!inviteEmail}
                     sx={{ mr: -0.75 }}
                   >
-                    Send Invite
+                    发生邀请
                   </Button>
                 </InputAdornment>
               ),
@@ -71,13 +71,13 @@ export default function FileManagerShareDialog({
       <DialogActions sx={{ justifyContent: 'space-between' }}>
         {onCopyLink && (
           <Button startIcon={<Iconify icon="eva:link-2-fill" />} onClick={onCopyLink}>
-            Copy link
+            拷贝链接
           </Button>
         )}
 
         {onClose && (
           <Button variant="outlined" color="inherit" onClick={onClose}>
-            Close
+            关闭
           </Button>
         )}
       </DialogActions>

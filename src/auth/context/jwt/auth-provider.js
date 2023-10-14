@@ -1,11 +1,19 @@
 import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import DDPClient from 'ddp';
 // utils
 // import axios, { endpoints } from 'src/utils/axios';
 //
-import { authService, userService } from 'src/composables/context-provider';
+import { authService, notificationService, userService } from 'src/composables/context-provider';
+
+// import { useDispatch } from 'src/redux/store';
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+// import { io } from "socket.io-client";
 import { AuthContext } from './auth-context';
 import { setSession } from './utils';
+
 // ----------------------------------------------------------------------
 
 // NOTE:
@@ -19,6 +27,7 @@ const initialState = {
   isAuthenticated: false,
   user: null,
   loading: true,
+  notifications: [],
 };
 
 const reducer = (state, action) => {
@@ -28,6 +37,7 @@ const reducer = (state, action) => {
       isAuthenticated: action.payload.isAuthenticated,
       loading: false,
       user: action.payload.user,
+      notifications: [],
     };
   }
   if (action.type === 'LOGIN') {
@@ -51,6 +61,13 @@ const reducer = (state, action) => {
       user: null,
     };
   }
+
+  if (action.type === 'NOTIFICATION') {
+    return {
+      ...state,
+      notifications: action.payload.notifications
+    };
+  }
   return state;
 };
 
@@ -59,7 +76,67 @@ const reducer = (state, action) => {
 const STORAGE_KEY = 'accessToken';
 
 export function AuthProvider ({ children }) {
+
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  const ddpclient = new DDPClient({
+    // All properties optional, defaults shown
+    host: "localhost",
+    port: 3000,
+    ssl: false,
+    autoReconnect: true,
+    autoReconnectTimer: 5000,
+    maintainCollections: true,
+    ddpVersion: '1',  // ['1', 'pre2', 'pre1'] available
+    // uses the SockJs protocol to create the connection
+    // this still uses websockets, but allows to get the benefits
+    // from projects like meteorhacks:cluster
+    // (for load balancing and service discovery)
+    // do not use `path` option when you are using useSockJs
+    useSockJs: true,
+    // Use a full url instead of a set of `host`, `port` and `ssl`
+    // do not set `useSockJs` option if `url` is used
+    url: 'wss://localhost:3000/websocket'
+  });
+  ddpclient.subscribe(
+    'notifications',                  // name of Meteor Publish function to subscribe to
+    [],                       // any parameters used by the Publish function
+    () => {             // callback when the subscription is complete
+      dispatch({
+        type: 'NOTIFICATION',
+        payload: {
+          notifications: ddpclient.collections.notifications.find().fetch()
+        },
+      });
+    }
+  );
+  // const reduxDispatch = useDispatch()
+
+  // const socket = io("ws://localhost:5005",{
+  //   reconnectionDelayMax: 10000,
+  //   ackTimeout: 10000,
+  //   timeout: 10000
+  // });
+  // socket.on("connect", () => {
+  //   socket.emit("upsert", state.user);
+  // });
+
+  // socket.on("hello", (data) => {
+  //   console.log('收到', data)
+  // })
+
+  // socket.on("training", () => {
+  //   getNotifications();
+  // })
+  const getNotifications = useCallback(() => async () => {
+    const data = await notificationService.getWithCurrentUser()
+    dispatch({
+      type: 'NOTIFICATION',
+      payload: {
+        notifications: data
+      },
+    });
+  }, [])
 
   const initialize = useCallback(async () => {
     try {
@@ -90,6 +167,7 @@ export function AuthProvider ({ children }) {
           //   user,
           // },
         });
+        getNotifications()
       } else {
         dispatch({
           type: 'INITIAL',
@@ -109,7 +187,7 @@ export function AuthProvider ({ children }) {
         },
       });
     }
-  }, []);
+  }, [getNotifications]);
 
   useEffect(() => {
     initialize();
@@ -145,6 +223,10 @@ export function AuthProvider ({ children }) {
         }
       },
     });
+  }, []);
+
+  const sendPublish = useCallback(async (data) => {
+    // socket.emit("notification", data);
   }, []);
 
   // REGISTER
@@ -205,20 +287,22 @@ export function AuthProvider ({ children }) {
   const memoizedValue = useMemo(
     () => ({
       user: state.user,
+      notifications: state.notifications,
       method: 'jwt',
       loading: status === 'loading',
       authenticated: status === 'authenticated',
       unauthenticated: status === 'unauthenticated',
       isInitialized: state.isInitialized,
       isAuthenticated: state.isAuthenticated,
-      permissions: state.user?.permissions?.map(item=>item.value),
-      isAdmin: state.user?.roles?.map(item=>item._id).indexOf("admin")!==-1,
+      permissions: state.user?.permissions?.map(item => item.value),
+      isAdmin: state.user?.roles?.map(item => item._id).indexOf("admin") !== -1,
       //
       login,
+      sendPublish,
       register,
-      logout,
+      logout
     }),
-    [login, logout, register, state.isAuthenticated, state.isInitialized, state.user, status]
+    [login, logout, state.notifications, sendPublish, register, state.isAuthenticated, state.isInitialized, state.user, status]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

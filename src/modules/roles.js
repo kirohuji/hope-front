@@ -193,4 +193,12 @@ export default class RoleService extends Service {
     });
   }
 
+  changeLeader (target ) {
+    return this.api.request({
+      url: `${this.model}/changeLeader`,
+      method: 'post',
+      data: target,
+    });
+  }
+  
 }

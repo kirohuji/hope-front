@@ -22,7 +22,7 @@ GroupNode.propTypes = {
   onClick: PropTypes.func,
 };
 
-export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, onCreate, onToggle, onPermission,onManager, onClick }) {
+export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, onCreate, onToggle, onPermission, onManager, onClick }) {
   const [openPopover, setOpenPopover] = useState(null);
 
   const handleOpenPopover = (event) => {
@@ -54,7 +54,7 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
 
   // const isGrMarketing = node.group === 'marketing';
 
-  const {isMaxRole} = node
+  const { isMaxRole } = node
 
   const isGrMarketing = node.group === 'marketing';
 
@@ -143,6 +143,9 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
         }
         <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
           {node.role}
+        </Typography>
+        <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
+          负责人: {node.leader?.account?.username || "无"}
         </Typography>
       </Card>
       <MenuPopover

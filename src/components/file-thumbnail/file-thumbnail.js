@@ -11,13 +11,13 @@ import DownloadButton from './download-button';
 export default function FileThumbnail({ file, tooltip, imageView, onDownload, sx, imgSx }) {
   const { name = '', path = '', preview = '' } = fileData(file);
 
-  const format = fileFormat(path || preview);
-
+  const format = fileFormat(path || preview || file);
+  console.log(file)
   const renderContent =
     format === 'image' && imageView ? (
       <Box
         component="img"
-        src={preview}
+        src={file}
         sx={{
           width: 1,
           height: 1,

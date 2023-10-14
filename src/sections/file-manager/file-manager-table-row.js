@@ -36,7 +36,7 @@ import FileManagerFileDetails from './file-manager-file-details';
 export default function FileManagerTableRow({ row, selected, onSelectRow, onDeleteRow }) {
   const theme = useTheme();
 
-  const { name, size, type, modifiedAt, shared, isFavorited } = row;
+  const { label, size, type, modifiedAt, shared, isFavorited } = row;
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -133,7 +133,7 @@ export default function FileManagerTableRow({ row, selected, onSelectRow, onDele
                 ...(details.value && { fontWeight: 'fontWeightBold' }),
               }}
             >
-              {name}
+              {label}
             </Typography>
           </Stack>
         </TableCell>
@@ -148,8 +148,8 @@ export default function FileManagerTableRow({ row, selected, onSelectRow, onDele
 
         <TableCell onClick={handleClick} sx={{ whiteSpace: 'nowrap' }}>
           <ListItemText
-            primary={format(new Date(modifiedAt), 'dd MMM yyyy')}
-            secondary={format(new Date(modifiedAt), 'p')}
+            // primary={format(new Date(modifiedAt), 'dd MMM yyyy')}
+            // secondary={format(new Date(modifiedAt), 'p')}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
               mt: 0.5,
@@ -215,7 +215,7 @@ export default function FileManagerTableRow({ row, selected, onSelectRow, onDele
           }}
         >
           <Iconify icon="eva:link-2-fill" />
-          Copy Link
+          拷贝链接
         </MenuItem>
 
         <MenuItem
@@ -225,7 +225,7 @@ export default function FileManagerTableRow({ row, selected, onSelectRow, onDele
           }}
         >
           <Iconify icon="solar:share-bold" />
-          Share
+          分享
         </MenuItem>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
@@ -238,7 +238,7 @@ export default function FileManagerTableRow({ row, selected, onSelectRow, onDele
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          删除
         </MenuItem>
       </CustomPopover>
 
@@ -267,11 +267,11 @@ export default function FileManagerTableRow({ row, selected, onSelectRow, onDele
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title="删除"
+        content="确认要删除?"
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            删除
           </Button>
         }
       />

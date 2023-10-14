@@ -29,4 +29,8 @@ export default class BroadcastService extends Service {
     signIn (target) {
         return this.api.post(`${this.model}/${target.broadcast_id}/users/${target.user_id}/${target.status === "signIn" ? "signOut" : "signIn"}`)
     }
+
+    publish (target) {
+        return this.api.post(`${this.model}/${target.broadcast_id}/publish`)
+    }
 }

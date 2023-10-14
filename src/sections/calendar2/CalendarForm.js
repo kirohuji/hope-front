@@ -105,14 +105,14 @@ export default function CalendarForm ({
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3} sx={{ p: 3 }}>
         <RHFTextField name="label" label="标题" InputProps={{
-          readOnly: !isDesktop,
+          readOnly: !isDesktop || event.isBroadcast,
         }} />
 
         <RHFTextField name="description" label="描述" multiline rows={3} InputProps={{
-          readOnly: !isDesktop,
+          readOnly: !isDesktop || event.isBroadcast,
         }} />
 
-        <RHFSwitch name="allDay" label="全天" disabled={!isDesktop} />
+        <RHFSwitch name="allDay" label="全天" disabled={!isDesktop || event.isBroadcast} />
 
         <Controller
           name="start"
@@ -122,7 +122,7 @@ export default function CalendarForm ({
               {...field}
               onChange={(newValue) => field.onChange(newValue)}
               label="开始 时间"
-              disabled={!isDesktop}
+              disabled={!isDesktop || event.isBroadcast}
               inputFormat="yyyy/MM/dd hh:mm a"
               renderInput={(params) => <TextField {...params} fullWidth />}
             />
@@ -137,7 +137,7 @@ export default function CalendarForm ({
               {...field}
               onChange={(newValue) => field.onChange(newValue)}
               label="结束 时间"
-              disabled={!isDesktop}
+              disabled={!isDesktop || event.isBroadcast}
               inputFormat="yyyy/MM/dd hh:mm a"
               renderInput={(params) => (
                 <TextField
@@ -157,6 +157,7 @@ export default function CalendarForm ({
             control={control}
             render={({ field }) => (
               <ColorSinglePicker
+                disabled={event.isBroadcast}
                 value={field.value}
                 onChange={field.onChange}
                 colors={colorOptions}
@@ -168,7 +169,7 @@ export default function CalendarForm ({
 
       {
         isDesktop && <DialogActions>
-          {hasEventData && (
+          {hasEventData && !event.isBroadcast && (
             <Tooltip label="删除 事件">
               <IconButton onClick={onDeleteEvent}>
                 <Iconify icon="eva:trash-2-outline" />
@@ -179,12 +180,14 @@ export default function CalendarForm ({
           <Box sx={{ flexGrow: 1 }} />
 
           <Button variant="outlined" color="inherit" onClick={onCancel}>
-            取消
+            返回
           </Button>
 
-          <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            {hasEventData ? '更新' : '添加'}
-          </LoadingButton>
+          {
+            !event.isBroadcast && <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+              {hasEventData ? '更新' : '添加'}
+            </LoadingButton>
+          }
         </DialogActions>
       }
     </FormProvider>

@@ -10,6 +10,7 @@ import {
   MenuItem,
   ListItemText,
   ListItemAvatar,
+  Badge
 } from '@mui/material';
 // components
 import Iconify from 'src/components/iconify';
@@ -19,14 +20,17 @@ import MenuPopover from 'src/components/menu-popover';
 
 JoinedUserItem.propTypes = {
   person: PropTypes.shape({
+    _id: PropTypes.any,
     displayName: PropTypes.string,
     emails: PropTypes.array,
     avatarUrl: PropTypes.string,
     permission: PropTypes.string,
   }),
+  leader: PropTypes.object,
+  onSelectMain: PropTypes.func
 };
 
-export default function JoinedUserItem({ person }) {
+export default function JoinedUserItem ({ leader, person, onSelectMain }) {
   const [permission] = useState(person.permission);
 
   const [openPopover, setOpenPopover] = useState(null);
@@ -39,6 +43,7 @@ export default function JoinedUserItem({ person }) {
     setOpenPopover(null);
   };
 
+
   // const handleChangePermission = (newPermission) => {
   //   setPermission(newPermission);
   // };
@@ -46,10 +51,14 @@ export default function JoinedUserItem({ person }) {
   return (
     <>
       <ListItem disableGutters>
-        <ListItemAvatar>
-          <Avatar alt={person.displayName} src={person.avatarUrl} />
-        </ListItemAvatar>
-
+        <Badge variant="dot"  invisible={leader?.account?._id !== person._id}  size="small" color="secondary" anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }} >
+          <ListItemAvatar>
+            <Avatar alt={person.displayName} src={person.avatarUrl} />
+          </ListItemAvatar>
+        </Badge>
         <ListItemText
           primary={person.displayName}
           secondary={
@@ -85,27 +94,47 @@ export default function JoinedUserItem({ person }) {
 
       <MenuPopover open={openPopover} onClose={handleClosePopover} sx={{ width: 160 }}>
         <>
-{
-  /**
-        <MenuItem
-            onClick={() => {
-              handleClosePopover();
-              handleChangePermission('view');
-            }}
-            sx={{
-              ...(permission === 'view' && {
-                bgcolor: 'action.selected',
-              }),
-            }}
-          >
-            <Iconify icon="eva:eye-fill" />
-            Can view
-          </MenuItem>
+          {
+            /**
+                  <MenuItem
+                      onClick={() => {
+                        handleClosePopover();
+                        handleChangePermission('view');
+                      }}
+                      sx={{
+                        ...(permission === 'view' && {
+                          bgcolor: 'action.selected',
+                        }),
+                      }}
+                    >
+                      <Iconify icon="eva:eye-fill" />
+                      Can view
+                    </MenuItem>
+          
+                    <MenuItem
+                      onClick={() => {
+                        handleClosePopover();
+                        handleChangePermission('edit');
+                      }}
+                      sx={{
+                        ...(permission === 'edit' && {
+                          bgcolor: 'action.selected',
+                        }),
+                      }}
+                    >
+                      <Iconify icon="eva:edit-fill" />
+                      Can edit
+                    </MenuItem>
+             */
+          }
+
+
 
           <MenuItem
             onClick={() => {
               handleClosePopover();
-              handleChangePermission('edit');
+              onSelectMain();
+              // handleChangePermission('edit');
             }}
             sx={{
               ...(permission === 'edit' && {
@@ -114,11 +143,8 @@ export default function JoinedUserItem({ person }) {
             }}
           >
             <Iconify icon="eva:edit-fill" />
-            Can edit
+            设置为负责人
           </MenuItem>
-   */
-}
-
           <Divider sx={{ borderStyle: 'dashed' }} />
 
           <MenuItem

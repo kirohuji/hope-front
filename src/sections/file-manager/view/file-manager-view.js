@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -13,6 +13,7 @@ import { _allFiles, FILE_TYPE_OPTIONS } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components
+import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
 import EmptyContent from 'src/components/empty-content';
 import { fileFormat } from 'src/components/file-thumbnail';
@@ -20,11 +21,13 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import { useTable, getComparator } from 'src/components/table';
 //
+import { fileManagerService } from 'src/composables/context-provider';
 import FileManagerTable from '../file-manager-table';
 import FileManagerFilters from '../file-manager-filters';
 import FileManagerGridView from '../file-manager-grid-view';
 import FileManagerFiltersResult from '../file-manager-filters-result';
 import FileManagerNewFolderDialog from '../file-manager-new-folder-dialog';
+
 
 // ----------------------------------------------------------------------
 
@@ -37,7 +40,8 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerView() {
+export default function FileManagerView () {
+  const { enqueueSnackbar } = useSnackbar();
   const table = useTable({ defaultRowsPerPage: 10 });
 
   const settings = useSettingsContext();
@@ -50,7 +54,20 @@ export default function FileManagerView() {
 
   const [view, setView] = useState('list');
 
-  const [tableData, setTableData] = useState(_allFiles);
+  const [tableData, setTableData] = useState([]);
+
+  const getTableData = useCallback(async () => {
+    try {
+      const response = await fileManagerService.getWithCurrentUser()
+      setTableData(response);
+    } catch (error) {
+      enqueueSnackbar(error.message);
+    }
+  }, [setTableData, enqueueSnackbar]);
+
+  useEffect(() => {
+    getTableData()
+  }, [getTableData]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -94,25 +111,36 @@ export default function FileManagerView() {
   );
 
   const handleDeleteItem = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-      setTableData(deleteRow);
+    async (id) => {
+      await fileManagerService.deleteCurrentUser({
+        _id: id
+      })
+      getTableData()
+      // const deleteRow = tableData.filter((row) => row.id !== id);
+      // setTableData(deleteRow);
 
-      table.onUpdatePageDeleteRow(dataInPage.length);
+      // table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, table, tableData]
+    [getTableData]
   );
 
-  const handleDeleteItems = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
+  const handleDeleteItems = useCallback(async () => {
+    await table.selected.map(async row=>{
+      console.log('row',row)
+      await fileManagerService.deleteCurrentUser({
+        _id: row
+      })
+    })
+    getTableData();
+    // const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+    // setTableData(deleteRows);
 
-    table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+    // table.onUpdatePageDeleteRows({
+    //   totalRows: tableData.length,
+    //   totalRowsInPage: dataInPage.length,
+    //   totalRowsFiltered: dataFiltered.length,
+    // });
+  }, [getTableData,table]);
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -164,13 +192,13 @@ export default function FileManagerView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography variant="h4">File Manager</Typography>
+          <Typography variant="h4">文件 管理</Typography>
           <Button
             variant="contained"
             startIcon={<Iconify icon="eva:cloud-upload-fill" />}
             onClick={upload.onTrue}
           >
-            Upload
+            上传
           </Button>
         </Stack>
 
@@ -206,6 +234,7 @@ export default function FileManagerView() {
               />
             ) : (
               <FileManagerGridView
+                onRefresh={getTableData}
                 table={table}
                 data={tableData}
                 dataFiltered={dataFiltered}
@@ -217,15 +246,18 @@ export default function FileManagerView() {
         )}
       </Container>
 
-      <FileManagerNewFolderDialog open={upload.value} onClose={upload.onFalse} />
+      <FileManagerNewFolderDialog open={upload.value} onClose={() => {
+        upload.onFalse();
+        getTableData();
+      }} />
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title="删除"
         content={
           <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
+           确定要删除 <strong> {table.selected.length} </strong> 个文件?
           </>
         }
         action={
@@ -237,7 +269,7 @@ export default function FileManagerView() {
               confirm.onFalse();
             }}
           >
-            Delete
+            删除
           </Button>
         }
       />
@@ -247,7 +279,7 @@ export default function FileManagerView() {
 
 // ----------------------------------------------------------------------
 
-function applyFilter({ inputData, comparator, filters, dateError }) {
+function applyFilter ({ inputData, comparator, filters, dateError }) {
   const { name, type, startDate, endDate } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);

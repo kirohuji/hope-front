@@ -150,7 +150,7 @@ export default function TourItem({ tour, onView, onEdit, onDelete }) {
           icon: <Iconify icon="solar:clock-circle-bold" sx={{ color: 'info.main' }} />,
         },
         {
-          label: `${bookers.length} 参与者`,
+          label: `${bookers.length} Booked`,
           icon: <Iconify icon="solar:users-group-rounded-bold" sx={{ color: 'primary.main' }} />,
         },
       ].map((item) => (

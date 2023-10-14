@@ -11,11 +11,11 @@ import Dialog from '@mui/material/Dialog';
 // components
 import Iconify from 'src/components/iconify';
 import { Upload } from 'src/components/upload';
-
+import { fileManagerService, fileService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
-export default function FileManagerNewFolderDialog({
-  title = 'Upload Files',
+export default function FileManagerNewFolderDialog ({
+  title = '上传文件',
   open,
   onClose,
   //
@@ -47,7 +47,19 @@ export default function FileManagerNewFolderDialog({
     [files]
   );
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
+    await files.map(async (file) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      const { link } = await fileService.avatar(formData)
+      await fileManagerService.createCurrentUser({
+        url: link,
+        label: file.name,
+        size: file.size,
+        type: `${file.name.split('.').pop()}`,
+        lastModified: new Date(file.lastModified)
+      })
+    })
     onClose();
     console.info('ON UPLOAD');
   };
@@ -85,12 +97,12 @@ export default function FileManagerNewFolderDialog({
           startIcon={<Iconify icon="eva:cloud-upload-fill" />}
           onClick={handleUpload}
         >
-          Upload
+          上传
         </Button>
 
         {!!files.length && (
           <Button variant="outlined" color="inherit" onClick={handleRemoveAllFiles}>
-            Remove all
+            删除全部
           </Button>
         )}
 

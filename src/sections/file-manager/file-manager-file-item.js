@@ -98,7 +98,7 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
         onClick={details.onTrue}
         sx={{ width: 1, mt: 2, mb: 0.5 }}
       >
-        {file.name}
+        {file.label}
       </TextMaxLine>
 
       <Stack
@@ -159,6 +159,7 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
         alignItems="flex-start"
         sx={{
           p: 2.5,
+          width: 300,
           borderRadius: 2,
           bgcolor: 'unset',
           cursor: 'pointer',
@@ -195,8 +196,18 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
           }}
         >
           <Iconify icon="eva:link-2-fill" />
-          Copy Link
+          拷贝链接
         </MenuItem>
+
+        <MenuItem
+        onClick={() => {
+          popover.onClose();
+          window.open(file.url,"blank")
+        }}
+      >
+        <Iconify icon="eva:link-2-fill" />
+        下载
+      </MenuItem>
 
         <MenuItem
           onClick={() => {
@@ -205,7 +216,7 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
           }}
         >
           <Iconify icon="solar:share-bold" />
-          Share
+          分享
         </MenuItem>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
@@ -218,7 +229,7 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          删除
         </MenuItem>
       </CustomPopover>
 
@@ -250,11 +261,11 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title="删除"
+        content="确认要删除吗?"
         action={
           <Button variant="contained" color="error" onClick={onDelete}>
-            Delete
+            删除
           </Button>
         }
       />

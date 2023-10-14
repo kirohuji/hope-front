@@ -22,6 +22,7 @@ import FileManagerNewFolderDialog from './file-manager-new-folder-dialog';
 export default function FileManagerGridView({
   table,
   data,
+  onRefresh,
   dataFiltered,
   onDeleteItem,
   onOpenConfirm,
@@ -56,8 +57,8 @@ export default function FileManagerGridView({
     <>
       <Box ref={containerRef}>
         <FileManagerPanel
-          title="Folders"
-          subTitle={`${data.filter((item) => item.type === 'folder').length} folders`}
+          title="文件夹"
+          subTitle={`${data.filter((item) => item.type === 'folder').length} 文件夹`}
           onOpen={newFolder.onTrue}
           collapse={folders.value}
           onCollapse={folders.onToggle}
@@ -78,11 +79,11 @@ export default function FileManagerGridView({
               .filter((i) => i.type === 'folder')
               .map((folder) => (
                 <FileManagerFolderItem
-                  key={folder.id}
+                  key={folder._id}
                   folder={folder}
-                  selected={selected.includes(folder.id)}
-                  onSelect={() => onSelectItem(folder.id)}
-                  onDelete={() => onDeleteItem(folder.id)}
+                  selected={selected.includes(folder._id)}
+                  onSelect={() => onSelectItem(folder._id)}
+                  onDelete={() => onDeleteItem(folder._id)}
                   sx={{ maxWidth: 'auto' }}
                 />
               ))}
@@ -92,8 +93,8 @@ export default function FileManagerGridView({
         <Divider sx={{ my: 5, borderStyle: 'dashed' }} />
 
         <FileManagerPanel
-          title="Files"
-          subTitle={`${data.filter((item) => item.type !== 'folder').length} files`}
+          title="文件"
+          subTitle={`${data.filter((item) => item.type !== 'folder').length} 文件`}
           onOpen={upload.onTrue}
           collapse={files.value}
           onCollapse={files.onToggle}
@@ -114,11 +115,11 @@ export default function FileManagerGridView({
               .filter((i) => i.type !== 'folder')
               .map((file) => (
                 <FileManagerFileItem
-                  key={file.id}
+                  key={file._id}
                   file={file}
-                  selected={selected.includes(file.id)}
-                  onSelect={() => onSelectItem(file.id)}
-                  onDelete={() => onDeleteItem(file.id)}
+                  selected={selected.includes(file._id)}
+                  onSelect={() => onSelectItem(file._id)}
+                  onDelete={() => onDeleteItem(file._id)}
                   sx={{ maxWidth: 'auto' }}
                 />
               ))}
@@ -133,7 +134,7 @@ export default function FileManagerGridView({
             onSelectAllItems={(checked) =>
               onSelectAllItems(
                 checked,
-                data.map((row) => row.id)
+                data.map((row) => row._id)
               )
             }
             action={
@@ -146,7 +147,7 @@ export default function FileManagerGridView({
                   onClick={onOpenConfirm}
                   sx={{ mr: 1 }}
                 >
-                  Delete
+                  删除
                 </Button>
 
                 <Button
@@ -174,7 +175,10 @@ export default function FileManagerGridView({
         }}
       />
 
-      <FileManagerNewFolderDialog open={upload.value} onClose={upload.onFalse} />
+      <FileManagerNewFolderDialog open={upload.value} onClose={()=>{
+        onRefresh();
+        upload.onFalse()
+      }} />
 
       <FileManagerNewFolderDialog
         open={newFolder.value}
@@ -196,6 +200,7 @@ FileManagerGridView.propTypes = {
   data: PropTypes.array,
   dataFiltered: PropTypes.array,
   onDeleteItem: PropTypes.func,
+  onRefresh: PropTypes.func,
   onOpenConfirm: PropTypes.func,
   table: PropTypes.object,
 };

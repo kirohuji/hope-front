@@ -1,6 +1,6 @@
 import { Service } from './base'
 
-export default class EventService extends Service {
+export default class FilesManagerService extends Service {
     getWithCurrentUser () {
         return this.api.get(`${this.model}/current`)
     }

@@ -29,6 +29,7 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { useRouter } from 'src/routes/hook';
 import FormProvider, {
+  RHFRadioGroup,
   RHFEditor,
   RHFUpload,
   RHFTextField,
@@ -40,6 +41,10 @@ import { broadcastService, userService, fileService } from 'src/composables/cont
 
 // ----------------------------------------------------------------------
 
+export const BROAECAST_TYPE_OPTIONS = [
+  { value: 'activity', label: '活动通知' },
+  { value: 'notification', label: '消息公告' },
+];
 export default function BroadcastNewEditForm ({ currentBroadcast }) {
   const router = useRouter();
 
@@ -55,6 +60,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
     label: Yup.string().required('请输入标题'),
     content: Yup.string().required('Content is required'),
     images: Yup.array().min(1, 'Images is required'),
+    type: Yup.string().required(1, 'Type is required'),
     //
     tourGuides: Yup.array().min(1, 'Must have at least 1 guide'),
     durations: Yup.string().required('Duration is required'),
@@ -78,6 +84,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
       label: currentBroadcast?.label || '',
       content: currentBroadcast?.content || '',
       images: currentBroadcast?.images || [],
+      type: currentBroadcast?.type || '',
       //
       tourGuides: currentBroadcast?.tourGuides || [],
       tags: currentBroadcast?.tags || [],
@@ -113,9 +120,9 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
       const response = await userService.pagination({
         status: "active",
       },
-      {});
+        {});
       setUsers(response.data)
-      console.log('setUsers',response.data)
+      console.log('setUsers', response.data)
     } catch (error) {
       console.log(error)
     }
@@ -250,6 +257,10 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
           {!mdUp && <CardHeader title="Properties" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
+            <Stack spacing={1}>
+              <Typography variant="subtitle2">类型</Typography>
+              <RHFRadioGroup row spacing={4} name="type" options={BROAECAST_TYPE_OPTIONS} />
+            </Stack>
             <Stack>
               <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
                 负责人

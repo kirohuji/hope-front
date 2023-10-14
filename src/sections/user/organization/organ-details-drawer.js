@@ -44,7 +44,7 @@ export default function OrganDetailsDrawer ({
   onDelete,
   ...other
 }) {
-  const { name, size, type, dateModified } = item;
+  const { name, size, type, dateModified, leader } = item;
 
 
   const { active } = useSelector((state) => state.scope);
@@ -59,7 +59,7 @@ export default function OrganDetailsDrawer ({
 
   const [tags, setTags] = useState(item.tags ? item.tags.slice(0, 3) : []);
 
-  const [toggleProperties, setToggleProperties] = useState(false);
+  const [toggleProperties, setToggleProperties] = useState(true);
 
   const getUsers = useCallback(async () => {
     const response = await roleService.getUsersInRoleOnly({
@@ -90,6 +90,13 @@ export default function OrganDetailsDrawer ({
     getUsers();
     setOpenContacts(false);
   };
+  const onSelectMain = async (person) => {
+    await roleService.changeLeader({
+      _id: item._id,
+      leader_id: person._id
+    })
+    getUsers();
+  }
 
   return (
     <>
@@ -181,11 +188,13 @@ export default function OrganDetailsDrawer ({
 
               {toggleProperties && (
                 <Stack spacing={1.5}>
-                  <Row label="负责人" value={fData(size)} />
+                  {false && <Row label="负责人" value={fData(size)} />}
 
-                  <Row label="代码" value={fDateTime(dateModified)} />
+                  <Row label="负责人" value={leader?.account?.username} />
 
-                  <Row label="类型" value={fileFormat(type)} />
+                  {false &&  <Row label="代码" value={fDateTime(dateModified)} />}
+
+                  {false && <Row label="类型" value={fileFormat(type)} /> }
                 </Stack>
               )}
             </Stack>
@@ -216,7 +225,7 @@ export default function OrganDetailsDrawer ({
           {hasUsers && (
             <List disablePadding sx={{ pl: 2.5, pr: 1 }}>
               {users.map((person) => (
-                <JoinedUserItem key={person._id} person={person} />
+                <JoinedUserItem key={person._id} leader={leader} person={person} onSelectMain={() => onSelectMain(person)} />
               ))}
             </List>
           )}

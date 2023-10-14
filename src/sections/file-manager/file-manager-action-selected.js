@@ -54,7 +54,7 @@ export default function FileManagerActionSelected({
               color: (theme) => (theme.palette.mode === 'light' ? 'common.white' : 'grey.800'),
             }}
           >
-            {selected.length} Items selected
+            {selected.length} 个文件被选中
           </Typography>
         )}
 

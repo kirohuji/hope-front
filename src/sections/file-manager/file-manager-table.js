@@ -25,11 +25,11 @@ import FileManagerTableRow from './file-manager-table-row';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'size', label: 'Size', width: 120 },
-  { id: 'type', label: 'Type', width: 120 },
-  { id: 'modifiedAt', label: 'Modified', width: 140 },
-  { id: 'shared', label: 'Shared', align: 'right', width: 140 },
+  { id: 'name', label: '文件名' },
+  { id: 'size', label: '文件大小', width: 120 },
+  { id: 'type', label: '文件大小', width: 120 },
+  { id: 'modifiedAt', label: '修改时间', width: 140 },
+  { id: 'shared', label: '分享', align: 'right', width: 140 },
   { id: '', width: 88 },
 ];
 
@@ -79,7 +79,7 @@ export default function FileManagerTable({
           onSelectAllRows={(checked) =>
             onSelectAllRows(
               checked,
-              tableData.map((row) => row.id)
+              tableData.map((row) => row._id)
             )
           }
           action={
@@ -131,7 +131,7 @@ export default function FileManagerTable({
               onSelectAllRows={(checked) =>
                 onSelectAllRows(
                   checked,
-                  tableData.map((row) => row.id)
+                  tableData.map((row) => row._id)
                 )
               }
               sx={{
@@ -153,11 +153,11 @@ export default function FileManagerTable({
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => (
                   <FileManagerTableRow
-                    key={row.id}
+                    key={row._id}
                     row={row}
-                    selected={selected.includes(row.id)}
-                    onSelectRow={() => onSelectRow(row.id)}
-                    onDeleteRow={() => onDeleteRow(row.id)}
+                    selected={selected.includes(row._id)}
+                    onSelectRow={() => onSelectRow(row._id)}
+                    onDeleteRow={() => onDeleteRow(row._id)}
                   />
                 ))}
 

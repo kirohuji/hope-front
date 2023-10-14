@@ -69,6 +69,12 @@ export default class BookService extends Service {
         })
     }
 
+    signInWithCurrentUser (target){
+        return this.api.post(`${this.model}/users/current/signIn/${target._id}`,{
+            date: new Date()
+        })
+    }
+
     submitWithCurrentUser (target){
         return this.api.post(`${this.model}/users/current/${target._id}/submit`)
     }

@@ -1,5 +1,5 @@
 import { m } from 'framer-motion';
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -14,16 +14,21 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // hooks
+import { useSelector } from 'src/redux/store';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
+
+import { notificationService } from 'src/composables/context-provider';
+
 // _mock
-import { _notifications } from 'src/_mock';
+// import { _notifications } from 'src/_mock';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { varHover } from 'src/components/animate';
 //
+import { useAuthContext } from 'src/auth/hooks';
 import NotificationItem from './notification-item';
 
 // ----------------------------------------------------------------------
@@ -32,17 +37,17 @@ const TABS = [
   {
     value: 'all',
     label: 'All',
-    count: 22,
+    count: 0,
   },
   {
     value: 'unread',
     label: 'Unread',
-    count: 12,
+    count: 0,
   },
   {
     value: 'archived',
     label: 'Archived',
-    count: 10,
+    count: 0,
   },
 ];
 
@@ -59,17 +64,30 @@ export default function NotificationsPopover() {
     setCurrentTab(newValue);
   }, []);
 
-  const [notifications, setNotifications] = useState(_notifications);
+  // const { notifications } = useSelector((state) => state.notification);
+  const { notifications } = useAuthContext()
+
+  // const [notifications, setNotifications] = useState([]);
+
+  // const getAllNotification = useCallback(async () => {
+  //   const response = await notificationService.getWithCurrentUser();
+  //   setNotifications(response);
+  // }, [setNotifications]);
+
+  // useEffect(()=>{
+  //   getAllNotification()
+  // }, [getAllNotification])
+
 
   const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
 
   const handleMarkAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        isUnRead: false,
-      }))
-    );
+    // setNotifications(
+    //   notifications.map((notification) => ({
+    //     ...notification,
+    //     isUnRead: false,
+    //   }))
+    // );
   };
 
   const renderHead = (

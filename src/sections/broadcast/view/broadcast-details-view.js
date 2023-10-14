@@ -18,10 +18,12 @@ import { useSettingsContext } from 'src/components/settings';
 import { broadcastService } from 'src/composables/context-provider';
 import Iconify from 'src/components/iconify';
 import _ from 'lodash';
-import BroadcastDetailsToolbar from '../broadcast-details-toolbar';
-import BroadcastDetailsContent from '../broadcast-details-content';
-import BroadcastDetailsBookers from '../broadcast-details-bookers';
+// redux
+import { useSnackbar } from 'src/components/snackbar';
 import BoradcastContactsDialog from '../boradcast-contacts-dialog';
+import BroadcastDetailsBookers from '../broadcast-details-bookers';
+import BroadcastDetailsContent from '../broadcast-details-content';
+import BroadcastDetailsToolbar from '../broadcast-details-toolbar';
 
 export const TOUR_DETAILS_TABS = [
   { value: 'content', label: '内容' },
@@ -31,11 +33,12 @@ export const TOUR_DETAILS_TABS = [
 // ----------------------------------------------------------------------
 
 export default function BroadcastDetailsView () {
+  const { enqueueSnackbar } = useSnackbar();
   const [participants, setParticipants] = useState([])
   const [isAdmin, setIsAdmin] = useState(false)
   const [participantsCount, setParticipantsCount] = useState([])
   const [openContacts, setOpenContacts] = useState(false);
-  const { user } = useAuthContext();
+  const { user, sendPublish  } = useAuthContext();
   const handleOpenContacts = () => {
     setOpenContacts(true);
   };
@@ -76,6 +79,10 @@ export default function BroadcastDetailsView () {
     setPublish(newValue);
   }, []);
 
+  const handlePublish = useCallback(async () => {
+    await sendPublish(id)
+    enqueueSnackbar('发布成功');
+  }, [enqueueSnackbar, sendPublish, id])
   const onRefresh = useCallback(async () => {
     getParticipants()
     const getUsersCount = await broadcastService.getUsersCount({
@@ -162,6 +169,11 @@ export default function BroadcastDetailsView () {
         {
           isAdmin && <Button variant="contained" color="secondary" onClick={() => handleOpenContacts()}>
             添加参加者
+          </Button>
+        }
+        {
+          isAdmin && <Button variant="contained" color="success" onClick={() => handlePublish()}>
+            发布公告
           </Button>
         }
       </Stack>

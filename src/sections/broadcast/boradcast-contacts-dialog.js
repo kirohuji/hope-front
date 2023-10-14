@@ -18,14 +18,19 @@ import {
   DialogContent,
   FormControlLabel,
   Switch,
-  Divider
+  Divider,
+  Stack,
+  Link
 } from '@mui/material';
+import _ from 'lodash';
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import SearchNotFound from 'src/components/search-not-found';
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getOrganizations } from 'src/redux/slices/chat';
+
 import { roleService, userService, broadcastService } from 'src/composables/context-provider';
-import { useSelector } from 'src/redux/store';
 import { useSnackbar } from 'src/components/snackbar';
 import ConfirmDialog from 'src/components/confirm-dialog';
 import FormProvider, {
@@ -41,14 +46,24 @@ BroadCastContactsDialog.propTypes = {
   // assignee: PropTypes.array,
   current: PropTypes.object,
 };
+const styles = {
+  typography: 'body2',
+  alignItems: 'center',
+  color: 'text.primary',
+  display: 'inline-flex',
+};
 
 export default function BroadCastContactsDialog ({ open, onClose, current }) {
+  const dispatch = useDispatch();
+  const { active } = useSelector((state) => state.scope);
+  const { organizations } = useSelector((state) => state.chat);
+  const [currentOrganization, setCurrentOrganization] = useState([]);
+  const [levels, setLevels] = useState([]);
   const [searchContacts, setSearchContacts] = useState('');
   const [openConfirm, setOpenConfirm] = useState(false);
   const [users, setUsers] = useState([]);
   const [assignee, setAssignee] = useState([]);
   const [user, setUser] = useState([]);
-  const { active } = useSelector((state) => state.scope);
   const { enqueueSnackbar } = useSnackbar();
   const handleOpenConfirm = (contact) => {
     setUser(contact)
@@ -69,6 +84,47 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
+  const onChildren = (organization) => {
+    console.log('gx')
+    if (organization.children) {
+      const level = {
+        name: organization.label,
+        to: organization._id,
+      }
+      levels.push(level);
+      setCurrentOrganization([...organization.children, ...organization.users.map(item => ({
+        name: item.account.username,
+        photoURL: item.profile.photoURL,
+        email: item.profile.email,
+        _id: item.profile._id
+      }))])
+      setLevels(levels)
+    }
+  }
+  const onGoTo = async (level) => {
+    let index = 0;
+    const length = _.findIndex(levels, ["to", level.to])
+    let isChildren = false;
+    let currentOrganizations = organizations
+    const levels2 = []
+    while (index < length) {
+      isChildren = true;
+      const currentLevel = levels[index];
+      currentOrganizations = _.find(currentOrganizations, ["_id", currentLevel.to]);
+      index += 1;
+      levels2.push(currentLevel)
+    }
+    if (isChildren) {
+      await setCurrentOrganization([...currentOrganizations.children, ...currentOrganizations.users.map(item => ({
+        _id: item.account._id,
+        name: item.account.username,
+        photoURL: item.profile.photoURL
+      }))]);
+    } else {
+      await setCurrentOrganization(currentOrganizations);
+    }
+    setLevels(levels2);
+  }
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
@@ -113,18 +169,26 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
     getData();
   }
   const handleAdd = async (contact) => {
-    await broadcastService.addUser({
-      user_id: contact._id,
-      broadcast_id: current._id
-    })
+    // if (contact.type === "org") {
+    //   await broadcastService.addUsers({
+    //     users_id: contact.users.map(item => item.account._id),
+    //     broadcast_id: current._id
+    //   })
+    // } else {
+      await broadcastService.addUser({
+        user_id: contact._id,
+        broadcast_id: current._id
+      })
+    // }
     enqueueSnackbar('添加成功');
     getData();
   }
   useEffect(() => {
-    if(open){
+    if (open) {
       getData();
+      dispatch(getOrganizations(active._id));
     }
-  }, [getData,open]);
+  }, [getData, active._id, dispatch, open]);
   // const dataFiltered = applyFilter({
   //   inputData: _contacts,
   //   query: searchContacts,
@@ -134,6 +198,83 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
   };
   const isNotFound = !!searchContacts;
 
+  console.log('organizations', organizations);
+  const renderOrganizationsItem = (contact, id, checked) =>
+    <Box key={id} onClick={() => onChildren(contact)}>
+      <ListItem
+        disableGutters
+        secondaryAction={
+          contact.type !== "org" && <div>
+            <Button
+              size="small"
+              color={checked ? 'primary' : 'inherit'}
+              onClick={() => !checked && handleAdd(contact)}
+              startIcon={
+                <Iconify icon={checked ? 'eva:checkmark-fill' : 'eva:plus-fill'} />
+              }
+            >
+              {checked ? '已添加' : '添加'}
+            </Button>
+            {checked && false && <Button
+              size="small"
+              disabled={!checked}
+              onClick={() => handleOpenConfirm(contact)}
+              color={!checked ? 'primary' : 'inherit'}
+              startIcon={
+                <Iconify icon="eva:close-fill" />
+              }
+            >
+              移出
+            </Button>}
+          </div>
+        }
+        sx={{ height: ITEM_HEIGHT }}
+      >
+        <ListItemAvatar>
+          <Avatar src={contact.type === "org" ? contact?.avatarUrl?.preview : contact?.photoURL} />
+        </ListItemAvatar>
+
+        <ListItemText
+          primaryTypographyProps={{ typography: 'subtitle2', sx: { mb: 0.25 } }}
+          secondaryTypographyProps={{ typography: 'caption' }}
+          primary={contact.type === "org" ? contact.name : contact.name}
+          secondary={contact.type === "org" ? "" : contact.email}
+        />
+      </ListItem>
+    </Box>
+  const renderOrganizations = (
+    <Scrollbar
+      sx={{
+        px: 2.5,
+        height: ITEM_HEIGHT * 6,
+      }}
+    >
+      {
+        levels && levels.length > 0 && <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="flex-start"
+          sx={{ m: 1 }}
+        >
+          {
+            levels.map((level, index) => (<Box key={index} sx={{ display: 'flex' }}>
+              <Link onClick={() => onGoTo(level)} sx={styles}>{`${level.name}`} </Link>
+              <div style={{ margin: '0 4px' }}> /</div>
+            </Box>))
+          }
+        </Stack>
+      }
+      {currentOrganization && currentOrganization.length > 0 ?
+        currentOrganization.map((contact, id) => {
+          const checked = assignee.filter((person) => person._id === contact._id).length > 0;
+          return renderOrganizationsItem(contact, id, checked)
+        }) : organizations.map((contact, id) => {
+          const checked = assignee.filter((person) => person._id === contact._id).length > 0;
+          return renderOrganizationsItem(contact, id, checked)
+        })}
+    </Scrollbar>
+
+  )
   return (
     <>
       <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
@@ -188,62 +329,7 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
           <Divider />
           {isNotFound ? (
             <SearchNotFound query={searchContacts} sx={{ mt: 3, mb: 10 }} />
-          ) : (
-            <Scrollbar
-              sx={{
-                px: 2.5,
-                height: ITEM_HEIGHT * 6,
-              }}
-            >
-              {users.map((contact) => {
-                const checked = assignee.map((person) => person.username).includes(contact.username);
-
-                return (
-                  <ListItem
-                    key={contact._id}
-                    disableGutters
-                    secondaryAction={
-                      <div>
-                        <Button
-                          size="small"
-                          color={checked ? 'primary' : 'inherit'}
-                          onClick={() => !checked && handleAdd(contact)}
-                          startIcon={
-                            <Iconify icon={checked ? 'eva:checkmark-fill' : 'eva:plus-fill'} />
-                          }
-                        >
-                          {checked ? '已添加' : '添加'}
-                        </Button>
-                        {checked && false && <Button
-                          size="small"
-                          disabled={!checked}
-                          onClick={() => handleOpenConfirm(contact)}
-                          color={!checked ? 'primary' : 'inherit'}
-                          startIcon={
-                            <Iconify icon="eva:close-fill" />
-                          }
-                        >
-                          移出
-                        </Button>}
-                      </div>
-                    }
-                    sx={{ height: ITEM_HEIGHT }}
-                  >
-                    <ListItemAvatar>
-                      <Avatar src={contact.avatarUrl} />
-                    </ListItemAvatar>
-
-                    <ListItemText
-                      primaryTypographyProps={{ typography: 'subtitle2', sx: { mb: 0.25 } }}
-                      secondaryTypographyProps={{ typography: 'caption' }}
-                      primary={contact.displayName || contact.username}
-                      secondary={contact.emails[0].address}
-                    />
-                  </ListItem>
-                );
-              })}
-            </Scrollbar>
-          )}
+          ) : renderOrganizations}
         </DialogContent>
       </Dialog>
       <ConfirmDialog

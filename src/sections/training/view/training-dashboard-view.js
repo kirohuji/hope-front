@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
-import { Link,useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 // components
 import { Box, Button, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
@@ -7,24 +8,52 @@ import { Stack } from "@mui/system";
 import { paths } from 'src/routes/paths';
 
 import { useSettingsContext } from 'src/components/settings';
-import { bookService } from "src/composables/context-provider";
+import { bookService, articleService } from "src/composables/context-provider";
 import { useSnackbar } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
 export default function TrainingDashboardView () {
-
-  const { enqueueSnackbar } = useSnackbar();
+    const [article, setArticle] = useState(null)
+    const [articleUser, setArticleUser] = useState({})
+    const { enqueueSnackbar } = useSnackbar();
     const { themeStretch } = useSettingsContext();
     const navigate = useNavigate();
-    
+
+    const getToday = useCallback(async () => {
+        const bookArticle = await bookService.startWithCurrentUser();
+        if (bookArticle) {
+            const response = await articleService.getArticleCurrentUser({
+                _id: bookArticle.article_id
+            })
+            setArticleUser(response)
+        }
+    }, [])
+
     const onStart = async () => {
         const response = await bookService.startWithCurrentUser()
-        if(response){
+        if (response && response.article_id) {
             navigate(paths.reading(response.article_id));
         } else {
             enqueueSnackbar('今日没有灵修!')
         }
     }
+    const onSignIn = async () => {
+        if (articleUser.article_id) {
+            // navigate(paths.reading(response.article_id));
+            await bookService.signInWithCurrentUser({
+                _id: articleUser.article_id,
+            })
+            const response = await articleService.getArticleCurrentUser({
+                _id: articleUser.article_id
+            })
+            setArticleUser(response)
+        } else {
+            enqueueSnackbar('今日没有灵修!')
+        }
+    }
+    useEffect(() => {
+        getToday()
+    }, [getToday]);
     return (
         <>
             <Helmet>
@@ -62,7 +91,7 @@ export default function TrainingDashboardView () {
             >
                 <Button variant="soft" sx={{
                     borderRadius: '5%',
-                    width: '150px',
+                    width: '100px',
                     padding: '15px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -77,13 +106,32 @@ export default function TrainingDashboardView () {
                     </div>
                 </Button>
 
+                <Button variant="soft"
+                    color={articleUser.signIn ? 'success' : 'inherit'}
+                    sx={{
+                        borderRadius: '5%',
+                        width: '100px',
+                        padding: '15px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }} onClick={onSignIn} >
+                    <div style={{
+                        fontSize: '15px',
+                        fontWeight: '700',
+                    }}>
+                        {articleUser.signIn ? '已签到' : '签到'}
+                    </div>
+                </Button>
+
                 <Button
                     variant="soft"
                     component={Link}
                     to="/training"
                     sx={{
                         borderRadius: '5%',
-                        width: '150px',
+                        width: '100px',
                         padding: '15px',
                         display: 'flex',
                         flexDirection: 'column',

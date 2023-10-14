@@ -81,7 +81,7 @@ export default function CalendarView () {
       return calendar.events.find((event) => event._id === selectedEventId);
     }
 
-    return null;
+    return {};
   });
 
   const picker = useDateRangePicker(null, null);
@@ -202,12 +202,12 @@ export default function CalendarView () {
     }
   };
 
-  const handleCreateUpdateEvent = (newEvent) => {
+  const handleCreateUpdateEvent = async (newEvent) => {
     if (selectedEventId) {
-      dispatch(updateEvent(selectedEventId, newEvent));
+      await dispatch(updateEvent(selectedEventId, newEvent));
       enqueueSnackbar('更新成功!');
     } else {
-      dispatch(createEvent(newEvent));
+      await dispatch(createEvent(newEvent));
       enqueueSnackbar('创建成功!');
     }
     handleCloseModal();

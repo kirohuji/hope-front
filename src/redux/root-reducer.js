@@ -8,6 +8,7 @@ import dashboardReducer from './slices/dashboard';
 import calendarReducer from './slices/calendar';
 import articleReducer from './slices/article';
 import chatReducer from './slices/chat';
+// import notificationReducer from './slices/notification';
 // ----------------------------------------------------------------------
 
 const checkoutPersistConfig = {
@@ -44,6 +45,7 @@ export const articlePersistConfig = {
 export const rootReducer = combineReducers({
   calendar: calendarReducer,
   chat: chatReducer,
+  // notification: notificationReducer,
   dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
   checkout: persistReducer(checkoutPersistConfig, checkoutReducer),
   scope: persistReducer(scopePersistConfig, scopeReducer),

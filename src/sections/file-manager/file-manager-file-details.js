@@ -38,7 +38,7 @@ export default function FileManagerFileDetails({
   onDelete,
   ...other
 }) {
-  const { name, size, url, type, shared, modifiedAt } = item;
+  const { label, size, url, type, shared, modifiedAt } = item;
 
   const hasShared = shared && !!shared.length;
 
@@ -50,7 +50,8 @@ export default function FileManagerFileDetails({
 
   const [inviteEmail, setInviteEmail] = useState('');
 
-  const [tags, setTags] = useState(item.tags.slice(0, 3));
+  const [tags, setTags] = useState([]);
+  // const [tags, setTags] = useState(item?.tags.slice(0, 3) || []);
 
   const handleChangeInvite = useCallback((event) => {
     setInviteEmail(event.target.value);
@@ -68,7 +69,7 @@ export default function FileManagerFileDetails({
         justifyContent="space-between"
         sx={{ typography: 'subtitle2' }}
       >
-        Tags
+        标签
         <IconButton size="small" onClick={toggleTags.onToggle}>
           <Iconify
             icon={toggleTags.value ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
@@ -117,7 +118,7 @@ export default function FileManagerFileDetails({
         justifyContent="space-between"
         sx={{ typography: 'subtitle2' }}
       >
-        Properties
+        属性
         <IconButton size="small" onClick={properties.onToggle}>
           <Iconify
             icon={properties.value ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
@@ -129,21 +130,21 @@ export default function FileManagerFileDetails({
         <>
           <Stack direction="row" sx={{ typography: 'caption', textTransform: 'capitalize' }}>
             <Box component="span" sx={{ width: 80, color: 'text.secondary', mr: 2 }}>
-              Size
+              大小
             </Box>
             {fData(size)}
           </Stack>
 
           <Stack direction="row" sx={{ typography: 'caption', textTransform: 'capitalize' }}>
             <Box component="span" sx={{ width: 80, color: 'text.secondary', mr: 2 }}>
-              Modified
+              修改时间
             </Box>
             {fDateTime(modifiedAt)}
           </Stack>
 
           <Stack direction="row" sx={{ typography: 'caption', textTransform: 'capitalize' }}>
             <Box component="span" sx={{ width: 80, color: 'text.secondary', mr: 2 }}>
-              Type
+              类型
             </Box>
             {fileFormat(type)}
           </Stack>
@@ -155,7 +156,7 @@ export default function FileManagerFileDetails({
   const renderShared = (
     <>
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2.5 }}>
-        <Typography variant="subtitle2"> File Share With </Typography>
+        <Typography variant="subtitle2"> 文件共享 </Typography>
 
         <IconButton
           size="small"
@@ -201,7 +202,7 @@ export default function FileManagerFileDetails({
       >
         <Scrollbar sx={{ height: 1 }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2.5 }}>
-            <Typography variant="h6"> Info </Typography>
+            <Typography variant="h6"> 信息 </Typography>
 
             <Checkbox
               color="warning"
@@ -228,7 +229,7 @@ export default function FileManagerFileDetails({
             />
 
             <Typography variant="subtitle1" sx={{ wordBreak: 'break-all' }}>
-              {name}
+              {label}
             </Typography>
 
             <Divider sx={{ borderStyle: 'dashed' }} />
