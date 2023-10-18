@@ -175,7 +175,7 @@ export default function FileManagerTableRow({ row, selected, onSelectRow, onDele
           >
             {shared &&
               shared.map((person) => (
-                <Avatar key={person.id} alt={person.name} src={person.avatarUrl} />
+                <Avatar key={person._id} alt={person.username} src={person.photoURL} />
               ))}
           </AvatarGroup>
         </TableCell>

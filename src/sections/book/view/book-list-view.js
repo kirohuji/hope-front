@@ -181,14 +181,14 @@ export default function BookListView () {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="List"
+        heading="列表"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          // { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Book',
+            name: '灵修本',
             href: paths.dashboard.book.root,
           },
-          { name: 'List' },
+          { name: '列表' },
         ]}
         action={
           <Button

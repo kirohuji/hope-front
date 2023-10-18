@@ -13,10 +13,27 @@ import { fToNow } from 'src/utils/format-time';
 // components
 import Label from 'src/components/label';
 import FileThumbnail from 'src/components/file-thumbnail';
+import { fileManagerService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
-export default function NotificationItem({ notification }) {
+function category (notification) {
+  let value = '';
+  // eslint-disable-next-line default-case
+  switch (notification.category) {
+    case 'training':
+      value = "灵修";
+      break;
+  }
+  return value
+}
+export default function NotificationItem ({ notification }) {
+  const onShareFile = ()=>{
+    fileManagerService.accpetShareFile(notification);
+  }
+  const onDenyShareFile = ()=>{
+    fileManagerService.denyShareFile(notification);
+  }
   const renderAvatar = (
     <ListItemAvatar>
       {notification.avatarUrl ? (
@@ -34,12 +51,11 @@ export default function NotificationItem({ notification }) {
         >
           <Box
             component="img"
-            src={`/assets/icons/notification/${
-              (notification.type === 'order' && 'ic_order') ||
+            src={`/assets/icons/notification/${(notification.type === 'order' && 'ic_order') ||
               (notification.type === 'chat' && 'ic_chat') ||
               (notification.type === 'mail' && 'ic_mail') ||
               (notification.type === 'delivery' && 'ic_delivery')
-            }.svg`}
+              }.svg`}
             sx={{ width: 24, height: 24 }}
           />
         </Stack>
@@ -63,7 +79,7 @@ export default function NotificationItem({ notification }) {
           }
         >
           {fToNow(notification.createdAt)}
-          {notification.category}
+          {category(notification)}
         </Stack>
       }
     />
@@ -171,6 +187,20 @@ export default function NotificationItem({ notification }) {
     </Stack>
   );
 
+  const shareAction = (
+    <Stack spacing={1} direction="row" sx={{ mt: 1.5 }}>
+      <Button size="small" variant="contained" onClick={onShareFile}>
+        接受
+      </Button>
+      <Button size="small" variant="outlined" onClick={onDenyShareFile}>
+        拒绝
+      </Button>
+      <Button size="small" variant="outlined">
+        查看详情
+      </Button>
+    </Stack>
+  );
+
   const tagsAction = (
     <Stack direction="row" spacing={0.75} flexWrap="wrap" sx={{ mt: 1.5 }}>
       <Label variant="outlined" color="info">
@@ -212,6 +242,7 @@ export default function NotificationItem({ notification }) {
         {notification.type === 'friend' && friendAction}
         {notification.type === 'project' && projectAction}
         {notification.type === 'file' && fileAction}
+        {notification.type === 'share' && shareAction}
         {notification.type === 'tags' && tagsAction}
         {notification.type === 'payment' && paymentAction}
       </Stack>
@@ -225,7 +256,7 @@ NotificationItem.propTypes = {
 
 // ----------------------------------------------------------------------
 
-function reader(data) {
+function reader (data) {
   return (
     <Box
       dangerouslySetInnerHTML={{ __html: data }}

@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Markdown from 'src/components/markdown';
 // components
 import { Box, Button, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
@@ -8,12 +9,13 @@ import { Stack } from "@mui/system";
 import { paths } from 'src/routes/paths';
 
 import { useSettingsContext } from 'src/components/settings';
-import { bookService, articleService } from "src/composables/context-provider";
+import { bookService, broadcastService, articleService } from "src/composables/context-provider";
 import { useSnackbar } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
 export default function TrainingDashboardView () {
     const [article, setArticle] = useState(null)
+    const [info, setInfo] = useState(null)
     const [articleUser, setArticleUser] = useState({})
     const { enqueueSnackbar } = useSnackbar();
     const { themeStretch } = useSettingsContext();
@@ -21,6 +23,10 @@ export default function TrainingDashboardView () {
 
     const getToday = useCallback(async () => {
         const bookArticle = await bookService.startWithCurrentUser();
+        const getInfo = await broadcastService.getBook();
+        if (getInfo) {
+            setInfo(getInfo);
+        }
         if (bookArticle) {
             const response = await articleService.getArticleCurrentUser({
                 _id: bookArticle.article_id
@@ -71,12 +77,22 @@ export default function TrainingDashboardView () {
                     color: '#007B55'
                 }}
             >
-                <Box sx={{ margin: '15px', width: '100%' }}>
-                    <Typography align="left" variant="h5" gutterBottom >凡有爱心的，都是由神而生，并且认识神，没有爱心的，就不认识神，因为神就是爱。</Typography>
-                </Box>
-                <Box sx={{ margin: '0 15px', width: '100%' }}>
-                    <Typography align="right" variant="h5" gutterBottom >（约壹4：78）</Typography>
-                </Box>
+                {
+                    info && <Box sx={{ margin: '15px', width: '100%' }}>
+                        <Markdown children={info.content} />
+                    </Box>
+                }
+
+                {
+                    false && <>
+                        <Box sx={{ margin: '15px', width: '100%' }}>
+                            <Typography align="left" variant="h5" gutterBottom >凡有爱心的，都是由神而生，并且认识神，没有爱心的，就不认识神，因为神就是爱。</Typography>
+                        </Box>
+                        <Box sx={{ margin: '0 15px', width: '100%' }}>
+                            <Typography align="right" variant="h5" gutterBottom >（约壹4：78）</Typography>
+                        </Box>
+                    </>
+                }
             </Stack>
             <Stack
                 direction="row"
@@ -106,24 +122,27 @@ export default function TrainingDashboardView () {
                     </div>
                 </Button>
 
-                <Button variant="soft"
-                    color={articleUser.signIn ? 'success' : 'inherit'}
-                    sx={{
-                        borderRadius: '5%',
-                        width: '100px',
-                        padding: '15px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }} onClick={onSignIn} >
-                    <div style={{
-                        fontSize: '15px',
-                        fontWeight: '700',
-                    }}>
-                        {articleUser.signIn ? '已签到' : '签到'}
-                    </div>
-                </Button>
+                {
+                    articleUser._id && !articleUser.signIn && <Button variant="soft"
+                        color={articleUser.signIn ? 'success' : 'inherit'}
+                        sx={{
+                            borderRadius: '5%',
+                            width: '100px',
+                            padding: '15px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }} onClick={onSignIn} >
+                        <div style={{
+                            fontSize: '15px',
+                            fontWeight: '700',
+                        }}>
+                            {articleUser.signIn ? '已签到' : '签到'}
+                        </div>
+                    </Button>
+                }
+
 
                 <Button
                     variant="soft"

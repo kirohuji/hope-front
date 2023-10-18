@@ -29,6 +29,7 @@ export default function ScopePopover () {
   const getAllEvents = useCallback(() => {
     dispatch(getScopes());
   }, [dispatch]);
+  
 
   useEffect(() => {
     getAllEvents();
@@ -52,7 +53,7 @@ export default function ScopePopover () {
           }),
         }}
       >
-        <Image disabledEffect src={scope.active?.src} alt={scope.active?.src} />
+        <Image disabledEffect src={scope.active?.cover} alt={scope.active?.cover} />
       </IconButton>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
@@ -66,7 +67,7 @@ export default function ScopePopover () {
               <Image
                 disabledEffect
                 alt={option.label}
-                src={option.src}
+                src={option.cover}
                 sx={{ width: 28, mr: 2 }}
               />
 

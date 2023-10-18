@@ -1,4 +1,5 @@
 import { format, getTime, formatDistanceToNow } from 'date-fns';
+import { zhCN } from 'date-fns/locale';
 
 // ----------------------------------------------------------------------
 
@@ -9,7 +10,7 @@ export function fDate(date, newFormat) {
 }
 
 export function fDateTime(date, newFormat) {
-  const fm = newFormat || 'dd MMM yyyy p';
+  const fm = newFormat || 'yyyy/MM/dd HH:mm';
 
   return date ? format(new Date(date), fm) : '';
 }
@@ -22,6 +23,7 @@ export function fToNow(date) {
   return date
     ? formatDistanceToNow(new Date(date), {
         addSuffix: true,
+        locale: zhCN
       })
     : '';
 }

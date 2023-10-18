@@ -22,6 +22,10 @@ export default class BroadcastService extends Service {
         return this.api.get(`${this.model}/${target._id}/users`)
     }
 
+    getBook (target) {
+        return this.api.get(`${this.model}/book`)
+    }
+
     getUsersCount (target) {
         return this.api.get(`${this.model}/${target._id}/users/count`)
     }

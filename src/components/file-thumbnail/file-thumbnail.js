@@ -12,12 +12,11 @@ export default function FileThumbnail({ file, tooltip, imageView, onDownload, sx
   const { name = '', path = '', preview = '' } = fileData(file);
 
   const format = fileFormat(path || preview || file);
-  console.log(file)
   const renderContent =
     format === 'image' && imageView ? (
       <Box
         component="img"
-        src={file}
+        src={file.preview || file}
         sx={{
           width: 1,
           height: 1,

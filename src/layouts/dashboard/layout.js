@@ -6,6 +6,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import { useSettingsContext } from 'src/components/settings';
+import MusicPlayer from 'src/components/music-player';
+import AppBar from '@mui/material/AppBar';
 //
 import Main from './main';
 import Header from './header';
@@ -15,7 +17,7 @@ import NavHorizontal from './nav-horizontal';
 import DashboardFooter from './footer';
 // ----------------------------------------------------------------------
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout ({ children }) {
   const settings = useSettingsContext();
 
   const lgUp = useResponsive('up', 'lg');
@@ -79,7 +81,12 @@ export default function DashboardLayout({ children }) {
 
         <Main>{children}</Main>
         {
-          !lgUp &&<DashboardFooter />
+          !lgUp && <DashboardFooter />
+        }
+        {
+          !lgUp && <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 55 }}>
+            <MusicPlayer />
+          </AppBar>
         }
       </Box>
     </>

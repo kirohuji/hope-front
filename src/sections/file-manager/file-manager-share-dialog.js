@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types';
+import { useState, useEffect, useCallback } from 'react';
 // @mui
 import List from '@mui/material/List';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -13,12 +16,14 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 //
 import FileManagerInvitedItem from './file-manager-invited-item';
+import FileManagerSearchResults from './file-manager-search-results';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerShareDialog({
+export default function FileManagerShareDialog ({
   shared,
   inviteEmail,
+  onInviteEmail,
   onCopyLink,
   onChangeInvite,
   //
@@ -28,6 +33,52 @@ export default function FileManagerShareDialog({
 }) {
   const hasShared = shared && !!shared.length;
 
+  const [searchContacts, setSearchContacts] = useState({
+    query: '',
+    results: [],
+  });
+  const handleClickAwaySearch = useCallback(() => {
+    setSearchContacts({
+      query: '',
+      results: [],
+    });
+  }, []);
+  const handleClickResult = useCallback(
+    (result) => {
+      handleClickAwaySearch();
+    },
+    [handleClickAwaySearch]
+  );
+  
+  const renderListResults = (
+    <FileManagerSearchResults
+      query={searchContacts.query}
+      results={searchContacts.results}
+      onClickResult={handleClickResult}
+    />
+  );
+
+    const handleSearchContacts = useCallback(
+    (inputValue) => {
+      setSearchContacts((prevState) => ({
+        ...prevState,
+        query: inputValue,
+      }));
+
+      if (inputValue) {
+        const results = [].filter((contact) =>
+          contact.username.toLowerCase().includes(inputValue)
+        );
+
+        setSearchContacts((prevState) => ({
+          ...prevState,
+          results,
+        }));
+      }
+    },
+    []
+  );
+
   return (
     <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose} {...other}>
       <DialogTitle> 邀请 </DialogTitle>
@@ -36,13 +87,17 @@ export default function FileManagerShareDialog({
         {onChangeInvite && (
           <TextField
             fullWidth
-            value={inviteEmail}
+            value={searchContacts.query}
             placeholder="Email"
-            onChange={onChangeInvite}
+            onChange={(event)=>{
+              onChangeInvite(event)
+              handleSearchContacts(event.target.value)
+            }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <Button
+                    onClick={onInviteEmail}
                     color="inherit"
                     variant="contained"
                     disabled={!inviteEmail}
@@ -56,16 +111,25 @@ export default function FileManagerShareDialog({
             sx={{ mb: 2 }}
           />
         )}
-
-        {hasShared && (
-          <Scrollbar sx={{ maxHeight: 60 * 6 }}>
-            <List disablePadding>
-              {shared.map((person) => (
-                <FileManagerInvitedItem key={person.id} person={person} />
-              ))}
-            </List>
-          </Scrollbar>
-        )}
+        {
+          searchContacts.query && renderListResults
+        }
+        {
+          !searchContacts.query &&
+          <>
+            <Divider sx={{ mb: 1 }} />
+            <Typography variant="h6" sx={{ mb: 1 }}>已邀请列表</Typography>
+            {hasShared && (
+              <Scrollbar sx={{ maxHeight: 60 * 6 }}>
+                <List disablePadding>
+                  {shared.map((person) => (
+                    <FileManagerInvitedItem key={person._id} person={person} />
+                  ))}
+                </List>
+              </Scrollbar>
+            )}
+          </>
+        }
       </DialogContent>
 
       <DialogActions sx={{ justifyContent: 'space-between' }}>
@@ -88,6 +152,7 @@ export default function FileManagerShareDialog({
 FileManagerShareDialog.propTypes = {
   inviteEmail: PropTypes.string,
   onChangeInvite: PropTypes.func,
+  onInviteEmail: PropTypes.func,
   onClose: PropTypes.func,
   onCopyLink: PropTypes.func,
   open: PropTypes.bool,

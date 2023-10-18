@@ -17,17 +17,19 @@ import { fData } from 'src/utils/format-number';
 import { fDateTime } from 'src/utils/format-time';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useAuthContext } from 'src/auth/hooks';
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import FileThumbnail, { fileFormat } from 'src/components/file-thumbnail';
 //
+import _ from 'lodash';
 import FileManagerShareDialog from './file-manager-share-dialog';
 import FileManagerInvitedItem from './file-manager-invited-item';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerFileDetails({
+export default function FileManagerFileDetails ({
   item,
   open,
   favorited,
@@ -38,9 +40,12 @@ export default function FileManagerFileDetails({
   onDelete,
   ...other
 }) {
-  const { label, size, url, type, shared, modifiedAt } = item;
+  const { user } = useAuthContext();
+  const { label, size, url, type, shared, lastModified } = item;
 
   const hasShared = shared && !!shared.length;
+
+  const fileUser = shared && _.find(shared, ["_id", user._id]);
 
   const toggleTags = useBoolean(true);
 
@@ -139,7 +144,7 @@ export default function FileManagerFileDetails({
             <Box component="span" sx={{ width: 80, color: 'text.secondary', mr: 2 }}>
               修改时间
             </Box>
-            {fDateTime(modifiedAt)}
+            {fDateTime(lastModified)}
           </Stack>
 
           <Stack direction="row" sx={{ typography: 'caption', textTransform: 'capitalize' }}>
@@ -157,29 +162,30 @@ export default function FileManagerFileDetails({
     <>
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2.5 }}>
         <Typography variant="subtitle2"> 文件共享 </Typography>
-
-        <IconButton
-          size="small"
-          color="primary"
-          onClick={share.onTrue}
-          sx={{
-            width: 24,
-            height: 24,
-            bgcolor: 'primary.main',
-            color: 'primary.contrastText',
-            '&:hover': {
-              bgcolor: 'primary.dark',
-            },
-          }}
-        >
-          <Iconify icon="mingcute:add-line" />
-        </IconButton>
+        {
+          fileUser.isMain && <IconButton
+            size="small"
+            color="primary"
+            onClick={share.onTrue}
+            sx={{
+              width: 24,
+              height: 24,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              '&:hover': {
+                bgcolor: 'primary.dark',
+              },
+            }}
+          >
+            <Iconify icon="mingcute:add-line" />
+          </IconButton>
+        }
       </Stack>
 
       {hasShared && (
         <Box sx={{ pl: 2.5, pr: 1 }}>
           {shared.map((person) => (
-            <FileManagerInvitedItem key={person.id} person={person} />
+            <FileManagerInvitedItem key={person._id} person={person} isMain={fileUser.isMain} />
           ))}
         </Box>
       )}
@@ -242,7 +248,7 @@ export default function FileManagerFileDetails({
           {renderShared}
         </Scrollbar>
 
-        <Box sx={{ p: 2.5 }}>
+        {fileUser.isMain && <Box sx={{ p: 2.5 }}>
           <Button
             fullWidth
             variant="soft"
@@ -251,9 +257,10 @@ export default function FileManagerFileDetails({
             startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
             onClick={onDelete}
           >
-            Delete
+            删除
           </Button>
         </Box>
+        }
       </Drawer>
 
       <FileManagerShareDialog

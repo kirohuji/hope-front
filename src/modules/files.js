@@ -26,6 +26,22 @@ export default class FileService {
         // })
     }
 
+    upload (target) {
+        const token = localStorage.getItem('accessToken')
+        if (token) {
+            return this.api.post(`${this.model}/upload?authToken=${token}`, target)
+        }
+        return this.api.post(`${this.model}/upload`, target)
+
+        // return fetch('http://localhost:5005/api/v1/avatar', {
+        //     method: 'POST',
+        //     headers: {
+        //         'x-auth-token': localStorage.getItem('accessToken')
+        //     },
+        //     body: target
+        // })
+    }
+
     excel (target) {
         const token = localStorage.getItem('accessToken')
         if (token) {

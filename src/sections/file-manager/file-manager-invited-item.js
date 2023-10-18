@@ -14,7 +14,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerInvitedItem({ person }) {
+export default function FileManagerInvitedItem ({ person, isMain }) {
   const [permission, setPermission] = useState(person.permission);
 
   const popover = usePopover();
@@ -31,10 +31,10 @@ export default function FileManagerInvitedItem({ person }) {
           py: 1,
         }}
       >
-        <Avatar alt={person.name} src={person.avatarUrl} sx={{ mr: 2 }} />
+        <Avatar alt={person.username} src={person.photoURL} sx={{ mr: 2 }} />
 
         <ListItemText
-          primary={person.name}
+          primary={person.username}
           secondary={
             <Tooltip title={person.email}>
               <span>{person.email}</span>
@@ -44,27 +44,28 @@ export default function FileManagerInvitedItem({ person }) {
           secondaryTypographyProps={{ noWrap: true, component: 'span' }}
           sx={{ flexGrow: 1, pr: 1 }}
         />
-
-        <Button
-          size="small"
-          color="inherit"
-          endIcon={
-            <Iconify
-              width={20}
-              icon={popover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
-              sx={{ ml: -1 }}
-            />
-          }
-          onClick={popover.onOpen}
-          sx={{
-            flexShrink: 0,
-            ...(popover.open && {
-              bgcolor: 'action.selected',
-            }),
-          }}
-        >
-          Can {permission}
-        </Button>
+        {
+          isMain && <Button
+            size="small"
+            color="inherit"
+            endIcon={
+              <Iconify
+                width={20}
+                icon={popover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
+                sx={{ ml: -1 }}
+              />
+            }
+            onClick={popover.onOpen}
+            sx={{
+              flexShrink: 0,
+              ...(popover.open && {
+                bgcolor: 'action.selected',
+              }),
+            }}
+          >
+            Can {permission}
+          </Button>
+        }
       </ListItem>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 160 }}>
@@ -110,4 +111,5 @@ export default function FileManagerInvitedItem({ person }) {
 
 FileManagerInvitedItem.propTypes = {
   person: PropTypes.object,
+  isMain: PropTypes.bool,
 };

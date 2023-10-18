@@ -50,7 +50,7 @@ export default function BookItem ({ book, onView, onEdit, onDelete }) {
                 {label}
               </Link>
             }
-            secondary={`Posted date: ${fDate(createdAt)}`}
+            secondary={`发布时间: ${fDate(createdAt)}`}
             primaryTypographyProps={{
               typography: 'subtitle1',
             }}

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
 // @mui
@@ -41,6 +41,7 @@ import { countries } from 'src/assets/data';
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
+  RHFUpload,
   RHFEditor,
   RHFSwitch,
   RHFTextField,
@@ -48,7 +49,7 @@ import FormProvider, {
   RHFAutocomplete,
   RHFMultiCheckbox,
 } from 'src/components/hook-form';
-import { scopeService } from 'src/composables/context-provider';
+import { scopeService, fileService } from 'src/composables/context-provider';
 import { getScopes } from 'src/redux/slices/scope';
 
 // ----------------------------------------------------------------------
@@ -64,6 +65,7 @@ export default function ScopeNewEditForm ({ currentScope }) {
     label: Yup.string().required('Title is required'),
     value: Yup.string().required('Title is required'),
     description: Yup.string().required('Content is required'),
+    cover: Yup.string(),
     // employmentTypes: Yup.array().min(1, 'Choose at least one option'),
     // role: Yup.string().required('Role is required'),
     // skills: Yup.array().min(1, 'Choose at least one option'),
@@ -85,6 +87,7 @@ export default function ScopeNewEditForm ({ currentScope }) {
       label: currentScope?.label || '',
       value: currentScope?.value || '',
       description: currentScope?.description || '',
+      cover: currentScope?.cover || '',
       employmentTypes: currentScope?.employmentTypes || [],
       experience: currentScope?.experience || '1 year exp',
       role: currentScope?.role || _roles[1],
@@ -110,6 +113,7 @@ export default function ScopeNewEditForm ({ currentScope }) {
   const {
     reset,
     control,
+    setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
@@ -119,6 +123,22 @@ export default function ScopeNewEditForm ({ currentScope }) {
       reset(defaultValues);
     }
   }, [currentScope, defaultValues, reset]);
+
+  const handleDrop = useCallback(
+    async (acceptedFiles) => {
+      const file = acceptedFiles[0];
+      const formData = new FormData();
+      formData.append('file', file);
+      const { link } = await fileService.avatar(formData)
+      if (file) {
+        setValue('cover', link, { shouldValidate: true });
+        // setValue('photoURL', Object.assign(file, {
+        //   preview: link
+        // }), { shouldValidate: true });
+      }
+    },
+    [setValue]
+  );
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -186,6 +206,18 @@ export default function ScopeNewEditForm ({ currentScope }) {
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">描述</Typography>
               <RHFEditor simple name="description" />
+            </Stack>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">封面</Typography>
+              <RHFUpload
+                thumbnail
+                name="cover"
+                maxSize={3145728}
+                onDrop={handleDrop}
+                // onRemove={handleRemoveFile}
+                // onRemoveAll={handleRemoveAllFiles}
+                onUpload={() => console.info('ON UPLOAD')}
+              />
             </Stack>
           </Stack>
         </Card>

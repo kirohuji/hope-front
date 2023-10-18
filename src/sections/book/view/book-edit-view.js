@@ -44,14 +44,14 @@ export default function BookEditView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading="编辑"
         links={[
+          // {
+          //   name: 'Dashboard',
+          //   href: paths.dashboard.root,
+          // },
           {
-            name: 'Dashboard',
-            href: paths.dashboard.root,
-          },
-          {
-            name: 'Book',
+            name: '灵修本',
             href: paths.dashboard.book.root,
           },
           { name: book?.label },

@@ -38,12 +38,14 @@ import FormProvider, {
 } from 'src/components/hook-form';
 
 import { broadcastService, userService, fileService } from 'src/composables/context-provider';
+import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
 export const BROAECAST_TYPE_OPTIONS = [
   { value: 'activity', label: '活动通知' },
   { value: 'notification', label: '消息公告' },
+  { value: 'book', label: '灵修' },
 ];
 export default function BroadcastNewEditForm ({ currentBroadcast }) {
   const router = useRouter();
@@ -136,13 +138,18 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
   }, [currentBroadcast, getUserData, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
+    console.log('执行')
     try {
       if (!isEdit) {
-        await broadcastService.post(data);
+        await broadcastService.post({
+          ...data,
+          modifiedDate: moment(new Date()).format('YYYY/MM/DD')
+        });
       } else {
         await broadcastService.patch({
           _id: currentBroadcast._id,
-          ...data
+          ...data,
+          modifiedDate: moment(new Date()).format('YYYY/MM/DD')
         });
       }
       reset();

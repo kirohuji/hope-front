@@ -48,18 +48,20 @@ export default function FileManagerNewFolderDialog ({
   );
 
   const handleUpload = async () => {
-    await files.map(async (file) => {
-      const formData = new FormData();
-      formData.append('file', file);
-      const { link } = await fileService.avatar(formData)
-      await fileManagerService.createCurrentUser({
-        url: link,
-        label: file.name,
-        size: file.size,
-        type: `${file.name.split('.').pop()}`,
-        lastModified: new Date(file.lastModified)
+    await Promise.all(
+      files.map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const { link } = await fileService.upload(formData)
+        await fileManagerService.createCurrentUser({
+          url: link,
+          label: file.name,
+          size: file.size,
+          type: `${file.name.split('.').pop()}`,
+          lastModified: new Date(file.lastModified)
+        })
       })
-    })
+    )
     onClose();
     console.info('ON UPLOAD');
   };

@@ -66,6 +66,7 @@ export function getScopes () {
       try {
         const response = await scopeService.getAll()
         dispatch(slice.actions.getScopesSuccess(response));
+        dispatch(slice.actions.setActive(response[0]));
       } catch (error) {
         console.error(error);
         dispatch(slice.actions.hasError(error));

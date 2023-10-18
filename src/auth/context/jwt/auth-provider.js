@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
 
@@ -8,8 +9,6 @@ import { authService, notificationService, userService } from 'src/composables/c
 
 // import { useDispatch } from 'src/redux/store';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-// import { io } from "socket.io-client";
 import { AuthContext } from './auth-context';
 import { setSession } from './utils';
 
@@ -74,44 +73,30 @@ const reducer = (state, action) => {
 
 const STORAGE_KEY = 'accessToken';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-const DDPClient = require('ddp')
-
+const simpleDDP = require("simpleddp"); // nodejs
+// eslint-disable-next-line new-cap
+const ddpclient = new simpleDDP({
+  endpoint: "ws://localhost:3000/websocket",
+  SocketConstructor: WebSocket,
+  reconnectInterval: 3000
+});
 export function AuthProvider ({ children }) {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const ddpclient = new DDPClient({
-    // All properties optional, defaults shown
-    host: "localhost",
-    port: 3000,
-    ssl: false,
-    autoReconnect: true,
-    autoReconnectTimer: 5000,
-    maintainCollections: true,
-    ddpVersion: '1',  // ['1', 'pre2', 'pre1'] available
-    // uses the SockJs protocol to create the connection
-    // this still uses websockets, but allows to get the benefits
-    // from projects like meteorhacks:cluster
-    // (for load balancing and service discovery)
-    // do not use `path` option when you are using useSockJs
-    useSockJs: true,
-    // Use a full url instead of a set of `host`, `port` and `ssl`
-    // do not set `useSockJs` option if `url` is used
-    url: 'wss://localhost:3000/websocket'
-  });
-  ddpclient.subscribe(
-    'notifications',                  // name of Meteor Publish function to subscribe to
-    [],                       // any parameters used by the Publish function
-    () => {             // callback when the subscription is complete
-      dispatch({
-        type: 'NOTIFICATION',
-        payload: {
-          notifications: ddpclient.collections.notifications.find().fetch()
-        },
-      });
-    }
-  );
+
+  // ddpclient.subscribe(
+  //   'notifications',                  // name of Meteor Publish function to subscribe to
+  //   [],                       // any parameters used by the Publish function
+  //   () => {             // callback when the subscription is complete
+  //     dispatch({
+  //       type: 'NOTIFICATION',
+  //       payload: {
+  //         notifications: ddpclient.collections.notifications.find().fetch()
+  //       },
+  //     });
+  //   }
+  // );
   // const reduxDispatch = useDispatch()
 
   // const socket = io("ws://localhost:5005",{
@@ -130,13 +115,23 @@ export function AuthProvider ({ children }) {
   // socket.on("training", () => {
   //   getNotifications();
   // })
-  const getNotifications = useCallback(() => async () => {
-    const data = await notificationService.getWithCurrentUser()
+  const getNotifications = useCallback(async (user) => {
+    const notifications = await ddpclient.subscribe("notifications", user._id);
+    await notifications.ready();
+    const reactiveCollection = ddpclient.collection('notifications').reactive();
     dispatch({
       type: 'NOTIFICATION',
       payload: {
-        notifications: data
+        notifications: reactiveCollection.data()
       },
+    });
+    reactiveCollection.onChange((newData) => {
+      dispatch({
+        type: 'NOTIFICATION',
+        payload: {
+          notifications: newData
+        },
+      });
     });
   }, [])
 
@@ -153,7 +148,7 @@ export function AuthProvider ({ children }) {
         // const { user } = response.data;
         // 获取用户信息
         const { user, profile, roles, permissions } = await userService.info()
-
+        getNotifications(user)
         dispatch({
           type: 'INITIAL',
           payload: {
@@ -169,7 +164,6 @@ export function AuthProvider ({ children }) {
           //   user,
           // },
         });
-        getNotifications()
       } else {
         dispatch({
           type: 'INITIAL',
@@ -213,7 +207,7 @@ export function AuthProvider ({ children }) {
     setSession(accessToken);
 
     const { user, profile, roles, permissions } = await userService.info()
-
+    getNotifications(user)
     dispatch({
       type: 'LOGIN',
       payload: {
@@ -225,7 +219,7 @@ export function AuthProvider ({ children }) {
         }
       },
     });
-  }, []);
+  }, [getNotifications]);
 
   const sendPublish = useCallback(async (data) => {
     // socket.emit("notification", data);

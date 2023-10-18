@@ -154,6 +154,7 @@ export default function ChatMessageInput ({
   return (
     <>
       <InputBase
+        type="search"
         value={message}
         onKeyUp={handleSendMessage}
         onChange={handleChangeMessage}

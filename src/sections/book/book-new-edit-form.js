@@ -53,7 +53,7 @@ import { bookService, fileService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
-export default function BookNewEditForm({ currentBook }) {
+export default function BookNewEditForm ({ currentBook }) {
   const router = useRouter();
 
   const isEdit = !!currentBook;
@@ -205,17 +205,17 @@ export default function BookNewEditForm({ currentBook }) {
             </Stack>
 
             <Stack spacing={1.5}>
-            <Typography variant="subtitle2">封面</Typography>
-            <RHFUpload
-              thumbnail
-              name="cover"
-              maxSize={3145728}
-              onDrop={handleDrop}
-              // onRemove={handleRemoveFile}
-              // onRemoveAll={handleRemoveAllFiles}
-              onUpload={() => console.info('ON UPLOAD')}
-            />
-          </Stack>
+              <Typography variant="subtitle2">封面</Typography>
+              <RHFUpload
+                thumbnail
+                name="cover"
+                maxSize={3145728}
+                onDrop={handleDrop}
+                // onRemove={handleRemoveFile}
+                // onRemoveAll={handleRemoveAllFiles}
+                onUpload={() => console.info('ON UPLOAD')}
+              />
+            </Stack>
           </Stack>
         </Card>
       </Grid>
@@ -227,17 +227,17 @@ export default function BookNewEditForm({ currentBook }) {
       {mdUp && (
         <Grid md={4}>
           <Typography variant="h6" sx={{ mb: 0.5 }}>
-            Properties
+            属性
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Additional functions and attributes...
+            额外的功能和属性
           </Typography>
         </Grid>
       )}
 
       <Grid xs={12} md={8}>
         <Card>
-          {!mdUp && <CardHeader title="Properties" />}
+          {!mdUp && <CardHeader title="属性" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1}>
@@ -381,7 +381,7 @@ export default function BookNewEditForm({ currentBook }) {
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
                     {...field}
-                    renderInput={()=>{}}
+                    renderInput={() => { }}
                     format="dd/MM/yyyy"
                     slotProps={{
                       textField: {

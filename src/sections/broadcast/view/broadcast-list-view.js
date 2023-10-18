@@ -9,6 +9,7 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useResponsive } from 'src/hooks/use-responsive';
 // utils
 import { fTimestamp } from 'src/utils/format-time';
 // _mock
@@ -43,7 +44,7 @@ const defaultFilters = {
 export default function BroadcastListView() {
   const { enqueueSnackbar } = useSnackbar();
   const settings = useSettingsContext();
-
+  const lgUp = useResponsive('up', 'lg');
   const [tableData, setTableData] = useState([]);
 
   const openFilters = useBoolean();
@@ -181,14 +182,14 @@ export default function BroadcastListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="List"
+        heading="活动列表"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          {
-            name: 'Broadcast',
-            href: paths.dashboard.broadcast.root,
-          },
-          { name: 'List' },
+          // { name: 'Dashboard', href: paths.dashboard.root },
+          // {
+          //   name: 'Broadcast',
+          //   href: paths.dashboard.broadcast.root,
+          // },
+          { name: '' },
         ]}
         action={
           <Button

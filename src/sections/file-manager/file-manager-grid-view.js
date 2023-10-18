@@ -19,7 +19,7 @@ import FileManagerNewFolderDialog from './file-manager-new-folder-dialog';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerGridView({
+export default function FileManagerGridView ({
   table,
   data,
   onRefresh,
@@ -56,41 +56,45 @@ export default function FileManagerGridView({
   return (
     <>
       <Box ref={containerRef}>
-        <FileManagerPanel
-          title="文件夹"
-          subTitle={`${data.filter((item) => item.type === 'folder').length} 文件夹`}
-          onOpen={newFolder.onTrue}
-          collapse={folders.value}
-          onCollapse={folders.onToggle}
-        />
+        {
+          false && <>
+            <FileManagerPanel
+              title="文件夹"
+              subTitle={`${data.filter((item) => item.type === 'folder').length} 文件夹`}
+              onOpen={newFolder.onTrue}
+              collapse={folders.value}
+              onCollapse={folders.onToggle}
+            />
 
-        <Collapse in={!folders.value} unmountOnExit>
-          <Box
-            gap={3}
-            display="grid"
-            gridTemplateColumns={{
-              xs: 'repeat(1, 1fr)',
-              sm: 'repeat(2, 1fr)',
-              md: 'repeat(3, 1fr)',
-              lg: 'repeat(4, 1fr)',
-            }}
-          >
-            {dataFiltered
-              .filter((i) => i.type === 'folder')
-              .map((folder) => (
-                <FileManagerFolderItem
-                  key={folder._id}
-                  folder={folder}
-                  selected={selected.includes(folder._id)}
-                  onSelect={() => onSelectItem(folder._id)}
-                  onDelete={() => onDeleteItem(folder._id)}
-                  sx={{ maxWidth: 'auto' }}
-                />
-              ))}
-          </Box>
-        </Collapse>
+            <Collapse in={!folders.value} unmountOnExit>
+              <Box
+                gap={3}
+                display="grid"
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(2, 1fr)',
+                  md: 'repeat(3, 1fr)',
+                  lg: 'repeat(4, 1fr)',
+                }}
+              >
+                {dataFiltered
+                  .filter((i) => i.type === 'folder')
+                  .map((folder) => (
+                    <FileManagerFolderItem
+                      key={folder._id}
+                      folder={folder}
+                      selected={selected.includes(folder._id)}
+                      onSelect={() => onSelectItem(folder._id)}
+                      onDelete={() => onDeleteItem(folder._id)}
+                      sx={{ maxWidth: 'auto' }}
+                    />
+                  ))}
+              </Box>
+            </Collapse>
 
-        <Divider sx={{ my: 5, borderStyle: 'dashed' }} />
+            <Divider sx={{ my: 5, borderStyle: 'dashed' }} />
+          </>
+        }
 
         <FileManagerPanel
           title="文件"
@@ -175,7 +179,7 @@ export default function FileManagerGridView({
         }}
       />
 
-      <FileManagerNewFolderDialog open={upload.value} onClose={()=>{
+      <FileManagerNewFolderDialog open={upload.value} onClose={() => {
         onRefresh();
         upload.onFalse()
       }} />

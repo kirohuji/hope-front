@@ -15,18 +15,18 @@ export default function SearchNotFound({ query, sx, ...other }) {
       {...other}
     >
       <Typography variant="h6" gutterBottom>
-        Not Found
+        没有发现
       </Typography>
 
       <Typography variant="body2">
-        No results found for &nbsp;
+        没有搜索相关:&nbsp;
         <strong>&quot;{query}&quot;</strong>.
-        <br /> Try checking for typos or using complete words.
+        <br /> 请尝试输入其他词汇
       </Typography>
     </Paper>
   ) : (
     <Typography variant="body2" sx={sx}>
-      Please enter keywords
+      请输入
     </Typography>
   );
 }

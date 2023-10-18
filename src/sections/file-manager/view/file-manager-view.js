@@ -12,6 +12,7 @@ import { fTimestamp } from 'src/utils/format-time';
 import { _allFiles, FILE_TYPE_OPTIONS } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
@@ -41,6 +42,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function FileManagerView () {
+  const upMd = useResponsive('up', 'md');
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable({ defaultRowsPerPage: 10 });
 
@@ -52,7 +54,7 @@ export default function FileManagerView () {
 
   const upload = useBoolean();
 
-  const [view, setView] = useState('list');
+  const [view, setView] = useState('grid');
 
   const [tableData, setTableData] = useState([]);
 

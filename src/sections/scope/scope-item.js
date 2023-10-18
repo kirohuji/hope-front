@@ -22,7 +22,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
   const popover = usePopover();
 
-  const { _id, label, logo, createdAt, candidates } = scope;
+  const { _id, label, cover, createdAt, candidates } = scope;
 
   return (
     <>
@@ -34,7 +34,7 @@ export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
         <Stack sx={{ p: 3, pb: 2 }}>
           <Avatar
             alt={label}
-            src={logo}
+            src={cover}
             variant="rounded"
             sx={{ width: 48, height: 48, mb: 2 }}
           />

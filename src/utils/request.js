@@ -2,7 +2,7 @@ import axios from 'axios'
 // import qs from 'qs'
 // create an axios instance
 const service = axios.create({
-  baseURL: 'http://localhost:3000/api/v1/',
+  baseURL: 'http://192.168.50.164:3000/api/v1/',
   timeout: 10000
 })
 service.interceptors.request.use(
@@ -26,7 +26,7 @@ service.interceptors.response.use(
 export default service
 
 export const fileService = axios.create({
-  baseURL: 'http://localhost:5005/api/v1/',
+  baseURL: 'http://192.168.50.164:5005/api/v1/',
   timeout: 100000,
   headers: {
     "Content-Type": "multipart/form-data"

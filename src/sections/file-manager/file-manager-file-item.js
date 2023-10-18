@@ -17,6 +17,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
 // utils
 import { fDateTime } from 'src/utils/format-time';
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getList } from 'src/redux/slices/audio';
 import { fData } from 'src/utils/format-number';
 
 // components
@@ -27,14 +29,16 @@ import TextMaxLine from 'src/components/text-max-line';
 import FileThumbnail from 'src/components/file-thumbnail';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 //
+import { fileManagerService } from 'src/composables/context-provider';
 import FileManagerShareDialog from './file-manager-share-dialog';
 import FileManagerFileDetails from './file-manager-file-details';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerFileItem({ file, selected, onSelect, onDelete, sx, ...other }) {
+export default function FileManagerFileItem ({ file, selected, onSelect, onDelete, sx, ...other }) {
   const { enqueueSnackbar } = useSnackbar();
 
+  const dispatch = useDispatch()
   const { copy } = useCopyToClipboard();
 
   const [inviteEmail, setInviteEmail] = useState('');
@@ -54,6 +58,13 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
   const handleChangeInvite = useCallback((event) => {
     setInviteEmail(event.target.value);
   }, []);
+
+  const handleInvite = useCallback(() => {
+    fileManagerService.inviteEmailWithCurrent({
+      inviteEmail,
+      fileId: file._id,
+    })
+  }, [inviteEmail, file]);
 
   const handleCopy = useCallback(() => {
     enqueueSnackbar('Copied!');
@@ -76,14 +87,16 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
 
   const renderAction = (
     <Stack direction="row" alignItems="center" sx={{ top: 8, right: 8, position: 'absolute' }}>
-      <Checkbox
-        color="warning"
-        icon={<Iconify icon="eva:star-outline" />}
-        checkedIcon={<Iconify icon="eva:star-fill" />}
-        checked={favorite.value}
-        onChange={favorite.onToggle}
-      />
+      {
+        false && <Checkbox
+          color="warning"
+          icon={<Iconify icon="eva:star-outline" />}
+          checkedIcon={<Iconify icon="eva:star-fill" />}
+          checked={favorite.value}
+          onChange={favorite.onToggle}
+        />
 
+      }
       <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
         <Iconify icon="eva:more-vertical-fill" />
       </IconButton>
@@ -146,7 +159,7 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
       }}
     >
       {file.shared?.map((person) => (
-        <Avatar key={person.id} alt={person.name} src={person.avatarUrl} />
+        <Avatar key={person._id} alt={person.username} src={person.photoURL} />
       ))}
     </AvatarGroup>
   );
@@ -172,10 +185,15 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
         }}
         {...other}
       >
-        <Box onMouseEnter={checkbox.onTrue} onMouseLeave={checkbox.onFalse}>
+        {
+          false && <Box onMouseEnter={checkbox.onTrue} onMouseLeave={checkbox.onFalse}>
+            {renderIcon}
+          </Box>
+
+        }
+        <Box onClick={details.onTrue}>
           {renderIcon}
         </Box>
-
         {renderText}
 
         {renderAvatar}
@@ -200,14 +218,24 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
         </MenuItem>
 
         <MenuItem
-        onClick={() => {
-          popover.onClose();
-          window.open(file.url,"blank")
-        }}
-      >
-        <Iconify icon="eva:link-2-fill" />
-        下载
-      </MenuItem>
+          onClick={() => {
+            popover.onClose();
+            window.open(file.url, "blank")
+          }}
+        >
+          <Iconify icon="eva:link-2-fill" />
+          下载
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            dispatch(getList(file))
+            popover.onClose();
+          }}
+        >
+          <Iconify icon="eva:link-2-fill" />
+          播放
+        </MenuItem>
 
         <MenuItem
           onClick={() => {
@@ -248,6 +276,7 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
 
       <FileManagerShareDialog
         open={share.value}
+        onInviteEmail={handleInvite}
         shared={file.shared}
         inviteEmail={inviteEmail}
         onChangeInvite={handleChangeInvite}
