@@ -43,7 +43,7 @@ export default function UserNewEditForm ({ currentUser }) {
   const NewUserSchema = Yup.object().shape({
     username: Yup.string().required('请输入名字'),
     displayName: Yup.string().required('请输入展示名'),
-    email: Yup.string().required('请输入电子邮件').email('Email must be a valid email address'),
+    email: Yup.string().required('请输入电子邮件').email('电子邮件必须是有效的'),
     phoneNumber: Yup.string().required('请输入手机号'),
     address: Yup.string().required('请选择地址'),
     age: Yup.string().required('请选择年龄'),
@@ -58,8 +58,6 @@ export default function UserNewEditForm ({ currentUser }) {
     // role: Yup.string().required('Role is required'),
     photoURL: Yup.mixed().required('请选择头像'),
   });
-
-  console.log('current', currentUser)
   const defaultValues = useMemo(
     () => ({
       username: currentUser?.username || '',

@@ -198,12 +198,12 @@ export default function ScopeListView () {
       <CustomBreadcrumbs
         heading="列表"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          // { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Scope',
+            name: '作用域',
             href: paths.dashboard.job.root,
           },
-          { name: 'List' },
+          { name: '列表' },
         ]}
         action={
           <Button

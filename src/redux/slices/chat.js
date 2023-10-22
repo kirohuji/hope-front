@@ -67,6 +67,7 @@ const initialState = {
   activeConversationId: null,
   participants: [],
   recipients: [],
+  lastMessage: {},
 };
 
 const slice = createSlice({
@@ -142,8 +143,23 @@ const slice = createSlice({
     },
 
     getMessagesSuccess (state, action) {
-      const { conversationId, data } = action.payload;;
-      state.conversations.byId[conversationId].messages.unshift(..._.orderBy(data, ["createdAt", "asc"]))
+      const { conversationId, data } = action.payload;
+      const orderData = _.orderBy(data, ["createdAt", "asc"]);
+      if (!state.conversations.byId[conversationId]?.messages) {
+        state.conversations.byId[conversationId].messages = [];
+      }
+      state.conversations.byId[conversationId].messages.unshift(...orderData)
+      state.lastMessage = orderData[orderData.length - 1];
+    },
+
+    getNewMessagesSuccess (state, action) {
+      const { conversationId, data } = action.payload;
+      const orderData = _.orderBy(data, ["createdAt", "asc"]);
+      if (!state.conversations.byId[conversationId]?.messages) {
+        state.conversations.byId[conversationId].messages = [];
+      }
+      state.conversations.byId[conversationId].messages = _.uniqBy([...state.conversations.byId[conversationId].messages, ...orderData], "_id")
+      state.lastMessage = state.conversations.byId[conversationId].messages[state.conversations.byId[conversationId].messages.length - 1];
     },
 
     markConversationAsReadSuccess (state, action) {
@@ -169,6 +185,13 @@ const slice = createSlice({
       const recipients = action.payload;
       state.recipients = recipients;
     },
+
+    mergeConversationsUnique (state, action) {
+      const { newData } = action.payload;
+      state.conversationsByAll = newData;
+      state.conversations.byId = keyBy(newData, '_id');
+      state.conversations.allIds = Object.keys(state.conversations.byId);
+    },
   },
 });
 
@@ -185,7 +208,7 @@ export function sendMessage (conversationKey, body) {
     try {
       // debugger
       await messagingService.sendMessage({ _id: conversationKey, body: body.message, contentType: body.contentType })
-      dispatch(slice.actions.onSendMessage(body));
+      // dispatch(slice.actions.onSendMessage(body));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -196,9 +219,6 @@ export function getMessages (conversationKey, messageLimit) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      // const response = await axios.get('/api/chat/conversation', {
-      //   params: { conversationKey },
-      // });
       const data = await messagingService.getConversationMessagesById({
         _id: conversationKey, options: {
           limit: 20,
@@ -254,7 +274,10 @@ export function getConversations () {
     dispatch(slice.actions.startLoading());
     try {
       const data = await messagingService.usersAndConversations()
-      dispatch(slice.actions.getConversationsSuccess(data));
+      dispatch(slice.actions.getConversationsSuccess(data.map(conversation => ({
+          ...conversation,
+          messages: _.compact(conversation.messages)
+        }))));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -313,6 +336,36 @@ export function getParticipants (conversationKey) {
     try {
       const data = await messagingService.getConversationParticipantsById({ _id: conversationKey })
       dispatch(slice.actions.getParticipantsSuccess(data));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+export function newMessageGet (conversationId) {
+  return async (dispatch, getState) => {
+    try {
+      const { lastMessage } = getState().chat;
+      if (lastMessage._id) {
+        const data = await messagingService.getLastMessageBy({ _id: conversationId, lastId: lastMessage._id })
+        await dispatch(slice.actions.getNewMessagesSuccess({
+          conversationId,
+          data
+        }))
+      }
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+export function mergeConversations (newData) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      await dispatch(slice.actions.mergeConversationsUnique({
+        newData,
+      }));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }

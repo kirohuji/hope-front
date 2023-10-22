@@ -27,10 +27,11 @@ JoinedUserItem.propTypes = {
     permission: PropTypes.string,
   }),
   leader: PropTypes.object,
+  node: PropTypes.object,
   onSelectMain: PropTypes.func
 };
 
-export default function JoinedUserItem ({ leader, person, onSelectMain }) {
+export default function JoinedUserItem ({ node, leader, person, onSelectMain }) {
   const [permission] = useState(person.permission);
 
   const [openPopover, setOpenPopover] = useState(null);
@@ -51,7 +52,7 @@ export default function JoinedUserItem ({ leader, person, onSelectMain }) {
   return (
     <>
       <ListItem disableGutters>
-        <Badge variant="dot"  invisible={leader?.account?._id !== person._id}  size="small" color="secondary" anchorOrigin={{
+        <Badge variant="dot" invisible={leader?.account?._id !== person._id} size="small" color="secondary" anchorOrigin={{
           vertical: 'top',
           horizontal: 'left',
         }} >
@@ -127,25 +128,26 @@ export default function JoinedUserItem ({ leader, person, onSelectMain }) {
                     </MenuItem>
              */
           }
-
-
-
-          <MenuItem
-            onClick={() => {
-              handleClosePopover();
-              onSelectMain();
-              // handleChangePermission('edit');
-            }}
-            sx={{
-              ...(permission === 'edit' && {
-                bgcolor: 'action.selected',
-              }),
-            }}
-          >
-            <Iconify icon="eva:edit-fill" />
-            设置为负责人
-          </MenuItem>
-          <Divider sx={{ borderStyle: 'dashed' }} />
+          {
+            node.type === "org" && <>
+              <MenuItem
+                onClick={() => {
+                  handleClosePopover();
+                  onSelectMain();
+                  // handleChangePermission('edit');
+                }}
+                sx={{
+                  ...(permission === 'edit' && {
+                    bgcolor: 'action.selected',
+                  }),
+                }}
+              >
+                <Iconify icon="eva:edit-fill" />
+                设置为负责人
+              </MenuItem>
+              <Divider sx={{ borderStyle: 'dashed' }} />
+            </>
+          }
 
           <MenuItem
             onClick={() => {

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
+import { useRef, useCallback, useEffect, useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -40,7 +40,7 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 // service
-import { userService } from 'src/composables/context-provider';
+import { fileService, userService } from 'src/composables/context-provider';
 //
 import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';
@@ -77,6 +77,8 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function UserListView () {
+
+  const fileRef = useRef(null);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -188,8 +190,25 @@ export default function UserListView () {
     setFilters(defaultFilters);
   }, []);
 
+  const uploadImage = async () => {
+    if (fileRef.current) {
+      const file = fileRef.current.files[0]
+      const formData = new FormData();
+      formData.append('file', file);
+      await fileService.excel(formData)
+      enqueueSnackbar("导入成功")
+      getTableData()
+    }
+  }
+  const handleUploadExcel = useCallback(() => {
+    if (fileRef.current) {
+      fileRef.current.click();
+    }
+  }, []);
+
   return (
     <>
+      <input onChange={uploadImage} accept='application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' type="file" ref={fileRef} style={{ display: 'none' }} />
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
           heading="列表"
@@ -237,6 +256,7 @@ export default function UserListView () {
           <UserTableToolbar
             filters={filters}
             onFilters={handleFilters}
+            onUploadExcel={handleUploadExcel}
             //
             roleOptions={_roles}
           />

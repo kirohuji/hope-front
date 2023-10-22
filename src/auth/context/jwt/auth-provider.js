@@ -5,7 +5,7 @@ import { useEffect, useReducer, useCallback, useMemo } from 'react';
 // utils
 // import axios, { endpoints } from 'src/utils/axios';
 //
-import { authService, notificationService, userService } from 'src/composables/context-provider';
+import { authService, notificationService, userService, ddpclient } from 'src/composables/context-provider';
 
 // import { useDispatch } from 'src/redux/store';
 
@@ -73,48 +73,10 @@ const reducer = (state, action) => {
 
 const STORAGE_KEY = 'accessToken';
 
-const simpleDDP = require("simpleddp"); // nodejs
-// eslint-disable-next-line new-cap
-const ddpclient = new simpleDDP({
-  endpoint: "ws://localhost:3000/websocket",
-  SocketConstructor: WebSocket,
-  reconnectInterval: 3000
-});
+
 export function AuthProvider ({ children }) {
 
   const [state, dispatch] = useReducer(reducer, initialState);
-
-
-  // ddpclient.subscribe(
-  //   'notifications',                  // name of Meteor Publish function to subscribe to
-  //   [],                       // any parameters used by the Publish function
-  //   () => {             // callback when the subscription is complete
-  //     dispatch({
-  //       type: 'NOTIFICATION',
-  //       payload: {
-  //         notifications: ddpclient.collections.notifications.find().fetch()
-  //       },
-  //     });
-  //   }
-  // );
-  // const reduxDispatch = useDispatch()
-
-  // const socket = io("ws://localhost:5005",{
-  //   reconnectionDelayMax: 10000,
-  //   ackTimeout: 10000,
-  //   timeout: 10000
-  // });
-  // socket.on("connect", () => {
-  //   socket.emit("upsert", state.user);
-  // });
-
-  // socket.on("hello", (data) => {
-  //   console.log('收到', data)
-  // })
-
-  // socket.on("training", () => {
-  //   getNotifications();
-  // })
   const getNotifications = useCallback(async (user) => {
     const notifications = await ddpclient.subscribe("notifications", user._id);
     await notifications.ready();

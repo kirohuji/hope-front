@@ -30,10 +30,10 @@ const OPTIONS = [
   //   label: 'Home',
   //   linkTo: '/',
   // },
-  // {
-  //   label: '个人中心',
-  //   linkTo: paths.dashboard.user.profile,
-  // },
+  {
+    label: '个人中心',
+    linkTo: paths.dashboard.user.profile,
+  },
   {
     label: '设置',
     linkTo: paths.dashboard.user.account,

@@ -19,9 +19,11 @@ import { useRouter } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
 import { useResponsive } from 'src/hooks/use-responsive';
 //
+import { messagingService } from 'src/composables/context-provider';
 import { useGetNavItem } from './hooks';
 
 import ChatSwipeableNavItem from './chat-swipeable-nav-item'
+
 
 // ----------------------------------------------------------------------
 
@@ -48,14 +50,22 @@ export default function ChatNavItem ({ deleteConversation, onSwipe, selected, on
     } else {
       try {
         if (!mdUp) {
-          onCloseMobile();
+          // eslint-disable-next-line no-unused-expressions
+          onCloseMobile && onCloseMobile();
         }
-        router.push(`${paths.chat}?id=${conversation._id}`);
+        if (type === "contact") {
+          const newConversation = await messagingService.room({
+            participants: [user._id, conversation._id]
+          })
+          router.push(`${paths.chat}?id=${newConversation._id}`);
+        } else {
+          router.push(`${paths.chat}?id=${conversation._id}`);
+        }
       } catch (error) {
         console.error(error);
       }
     }
-  }, [conversation, type, onChildren, mdUp, onCloseMobile, router]);
+  }, [type, onChildren, conversation, mdUp, onCloseMobile, user._id, router]);
 
   const renderGroup = (
     <Badge
@@ -77,7 +87,7 @@ export default function ChatNavItem ({ deleteConversation, onSwipe, selected, on
   );
 
   return (
-    <ChatSwipeableNavItem onSwipe={()=>deleteConversation && deleteConversation()} handleClickConversation={handleClickConversation}>
+    <ChatSwipeableNavItem onSwipe={() => deleteConversation && deleteConversation()} handleClickConversation={handleClickConversation}>
       <ListItemButton
         disableGutters
         sx={{

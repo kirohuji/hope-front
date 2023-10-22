@@ -35,6 +35,7 @@ OrganDetailsDrawer.propTypes = {
   item: PropTypes.object,
   onClose: PropTypes.func,
   onDelete: PropTypes.func,
+  onFlash: PropTypes.func,
 };
 
 export default function OrganDetailsDrawer ({
@@ -42,6 +43,7 @@ export default function OrganDetailsDrawer ({
   open,
   onClose,
   onDelete,
+  onFlash,
   ...other
 }) {
   const { name, size, type, dateModified, leader } = item;
@@ -96,6 +98,7 @@ export default function OrganDetailsDrawer ({
       leader_id: person._id
     })
     getUsers();
+    onFlash()
   }
 
   return (
@@ -190,11 +193,11 @@ export default function OrganDetailsDrawer ({
                 <Stack spacing={1.5}>
                   {false && <Row label="负责人" value={fData(size)} />}
 
-                  <Row label="负责人" value={leader?.account?.username} />
+                  {item.type === "org" && <Row label="负责人" value={leader?.account?.username} />}
 
-                  {false &&  <Row label="代码" value={fDateTime(dateModified)} />}
+                  {false && <Row label="代码" value={fDateTime(dateModified)} />}
 
-                  {false && <Row label="类型" value={fileFormat(type)} /> }
+                  {false && <Row label="类型" value={fileFormat(type)} />}
                 </Stack>
               )}
             </Stack>
@@ -225,7 +228,7 @@ export default function OrganDetailsDrawer ({
           {hasUsers && (
             <List disablePadding sx={{ pl: 2.5, pr: 1 }}>
               {users.map((person) => (
-                <JoinedUserItem key={person._id} leader={leader} person={person} onSelectMain={() => onSelectMain(person)} />
+                <JoinedUserItem node={item} key={person._id} leader={leader} person={person} onSelectMain={() => onSelectMain(person)} />
               ))}
             </List>
           )}

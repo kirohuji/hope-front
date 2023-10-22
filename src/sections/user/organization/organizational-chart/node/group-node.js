@@ -144,9 +144,11 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
         <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
           {node.role}
         </Typography>
-        <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
-          负责人: {node.leader?.account?.username || "无"}
-        </Typography>
+        {
+          node.type === "org" && <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
+            负责人: {node.leader?.account?.username || "无"}
+          </Typography>
+        }
       </Card>
       <MenuPopover
         open={openPopover}

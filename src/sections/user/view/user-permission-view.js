@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import { useState, useCallback, useEffect, useMemo, createContext } from 'react';
 // @mui
 import { Container, DialogTitle, Dialog, DialogContent, Button } from '@mui/material';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 // import Card from '@mui/material/Card';
 import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
 import Box from '@mui/material/Box';
@@ -265,12 +267,18 @@ export default function UserPermissionView () {
             sx={{ px: 2.5, pt: 2.5 }}>
             <StyledTreeItem nodeId="0" label="根节点" isRoot onAddChildren={() => handleAddChildren()}>
               {
-                getTree(permissions).map((perm) => <List data={perm} key={perm._id}/>)
+                getTree(permissions).map((perm) => <List data={perm} key={perm._id} />)
               }
             </StyledTreeItem>
           </StyledTreeView>
         </userContext.Provider>
       </Container>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={!permissions.length}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Dialog fullWidth maxWidth="md" open={openForm} onClose={handleCloseModal}>
         <DialogTitle>{item._id ? '编辑' : '新增'}</DialogTitle>
         <DialogContent dividers>

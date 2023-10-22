@@ -81,7 +81,7 @@ export default function UserTableRow ({ row, selected, onClose, onEditRow, onSel
         </TableCell>
         <Restricted to={["UserListEditButton", "UserListRemoveButton"]}>
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-            <Restricted to={["UserListEditButton"]}>
+            <Restricted to={["UserListEditButton"]} hidden>
               <Tooltip title="快速编辑" placement="top" arrow>
                 <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
                   <Iconify icon="solar:pen-bold" />
@@ -106,6 +106,17 @@ export default function UserTableRow ({ row, selected, onClose, onEditRow, onSel
         arrow="right-top"
         sx={{ width: 140 }}
       >
+        <Restricted to={["UserListEditButton"]}>
+          <MenuItem
+            onClick={() => {
+              onEditRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            查看/编辑
+          </MenuItem>
+        </Restricted>
         <Restricted to={["UserListRemoveButton"]}>
           <MenuItem
             onClick={() => {
@@ -118,17 +129,6 @@ export default function UserTableRow ({ row, selected, onClose, onEditRow, onSel
             删除
           </MenuItem>
         </Restricted>
-        <Restricted to={["UserListEditButton"]}>
-          <MenuItem
-            onClick={() => {
-              onEditRow();
-              popover.onClose();
-            }}
-          >
-            <Iconify icon="solar:pen-bold" />
-            查看/编辑
-          </MenuItem>
-        </Restricted>
       </CustomPopover>
 
       <ConfirmDialog
@@ -137,7 +137,10 @@ export default function UserTableRow ({ row, selected, onClose, onEditRow, onSel
         title="删除"
         content="你确认要删除吗?"
         action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+          <Button variant="contained" color="error" onClick={()=>{
+            onDeleteRow();
+            confirm.onFalse()
+          }}>
             删除
           </Button>
         }

@@ -118,7 +118,7 @@ export default function OrganizationalChart ({ maxRole, type, data, variant = 's
           }
         </DialogContent>
       </Dialog>
-      <OrganDetailsDrawer item={item} open={openManager} onClose={handleCloseManagerModal} onDelete={() => setOpenDeleteConfirm(true)} />
+      <OrganDetailsDrawer onFlash={onFlash} item={item} open={openManager} onClose={handleCloseManagerModal} onDelete={() => setOpenDeleteConfirm(true)} />
       {
         /**
             <Dialog fullWidth maxWidth="md" open={openManager} onClose={handleCloseManagerModal}>

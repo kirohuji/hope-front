@@ -120,7 +120,7 @@ export default function ChatMessageInput ({
             if (selectedConversationId) {
               setType('text')
               await dispatch(sendMessage(selectedConversationId, messageData));
-              sendMessageToOpenVidu(message)
+              // sendMessageToOpenVidu(message)
             } else {
               const conversationKey = await createConversation(conversationData);
               router.push(`${paths.chat}?id=${conversationKey}`);
@@ -134,7 +134,7 @@ export default function ChatMessageInput ({
         console.error(error);
       }
     },
-    [conversationData, message, sendMessageToOpenVidu, messageData, dispatch, createConversation, onAddRecipients, router, selectedConversationId]
+    [conversationData, message, messageData, dispatch, createConversation, onAddRecipients, router, selectedConversationId]
   );
 
   const uploadImage = async () => {

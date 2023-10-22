@@ -13,6 +13,10 @@ export default class UserService extends Service {
     return this.api.post(`${this.model}/register`, target)
   }
 
+  delete(target) {
+    return this.api.delete(`${this.model}/delete/${target._id}`, target)
+  }
+
   changePassword(target) {
     return this.api.post(`${this.model}/changePassword`, target)
   }

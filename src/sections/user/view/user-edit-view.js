@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Container from '@mui/material/Container';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 // routes
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
@@ -46,22 +48,28 @@ export default function UserEditView () {
       <CustomBreadcrumbs
         heading="编辑"
         links={[
+          // {
+          //   name: 'Dashboard',
+          //   href: paths.dashboard.root,
+          // },
           {
-            name: 'Dashboard',
-            href: paths.dashboard.root,
-          },
-          {
-            name: 'User',
+            name: '用户',
             href: paths.dashboard.user.root,
           },
-          { name: user?.name },
+          { name: user?.username },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={!user}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       {
-        user && <UserNewEditForm currentUser={user} />
+        !!user && <UserNewEditForm currentUser={user} />
       }
     </Container>
   );

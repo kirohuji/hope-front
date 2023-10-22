@@ -24,8 +24,6 @@ import UserVideoComponent from './user-video-component'
 // ----------------------------------------------------------------------
 
 const Transition = forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
-
-const OV = new OpenVidu();
 export default function ChatHeaderDetail ({ openMedia, mainStreamManager, participants }) {
 
   const dialog = useBoolean();
@@ -74,9 +72,6 @@ export default function ChatHeaderDetail ({ openMedia, mainStreamManager, partic
       />
     </Stack>
   );
-
-
-  console.log('mainStreamManager',mainStreamManager)
   return (
     <>
       {group ? renderGroup : renderSingle}

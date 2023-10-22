@@ -1,3 +1,4 @@
+import SimpleDDP from "simpleddp";
 import api, { fileService as fileApi } from "../utils/request";
 import AuthService from "../modules/auth";
 import UserService from "../modules/users";
@@ -16,7 +17,7 @@ import DictionaryOptionService from "../modules/dictionaries_options";
 import ArticleService from "../modules/articles";
 import NotificationService from "../modules/notifications";
 // export const serviceContainer = {
-//   authService: new AuthService({ api: api, model: 'auth' })
+//   authService: new AuthService({ api: api, model: 'auth })
 // };
 export const authService = new AuthService({ api, model: '' })
 export const userService = new UserService({ api, model: 'users' })
@@ -34,3 +35,8 @@ export const dictionaryOptionService = new DictionaryOptionService({ api, model:
 export const articleService = new ArticleService({ api, model: 'articles' })
 export const broadcastService = new BroadcastService({ api, model: 'broadcasts' })
 export const notificationService = new NotificationService({ api, model: 'notifications' })
+export const ddpclient = new SimpleDDP({
+    endpoint: "ws://localhost:3000/websocket",
+    SocketConstructor: WebSocket,
+    reconnectInterval: 3000
+});

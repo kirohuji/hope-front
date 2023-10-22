@@ -10,35 +10,39 @@ export default class MessagingService {
         }
     }
 
-    usersAndConversations(){
+    usersAndConversations () {
         return this.api.get(`${this.model}/users/conversations`)
     }
 
-    getConversationById(target){
+    getConversationById (target) {
         return this.api.get(`${this.model}/conversations/${target._id}`)
     }
 
-    getConversationParticipantsById(target){
+    getLastMessageBy (target) {
+        return this.api.get(`${this.model}/conversations/${target._id}/lastMessage/${target.lastId}`)
+    }
+
+    getConversationParticipantsById (target) {
         return this.api.get(`${this.model}/conversations/${target._id}/participantsAsUsers`)
     }
 
-    getConversationMessagesById(target){
+    getConversationMessagesById (target) {
         return this.api.post(`${this.model}/conversations/${target._id}/messages`, target)
     }
 
-    sendMessage(target){
+    sendMessage (target) {
         return this.api.post(`${this.model}/conversations/${target._id}/sendMessage`, target)
     }
 
-    findExistingConversationWithUsers(target){
+    findExistingConversationWithUsers (target) {
         return this.api.post(`${this.model}/findExistingConversationWithUsers`, target)
     }
 
-    room(target){
+    room (target) {
         return this.api.post(`${this.model}/conversations/room`, target)
     }
 
-    deleteConversation(target){
+    deleteConversation (target) {
         return this.api.delete(`${this.model}/conversations/${target._id}`, target)
     }
 }
