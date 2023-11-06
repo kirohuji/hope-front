@@ -1,5 +1,7 @@
-import { Box, Container, Divider, List, ListItemAvatar, ListItemButton, Avatar, ListItemIcon, ListItemText, Typography, ButtonGroup, Button } from "@mui/material"
+/* eslint-disable react/no-danger */
+import { Box, Container, Divider, List, ListItemButton, Stack, ListItemIcon, ListItemText, Typography, ButtonGroup, Button } from "@mui/material"
 import { Helmet } from "react-helmet-async"
+import Markdown from 'src/components/markdown';
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import TrainingCard from 'src/sections/training/training-card'
@@ -14,21 +16,19 @@ export default function TrainingSearchDetailView () {
   const [isLoading, setIsLoading] = useState(true);
   const getDetail = useCallback(async () => {
     try {
-      await Promise.all([bookService.get({ _id: id }), bookService.paginationWithPostsByBookId({
-        selector: {
-          book_id: id
-        }
+      await Promise.all([bookService.get({ _id: id }), bookService.paginationWithArticleByBookId({
+        book_id: id
       })]).then(async ([bookData, postsData]) => {
         const bookUsers = await bookService.getBooksWithCurrentUser({
           book_id: bookData._id,
         })
-        if(bookUsers.length){
+        if (bookUsers.length) {
           setBookUser(bookUsers[0])
         } else {
           setBookUser({})
         }
         setBook(bookData);
-        setPosts(postsData.data);
+        setPosts(postsData);
         setIsLoading(false);
       })
     } catch (error) {
@@ -36,7 +36,7 @@ export default function TrainingSearchDetailView () {
       // setErrorMsg(error.message);
       console.log(error)
     }
-  }, [id, setBook, setBookUser,setPosts, setIsLoading])
+  }, [id, setBook, setBookUser, setPosts, setIsLoading])
 
   useEffect(() => {
     if (id) {
@@ -69,7 +69,7 @@ export default function TrainingSearchDetailView () {
   return (
     <>
       <Helmet>详情 | Hope Family</Helmet>
-      <Container>
+      <Container sx={{ height: 'calc(100vh - 64px)' }}>
         <Box>
           <div style={{ display: 'flex' }}>
             <div style={{ width: '142px' }}>
@@ -79,32 +79,70 @@ export default function TrainingSearchDetailView () {
               <Typography variant="h9" style={{ fontWeight: '700' }}>{book.label}</Typography>
             </div>
           </div>
-          <div style={{ fontSize: '12px', margin: '15px' }}>
-            {book.description}
-          </div>
+          <Box sx={{ margin: '15px 0 15px 15px' }}>
+            <Typography style={{ fontWeight: '700' }} variant="h9">描述</Typography>
+            <div style={{ fontSize: '14px' }} dangerouslySetInnerHTML={{ __html: book.description }} />
+          </Box>
         </Box>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-evenly'
-        }}>
-          {
-            bookUser.currentStatus === "active" ? <Button variant="text" color="error" onClick={() => onDeactive()}> 退出(正在灵修中)</Button> :
-              <Button variant="text" onClick={() => onActive()}>开始灵修</Button>
-          }
-          <Button variant="text" onClick={() => onSelect()}>添加到列表</Button>
-        </div>
         <Divider />
-        <Box sx={{ margin: '15px 0', color: 'black' }}>
+        <Box sx={{ color: 'black' }}>
           <List>
             {
               !isLoading && posts.map((item, index) => <ListItemButton key={index}>
-                <ListItemText primary={item.title} secondary={item.title} />
-                <Iconify icon="ic:outline-remove-red-eye" width={22} />
-                <Iconify icon="ic:outline-more-vert" width={22} />
+                <ListItemText primary={`${item.title}`} secondary={item.title} />
+                {
+                  false && <>
+                    <Iconify icon="ic:outline-remove-red-eye" width={22} />
+                    <Iconify icon="ic:outline-more-vert" width={22} />
+                  </>
+                }
               </ListItemButton>)
             }
           </List>
         </Box>
+        <Stack
+          direction="row"
+          flexWrap="wrap"
+          justifyContent="space-evenly"
+          style={{
+            left: '-0px',
+            position: "absolute",
+            bottom: "5%",
+            width: "100%"
+          }}
+        >
+          <Button variant="soft" color={bookUser.currentStatus === "active" ? "error" : "inherit"} sx={{
+            borderRadius: '5%',
+            width: '150px',
+            padding: '8px',
+          }} onClick={() => bookUser.currentStatus === "active" ? onDeactive() : onActive()}>
+            <div style={{
+              fontSize: '15px',
+              fontWeight: '700',
+            }}>
+              {
+                bookUser.currentStatus === "active" ? "退出(正在阅读)" : "开始阅读"
+              }
+            </div>
+          </Button>
+          <Button
+            variant="soft"
+            to="/training"
+            sx={{
+              borderRadius: '5%',
+              width: '150px',
+              padding: '8px',
+            }}
+            onClick={onSelect}
+          >
+            <div style={{
+              fontSize: '15px',
+              fontWeight: '700',
+            }}>
+              添加到列表
+            </div>
+          </Button>
+        </Stack>
       </Container>
     </>
   )

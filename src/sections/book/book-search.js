@@ -44,7 +44,7 @@ export default function BookSearch({ query, results, onSearch, hrefItem }) {
       renderInput={(params) => (
         <TextField
           {...params}
-          placeholder="Search..."
+          placeholder="搜索..."
           onKeyUp={handleKeyUp}
           InputProps={{
             ...params.InputProps,

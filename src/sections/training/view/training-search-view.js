@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 import { Box, Container, Divider, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 import { useState, useEffect, useCallback } from 'react'
@@ -140,9 +141,7 @@ export default function TrainingSearchPage () {
               </div>
               <div style={{ margin: "15px 0px", width: 'calc(100% - 142px' }}>
                 <Typography variant="h9" style={{ fontWeight: '700' }}>{post.label}</Typography>
-                <div style={{ fontSize: '12px' }}>
-                  {post.description}
-                </div>
+                <div style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: post.description }} />
               </div>
             </Box>
           )}

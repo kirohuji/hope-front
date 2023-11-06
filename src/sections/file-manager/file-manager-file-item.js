@@ -30,22 +30,28 @@ import FileThumbnail from 'src/components/file-thumbnail';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import { fileManagerService } from 'src/composables/context-provider';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import FileManagerShareDialog from './file-manager-share-dialog';
 import FileManagerFileDetails from './file-manager-file-details';
 
 // ----------------------------------------------------------------------
 
 export default function FileManagerFileItem ({ file, selected, onSelect, onDelete, sx, ...other }) {
+
   const { enqueueSnackbar } = useSnackbar();
 
   const dispatch = useDispatch()
   const { copy } = useCopyToClipboard();
+  
 
   const [inviteEmail, setInviteEmail] = useState('');
 
   const checkbox = useBoolean();
 
   const share = useBoolean();
+
+  const loading = useBoolean();
 
   const confirm = useBoolean();
 
@@ -59,15 +65,19 @@ export default function FileManagerFileItem ({ file, selected, onSelect, onDelet
     setInviteEmail(event.target.value);
   }, []);
 
-  const handleInvite = useCallback(() => {
-    fileManagerService.inviteEmailWithCurrent({
+  const handleInvite = useCallback(async () => {
+    loading.onTrue()
+    await fileManagerService.inviteEmailWithCurrent({
       inviteEmail,
       fileId: file._id,
     })
-  }, [inviteEmail, file]);
+    enqueueSnackbar('发送成功!');
+    loading.onFalse()
+    share.onFalse();
+  }, [share,loading, inviteEmail, file._id, enqueueSnackbar]);
 
   const handleCopy = useCallback(() => {
-    enqueueSnackbar('Copied!');
+    enqueueSnackbar('拷贝成功!');
     copy(file.url);
   }, [copy, enqueueSnackbar, file.url]);
 
@@ -298,6 +308,12 @@ export default function FileManagerFileItem ({ file, selected, onSelect, onDelet
           </Button>
         }
       />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading.value}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 }

@@ -150,7 +150,7 @@ export default function BroadcastDetailsView () {
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <BroadcastDetailsToolbar
         backLink={paths.dashboard.broadcast.root}
-        editLink={paths.dashboard.broadcast.edit(`${currentBroadcast?.id}`)}
+        editLink={paths.dashboard.broadcast.edit(`${currentBroadcast?._id}`)}
         liveLink="#"
         publish={publish || ''}
         onChangePublish={handleChangePublish}

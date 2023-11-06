@@ -20,6 +20,9 @@ import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import dayjs from 'dayjs';
 import isBetweenPlugin from 'dayjs/plugin/isBetween';
 import { styled } from '@mui/material/styles';
+// redux
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getPlay } from 'src/redux/slices/trainning';
 // components
 import {
     StaticDatePicker
@@ -27,13 +30,10 @@ import {
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Link } from "react-router-dom";
-import { IconButtonAnimate } from 'src/components/animate';
 import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
 import Iconify from 'src/components/iconify'
-import { SkeletonPostItem } from 'src/components/skeleton';
 import TrainingCard from 'src/sections/training/training-card'
-import Image from 'src/components/image';
 import { bookService } from 'src/composables/context-provider';
 import _ from 'lodash'
 
@@ -107,13 +107,18 @@ const defaultBook = {
     }
 }
 export default function TrainingProcessPage () {
+    const dispatch = useDispatch();
+
     const { themeStretch } = useSettingsContext();
+
     const [scrollable, setScrollable] = useState('one');
     const [click, setCLick] = useState(null);
     const [value, setValue] = useState(new Date());
     const [open, setOpen] = useState(false);
     const [books, setBooks] = useState([]);
     const [bookSummarize, setBookSummarize] = useState([]);
+
+    // const { list, current } = useSelector((state) => state.training);
 
     const getBooks = useCallback(async () => {
         try {
@@ -126,20 +131,25 @@ export default function TrainingProcessPage () {
                 });
                 setBookSummarize(bookSummarizeData)
             }
-            // BooksData.forEach(book => {
-            //     if (book.currentStatus === "acitve") {
-
-            //     }
-            // });
         } catch (error) {
             // setLoadingPost(false);
             // setErrorMsg(error.message);
         }
     }, [setBooks, setBookSummarize])
 
+    const getCurrentTraining = useCallback(async () => {
+        try {
+            dispatch(getPlay())
+        } catch (error) {
+            // setLoadingPost(false);
+            // setErrorMsg(error.message);
+        }
+    }, [dispatch])
+
     useEffect(() => {
-        getBooks()
-    }, [getBooks]);
+        getBooks();
+        getCurrentTraining()
+    }, [getBooks, getCurrentTraining]);
 
     const handleDialogOpen = () => {
         setOpen(true);
@@ -187,23 +197,6 @@ export default function TrainingProcessPage () {
             <Helmet>
                 <title> 灵修 | Hope Family</title>
             </Helmet>
-            {
-                /**
-            <Box
-                sx={{
-                    flexGrow: 1,
-                    width: '100%',
-                    bgcolor: 'background.neutral'
-                }}
-            >
-                <Tabs value={scrollable} onChange={(event, newValue) => setScrollable(newValue)}>
-                    {TABS.map((tab) => (
-                        <Tab key={tab.value} label={tab.label} value={tab.value} />
-                    ))}
-                </Tabs>
-            </Box>
-                 */
-            }
             <TabPanel value={scrollable} index="one" key={0}>
                 <Box sx={{ margin: '0 15px', display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="h4" >正在学习</Typography>
@@ -221,11 +214,11 @@ export default function TrainingProcessPage () {
                     <Box sx={{ display: 'flex', position: "relative" }}>
                         {books.length ? books.map((book, index) => <TrainingCard post={book} index={index} key={index} />) : <TrainingCard post={defaultBook} />}
                         {
-                            false &&                         <Iconify
-                            icon="ic:outline-more-vert"
-                            style={{
-                                mr: 1, color: 'text.primary', position: "absolute", right: "8px", top: '8px'
-                            }} />
+                            false && <Iconify
+                                icon="ic:outline-more-vert"
+                                style={{
+                                    mr: 1, color: 'text.primary', position: "absolute", right: "8px", top: '8px'
+                                }} />
                         }
                     </Box>
                     {
@@ -233,7 +226,7 @@ export default function TrainingProcessPage () {
                             <div>
                                 <LinearProgress
                                     variant="determinate"
-                                    value={(bookSummarize.inProcess/bookSummarize.total)*100}
+                                    value={(bookSummarize.inProcess / bookSummarize.total) * 100}
                                     sx={{ width: 1 }} />
                             </div>
                             <div style={{

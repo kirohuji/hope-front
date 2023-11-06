@@ -38,13 +38,13 @@ export default function FileManagerFiltersResult({
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          results found
+          项被找到
         </Box>
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {!!filters.type.length && (
-          <Block label="Types:">
+          <Block label="类型:">
             {filters.type.map((item) => (
               <Chip key={item} label={item} size="small" onDelete={() => handleRemoveTypes(item)} />
             ))}
@@ -63,7 +63,7 @@ export default function FileManagerFiltersResult({
             onClick={onResetFilters}
             startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
           >
-            Clear
+            清除
           </Button>
         )}
       </Stack>

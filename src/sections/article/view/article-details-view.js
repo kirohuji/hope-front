@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useCallback, useState } from 'react';
 // @mui
 import Chip from '@mui/material/Chip';
@@ -37,7 +38,12 @@ import { ArticleDetailsSkeleton } from '../article-skeleton';
 import ArticleDetailsToolbar from '../article-details-toolbar';
 // ----------------------------------------------------------------------
 
-export default function ArticleDetailsView () {
+ArticleDetailsView.propTypes = {
+  articleId: PropTypes.string,
+  onClose: PropTypes.func,
+};
+
+export default function ArticleDetailsView ({ onClose,articleId }) {
   const { themeStretch } = useSettingsContext();
 
   const params = useParams();
@@ -62,14 +68,14 @@ export default function ArticleDetailsView () {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const getPost = useCallback(async () => {
+  const getPost = useCallback(async (_id) => {
     try {
       const response = await articleService.get({
-        _id: id
+        _id
       })
 
       const getArticleUser = await articleService.getArticleCurrentUser({
-        _id: id
+        _id
       })
       setArticle(response);
       setArticleUser(getArticleUser);
@@ -81,12 +87,14 @@ export default function ArticleDetailsView () {
       setLoadingPost(false);
       setErrorMsg(error.message);
     }
-  }, [id]);
+  }, []);
   useEffect(() => {
     if (id) {
-      getPost();
+      getPost(id);
+    } else if (articleId) {
+      getPost(articleId)
     }
-  }, [getPost, id]);
+  }, [getPost, articleId, id]);
 
   const handleChangePublish = useCallback((newValue) => {
     setPublish(newValue);
@@ -102,8 +110,9 @@ export default function ArticleDetailsView () {
       answers
     })
     setIsSubmitting(false)
+    onClose()
     enqueueSnackbar('提交成功!');
-    
+
   }
   const renderError = (
     <EmptyContent
@@ -237,7 +246,7 @@ export default function ArticleDetailsView () {
           }
           <Divider sx={{ mt: 1, mb: 1 }} />
           <LoadingButton onClick={() => onSubmit()} variant="contained" loading={isSubmitting}>
-            保存回答
+            完成阅读
           </LoadingButton>
         </Stack>
       </Stack>

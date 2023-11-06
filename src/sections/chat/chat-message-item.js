@@ -8,6 +8,8 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // hooks
 import { useAuthContext } from 'src/auth/hooks';
+
+import CircularProgress from '@mui/material/CircularProgress';
 // components
 import Iconify from 'src/components/iconify';
 //
@@ -27,7 +29,7 @@ export default function ChatMessageItem ({ message, participants, onOpenLightbox
 
   const { username, photoURL } = senderDetails;
 
-  const { body, createdAt } = message;
+  const { body, createdAt, isLoading } = message;
 
   const renderInfo = (
     <Typography
@@ -113,21 +115,26 @@ export default function ChatMessageItem ({ message, participants, onOpenLightbox
       <IconButton size="small">
         <Iconify icon="solar:reply-bold" width={16} />
       </IconButton>
-      <IconButton size="small">
-        <Iconify icon="eva:smiling-face-fill" width={16} />
-      </IconButton>
-      <IconButton size="small">
-        <Iconify icon="solar:trash-bin-trash-bold" width={16} />
-      </IconButton>
+      {
+        false && <IconButton size="small">
+          <Iconify icon="eva:smiling-face-fill" width={16} />
+        </IconButton>
+      }
+      {
+        false && <IconButton size="small">
+          <Iconify icon="solar:trash-bin-trash-bold" width={16} />
+        </IconButton>
+      }
     </Stack>
   );
 
   return (
-    <Stack direction="row" justifyContent={me ? 'flex-end' : 'unset'} sx={{ mb: 5 }}>
+    <Stack direction="row" justifyContent={me ? 'flex-end' : 'unset'} sx={{ mb: 5 }} alignItems="center">
+      {isLoading && <CircularProgress size={20} sx={{ mr: 0.5}} />}
       {!me && <Avatar alt={username} src={photoURL} sx={{ width: 32, height: 32, mr: 2 }} />}
 
       <Stack alignItems={me ? "flex-end" : "flex-start"}>
-        {renderInfo}
+        {!isLoading && renderInfo}
 
         <Stack
           direction="row"

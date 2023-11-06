@@ -70,7 +70,7 @@ export default function ChatMessageInput ({
       message,
       contentType: type,
       // createdAt: sub(new Date(), { minutes: 1 }),
-      createdAt: moment(new Date()).format("YYYY/MM/DD hh:mm:ss"),
+      createdAt: new Date().toISOString(),
       senderId: myContact._id,
     }),
     [message, type, selectedConversationId, myContact._id]
@@ -155,6 +155,7 @@ export default function ChatMessageInput ({
     <>
       <InputBase
         type="search"
+        enterKeyHint="send"
         value={message}
         onKeyUp={handleSendMessage}
         onChange={handleChangeMessage}

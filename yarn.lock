@@ -12597,6 +12597,11 @@
     "ejson" "^2.1.2"
     "wolfy87-eventemitter" "^5.2.5"
 
+"simpleddp-plugin-login@^4.0.2":
+  "integrity" "sha512-rWZ6aoDq9znZnUmnOaIlewU4eawLGoAIlWPGenwmlIKdc1qIhkHfg7MfjwmhGA5WQLNTnXelVjPgm9cuzG1neA=="
+  "resolved" "https://registry.npmmirror.com/simpleddp-plugin-login/-/simpleddp-plugin-login-4.0.2.tgz"
+  "version" "4.0.2"
+
 "simpleddp@^2.2.4":
   "integrity" "sha512-VnsORlr1TPOqHyHjJXPoh5UYM6A30WAZVzxvxzCa3ShlxDjQfIO0dtmHKnr6eE5UnMffzcYnLaLXmp352zBsEg=="
   "resolved" "https://registry.npmmirror.com/simpleddp/-/simpleddp-2.2.4.tgz"

@@ -85,7 +85,7 @@ export default function CalendarToolbar({
             <Iconify icon="eva:arrow-ios-back-fill" />
           </IconButton>
 
-          <Typography variant="h6">{fDate(date)}</Typography>
+          <Typography variant="h6">{fDate(date,"yyyy年MM月dd日")}</Typography>
 
           <IconButton onClick={onNextDate}>
             <Iconify icon="eva:arrow-ios-forward-fill" />

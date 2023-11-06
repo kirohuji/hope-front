@@ -18,7 +18,7 @@ import parse from 'id3-parser';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { next, select } from 'src/redux/slices/audio';
 
-import { convertFileToBuffer, fetchFileAsBuffer } from 'id3-parser/lib/util';
+import { fetchFileAsBuffer } from 'id3-parser/lib/util';
 
 
 // You have a File instance in browser
@@ -45,14 +45,12 @@ const TinyText = styled(Typography)({
 
 export default function MusicPlayer () {
     const [isOpenList, setOpenList] = useState(null);
-    const [isOpen, setOpen] = useState(null);
     const theme = useTheme();
     const dispatch = useDispatch();
     const isPlay = useBoolean(false)
     const player = createRef()
     const [tag, setTag] = useState(0);
     const [position, setPosition] = useState(0);
-    const showList = useBoolean();
     const [image, setImage] = useState('');
     const [duration, setDuration] = useState(0);
     const [isStop, setIsStop] = useState(false);
@@ -76,17 +74,10 @@ export default function MusicPlayer () {
     const onSelect = (item) => {
         dispatch(select(item))
         setOpenList(null)
-        // if (player.current.audioEl.current.paused) {
-        //     setDuration(player.current.audioEl.current.duration);
-        //     player.current.audioEl.current.play()
-        //     isPlay.onTrue()
-        // }
     }
     const onPlay = () => {
         if (player.current.audioEl.current.paused) {
-            // setDuration(player.current.audioEl.current.duration);
             player.current.audioEl.current.play()
-            // isPlay.onTrue()
         }
     }
     const onPause = () => {
@@ -99,17 +90,6 @@ export default function MusicPlayer () {
     return current && <>
         <AudioPlayer
             autoPlay
-            // showJumpControls={false}
-            // showDownloadProgress={false}
-            // showFilledProgress={false}
-            // hasDefaultKeyBindings={false}
-            // customVolumeControls={[]}
-            // customAdditionalControls={[]}
-            // customControlsSection={[]}
-            // customProgressBarSection={[]}
-            // onCanPlayThrough={() => {
-            //     console.log('onCanPlayThrough')
-            // }}
             onPlay={()=>{
                 setDuration(player.current.audioEl.current.duration);
                 player.current.audioEl.current.play()
@@ -212,7 +192,6 @@ export default function MusicPlayer () {
                         </IconButton>
                     }
                     <IconButton onClick={() => {
-                        // player.current.audioEl.current.pause();
                         onPause()
                         setPosition(0)
                         dispatch(next())

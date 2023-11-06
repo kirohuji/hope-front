@@ -76,19 +76,21 @@ export default function TrainingCard ({ post, index }) {
     return (
         <Card sx={{ margin: '15px 0 15px 15px', width: '110px', height: '140px' }}>
             <Box sx={{ position: 'relative' }}>
-                <Image alt="cover" src={cover} ratio="4/6" />
+                <Image alt="cover" src={cover} ratio="3/4" />
             </Box>
-            <Stack spacing={2.5} sx={{
-                position: "absolute",
-                bottom: 0,
-                background: "white",
-                width: "100%",
-                height: "41px",
-                padding: "8px",
-                fontSize: "14px"
-            }}>
-                {label}
-            </Stack>
+            {
+                false && <Stack spacing={2.5} sx={{
+                    position: "absolute",
+                    bottom: 0,
+                    background: "white",
+                    width: "100%",
+                    height: "41px",
+                    padding: "8px",
+                    fontSize: "14px"
+                }}>
+                    {label}
+                </Stack>
+            }
         </Card>
     );
 }
@@ -148,7 +150,7 @@ export function PostContent ({ label, view, comment, share, createdAt, index }) 
                 {fDate(createdAt)}
             </Typography>
 
-            <Link component={RouterLink} to={linkTo}  color="inherit">
+            <Link component={RouterLink} to={linkTo} color="inherit">
                 <TextMaxLine
                     variant={isDesktop && latestPostLarge ? 'h5' : 'subtitle2'}
                     line={2}

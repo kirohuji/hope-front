@@ -43,36 +43,16 @@ export default function ScopeDetailsToolbar({
           href={backLink}
           startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
         >
-          Back
+          返回
         </Button>
 
         <Box sx={{ flexGrow: 1 }} />
 
-        {publish === 'published' && (
-          <Tooltip title="Go Live">
-            <IconButton component={RouterLink} href={liveLink}>
-              <Iconify icon="eva:external-link-fill" />
-            </IconButton>
-          </Tooltip>
-        )}
-
-        <Tooltip title="Edit">
+        <Tooltip title="编辑">
           <IconButton component={RouterLink} href={editLink}>
             <Iconify icon="solar:pen-bold" />
           </IconButton>
         </Tooltip>
-
-        <LoadingButton
-          color="inherit"
-          variant="contained"
-          loading={!publish}
-          loadingIndicator="Loading…"
-          endIcon={<Iconify icon="eva:arrow-ios-downward-fill" />}
-          onClick={popover.onOpen}
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {publish}
-        </LoadingButton>
       </Stack>
 
       <CustomPopover

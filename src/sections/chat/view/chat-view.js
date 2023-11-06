@@ -19,8 +19,8 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { useSettingsContext } from 'src/components/settings';
 //
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getOrganizations, getConversations, resetActiveConversation, getMessages, getConversation, getContacts, deleteConversation, newMessageGet, mergeConversations } from 'src/redux/slices/chat';
-import { fileService, ddpclient } from 'src/composables/context-provider';
+import { getOrganizations, getConversations, resetActiveConversation, getMessages, getConversation, getContacts, deleteConversation, newMessageGet } from 'src/redux/slices/chat';
+import { ddpclient } from 'src/composables/context-provider';
 import _ from 'lodash'
 import ChatNav from '../chat-nav';
 import ChatRoom from '../chat-room';
@@ -29,7 +29,6 @@ import ChatMessageInput from '../chat-message-input';
 import ChatHeaderDetail from '../chat-header-detail';
 import ChatHeaderCompose from '../chat-header-compose';
 import ChatNavItem from '../chat-nav-item';
-import UserModel from './user-model'
 
 const conversationSelector = (state) => {
   const { conversations, activeConversationId } = state.chat;
@@ -112,17 +111,23 @@ export default function ChatView () {
 
 
   const onChildren = (organization) => {
-    if (organization.children) {
+    if (organization.children || organization.users) {
       const level = {
         name: organization.label,
         to: organization._id,
       }
       levels.push(level);
-      setCurrentOrganization([...organization.children, ...organization.users.map(item => ({
-        name: item.account.username,
-        photoURL: item.profile.photoURL,
-        _id: item.profile._id
-      }))])
+      setCurrentOrganization(_.compact([...(organization.children || []), ...(organization.users || []).map(item => {
+        if (item.profile) {
+          return {
+            name: item.account.username,
+            photoURL: item.profile.photoURL,
+            _id: item.profile._id
+          }
+        }
+        return null;
+
+      })]))
       setLevels(levels)
     }
   }
@@ -162,7 +167,7 @@ export default function ChatView () {
     setConversationsLoading(true)
     if (selectedConversationId) {
       getDetails()
-      if (ddpclient.connected) {
+      if (ddpclient.connected && user) {
         getMessage = ddpclient.subscribe("socialize.messagesFor2", selectedConversationId, user._id, new Date());
         getMessage.ready();
         reactiveCollection = ddpclient.collection('socialize:messages').reactive();
@@ -180,7 +185,7 @@ export default function ChatView () {
         getMessage.stop();
       }
     }
-  }, [dispatch, active._id, getDetails, selectedConversationId, user._id]);
+  }, [dispatch, active._id, getDetails, selectedConversationId, user]);
 
   useEffect(() => {
     if (!selectedConversationId) {
@@ -389,10 +394,14 @@ export default function ChatView () {
             ))}
             {
               currentTab === "conversations" && conversations.allIds.map((conversationId) => (
+                !conversations.byId[conversationId].isRemove &&
                 <ChatNavItem
                   key={conversationId}
                   deleteConversation={() => dispatch(deleteConversation(conversationId))}
-                  conversation={conversations.byId[conversationId]}
+                  conversation={{
+                    ...conversations.byId[conversationId],
+                    type: "conversation"
+                  }}
                   selected={conversationId === selectedConversationId}
                 />
               ))

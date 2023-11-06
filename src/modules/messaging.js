@@ -43,6 +43,7 @@ export default class MessagingService {
     }
 
     deleteConversation (target) {
-        return this.api.delete(`${this.model}/conversations/${target._id}`, target)
+        // return this.api.delete(`${this.model}/conversations/${target._id}`, target)
+        return this.api.post(`${this.model}/conversations/delete/${target._id}`, target)
     }
 }

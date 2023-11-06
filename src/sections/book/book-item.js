@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 // @mui
 // import Box from '@mui/material/Box';
+import { alpha, useTheme } from '@mui/material/styles';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
+import Image from 'src/components/image';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
@@ -23,9 +24,10 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 export default function BookItem ({ book, onView, onEdit, onDelete }) {
+  const theme = useTheme();
   const popover = usePopover();
 
-  const { _id, label, cover,createdAt, candidates} =
+  const { _id, label, cover, createdAt, candidates } =
     book;
 
   return (
@@ -35,41 +37,44 @@ export default function BookItem ({ book, onView, onEdit, onDelete }) {
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
 
-        <Stack sx={{ p: 3, pb: 2 }}>
-          <Avatar
+        <Stack sx={{ p: 2, pb: 2 }} direction="row">
+          <Image
             alt={label}
             src={cover}
-            variant="rounded"
-            sx={{ width: 48, height: 48, mb: 2 }}
-          />
-
-          <ListItemText
-            sx={{ mb: 1 }}
-            primary={
-              <Link component={RouterLink} href={paths.dashboard.book.details.root(_id)} color="inherit">
-                {label}
-              </Link>
-            }
-            secondary={`发布时间: ${fDate(createdAt)}`}
-            primaryTypographyProps={{
-              typography: 'subtitle1',
-            }}
-            secondaryTypographyProps={{
-              mt: 1,
-              component: 'span',
-              typography: 'caption',
-              color: 'text.disabled',
+            sx={{
+              width: 100,
+              height: 120,
             }}
           />
+          <Stack sx={{ pl: 2}}>
+            <ListItemText
+              sx={{ mb: 1 }}
+              primary={
+                <Link component={RouterLink} href={paths.dashboard.book.details.root(_id)} color="inherit">
+                  {label}
+                </Link>
+              }
+              secondary={`发布时间: ${fDate(createdAt)}`}
+              primaryTypographyProps={{
+                typography: 'subtitle1',
+              }}
+              secondaryTypographyProps={{
+                mt: 1,
+                component: 'span',
+                typography: 'caption',
+                color: 'text.disabled',
+              }}
+            />
 
-          <Stack
-            spacing={0.5}
-            direction="row"
-            alignItems="center"
-            sx={{ color: 'primary.main', typography: 'caption' }}
-          >
-            <Iconify width={16} icon="solar:users-group-rounded-bold" />
-            {candidates ? candidates.length : '无'} 参与者
+            <Stack
+              spacing={0.5}
+              direction="row"
+              alignItems="center"
+              sx={{ color: 'primary.main', typography: 'caption' }}
+            >
+              <Iconify width={16} icon="solar:users-group-rounded-bold" />
+              {candidates ? candidates.length : '无'} 参与者
+            </Stack>
           </Stack>
         </Stack>
 

@@ -34,7 +34,7 @@ export default function useGetNavItem({ currentUserId, conversation, user }) {
   return {
     group,
     displayName,
-    type: conversation.type,
+    type: conversation.type || "contact",
     displayText,
     participants: participantsInConversation,
     lastActivity: lastMessage?.createdAt,

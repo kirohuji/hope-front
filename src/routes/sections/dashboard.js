@@ -98,6 +98,7 @@ const UserPermissionPage = lazy(() => import('src/pages/dashboard/user/permissio
 
 const TrainingDashboardPage = lazy(() => import('src/pages/dashboard/training/dashboard'))
 
+const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'))
 
 
 
@@ -123,7 +124,7 @@ export const dashboardRoutes = [
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
       {
-        path: 'training/dashboard', element: <TrainingDashboardPage />
+        path: 'training/dashboard', element: <TrainingPage />
       },
       {
         path: 'user',

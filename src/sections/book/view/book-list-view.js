@@ -211,7 +211,7 @@ export default function BookListView () {
           mb: { xs: 3, md: 5 },
         }}
       >
-        {renderFilters}
+        {false && renderFilters}
 
         {canReset && renderResults}
       </Stack>

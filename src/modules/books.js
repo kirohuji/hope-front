@@ -25,6 +25,10 @@ export default class BookService extends Service {
         return this.api.post(`${this.model}/posts/pagination`, target)
     }
 
+    paginationWithArticleByBookId (target) {
+        return this.api.post(`${this.model}/articles/pagination`, target)
+    }
+
     getPostsByBookId (target) {
         return this.api.get(`${this.model}/posts/${target.book_id}`, target)
     }
@@ -87,4 +91,7 @@ export default class BookService extends Service {
         return this.api.get(`${this.model}/users/current/${target.bookId}/summarize`)
     }
 
+    getPlayWithCurrentUser () {
+        return this.api.get(`${this.model}/users/current/play`)
+    }
 }

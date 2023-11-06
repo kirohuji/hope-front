@@ -94,7 +94,7 @@ export default function BookDetailsView () {
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <BookDetailsToolbar
         backLink={paths.dashboard.book.root}
-        editLink={paths.dashboard.book.edit(`${book?.id}`)}
+        editLink={paths.dashboard.book.edit(`${book?._id}`)}
         liveLink="#"
         publish={publish || ''}
         onChangePublish={handleChangePublish}

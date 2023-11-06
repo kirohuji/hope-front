@@ -58,6 +58,7 @@ function objFromArray (array, key = '_id') {
 
 const initialState = {
   isLoading: false,
+  isSending: false,
   error: null,
   contacts: { byId: {}, allIds: [] },
   organizations: [],
@@ -77,6 +78,12 @@ const slice = createSlice({
     // START LOADING
     startLoading (state) {
       state.isLoading = true;
+    },
+    startSending (state) {
+      state.isSending = true;
+    },
+    stopSending (state) {
+      state.isSending = false;
     },
 
     // HAS ERROR
@@ -127,13 +134,14 @@ const slice = createSlice({
     // ON SEND MESSAGE
     onSendMessage (state, action) {
       const conversation = action.payload;
-      const { conversationId, messageId, message, contentType, attachments, createdAt, senderId } =
+      const { conversationId, messageId, message, contentType, attachments, createdAt, senderId, isLoading } =
         conversation;
 
       const newMessage = {
         _id: messageId,
         body: message,
         contentType,
+        isLoading,
         attachments,
         createdAt,
         senderId,
@@ -158,7 +166,7 @@ const slice = createSlice({
       if (!state.conversations.byId[conversationId]?.messages) {
         state.conversations.byId[conversationId].messages = [];
       }
-      state.conversations.byId[conversationId].messages = _.uniqBy([...state.conversations.byId[conversationId].messages, ...orderData], "_id")
+      state.conversations.byId[conversationId].messages = _.uniqBy([...state.conversations.byId[conversationId].messages.filter(item => item._id !== "-1"), ...orderData], "_id")
       state.lastMessage = state.conversations.byId[conversationId].messages[state.conversations.byId[conversationId].messages.length - 1];
     },
 
@@ -204,11 +212,21 @@ export const { addRecipients, onSendMessage, resetActiveConversation } = slice.a
 
 export function sendMessage (conversationKey, body) {
   return async (dispatch) => {
-    dispatch(slice.actions.startLoading());
+    dispatch(slice.actions.startSending());
     try {
       // debugger
+      dispatch(slice.actions.onSendMessage({
+        conversationId: conversationKey,
+        messageId: "-1",
+        message: body.message,
+        contentType: body.contentType,
+        attachments: body.attachments,
+        senderId: body.senderId,
+        isLoading: true,
+        createdAt: body.createdAt
+      }));
       await messagingService.sendMessage({ _id: conversationKey, body: body.message, contentType: body.contentType })
-      // dispatch(slice.actions.onSendMessage(body));
+      dispatch(slice.actions.stopSending());
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -275,9 +293,9 @@ export function getConversations () {
     try {
       const data = await messagingService.usersAndConversations()
       dispatch(slice.actions.getConversationsSuccess(data.map(conversation => ({
-          ...conversation,
-          messages: _.compact(conversation.messages)
-        }))));
+        ...conversation,
+        messages: _.compact(conversation.messages)
+      }))));
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -346,12 +364,23 @@ export function newMessageGet (conversationId) {
   return async (dispatch, getState) => {
     try {
       const { lastMessage } = getState().chat;
-      if (lastMessage._id) {
+      if (lastMessage && lastMessage._id) {
         const data = await messagingService.getLastMessageBy({ _id: conversationId, lastId: lastMessage._id })
         await dispatch(slice.actions.getNewMessagesSuccess({
           conversationId,
           data
         }))
+      } else {
+        const data = await messagingService.getConversationMessagesById({
+          _id: conversationId, options: {
+            limit: 20,
+            sort: { createdAt: -1 }
+          }
+        })
+        dispatch(slice.actions.getMessagesSuccess({
+          conversationId,
+          data
+        }));
       }
     } catch (error) {
       dispatch(slice.actions.hasError(error));

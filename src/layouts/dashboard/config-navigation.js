@@ -55,27 +55,40 @@ export function useNavData () {
     () => [
       // OVERVIEW
       // ----------------------------------------------------------------------
-      {
-        subheader: t('overview'),
-        items: [
-          { title: t('app'), path: paths.dashboard.root, icon: ICONS.dashboard },
-          { title: t('ecommerce'), path: paths.dashboard.general.ecommerce, icon: ICONS.ecommerce },
-          { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics },
-          { title: t('banking'), path: paths.dashboard.general.banking, icon: ICONS.banking },
-          { title: t('booking'), path: paths.dashboard.general.booking, icon: ICONS.booking },
-          { title: t('file'), path: paths.dashboard.general.file, icon: ICONS.file },
-        ],
-      },
+      // {
+      //   subheader: t('overview'),
+      //   items: [
+      //     { title: t('app'), path: paths.dashboard.root, icon: ICONS.dashboard },
+      //     { title: t('ecommerce'), path: paths.dashboard.general.ecommerce, icon: ICONS.ecommerce },
+      //     { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics },
+      //     { title: t('banking'), path: paths.dashboard.general.banking, icon: ICONS.banking },
+      //     { title: t('booking'), path: paths.dashboard.general.booking, icon: ICONS.booking },
+      //     { title: t('file'), path: paths.dashboard.general.file, icon: ICONS.file },
+      //   ],
+      // },
 
       // MANAGEMENT
       // ----------------------------------------------------------------------
       {
         subheader: t('management'),
         items: [
+          // SCOPE
+          {
+            title: t('scope'),
+            auth: ['Scope'],
+            path: paths.dashboard.scope.root,
+            icon: ICONS.job,
+            children: [
+              { title: t('list'), path: paths.dashboard.scope.root },
+              // { title: t('details'), path: paths.dashboard.scope.demo.details },
+              // { title: t('create'), path: paths.dashboard.scope.new },
+              // { title: t('edit'), path: paths.dashboard.scope.demo.edit },
+            ],
+          },
           // USER
           {
             title: t('user'),
-            auth: ['User','UserList','UserPermission','UserOrganization','UserListAddButton','UserListRemoveButton','UserListEditButton'],
+            auth: ['User', 'UserList', 'UserPermission', 'UserOrganization', 'UserListAddButton', 'UserListRemoveButton', 'UserListEditButton'],
             path: paths.dashboard.user.root,
             icon: ICONS.user,
             children: [
@@ -86,7 +99,7 @@ export function useNavData () {
               // { title: t('edit'), path: paths.dashboard.user.demo.edit },
               // { title: t('account'), path: paths.dashboard.user.account },
               { title: t('organization'), path: paths.dashboard.user.organization, auth: ['UserOrganization'] },
-              { title: t('permission'), path: paths.dashboard.user.permission , auth: ['UserPermission']},
+              { title: t('permission'), path: paths.dashboard.user.permission, auth: ['UserPermission'] },
             ],
           },
 
@@ -152,19 +165,6 @@ export function useNavData () {
           //     { title: t('edit'), path: paths.dashboard.job.demo.edit },
           //   ],
           // },
-          // SCOPE
-          {
-            title: t('scope'),
-            auth: ['Scope'],
-            path: paths.dashboard.scope.root,
-            icon: ICONS.job,
-            children: [
-              { title: t('list'), path: paths.dashboard.scope.root },
-              // { title: t('details'), path: paths.dashboard.scope.demo.details },
-              // { title: t('create'), path: paths.dashboard.scope.new },
-              // { title: t('edit'), path: paths.dashboard.scope.demo.edit },
-            ],
-          },
           // BOOK
           {
             title: t('book'),
@@ -222,9 +222,9 @@ export function useNavData () {
             icon: ICONS.broadcast,
             children: [
               { title: t('list'), path: paths.dashboard.broadcast.root },
-              { title: t('details'), path: paths.dashboard.broadcast.demo.details },
-              { title: t('create'), path: paths.dashboard.broadcast.new },
-              { title: t('edit'), path: paths.dashboard.broadcast.demo.edit },
+              // { title: t('details'), path: paths.dashboard.broadcast.demo.details },
+              // { title: t('create'), path: paths.dashboard.broadcast.new },
+              // { title: t('edit'), path: paths.dashboard.broadcast.demo.edit },
             ],
           },
 
@@ -244,11 +244,11 @@ export function useNavData () {
           // },
 
           // CHAT
-          {
-            title: t('chat'),
-            path: paths.dashboard.chat,
-            icon: ICONS.chat,
-          },
+          // {
+          //   title: t('chat'),
+          //   path: paths.dashboard.chat,
+          //   icon: ICONS.chat,
+          // },
 
           // CALENDAR
           {

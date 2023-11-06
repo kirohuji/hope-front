@@ -70,9 +70,9 @@ const SHARED_PERSONS = [...Array(20)].map((_, index) => ({
 }));
 
 export const FILE_TYPE_OPTIONS = [
-  'folder',
-  'txt',
-  'zip',
+  // 'folder',
+  // 'txt',
+  // 'zip',
   'audio',
   'image',
   'video',
@@ -80,8 +80,8 @@ export const FILE_TYPE_OPTIONS = [
   'excel',
   'powerpoint',
   'pdf',
-  'photoshop',
-  'illustrator',
+  // 'photoshop',
+  // 'illustrator',
 ];
 
 // ----------------------------------------------------------------------

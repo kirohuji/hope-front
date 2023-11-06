@@ -45,7 +45,7 @@ import moment from 'moment';
 export const BROAECAST_TYPE_OPTIONS = [
   { value: 'activity', label: '活动通知' },
   { value: 'notification', label: '消息公告' },
-  { value: 'book', label: '灵修' },
+  // { value: 'book', label: '灵修' },
 ];
 export default function BroadcastNewEditForm ({ currentBroadcast }) {
   const router = useRouter();
@@ -219,7 +219,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">标题</Typography>
-              <RHFTextField name="label" placeholder="Ex: Adventure Seekers Expedition..." />
+              <RHFTextField name="label" placeholder="例如: 圣诞节活动 ..." />
             </Stack>
 
             <Stack spacing={1.5}>

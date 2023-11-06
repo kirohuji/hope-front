@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import SimpleDDP from "simpleddp";
 import api, { fileService as fileApi } from "../utils/request";
 import AuthService from "../modules/auth";
@@ -35,8 +36,11 @@ export const dictionaryOptionService = new DictionaryOptionService({ api, model:
 export const articleService = new ArticleService({ api, model: 'articles' })
 export const broadcastService = new BroadcastService({ api, model: 'broadcasts' })
 export const notificationService = new NotificationService({ api, model: 'notifications' })
+const {simpleDDPLogin} = require("simpleddp-plugin-login");
+
 export const ddpclient = new SimpleDDP({
     endpoint: "ws://localhost:3000/websocket",
     SocketConstructor: WebSocket,
-    reconnectInterval: 3000
-});
+    reconnectInterval: 5000,
+    clearDataOnReconnection: false,
+}, [simpleDDPLogin]);

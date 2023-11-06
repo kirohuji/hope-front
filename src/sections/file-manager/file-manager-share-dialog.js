@@ -10,11 +10,13 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import InputAdornment from '@mui/material/InputAdornment';
+import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 //
+import { userService } from 'src/composables/context-provider';
 import FileManagerInvitedItem from './file-manager-invited-item';
 import FileManagerSearchResults from './file-manager-search-results';
 
@@ -37,6 +39,12 @@ export default function FileManagerShareDialog ({
     query: '',
     results: [],
   });
+
+  const [sendSearchContacts, setSendSearchContacts] = useState({
+    query: '',
+    results: [],
+  });
+
   const handleClickAwaySearch = useCallback(() => {
     setSearchContacts({
       query: '',
@@ -45,11 +53,14 @@ export default function FileManagerShareDialog ({
   }, []);
   const handleClickResult = useCallback(
     (result) => {
+      setSendSearchContacts({
+        results: [...sendSearchContacts.results, result],
+      });
       handleClickAwaySearch();
     },
-    [handleClickAwaySearch]
+    [handleClickAwaySearch, sendSearchContacts]
   );
-  
+
   const renderListResults = (
     <FileManagerSearchResults
       query={searchContacts.query}
@@ -58,21 +69,27 @@ export default function FileManagerShareDialog ({
     />
   );
 
-    const handleSearchContacts = useCallback(
-    (inputValue) => {
+  const handleSearchContacts = useCallback(
+    async (inputValue) => {
       setSearchContacts((prevState) => ({
         ...prevState,
         query: inputValue,
       }));
 
       if (inputValue) {
-        const results = [].filter((contact) =>
-          contact.username.toLowerCase().includes(inputValue)
-        );
+        // const results = [].filter((contact) =>
+        //   contact.username.toLowerCase().includes(inputValue)
+        // );
+        const response = await userService.pagination(
+          {
+            username: inputValue
+          },
+          {}
+        )
 
         setSearchContacts((prevState) => ({
           ...prevState,
-          results,
+          results: response.data,
         }));
       }
     },
@@ -80,7 +97,12 @@ export default function FileManagerShareDialog ({
   );
 
   return (
-    <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose} {...other}>
+    <Dialog fullWidth maxWidth="xs" open={open} onClose={()=>{
+      setSendSearchContacts({
+        results: []
+      })
+      onClose()
+    }} {...other}>
       <DialogTitle> 邀请 </DialogTitle>
 
       <DialogContent sx={{ overflow: 'unset' }}>
@@ -88,26 +110,33 @@ export default function FileManagerShareDialog ({
           <TextField
             fullWidth
             value={searchContacts.query}
-            placeholder="Email"
-            onChange={(event)=>{
+            placeholder="用户名"
+            onChange={(event) => {
               onChangeInvite(event)
               handleSearchContacts(event.target.value)
             }}
             InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <Button
-                    onClick={onInviteEmail}
-                    color="inherit"
-                    variant="contained"
-                    disabled={!inviteEmail}
-                    sx={{ mr: -0.75 }}
-                  >
-                    发生邀请
-                  </Button>
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
                 </InputAdornment>
               ),
             }}
+            // InputProps={{
+            //   endAdornment: (
+            //     <InputAdornment position="end">
+            //       <Button
+            //         onClick={onInviteEmail}
+            //         color="inherit"
+            //         variant="contained"
+            //         disabled={!inviteEmail}
+            //         sx={{ mr: -0.75 }}
+            //       >
+            //         发送邀请
+            //       </Button>
+            //     </InputAdornment>
+            //   ),
+            // }}
             sx={{ mb: 2 }}
           />
         )}
@@ -117,6 +146,28 @@ export default function FileManagerShareDialog ({
         {
           !searchContacts.query &&
           <>
+            <Divider sx={{ mb: 1 }} />
+            <Stack direction="row" justifyContent="space-between">
+              <Typography variant="h6" sx={{ mb: 1 }}>待邀请列表</Typography>
+              <Button
+                onClick={onInviteEmail}
+                color="inherit"
+                variant="contained"
+                disabled={!inviteEmail}
+                sx={{ mr: -0.75 }}
+              >
+                发送邀请
+              </Button>
+            </Stack>
+            {hasShared && (
+              <Scrollbar sx={{ maxHeight: 60 * 6 }}>
+                <List disablePadding>
+                  {sendSearchContacts.results.map((person) => (
+                    <FileManagerInvitedItem key={person._id} person={person} />
+                  ))}
+                </List>
+              </Scrollbar>
+            )}
             <Divider sx={{ mb: 1 }} />
             <Typography variant="h6" sx={{ mb: 1 }}>已邀请列表</Typography>
             {hasShared && (
@@ -140,7 +191,12 @@ export default function FileManagerShareDialog ({
         )}
 
         {onClose && (
-          <Button variant="outlined" color="inherit" onClick={onClose}>
+          <Button variant="outlined" color="inherit" onClick={()=>{
+            setSendSearchContacts({
+              results: []
+            })
+            onClose()
+          }}>
             关闭
           </Button>
         )}

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-class-component-methods */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/prop-types */
@@ -16,7 +17,11 @@ class ChatSwipeableNavItem extends React.Component {
     // Drag & Drop
     dragStartX = 0;
 
+    hasSwipe = true;
+
     left = 0;
+
+    hasLeft = false;
 
     dragged = false;
 
@@ -43,27 +48,46 @@ class ChatSwipeableNavItem extends React.Component {
         this.onClicked = this.onClicked.bind(this);
 
         this.onSwiped = this.onSwiped.bind(this);
+
+        this.onClickOutsize = this.onClickOutsize.bind(this);
+
     }
 
     componentDidMount () {
         window.addEventListener("mouseup", this.onDragEndMouse);
         window.addEventListener("touchend", this.onDragEndTouch);
+        window.addEventListener("click", this.onClickOutsize);
     }
 
     componentWillUnmount () {
         window.removeEventListener("mouseup", this.onDragEndMouse);
         window.removeEventListener("touchend", this.onDragEndTouch);
+        window.removeEventListener("click", this.onClickOutsize);
+    }
+
+    onClickOutsize (event) {
+        if (this.wrapper && !this.wrapper.contains(event.target)) {
+            this.onDragEnd(true)
+        }
+        // if(this.listElement && this.listElement.contains(event.target) && !this.dragged){
+        //     console.log('点击')
+        //     // this.onSwiped()
+        // }
     }
 
     onDragStartMouse (evt) {
-        this.onDragStart(evt.clientX);
-        window.addEventListener("mousemove", this.onMouseMove);
+        if (this.hasSwipe) {
+            this.onDragStart(evt.clientX);
+            window.addEventListener("mousemove", this.onMouseMove);
+        }
     }
 
     onDragStartTouch (evt) {
-        const touch = evt.targetTouches[0];
-        this.onDragStart(touch.clientX);
-        window.addEventListener("touchmove", this.onTouchMove);
+        if (this.hasSwipe) {
+            const touch = evt.targetTouches[0];
+            this.onDragStart(touch.clientX);
+            window.addEventListener("touchmove", this.onTouchMove);
+        }
     }
 
     onDragStart (clientX) {
@@ -84,18 +108,26 @@ class ChatSwipeableNavItem extends React.Component {
         this.onDragEnd();
     }
 
-    onDragEnd () {
-        if (this.dragged) {
+    onDragEnd (close) {
+        if (this.dragged || close) {
             this.dragged = false;
 
-            const threshold = this.props.threshold || 0.3;
+            // const threshold = this.props.threshold || 0.3;
 
-            if (this.left < this.listElement.offsetWidth * threshold * -1) {
-                this.left = -this.listElement.offsetWidth * 2;
-                this.wrapper.style.maxHeight = 0;
-                this.onSwiped();
+            // if (this.left < this.listElement.offsetWidth * threshold * -1) {
+            //     this.left = -this.listElement.offsetWidth * 2;
+            //     this.wrapper.style.maxHeight = 0;
+            //     this.onSwiped();
+            // } else 
+            if (this.left < -70) {
+                this.hasLeft = true;
+                this.left = -70;
             } else {
                 this.left = 0;
+                this.hasLeft = false;
+                // if (!close) {
+                //     this.onSwiped();
+                // }
             }
 
             this.listElement.className = "BouncingListItem";
@@ -104,22 +136,30 @@ class ChatSwipeableNavItem extends React.Component {
     }
 
     onMouseMove (evt) {
-        const left = evt.clientX - this.dragStartX;
-        if (left < 0) {
-            this.left = left;
+        if (!this.hasLeft) {
+            const left = evt.clientX - this.dragStartX;
+            if (left < 0 && left > -100) {
+                this.left = left;
+            }
+        } else {
+            this.onDragEnd(true)
         }
     }
 
     onTouchMove (evt) {
-        const touch = evt.targetTouches[0];
-        const left = touch.clientX - this.dragStartX;
-        if (left < 0) {
-            this.left = left;
+        if (!this.hasLeft) {
+            const touch = evt.targetTouches[0];
+            const left = touch.clientX - this.dragStartX;
+            if (left < 0 && left > -100) {
+                this.left = left;
+            }
+        } else {
+            this.onDragEnd(true)
         }
     }
 
     onClicked () {
-        if (this.props.onSwipe) {
+        if (this.props.onSwipe && !this.hasLeft && !this.dragged) {
             this.props.handleClickConversation();
         }
     }
@@ -139,13 +179,13 @@ class ChatSwipeableNavItem extends React.Component {
         if (this.dragged && elapsed > this.fpsInterval) {
             this.listElement.style.transform = `translateX(${this.left}px)`;
 
-            const opacity = (Math.abs(this.left) / 100).toFixed(2);
-            if (opacity < 1 && opacity.toString() !== this.background.style.opacity) {
-                this.background.style.opacity = opacity.toString();
-            }
-            if (opacity >= 1) {
-                this.background.style.opacity = "1";
-            }
+            // const opacity = (Math.abs(this.left) / 100).toFixed(2);
+            // if (opacity < 1 && opacity.toString() !== this.background.style.opacity) {
+            //     this.background.style.opacity = opacity.toString();
+            // }
+            // if (opacity >= 1) {
+            //     this.background.style.opacity = "1";
+            // }
 
             this.startTime = Date.now();
         }
@@ -161,18 +201,19 @@ class ChatSwipeableNavItem extends React.Component {
                     ref={(div) => {
                         this.background = div
                     }}
+                    onClick={this.onSwiped}
                     className="Background">
                     {this.props.background ? (
                         this.props.background
                     ) : (
-                        <span>Delete</span>
+                        <span>删除</span>
                     )}
                 </div>
                 <div
-                    onClick={this.onClicked}
                     ref={(div) => {
                         this.listElement = div
                     }}
+                    onClick={this.onClicked}
                     onMouseDown={this.onDragStartMouse}
                     onTouchStart={this.onDragStartTouch}
                     className="ListItem"

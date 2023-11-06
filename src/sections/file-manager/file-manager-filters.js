@@ -31,7 +31,7 @@ export default function FileManagerFilters({
 }) {
   const popover = usePopover();
 
-  const renderLabel = filters.type.length ? filters.type.slice(0, 2).join(',') : 'All type';
+  const renderLabel = filters.type.length ? filters.type.slice(0, 2).join(',') : '所有类型';
 
   const handleFilterName = useCallback(
     (event) => {
@@ -73,7 +73,7 @@ export default function FileManagerFilters({
     <TextField
       value={filters.name}
       onChange={handleFilterName}
-      placeholder="Search..."
+      placeholder="本地搜索..."
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
@@ -145,11 +145,11 @@ export default function FileManagerFilters({
 
           <Stack spacing={1.5} direction="row" alignItems="center" justifyContent="flex-end">
             <Button variant="outlined" color="inherit" onClick={handleResetType}>
-              Clear
+              清楚
             </Button>
 
             <Button variant="contained" onClick={popover.onClose}>
-              Apply
+              确定
             </Button>
           </Stack>
         </Stack>
@@ -198,7 +198,7 @@ export default function FileManagerFilters({
       {renderFilterName}
 
       <Stack spacing={1} direction="row" alignItems="center" justifyContent="flex-end" flexGrow={1}>
-        {renderFilterDate}
+        {false && renderFilterDate}
 
         {renderFilterType}
       </Stack>

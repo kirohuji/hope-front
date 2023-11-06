@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
 // _mock
-import { _jobs, JOB_PUBLISH_OPTIONS, JOB_DETAILS_TABS } from 'src/_mock';
+import { JOB_PUBLISH_OPTIONS } from 'src/_mock';
 // components
 import Label from 'src/components/label';
 import { useSnackbar } from 'src/components/snackbar';
@@ -18,6 +18,11 @@ import ScopeDetailsToolbar from '../scope-details-toolbar';
 import ScopeDetailsContent from '../scope-details-content';
 import ScopeDetailsCandidates from '../scope-details-candidates';
 // ----------------------------------------------------------------------
+
+const JOB_DETAILS_TABS = [
+  { value: 'content', label: '简介' },
+  { value: 'candidates', label: '参与者' },
+];
 
 export default function ScopeDetailsView() {
   const { enqueueSnackbar } = useSnackbar();
@@ -31,6 +36,7 @@ export default function ScopeDetailsView() {
   
 
   const [publish, setPublish] = useState(currentScope?.publish);
+
   const getCurrentScope = useCallback(async (selector = {}, options = {}) => {
     try {
       const response = await scopeService.get({
@@ -85,8 +91,8 @@ export default function ScopeDetailsView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <ScopeDetailsToolbar
-        backLink={paths.dashboard.job.root}
-        editLink={paths.dashboard.job.edit(`${currentScope?.id}`)}
+        backLink={paths.dashboard.scope.root}
+        editLink={paths.dashboard.scope.edit(`${currentScope?._id}`)}
         liveLink="#"
         publish={publish || ''}
         onChangePublish={handleChangePublish}

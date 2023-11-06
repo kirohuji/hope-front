@@ -209,14 +209,15 @@ export default function FileManagerFileDetails ({
         <Scrollbar sx={{ height: 1 }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2.5 }}>
             <Typography variant="h6"> 信息 </Typography>
-
-            <Checkbox
-              color="warning"
-              icon={<Iconify icon="eva:star-outline" />}
-              checkedIcon={<Iconify icon="eva:star-fill" />}
-              checked={favorited}
-              onChange={onFavorite}
-            />
+            {
+              false && <Checkbox
+                color="warning"
+                icon={<Iconify icon="eva:star-outline" />}
+                checkedIcon={<Iconify icon="eva:star-fill" />}
+                checked={favorited}
+                onChange={onFavorite}
+              />
+            }
           </Stack>
 
           <Stack

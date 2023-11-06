@@ -127,8 +127,8 @@ export default function FileManagerView () {
   );
 
   const handleDeleteItems = useCallback(async () => {
-    await table.selected.map(async row=>{
-      console.log('row',row)
+    await table.selected.map(async row => {
+      console.log('row', row)
       await fileManagerService.deleteCurrentUser({
         _id: row
       })
@@ -142,7 +142,7 @@ export default function FileManagerView () {
     //   totalRowsInPage: dataInPage.length,
     //   totalRowsFiltered: dataFiltered.length,
     // });
-  }, [getTableData,table]);
+  }, [getTableData, table]);
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -165,16 +165,17 @@ export default function FileManagerView () {
         dateError={dateError}
         typeOptions={FILE_TYPE_OPTIONS}
       />
-
-      <ToggleButtonGroup size="small" value={view} exclusive onChange={handleChangeView}>
-        <ToggleButton value="list">
-          <Iconify icon="solar:list-bold" />
-        </ToggleButton>
-
-        <ToggleButton value="grid">
-          <Iconify icon="mingcute:dot-grid-fill" />
-        </ToggleButton>
-      </ToggleButtonGroup>
+      {
+        false &&
+        <ToggleButtonGroup size="small" value={view} exclusive onChange={handleChangeView}>
+          <ToggleButton value="list">
+            <Iconify icon="solar:list-bold" />
+          </ToggleButton>
+          <ToggleButton value="grid">
+            <Iconify icon="mingcute:dot-grid-fill" />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      }
     </Stack>
   );
 
@@ -259,7 +260,7 @@ export default function FileManagerView () {
         title="删除"
         content={
           <>
-           确定要删除 <strong> {table.selected.length} </strong> 个文件?
+            确定要删除 <strong> {table.selected.length} </strong> 个文件?
           </>
         }
         action={
@@ -296,7 +297,7 @@ function applyFilter ({ inputData, comparator, filters, dateError }) {
 
   if (name) {
     inputData = inputData.filter(
-      (file) => file.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (file) => file.label.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 

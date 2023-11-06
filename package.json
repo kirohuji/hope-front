@@ -120,6 +120,7 @@
     "remark-gfm": "^3.0.1",
     "simplebar-react": "^3.2.4",
     "simpleddp": "^2.2.4",
+    "simpleddp-plugin-login": "^4.0.2",
     "slick-carousel": "^1.8.1",
     "socket.io-client": "^4.7.2",
     "stream-browserify": "^3.0.0",

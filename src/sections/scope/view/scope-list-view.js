@@ -8,19 +8,10 @@ import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
 // _mock
 import {
   _jobs,
-  _roles,
-  JOB_SORT_OPTIONS,
-  JOB_BENEFIT_OPTIONS,
-  JOB_EXPERIENCE_OPTIONS,
-  JOB_EMPLOYMENT_TYPE_OPTIONS,
 } from 'src/_mock';
-// assets
-import { countries } from 'src/assets/data';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
@@ -30,9 +21,6 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import { scopeService } from 'src/composables/context-provider';
 import ScopeList from '../scope-list';
-import ScopeSort from '../scope-sort';
-import ScopeSearch from '../scope-search';
-import ScopeFilters from '../scope-filters';
 import ScopeFiltersResult from '../scope-filters-result';
 
 // ----------------------------------------------------------------------
@@ -54,14 +42,7 @@ export default function ScopeListView () {
 
   const settings = useSettingsContext();
 
-  const openFilters = useBoolean();
-
   const [sortBy, setSortBy] = useState('latest');
-
-  const [search, setSearch] = useState({
-    query: '',
-    results: [],
-  });
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -98,96 +79,16 @@ export default function ScopeListView () {
     }));
   }, []);
 
-  const handleSortBy = useCallback((newValue) => {
-    setSortBy(newValue);
-  }, []);
-
-  const handleSearch = useCallback(
-    async (inputValue) => {
-      setSearch((prevState) => ({
-        ...prevState,
-        query: inputValue,
-      }));
-
-      if (inputValue) {
-        const response = await scopeService.pagination({ label: inputValue })
-        const results = response.data
-
-        setSearch((prevState) => ({
-          ...prevState,
-          results,
-        }));
-      }
-      // setSearch((prevState) => ({
-      //   ...prevState,
-      //   query: inputValue,
-      // }));
-
-      // if (inputValue) {
-      //   const results = _jobs.filter(
-      //     (job) => job.title.toLowerCase().indexOf(search.query.toLowerCase()) !== -1
-      //   );
-
-      //   setSearch((prevState) => ({
-      //     ...prevState,
-      //     results,
-      //   }));
-      // }
-
-      // }, [search.query]
-    }, []
-  );
-
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
-  const renderFilters = (
-    <Stack
-      spacing={3}
-      justifyContent="space-between"
-      alignItems={{ xs: 'flex-end', sm: 'center' }}
-      direction={{ xs: 'column', sm: 'row' }}
-    >
-      <ScopeSearch
-        query={search.query}
-        results={search.results}
-        onSearch={handleSearch}
-        hrefItem={(id) => paths.dashboard.job.details(id)}
-      />
-
-      <Stack direction="row" spacing={1} flexShrink={0} style={{ display: 'none' }}>
-        <ScopeFilters
-          open={openFilters.value}
-          onOpen={openFilters.onTrue}
-          onClose={openFilters.onFalse}
-          //
-          filters={filters}
-          onFilters={handleFilters}
-          //
-          canReset={canReset}
-          onResetFilters={handleResetFilters}
-          //
-          locationOptions={countries}
-          roleOptions={_roles}
-          benefitOptions={JOB_BENEFIT_OPTIONS.map((option) => option.label)}
-          experienceOptions={['all', ...JOB_EXPERIENCE_OPTIONS.map((option) => option.label)]}
-          employmentTypeOptions={JOB_EMPLOYMENT_TYPE_OPTIONS.map((option) => option.label)}
-        />
-
-        <ScopeSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} />
-      </Stack>
-    </Stack>
-  );
 
   const renderResults = (
     <ScopeFiltersResult
       filters={filters}
       onResetFilters={handleResetFilters}
-      //
       canReset={canReset}
       onFilters={handleFilters}
-      //
       results={dataFiltered.length}
     />
   );
@@ -198,7 +99,6 @@ export default function ScopeListView () {
       <CustomBreadcrumbs
         heading="列表"
         links={[
-          // { name: 'Dashboard', href: paths.dashboard.root },
           {
             name: '作用域',
             href: paths.dashboard.job.root,
@@ -226,12 +126,10 @@ export default function ScopeListView () {
           mb: { xs: 3, md: 5 },
         }}
       >
-        {renderFilters}
-
         {canReset && renderResults}
       </Stack>
 
-      {notFound && <EmptyContent filled title="No Data" sx={{ py: 10 }} />}
+      {notFound && <EmptyContent filled title="没有数据" sx={{ py: 10 }} />}
 
       <ScopeList scopes={tableData} onRefresh={()=> getTableData()}/>
     </Container>

@@ -103,6 +103,9 @@ export function AuthProvider ({ children }) {
 
       // if (accessToken && isValidToken(accessToken)) {
       if (accessToken) {
+        await ddpclient.call("login",{
+          resume: accessToken
+        })
         setSession(accessToken);
 
         // const response = await axios.get(endpoints.auth.me);
@@ -161,10 +164,16 @@ export function AuthProvider ({ children }) {
     // const response = await axios.post(endpoints.auth.login, data);
 
     // const { accessToken, user } = response.data;
+    const response = await ddpclient.login({
+      password,
+      user: {
+          email
+      }
+    });
+    const { token: accessToken } = response;
+    // const response = await authService.login(data);
 
-    const response = await authService.login(data);
-
-    const { authToken: accessToken } = response;
+    // const { authToken: accessToken } = response;
 
     setSession(accessToken);
 
@@ -230,6 +239,8 @@ export function AuthProvider ({ children }) {
 
   // LOGOUT
   const logout = useCallback(async () => {
+    // await authService.logout()
+    await ddpclient.logout();
     setSession(null);
     dispatch({
       type: 'LOGOUT',

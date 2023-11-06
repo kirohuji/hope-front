@@ -7,6 +7,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import MusicPlayer from 'src/components/music-player';
+import BookPlayer from 'src/sections/training/book-player';
 import AppBar from '@mui/material/AppBar';
 //
 import Main from './main';
@@ -86,6 +87,7 @@ export default function DashboardLayout ({ children }) {
         {
           !lgUp && <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 55 }}>
             <MusicPlayer />
+            <BookPlayer />
           </AppBar>
         }
       </Box>
