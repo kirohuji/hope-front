@@ -65,22 +65,23 @@ export default function BookNewEditForm ({ currentBook }) {
   const NewBookSchema = Yup.object().shape({
     label: Yup.string().required('请输入书名'),
     description: Yup.string().required('请输入描述'),
+    published: Yup.boolean(),
     title: Yup.string(),
     cover: Yup.string(),
     content: Yup.string(),
-    employmentTypes: Yup.array(),
-    role: Yup.string(),
-    skills: Yup.array(),
-    workingSchedule: Yup.array(),
-    benefits: Yup.array(),
-    locations: Yup.array(),
-    expiredDate: Yup.mixed().nullable(),
-    salary: Yup.object().shape({
-      type: Yup.string(),
-      price: Yup.number(),
-      negotiable: Yup.boolean(),
-    }),
-    experience: Yup.string(),
+    // employmentTypes: Yup.array(),
+    // role: Yup.string(),
+    // skills: Yup.array(),
+    // workingSchedule: Yup.array(),
+    // benefits: Yup.array(),
+    // locations: Yup.array(),
+    // expiredDate: Yup.mixed().nullable(),
+    // salary: Yup.object().shape({
+    //   type: Yup.string(),
+    //   price: Yup.number(),
+    //   negotiable: Yup.boolean(),
+    // }),
+    // experience: Yup.string(),
   });
 
   const defaultValues = useMemo(
@@ -89,20 +90,21 @@ export default function BookNewEditForm ({ currentBook }) {
       description: currentBook?.description || '',
       cover: currentBook?.cover || '',
       title: currentBook?.title || '',
+      published: currentBook?.published || false,
       content: currentBook?.content || '',
-      employmentTypes: currentBook?.employmentTypes || [],
-      experience: currentBook?.experience || '1 year exp',
-      role: currentBook?.role || _roles[1],
-      skills: currentBook?.skills || [],
-      workingSchedule: currentBook?.workingSchedule || [],
-      locations: currentBook?.locations || [],
-      benefits: currentBook?.benefits || [],
-      expiredDate: moment(currentBook?.expiredDate).format("YYYYMMDD") || null,
-      salary: currentBook?.salary || {
-        type: 'Hourly',
-        price: 0,
-        negotiable: false,
-      },
+      // employmentTypes: currentBook?.employmentTypes || [],
+      // experience: currentBook?.experience || '1 year exp',
+      // role: currentBook?.role || _roles[1],
+      // skills: currentBook?.skills || [],
+      // workingSchedule: currentBook?.workingSchedule || [],
+      // locations: currentBook?.locations || [],
+      // benefits: currentBook?.benefits || [],
+      // expiredDate: moment(currentBook?.expiredDate).format("YYYYMMDD") || null,
+      // salary: currentBook?.salary || {
+      //   type: 'Hourly',
+      //   price: 0,
+      //   negotiable: false,
+      // },
     }),
     [currentBook]
   );
@@ -140,9 +142,8 @@ export default function BookNewEditForm ({ currentBook }) {
         });
       }
       reset();
-      enqueueSnackbar(currentBook ? 'Update success!' : 'Create success!');
+      enqueueSnackbar(currentBook ? '更新成功!' : '创建成功!');
       router.push(paths.dashboard.book.root);
-      console.info('DATA', data);
     } catch (error) {
       console.error(error);
     }
@@ -156,25 +157,10 @@ export default function BookNewEditForm ({ currentBook }) {
       const { link } = await fileService.avatar(formData)
       if (file) {
         setValue('cover', link, { shouldValidate: true });
-        // setValue('photoURL', Object.assign(file, {
-        //   preview: link
-        // }), { shouldValidate: true });
       }
     },
     [setValue]
   );
-
-  // const handleRemoveFile = useCallback(
-  //   (inputFile) => {
-  //     const filtered = values.images && values.images?.filter((file) => file !== inputFile);
-  //     setValue('cover', filtered);
-  //   },
-  //   [setValue, values.images]
-  // );
-
-  // const handleRemoveAllFiles = useCallback(() => {
-  //   setValue('images', []);
-  // }, [setValue]);
 
   const renderDetails = (
     <>
@@ -195,8 +181,8 @@ export default function BookNewEditForm ({ currentBook }) {
 
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">名称</Typography>
-              <RHFTextField name="label" placeholder="Ex: Software Engineer..." />
+              <Typography variant="subtitle2">书名</Typography>
+              <RHFTextField name="label"/>
             </Stack>
 
             <Stack spacing={1.5}>
@@ -222,260 +208,259 @@ export default function BookNewEditForm ({ currentBook }) {
     </>
   );
 
-  const renderProperties = (
-    <>
-      {mdUp && (
-        <Grid md={4}>
-          <Typography variant="h6" sx={{ mb: 0.5 }}>
-            属性
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            额外的功能和属性
-          </Typography>
-        </Grid>
-      )}
+  // const renderProperties = (
+  //   <>
+  //     {mdUp && (
+  //       <Grid md={4}>
+  //         <Typography variant="h6" sx={{ mb: 0.5 }}>
+  //           属性
+  //         </Typography>
+  //         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+  //           额外的功能和属性
+  //         </Typography>
+  //       </Grid>
+  //     )}
 
-      <Grid xs={12} md={8}>
-        <Card>
-          {!mdUp && <CardHeader title="属性" />}
+  //     <Grid xs={12} md={8}>
+  //       <Card>
+  //         {!mdUp && <CardHeader title="属性" />}
 
-          <Stack spacing={3} sx={{ p: 3 }}>
-            <Stack spacing={1}>
-              <Typography variant="subtitle2">Employment type</Typography>
-              <RHFMultiCheckbox
-                row
-                spacing={4}
-                name="employmentTypes"
-                options={JOB_EMPLOYMENT_TYPE_OPTIONS}
-              />
-            </Stack>
+  //         <Stack spacing={3} sx={{ p: 3 }}>
+  //           <Stack spacing={1}>
+  //             <Typography variant="subtitle2">Employment type</Typography>
+  //             <RHFMultiCheckbox
+  //               row
+  //               spacing={4}
+  //               name="employmentTypes"
+  //               options={JOB_EMPLOYMENT_TYPE_OPTIONS}
+  //             />
+  //           </Stack>
 
-            <Stack spacing={1}>
-              <Typography variant="subtitle2">Experience</Typography>
-              <RHFRadioGroup row spacing={4} name="experience" options={JOB_EXPERIENCE_OPTIONS} />
-            </Stack>
+  //           <Stack spacing={1}>
+  //             <Typography variant="subtitle2">Experience</Typography>
+  //             <RHFRadioGroup row spacing={4} name="experience" options={JOB_EXPERIENCE_OPTIONS} />
+  //           </Stack>
 
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Role</Typography>
-              <RHFAutocomplete
-                name="role"
-                autoHighlight
-                options={_roles.map((option) => option)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-              />
-            </Stack>
+  //           <Stack spacing={1.5}>
+  //             <Typography variant="subtitle2">Role</Typography>
+  //             <RHFAutocomplete
+  //               name="role"
+  //               autoHighlight
+  //               options={_roles.map((option) => option)}
+  //               getOptionLabel={(option) => option}
+  //               renderOption={(props, option) => (
+  //                 <li {...props} key={option}>
+  //                   {option}
+  //                 </li>
+  //               )}
+  //             />
+  //           </Stack>
 
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Skills</Typography>
-              <RHFAutocomplete
-                name="skills"
-                placeholder="+ Skills"
-                multiple
-                disableCloseOnSelect
-                options={JOB_SKILL_OPTIONS.map((option) => option)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-                renderTags={(selected, getTagProps) =>
-                  selected.map((option, index) => (
-                    <Chip
-                      {...getTagProps({ index })}
-                      key={option}
-                      label={option}
-                      size="small"
-                      color="info"
-                      variant="soft"
-                    />
-                  ))
-                }
-              />
-            </Stack>
+  //           <Stack spacing={1.5}>
+  //             <Typography variant="subtitle2">Skills</Typography>
+  //             <RHFAutocomplete
+  //               name="skills"
+  //               placeholder="+ Skills"
+  //               multiple
+  //               disableCloseOnSelect
+  //               options={JOB_SKILL_OPTIONS.map((option) => option)}
+  //               getOptionLabel={(option) => option}
+  //               renderOption={(props, option) => (
+  //                 <li {...props} key={option}>
+  //                   {option}
+  //                 </li>
+  //               )}
+  //               renderTags={(selected, getTagProps) =>
+  //                 selected.map((option, index) => (
+  //                   <Chip
+  //                     {...getTagProps({ index })}
+  //                     key={option}
+  //                     label={option}
+  //                     size="small"
+  //                     color="info"
+  //                     variant="soft"
+  //                   />
+  //                 ))
+  //               }
+  //             />
+  //           </Stack>
 
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Working schedule</Typography>
-              <RHFAutocomplete
-                name="workingSchedule"
-                placeholder="+ Schedule"
-                multiple
-                disableCloseOnSelect
-                options={JOB_WORKING_SCHEDULE_OPTIONS.map((option) => option)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-                renderTags={(selected, getTagProps) =>
-                  selected.map((option, index) => (
-                    <Chip
-                      {...getTagProps({ index })}
-                      key={option}
-                      label={option}
-                      size="small"
-                      color="info"
-                      variant="soft"
-                    />
-                  ))
-                }
-              />
-            </Stack>
+  //           <Stack spacing={1.5}>
+  //             <Typography variant="subtitle2">Working schedule</Typography>
+  //             <RHFAutocomplete
+  //               name="workingSchedule"
+  //               placeholder="+ Schedule"
+  //               multiple
+  //               disableCloseOnSelect
+  //               options={JOB_WORKING_SCHEDULE_OPTIONS.map((option) => option)}
+  //               getOptionLabel={(option) => option}
+  //               renderOption={(props, option) => (
+  //                 <li {...props} key={option}>
+  //                   {option}
+  //                 </li>
+  //               )}
+  //               renderTags={(selected, getTagProps) =>
+  //                 selected.map((option, index) => (
+  //                   <Chip
+  //                     {...getTagProps({ index })}
+  //                     key={option}
+  //                     label={option}
+  //                     size="small"
+  //                     color="info"
+  //                     variant="soft"
+  //                   />
+  //                 ))
+  //               }
+  //             />
+  //           </Stack>
 
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Locations</Typography>
-              <RHFAutocomplete
-                name="locations"
-                placeholder="+ Locations"
-                multiple
-                disableCloseOnSelect
-                options={countries.map((option) => option.label)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => {
-                  const { code, label, phone } = countries.filter(
-                    (country) => country.label === option
-                  )[0];
+  //           <Stack spacing={1.5}>
+  //             <Typography variant="subtitle2">Locations</Typography>
+  //             <RHFAutocomplete
+  //               name="locations"
+  //               placeholder="+ Locations"
+  //               multiple
+  //               disableCloseOnSelect
+  //               options={countries.map((option) => option.label)}
+  //               getOptionLabel={(option) => option}
+  //               renderOption={(props, option) => {
+  //                 const { code, label, phone } = countries.filter(
+  //                   (country) => country.label === option
+  //                 )[0];
 
-                  if (!label) {
-                    return null;
-                  }
+  //                 if (!label) {
+  //                   return null;
+  //                 }
 
-                  return (
-                    <li {...props} key={label}>
-                      <Iconify
-                        key={label}
-                        icon={`circle-flags:${code.toLowerCase()}`}
-                        width={28}
-                        sx={{ mr: 1 }}
-                      />
-                      {label} ({code}) +{phone}
-                    </li>
-                  );
-                }}
-                renderTags={(selected, getTagProps) =>
-                  selected.map((option, index) => (
-                    <Chip
-                      {...getTagProps({ index })}
-                      key={option}
-                      label={option}
-                      size="small"
-                      color="info"
-                      variant="soft"
-                    />
-                  ))
-                }
-              />
-            </Stack>
+  //                 return (
+  //                   <li {...props} key={label}>
+  //                     <Iconify
+  //                       key={label}
+  //                       icon={`circle-flags:${code.toLowerCase()}`}
+  //                       width={28}
+  //                       sx={{ mr: 1 }}
+  //                     />
+  //                     {label} ({code}) +{phone}
+  //                   </li>
+  //                 );
+  //               }}
+  //               renderTags={(selected, getTagProps) =>
+  //                 selected.map((option, index) => (
+  //                   <Chip
+  //                     {...getTagProps({ index })}
+  //                     key={option}
+  //                     label={option}
+  //                     size="small"
+  //                     color="info"
+  //                     variant="soft"
+  //                   />
+  //                 ))
+  //               }
+  //             />
+  //           </Stack>
 
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Expired</Typography>
-              <Controller
-                name="expiredDate"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    {...field}
-                    renderInput={() => { }}
-                    format="dd/MM/yyyy"
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        error: !!error,
-                        helperText: error?.message,
-                      },
-                    }}
-                  />
-                )}
-              />
-            </Stack>
+  //           <Stack spacing={1.5}>
+  //             <Typography variant="subtitle2">Expired</Typography>
+  //             <Controller
+  //               name="expiredDate"
+  //               control={control}
+  //               render={({ field, fieldState: { error } }) => (
+  //                 <DatePicker
+  //                   {...field}
+  //                   renderInput={() => { }}
+  //                   format="dd/MM/yyyy"
+  //                   slotProps={{
+  //                     textField: {
+  //                       fullWidth: true,
+  //                       error: !!error,
+  //                       helperText: error?.message,
+  //                     },
+  //                   }}
+  //                 />
+  //               )}
+  //             />
+  //           </Stack>
 
-            <Stack spacing={2}>
-              <Typography variant="subtitle2">Salary</Typography>
+  //           <Stack spacing={2}>
+  //             <Typography variant="subtitle2">Salary</Typography>
 
-              <Controller
-                name="salary.type"
-                control={control}
-                render={({ field }) => (
-                  <Box gap={2} display="grid" gridTemplateColumns="repeat(2, 1fr)">
-                    {[
-                      {
-                        label: 'Hourly',
-                        icon: <Iconify icon="solar:clock-circle-bold" width={32} sx={{ mb: 2 }} />,
-                      },
-                      {
-                        label: 'Custom',
-                        icon: <Iconify icon="solar:wad-of-money-bold" width={32} sx={{ mb: 2 }} />,
-                      },
-                    ].map((item) => (
-                      <Paper
-                        component={ButtonBase}
-                        variant="outlined"
-                        key={item.label}
-                        onClick={() => field.onChange(item.label)}
-                        sx={{
-                          p: 2.5,
-                          borderRadius: 1,
-                          typography: 'subtitle2',
-                          flexDirection: 'column',
-                          ...(item.label === field.value && {
-                            borderWidth: 2,
-                            borderColor: 'text.primary',
-                          }),
-                        }}
-                      >
-                        {item.icon}
-                        {item.label}
-                      </Paper>
-                    ))}
-                  </Box>
-                )}
-              />
+  //             <Controller
+  //               name="salary.type"
+  //               control={control}
+  //               render={({ field }) => (
+  //                 <Box gap={2} display="grid" gridTemplateColumns="repeat(2, 1fr)">
+  //                   {[
+  //                     {
+  //                       label: 'Hourly',
+  //                       icon: <Iconify icon="solar:clock-circle-bold" width={32} sx={{ mb: 2 }} />,
+  //                     },
+  //                     {
+  //                       label: 'Custom',
+  //                       icon: <Iconify icon="solar:wad-of-money-bold" width={32} sx={{ mb: 2 }} />,
+  //                     },
+  //                   ].map((item) => (
+  //                     <Paper
+  //                       component={ButtonBase}
+  //                       variant="outlined"
+  //                       key={item.label}
+  //                       onClick={() => field.onChange(item.label)}
+  //                       sx={{
+  //                         p: 2.5,
+  //                         borderRadius: 1,
+  //                         typography: 'subtitle2',
+  //                         flexDirection: 'column',
+  //                         ...(item.label === field.value && {
+  //                           borderWidth: 2,
+  //                           borderColor: 'text.primary',
+  //                         }),
+  //                       }}
+  //                     >
+  //                       {item.icon}
+  //                       {item.label}
+  //                     </Paper>
+  //                   ))}
+  //                 </Box>
+  //               )}
+  //             />
 
-              <RHFTextField
-                name="salary.price"
-                placeholder="0.00"
-                type="number"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <RHFSwitch name="salary.negotiable" label="Salary is negotiable" />
-            </Stack>
+  //             <RHFTextField
+  //               name="salary.price"
+  //               placeholder="0.00"
+  //               type="number"
+  //               InputProps={{
+  //                 startAdornment: (
+  //                   <InputAdornment position="start">
+  //                     <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
+  //                   </InputAdornment>
+  //                 ),
+  //               }}
+  //             />
+  //             <RHFSwitch name="salary.negotiable" label="Salary is negotiable" />
+  //           </Stack>
 
-            <Stack spacing={1}>
-              <Typography variant="subtitle2">Benefits</Typography>
-              <RHFMultiCheckbox
-                name="benefits"
-                options={JOB_BENEFIT_OPTIONS}
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                }}
-              />
-            </Stack>
-          </Stack>
-        </Card>
-      </Grid>
-    </>
-  );
+  //           <Stack spacing={1}>
+  //             <Typography variant="subtitle2">Benefits</Typography>
+  //             <RHFMultiCheckbox
+  //               name="benefits"
+  //               options={JOB_BENEFIT_OPTIONS}
+  //               sx={{
+  //                 display: 'grid',
+  //                 gridTemplateColumns: 'repeat(2, 1fr)',
+  //               }}
+  //             />
+  //           </Stack>
+  //         </Stack>
+  //       </Card>
+  //     </Grid>
+  //   </>
+  // );
 
   const renderActions = (
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
         <FormControlLabel
-          control={<Switch defaultChecked />}
-          label="Publish"
+          control={<RHFSwitch name="published" defaultChecked label="是否发布" />}
           sx={{ flexGrow: 1, pl: 3 }}
         />
 
@@ -496,8 +481,6 @@ export default function BookNewEditForm ({ currentBook }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         {renderDetails}
-
-        {renderProperties}
 
         {renderActions}
       </Grid>

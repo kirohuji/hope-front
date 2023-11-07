@@ -66,7 +66,7 @@ export default function UserEditView () {
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={!user}
       >
-        <CircularProgress color="inherit" />
+        <CircularProgress/>
       </Backdrop>
       {
         !!user && <UserNewEditForm currentUser={user} />

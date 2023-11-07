@@ -108,7 +108,7 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
       content: currentArticle?.content || '',
       coverUrl: currentArticle?.coverUrl || null,
       tags: currentArticle?.tags || [],
-      public: currentArticle?.public || null,
+      published: currentArticle?.published || null,
       metaKeywords: currentArticle?.metaKeywords || [],
       metaTitle: currentArticle?.metaTitle || '',
       metaDescription: currentArticle?.metaDescription || '',
@@ -388,7 +388,7 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
-        {activeStep === 0 && <div style={{ flexGrow: 1, pl: 3 }}> <RHFSwitch name="public" label="是否发布" /></div>}
+        {activeStep === 0 && <div style={{ flexGrow: 1, pl: 3 }}> <RHFSwitch name="published" label="是否发布" /></div>}
         <Button color="inherit" variant="outlined" size="large" onClick={preview.onTrue}>
           预览
         </Button>
@@ -457,8 +457,6 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
 
         <Grid container spacing={3}>
           {activeStep === 0 && renderDetails}
-
-          {activeStep === 0 && renderProperties}
 
           {activeStep === 0 && renderActions}
 

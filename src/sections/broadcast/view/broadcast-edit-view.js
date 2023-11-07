@@ -47,15 +47,15 @@ export default function BroadcastEditView() {
       <CustomBreadcrumbs
         heading="编辑"
         links={[
+          // {
+          //   name: 'Dashboard',
+          //   href: paths.dashboard.root,
+          // },
           {
-            name: 'Dashboard',
-            href: paths.dashboard.root,
-          },
-          {
-            name: 'Broadcast',
+            name: '活动通知',
             href: paths.dashboard.broadcast.root,
           },
-          { name: currentBroadcast?.name },
+          { name: currentBroadcast?.label },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

@@ -23,10 +23,10 @@ export function shortDateLabel(startDate, endDate) {
       if (sameDay) {
         return fDate(endDate, 'dd MMM yy');
       }
-      return `${fDate(startDate, 'dd')} - ${fDate(endDate, 'dd MMM yy')}`;
+      return `${fDate(startDate, 'yy 年 MM月 dd日')} - ${fDate(endDate, 'dd日')}`;
     }
-    return `${fDate(startDate, 'dd MMM')} - ${fDate(endDate, 'dd MMM yy')}`;
+    return `${fDate(startDate, 'yy年MM月dd日')} - ${fDate(endDate, 'MM月dd日')}`;
   }
 
-  return `${fDate(startDate, 'dd MMM yy')} - ${fDate(endDate, 'dd MMM yy')}`;
+  return `${fDate(startDate, 'yy年MM月dd日')} - ${fDate(endDate, 'yy年MM月dd日')}`;
 }

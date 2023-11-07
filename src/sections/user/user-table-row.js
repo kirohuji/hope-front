@@ -23,7 +23,7 @@ import UserQuickEditForm from './user-quick-edit-form';
 // ----------------------------------------------------------------------
 
 export default function UserTableRow ({ row, selected, onClose, onEditRow, onSelectRow, onDeleteRow }) {
-  const { username, displayName, baptized, gender, age, photoURL, company, status, email, phoneNumber } = row;
+  const { username, displayName, baptized, gender, age, photoURL, address, status, available, email, phoneNumber } = row;
 
   const confirm = useBoolean();
 
@@ -34,10 +34,16 @@ export default function UserTableRow ({ row, selected, onClose, onEditRow, onSel
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
+      {
+        /** 
+         * 
+         *         <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
+         * 
+         */
+      }
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar alt={username} src={photoURL} sx={{ mr: 2 }} />
 
@@ -62,7 +68,7 @@ export default function UserTableRow ({ row, selected, onClose, onEditRow, onSel
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{baptized ? "是" : "否"}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{company}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{address}</TableCell>
 
         {/** <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell> */}
 
@@ -70,13 +76,13 @@ export default function UserTableRow ({ row, selected, onClose, onEditRow, onSel
           <Label
             variant="soft"
             color={
-              (status === 'active' && 'success') ||
-              // (status === 'pending' && 'warning') ||
-              (status === 'banned' && 'error') ||
+              (available === 'active' && 'success') ||
+              // (available === 'pending' && 'warning') ||
+              (available === 'banned' && 'error') ||
               'default'
             }
           >
-            {status === 'active' ? '激活' : '注销'}
+            {available === 'active' ? '激活' : '注销'}
           </Label>
         </TableCell>
         <Restricted to={["UserListEditButton", "UserListRemoveButton"]}>

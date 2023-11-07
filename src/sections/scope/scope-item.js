@@ -46,7 +46,7 @@ export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
                 {label}
               </Link>
             }
-            secondary={`Posted date: ${fDate(createdAt)}`}
+            secondary={`创建时间: ${fDate(createdAt)}`}
             primaryTypographyProps={{
               typography: 'subtitle1',
             }}
@@ -57,16 +57,17 @@ export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
               color: 'text.disabled',
             }}
           />
-
-          <Stack
-            spacing={0.5}
-            direction="row"
-            alignItems="center"
-            sx={{ color: 'primary.main', typography: 'caption' }}
-          >
-            <Iconify width={16} icon="solar:users-group-rounded-bold" />
-            {candidates ? candidates.length : '无'} 参与者
-          </Stack>
+          {
+            false && <Stack
+              spacing={0.5}
+              direction="row"
+              alignItems="center"
+              sx={{ color: 'primary.main', typography: 'caption' }}
+            >
+              <Iconify width={16} icon="solar:users-group-rounded-bold" />
+              {candidates ? candidates.length : '无'} 参与者
+            </Stack>
+          }
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
@@ -145,7 +146,7 @@ export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-           删除
+          删除
         </MenuItem>
       </CustomPopover>
     </>

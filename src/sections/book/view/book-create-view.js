@@ -16,17 +16,13 @@ export default function BookCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create a new book"
+        heading="创建一本灵修本"
         links={[
           {
-            name: 'Dashboard',
-            href: paths.dashboard.root,
-          },
-          {
-            name: 'Book',
+            name: '灵修本',
             href: paths.dashboard.book.root,
           },
-          { name: 'New book' },
+          { name: '新的灵修本' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

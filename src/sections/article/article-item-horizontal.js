@@ -31,7 +31,6 @@ export default function ArticleItemHorizontal ({ onRefresh, article, book }) {
 
   const router = useRouter();
 
-  console.log('book', book)
   const mdUp = useResponsive('up', 'md');
 
   const {

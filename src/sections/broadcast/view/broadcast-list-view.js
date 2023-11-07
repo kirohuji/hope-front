@@ -10,6 +10,7 @@ import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useDebounce } from 'src/hooks/use-debounce';
 // utils
 import { fTimestamp } from 'src/utils/format-time';
 // _mock
@@ -24,14 +25,16 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import { broadcastService } from 'src/composables/context-provider';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 import BroadcastList from '../broadcast-list';
 import BroadcastSort from '../broadcast-sort';
-import BroadcastSearch from '../broadcast-search';
 import BroadcastFilters from '../broadcast-filters';
 import BroadcastFiltersResult from '../broadcast-filters-result';
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
+  label: '',
   destination: [],
   tourGuides: [],
   services: [],
@@ -41,7 +44,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function BroadcastListView() {
+export default function BroadcastListView () {
   const { enqueueSnackbar } = useSnackbar();
   const settings = useSettingsContext();
   const lgUp = useResponsive('up', 'lg');
@@ -58,17 +61,22 @@ export default function BroadcastListView() {
 
   const [filters, setFilters] = useState(defaultFilters);
 
+  const debouncedFilters = useDebounce(filters);
+
   const getTableData = useCallback(async (selector = {}, options = {}) => {
     try {
       const response = await broadcastService.pagination({
-        ...selector,
+        ...{
+          ...selector,
+          label: debouncedFilters.label
+        },
         ...options
       })
       setTableData(response.data);
     } catch (error) {
       enqueueSnackbar(error.message);
     }
-  }, [setTableData, enqueueSnackbar]);
+  }, [setTableData, enqueueSnackbar, debouncedFilters]);
 
   useEffect(() => {
     getTableData()
@@ -136,14 +144,26 @@ export default function BroadcastListView() {
       alignItems={{ xs: 'flex-end', sm: 'center' }}
       direction={{ xs: 'column', sm: 'row' }}
     >
-      <BroadcastSearch
-        query={search.query}
-        results={search.results}
-        onSearch={handleSearch}
-        hrefItem={(id) => paths.dashboard.broadcast.details(id)}
-      />
-
-      <Stack direction="row" spacing={1} flexShrink={0}>
+      <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <TextField
+          fullWidth
+          value={filters.label}
+          onChange={(event) => {
+            handleFilters('label', event.target.value);
+          }}
+          placeholder="请输入..."
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Stack>
+      {
+        /** 
+               <Stack direction="row" spacing={1} flexShrink={0}>
         <BroadcastFilters
           open={openFilters.value}
           onOpen={openFilters.onTrue}
@@ -163,7 +183,10 @@ export default function BroadcastListView() {
         />
 
         <BroadcastSort sort={sortBy} onSort={handleSortBy} sortOptions={TOUR_SORT_OPTIONS} />
-      </Stack>
+      </Stack> 
+         
+         */
+      }
     </Stack>
   );
 

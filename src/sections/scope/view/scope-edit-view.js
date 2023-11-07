@@ -38,22 +38,17 @@ export default function ScopeEditView () {
   useEffect(() => {
     getCurrentScope()
   }, [getCurrentScope]);
-  // const currentScope = _jobs.find((job) => job.id === id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading="编辑"
         links={[
           {
-            name: 'Dashboard',
-            href: paths.dashboard.root,
-          },
-          {
-            name: 'Scope',
+            name: '作用域',
             href: paths.dashboard.job.root,
           },
-          { name: currentScope?.title },
+          { name: currentScope?.label },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

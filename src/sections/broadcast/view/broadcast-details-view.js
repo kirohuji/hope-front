@@ -7,7 +7,6 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
 // _mock
-import { _tours, TOUR_PUBLISH_OPTIONS } from 'src/_mock';
 import { Divider, Stack } from '@mui/material';
 import Button from '@mui/material/Button';
 import { useAuthContext } from 'src/auth/hooks';
@@ -16,7 +15,6 @@ import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
 //
 import { broadcastService } from 'src/composables/context-provider';
-import Iconify from 'src/components/iconify';
 import _ from 'lodash';
 // redux
 import { useSnackbar } from 'src/components/snackbar';
@@ -30,6 +28,16 @@ export const TOUR_DETAILS_TABS = [
   { value: 'participants', label: '参加者列表' },
 ];
 
+export const TOUR_PUBLISH_OPTIONS = [
+  {
+    value: 'published',
+    label: 'Published',
+  },
+  {
+    value: 'draft',
+    label: 'Draft',
+  },
+];
 // ----------------------------------------------------------------------
 
 export default function BroadcastDetailsView () {
@@ -97,7 +105,7 @@ export default function BroadcastDetailsView () {
           _id: id
         })
         // console.log(_.find(response.tourGuides, ["_id", user._id]))
-        setIsAdmin(_.find(response.tourGuides, ["_id", user._id]))
+        setIsAdmin(_.find(response.leader, ["_id", user._id]))
         setCurrentBroadcast(response)
       } else {
         getParticipants()

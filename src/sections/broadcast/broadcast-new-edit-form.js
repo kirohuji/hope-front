@@ -34,13 +34,27 @@ import FormProvider, {
   RHFUpload,
   RHFTextField,
   RHFAutocomplete,
-  RHFMultiCheckbox,
+  RHFSwitch,
 } from 'src/components/hook-form';
 
 import { broadcastService, userService, fileService } from 'src/composables/context-provider';
 import moment from 'moment';
 
 // ----------------------------------------------------------------------
+
+
+export const BROADCAST_SERVICE_OPTIONS = [
+  { value: 'Audio guide', label: 'Audio guide' },
+  { value: 'Food and drinks', label: 'Food and drinks' },
+  { value: 'Lunch', label: 'Lunch' },
+  { value: 'Private tour', label: 'Private tour' },
+  { value: 'Special activities', label: 'Special activities' },
+  { value: 'Entrance fees', label: 'Entrance fees' },
+  { value: 'Gratuities', label: 'Gratuities' },
+  { value: 'Pick-up and drop off', label: 'Pick-up and drop off' },
+  { value: 'Professional guide', label: 'Professional guide' },
+  { value: 'Transport by air-conditioned', label: 'Transport by air-conditioned' },
+];
 
 export const BROAECAST_TYPE_OPTIONS = [
   { value: 'activity', label: '活动通知' },
@@ -60,24 +74,19 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
 
   const NewBroadcastSchema = Yup.object().shape({
     label: Yup.string().required('请输入标题'),
-    content: Yup.string().required('Content is required'),
-    images: Yup.array().min(1, 'Images is required'),
+    content: Yup.string().required('请输入内容'),
+    images: Yup.array(),
     type: Yup.string().required(1, 'Type is required'),
-    //
-    tourGuides: Yup.array().min(1, 'Must have at least 1 guide'),
+    leaders: Yup.array().min(1, 'Must have at least 1 guide'),
     durations: Yup.string().required('Duration is required'),
-    tags: Yup.array().min(2, 'Must have at least 2 tags'),
-    services: Yup.array().min(2, 'Must have at least 2 services'),
+    // tags: Yup.array().min(2, 'Must have at least 2 tags'),
+    // services: Yup.array().min(2, 'Must have at least 2 services'),
     destination: Yup.string().required('Destination is required'),
+    published: Yup.boolean(),
     available: Yup.object().shape({
       startDate: Yup.mixed().nullable().required('Start date is required'),
       endDate: Yup.mixed()
         .required('End date is required')
-      // .test(
-      //   'date-min',
-      //   'End date must be later than start date',
-      //   (value, { parent }) => value.getTime() > parent.startDate.getTime()
-      // ),
     }),
   });
 
@@ -88,11 +97,12 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
       images: currentBroadcast?.images || [],
       type: currentBroadcast?.type || '',
       //
-      tourGuides: currentBroadcast?.tourGuides || [],
-      tags: currentBroadcast?.tags || [],
+      leaders: currentBroadcast?.tourGuides || [],
+      // tags: currentBroadcast?.tags || [],
       durations: currentBroadcast?.durations || '',
       destination: currentBroadcast?.destination || '',
-      services: currentBroadcast?.services || [],
+      published: currentBroadcast?.published || false,
+      // services: currentBroadcast?.services || [],
       available: {
         startDate: currentBroadcast?.available.startDate || null,
         endDate: currentBroadcast?.available.endDate || null,
@@ -123,7 +133,11 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
         status: "active",
       },
         {});
-      setUsers(response.data)
+      setUsers(response.data.map(item=> ({ 
+        _id: item._id,
+        username: item.username,
+        photoURL: item.photoURL,
+      })))
       console.log('setUsers', response.data)
     } catch (error) {
       console.log(error)
@@ -275,7 +289,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
 
               <RHFAutocomplete
                 multiple
-                name="tourGuides"
+                name="leaders"
                 placeholder="+ Broadcast Guides"
                 disableCloseOnSelect
                 options={users}
@@ -357,75 +371,56 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">目的地</Typography>
-              <RHFAutocomplete
-                name="destination"
-                placeholder="+ Destination"
-                options={countries.map((option) => option.label)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => {
-                  const { code, label, phone } = countries.filter(
-                    (country) => country.label === option
-                  )[0];
-
-                  if (!label) {
-                    return null;
-                  }
-
-                  return (
-                    <li {...props} key={label}>
-                      <Iconify
-                        key={label}
-                        icon={`circle-flags:${code.toLowerCase()}`}
-                        width={28}
-                        sx={{ mr: 1 }}
-                      />
-                      {label} ({code}) +{phone}
-                    </li>
-                  );
-                }}
-              />
+              <RHFTextField name="destination" placeholder="比如: 详细地址..." />
             </Stack>
-
-            <Stack spacing={1}>
+            {
+              /**
+               *            <Stack spacing={1}>
               <Typography variant="subtitle2">活动提供情况</Typography>
               <RHFMultiCheckbox
                 name="services"
-                options={TOUR_SERVICE_OPTIONS}
+                options={BROADCAST_SERVICE_OPTIONS}
                 sx={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(2, 1fr)',
                 }}
               />
             </Stack>
-
+               * */
+            }
+            {
+              /**
+               
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">标签</Typography>
-              <RHFAutocomplete
-                name="tags"
-                placeholder="+ 标签"
-                multiple
-                freeSolo
-                options={_tags.map((option) => option)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => (
-                  <li {...props} key={option}>
-                    {option}
-                  </li>
-                )}
-                renderTags={(selected, getTagProps) =>
-                  selected.map((option, index) => (
-                    <Chip
-                      {...getTagProps({ index })}
-                      key={option}
-                      label={option}
-                      size="small"
-                      color="info"
-                      variant="soft"
-                    />
-                  ))
-                }
-              />
-            </Stack>
+            <Typography variant="subtitle2">标签</Typography>
+            <RHFAutocomplete
+              name="tags"
+              placeholder="+ 标签"
+              multiple
+              freeSolo
+              options={_tags.map((option) => option)}
+              getOptionLabel={(option) => option}
+              renderOption={(props, option) => (
+                <li {...props} key={option}>
+                  {option}
+                </li>
+              )}
+              renderTags={(selected, getTagProps) =>
+                selected.map((option, index) => (
+                  <Chip
+                    {...getTagProps({ index })}
+                    key={option}
+                    label={option}
+                    size="small"
+                    color="info"
+                    variant="soft"
+                  />
+                ))
+              }
+            />
+          </Stack>
+               * */
+            }
           </Stack>
         </Card>
       </Grid>
@@ -437,8 +432,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
         <FormControlLabel
-          control={<Switch defaultChecked />}
-          label="Publish"
+          control={<RHFSwitch name="published" label="是否发布" />}
           sx={{ flexGrow: 1, pl: 3 }}
         />
 

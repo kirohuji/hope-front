@@ -50,7 +50,7 @@ export default function Editor({
         <ReactQuill
           modules={modules}
           formats={formats}
-          placeholder="Write something awesome..."
+          placeholder="写点什么..."
           {...other}
         />
       </StyledEditor>

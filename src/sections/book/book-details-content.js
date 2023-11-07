@@ -20,23 +20,26 @@ import Markdown from 'src/components/markdown';
 export default function BookDetailsContent ({ book }) {
   const {
     label,
-    skills,
-    salary,
-    content,
-    benefits,
+    // skills,
+    // salary,
+    description,
+    // benefits,
     createdAt,
-    experience,
-    // expiredDate,
-    employmentTypes,
+    // experience,
+    // // expiredDate,
+    // employmentTypes,
   } = book;
 
   const renderContent = (
     <Stack component={Card} spacing={3} sx={{ p: 3 }}>
       <Typography variant="h4">{label}</Typography>
 
-      <Markdown children={content} />
+      <Markdown children={description} />
 
-      <Stack spacing={2}>
+      {
+        /**
+         * 
+         *       <Stack spacing={2}>
         <Typography variant="h6">Skills</Typography>
         <Stack direction="row" alignItems="center" spacing={1}>
           {skills && skills.map((skill) => (
@@ -53,6 +56,8 @@ export default function BookDetailsContent ({ book }) {
           ))}
         </Stack>
       </Stack>
+         */
+      }
     </Stack>
   );
 
@@ -60,7 +65,27 @@ export default function BookDetailsContent ({ book }) {
     <Stack component={Card} spacing={2} sx={{ p: 3 }}>
       {[
         {
-          label: 'Date Posted',
+          label: '创建时间',
+          value: fDate(createdAt),
+          icon: <Iconify icon="solar:calendar-date-bold" />,
+        },
+        {
+          label: '作者',
+          value: fDate(createdAt),
+          icon: <Iconify icon="solar:calendar-date-bold" />,
+        },
+        {
+          label: '发布时间',
+          value: fDate(createdAt),
+          icon: <Iconify icon="solar:calendar-date-bold" />,
+        },
+        {
+          label: '所属',
+          value: fDate(createdAt),
+          icon: <Iconify icon="solar:calendar-date-bold" />,
+        },
+        {
+          label: '分类',
           value: fDate(createdAt),
           icon: <Iconify icon="solar:calendar-date-bold" />,
         },
@@ -69,21 +94,21 @@ export default function BookDetailsContent ({ book }) {
         //   value: fDate(expiredDate),
         //   icon: <Iconify icon="solar:calendar-date-bold" />,
         // },
-        {
-          label: 'Employment type',
-          value: employmentTypes,
-          icon: <Iconify icon="solar:clock-circle-bold" />,
-        },
-        {
-          label: 'Offered salary',
-          value: salary && salary.negotiable ? 'Negotiable' : salary && fCurrency(salary.price),
-          icon: <Iconify icon="solar:wad-of-money-bold" />,
-        },
-        {
-          label: 'Experience',
-          value: experience,
-          icon: <Iconify icon="carbon:skill-level-basic" />,
-        },
+        // {
+        //   label: 'Employment type',
+        //   value: employmentTypes,
+        //   icon: <Iconify icon="solar:clock-circle-bold" />,
+        // },
+        // {
+        //   label: 'Offered salary',
+        //   value: salary && salary.negotiable ? 'Negotiable' : salary && fCurrency(salary.price),
+        //   icon: <Iconify icon="solar:wad-of-money-bold" />,
+        // },
+        // {
+        //   label: 'Experience',
+        //   value: experience,
+        //   icon: <Iconify icon="carbon:skill-level-basic" />,
+        // },
       ].map((item) => (
         <Stack key={item.label} spacing={1.5} direction="row">
           {item.icon}

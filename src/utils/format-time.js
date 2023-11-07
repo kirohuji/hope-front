@@ -4,7 +4,8 @@ import { zhCN } from 'date-fns/locale';
 // ----------------------------------------------------------------------
 
 export function fDate (date, newFormat) {
-  const fm = newFormat || 'dd MMM yyyy';
+  // const fm = newFormat || 'dd MMM yyyy';
+  const fm = newFormat || 'yyyy年MM月dd日';
 
   return date ? format(new Date(date), fm, {
     locale: zhCN
@@ -12,9 +13,11 @@ export function fDate (date, newFormat) {
 }
 
 export function fDateTime (date, newFormat) {
-  const fm = newFormat || 'yyyy/MM/dd HH:mm';
+  const fm = newFormat || 'yyyy年MM月dd日 HH:mm';
 
-  return date ? format(new Date(date), fm) : '';
+  return date ? format(new Date(date), fm, {
+    locale: zhCN
+  }) : '';
 }
 
 export function fTimestamp (date) {

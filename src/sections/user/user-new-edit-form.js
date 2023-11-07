@@ -48,7 +48,7 @@ export default function UserNewEditForm ({ currentUser }) {
     address: Yup.string().required('请选择地址'),
     age: Yup.string().required('请选择年龄'),
     gender: Yup.string().required('请选择性别'),
-    status: Yup.string(),
+    available: Yup.string(),
     scope: Yup.string().required('请选择组织'),
     baptized: Yup.boolean().required('请选择是否受洗'),
     // country: Yup.string().required('Country is required'),
@@ -67,18 +67,10 @@ export default function UserNewEditForm ({ currentUser }) {
       address: currentUser?.address || '',
       age: currentUser?.age || '',
       gender: currentUser?.gender || '',
-      status: currentUser?.status || '',
+      available: currentUser?.available || '',
       scope: currentUser?.scope || '',
       baptized: currentUser?.baptized || false,
-      // country: currentUser?.country || '',
-      // state: currentUser?.state || '',
-      // city: currentUser?.city || '',
-      // zipCode: currentUser?.zipCode || '',
       photoURL: currentUser?.photoURL || null,
-      // isVerified: currentUser?.isVerified || true,
-      // status: currentUser?.status,
-      // company: currentUser?.company || '',
-      // role: currentUser?.role || '',
     }),
     [currentUser]
   );
@@ -154,10 +146,10 @@ export default function UserNewEditForm ({ currentUser }) {
           <Card sx={{ pt: 10, pb: 5, px: 3 }}>
             {currentUser && (
               <Label
-                color={values.status === 'active' ? 'success' : 'error'}
+                color={values.available === 'active' ? 'success' : 'error'}
                 sx={{ textTransform: 'uppercase', position: 'absolute', top: 24, right: 24 }}
               >
-                {values.status === 'active' ? '激活' : '注销'}
+                {values.available === 'active' ? '激活' : '注销'}
               </Label>
             )}
 
@@ -189,7 +181,7 @@ export default function UserNewEditForm ({ currentUser }) {
                 labelPlacement="start"
                 control={
                   <Controller
-                    name="status"
+                    name="available"
                     control={control}
                     render={({ field }) => (
                       <Switch

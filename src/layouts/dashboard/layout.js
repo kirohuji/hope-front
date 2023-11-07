@@ -10,6 +10,7 @@ import MusicPlayer from 'src/components/music-player';
 import BookPlayer from 'src/sections/training/book-player';
 import AppBar from '@mui/material/AppBar';
 //
+import { usePathname } from 'src/routes/hook';
 import Main from './main';
 import Header from './header';
 import NavMini from './nav-mini';
@@ -19,6 +20,7 @@ import DashboardFooter from './footer';
 // ----------------------------------------------------------------------
 
 export default function DashboardLayout ({ children }) {
+
   const settings = useSettingsContext();
 
   const lgUp = useResponsive('up', 'lg');
@@ -35,6 +37,9 @@ export default function DashboardLayout ({ children }) {
 
   const renderNavVertical = <NavVertical openNav={nav.value} onCloseNav={nav.onFalse} />;
 
+  const pathname = usePathname();
+
+  console.log(pathname)
   if (isHorizontal) {
     return (
       <>

@@ -172,7 +172,7 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
           icon: <Iconify icon="solar:clock-circle-bold" sx={{ color: 'info.main' }} />,
         },
         {
-          label: `${participants.length} 参与者`,
+          label: `${participants?.length || "无"} 参与者`,
           icon: <Iconify icon="solar:users-group-rounded-bold" sx={{ color: 'primary.main' }} />,
         },
       ].map((item, i) => (

@@ -3,6 +3,8 @@ import { useCallback } from 'react';
 // @mui
 import Box from '@mui/material/Box';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
+// components
+import { useSnackbar } from 'src/components/snackbar';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -13,6 +15,7 @@ import ScopeItem from './scope-item';
 // ----------------------------------------------------------------------
 
 export default function ScopeList({ scopes ,onRefresh}) {
+  const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
 
   const handleView = useCallback(
@@ -33,8 +36,9 @@ export default function ScopeList({ scopes ,onRefresh}) {
     await scopeService.delete({
       _id
     })
+    enqueueSnackbar('删除成功')
     onRefresh()
-  }, [onRefresh]);
+  }, [onRefresh, enqueueSnackbar]);
 
   return (
     <>

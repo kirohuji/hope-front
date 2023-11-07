@@ -21,7 +21,7 @@ import ScopeDetailsCandidates from '../scope-details-candidates';
 
 const JOB_DETAILS_TABS = [
   { value: 'content', label: '简介' },
-  { value: 'candidates', label: '参与者' },
+  // { value: 'candidates', label: '参与者' },
 ];
 
 export default function ScopeDetailsView() {

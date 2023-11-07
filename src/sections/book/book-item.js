@@ -65,8 +65,10 @@ export default function BookItem ({ book, onView, onEdit, onDelete }) {
                 color: 'text.disabled',
               }}
             />
-
-            <Stack
+            {
+              /**
+               * 
+               *             <Stack
               spacing={0.5}
               direction="row"
               alignItems="center"
@@ -75,6 +77,8 @@ export default function BookItem ({ book, onView, onEdit, onDelete }) {
               <Iconify width={16} icon="solar:users-group-rounded-bold" />
               {candidates ? candidates.length : '无'} 参与者
             </Stack>
+               */
+            }
           </Stack>
         </Stack>
 

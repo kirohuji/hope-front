@@ -64,14 +64,14 @@ const TABLE_HEAD = [
   { id: 'baptized', label: ' 受洗情况', width: 90 },
   { id: 'address', label: '地址', width: 250 },
   // { id: 'role', label: 'Role', width: 180 },
-  { id: 'status', label: '状态', width: 100 },
+  { id: 'available', label: '状态', width: 100 },
   { id: '', width: 88 },
 ];
 
 const defaultFilters = {
   username: '',
   role: [],
-  status: 'all',
+  available: 'all',
 };
 
 // ----------------------------------------------------------------------
@@ -156,9 +156,10 @@ export default function UserListView () {
       await userService.delete({
         _id: id
       })
+      enqueueSnackbar("删除成功")
       getTableData();
     },
-    [getTableData]
+    [getTableData,enqueueSnackbar]
   );
 
   // const handleDeleteRows = useCallback(() => {
@@ -181,7 +182,7 @@ export default function UserListView () {
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
-      handleFilters('status', newValue);
+      handleFilters('available', newValue);
     },
     [handleFilters]
   );
@@ -236,7 +237,7 @@ export default function UserListView () {
 
         <Card>
           <Tabs
-            value={filters.status}
+            value={filters.available}
             onChange={handleFilterStatus}
             sx={{
               px: 2.5,
@@ -303,7 +304,7 @@ export default function UserListView () {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      tableData.map((row) => row.id)
+                      tableData.map((row) => row._id)
                     )
                   }
                 />

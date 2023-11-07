@@ -29,7 +29,7 @@ export default function ScopePopover () {
   const getAllEvents = useCallback(() => {
     dispatch(getScopes());
   }, [dispatch]);
-  
+
 
   useEffect(() => {
     getAllEvents();
@@ -68,7 +68,10 @@ export default function ScopePopover () {
                 disabledEffect
                 alt={option.label}
                 src={option.cover}
-                sx={{ width: 28, mr: 2 }}
+                sx={{
+                  width: 40,
+                  height: 40, mr: 2
+                }}
               />
 
               {option.label}

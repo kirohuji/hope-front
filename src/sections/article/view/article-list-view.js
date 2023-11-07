@@ -7,6 +7,8 @@ import Tabs from '@mui/material/Tabs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 // routes
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -15,7 +17,7 @@ import { useDebounce } from 'src/hooks/use-debounce';
 // _mock
 import { POST_SORT_OPTIONS } from 'src/_mock';
 // api
-import { useSearchPosts } from 'src/api/blog';
+// import { useSearchPosts } from 'src/api/blog';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import Label from 'src/components/label';
@@ -32,17 +34,31 @@ import ArticleListHorizontal from '../article-list-horizontal';
 
 const defaultFilters = {
   publish: 'all',
+  title: ''
 };
 
 ArticleListView.propTypes = {
   book: PropTypes.object,
 }
 
+const TABS = [
+  {
+    value: 'all',
+    label: '所有',
+  },
+  {
+    value: 'published',
+    label: '已经发布的',
+  },
+  {
+    value: 'draft',
+    label: '还在编写',
+  },
+];
 // ----------------------------------------------------------------------
 
 // eslint-disable-next-line react/prop-types
 export default function ArticleListView ({ book }) {
-  console.log('book',book)
   const { enqueueSnackbar } = useSnackbar();
 
   const settings = useSettingsContext();
@@ -55,13 +71,14 @@ export default function ArticleListView ({ book }) {
 
   const [filters, setFilters] = useState(defaultFilters);
 
+
   const [searchQuery, setSearchQuery] = useState('');
 
-  const debouncedQuery = useDebounce(searchQuery);
+  const debouncedFilters = useDebounce(filters);
 
   // const { articles } = useGetPosts();
 
-  const { searchResults, searchLoading } = useSearchPosts(debouncedQuery);
+  // const { searchResults, searchLoading } = useSearchPosts(debouncedQuery);
 
   // const dataFiltered = applyFilter({
   //   inputData: articles,
@@ -72,16 +89,18 @@ export default function ArticleListView ({ book }) {
   const getTableData = useCallback(async (selector = {}, options = {}) => {
     try {
       setLoading(true)
-      const response = await articleService.pagination({
+      let response = {}
+      response = await articleService.pagination({
         ...selector,
-        ...options
-      })
+        published: true,
+        title: debouncedFilters.title
+      }, options)
       setArticles(response.data);
       setLoading(false)
     } catch (error) {
       enqueueSnackbar(error.message);
     }
-  }, [setArticles, enqueueSnackbar]);
+  }, [setArticles, enqueueSnackbar, debouncedFilters]);
 
   useEffect(() => {
     getTableData()
@@ -168,15 +187,36 @@ export default function ArticleListView ({ book }) {
           mb: { xs: 3, md: 5 },
         }}
       >
-        <ArticleSearch
-          query={debouncedQuery}
-          results={searchResults}
-          onSearch={handleSearch}
-          loading={searchLoading}
-          hrefItem={(title) => paths.dashboard.article.details(title)}
-        />
+        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+          <TextField
+            fullWidth
+            value={filters.title}
+            onChange={(event) => {
+              handleFilters('title', event.target.value);
+            }}
+            placeholder="请输入..."
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Stack>
+        {
+          /**
+          <ArticleSearch
+            query={debouncedQuery}
+            results={searchResults}
+            onSearch={handleSearch}
+            loading={searchLoading}
+            // hrefItem={(title) => paths.dashboard.article.details(title)}
+          />
+           */
+        }
 
-        <ArticleSort sort={sortBy} onSort={handleSortBy} sortOptions={POST_SORT_OPTIONS} />
+        {/**  <ArticleSort sort={sortBy} onSort={handleSortBy} sortOptions={POST_SORT_OPTIONS} /> */}
       </Stack>
 
       <Tabs
@@ -186,30 +226,30 @@ export default function ArticleListView ({ book }) {
           mb: { xs: 3, md: 5 },
         }}
       >
-        {['all', 'published', 'draft'].map((tab) => (
+        {TABS.map((tab, index) => (
           <Tab
-            key={tab}
+            key={index}
             iconPosition="end"
-            value={tab}
-            label={tab}
-            icon={
-              <Label
-                variant={((tab === 'all' || tab === filters.publish) && 'filled') || 'soft'}
-                color={(tab === 'published' && 'info') || 'default'}
-              >
-                {tab === 'all' && articles.length}
+            value={tab.value}
+            label={tab.label}
+            // icon={
+            //   <Label
+            //     variant={((tab.value === 'all' || tab.value === filters.publish) && 'filled') || 'soft'}
+            //     color={(tab.value === 'published' && 'info') || 'default'}
+            //   >
+            //     {tab.value === 'all' && articles.length}
 
-                {tab === 'published' && articles.filter((article) => article.publish === 'published').length}
+            //     {tab.value === 'published' && articles.filter((article) => article.publish === 'published').length}
 
-                {tab === 'draft' && articles.filter((article) => article.publish === 'draft').length}
-              </Label>
-            }
+            //     {tab.value === 'draft' && articles.filter((article) => article.publish === 'draft').length}
+            //   </Label>
+            // }
             sx={{ textTransform: 'capitalize' }}
           />
         ))}
       </Tabs>
 
-      <ArticleListHorizontal onRefresh={()=> getTableData()} book={book} articles={articles} loading={loading} />
+      {articles && <ArticleListHorizontal onRefresh={() => getTableData()} book={book} articles={articles} loading={loading} />}
     </Container>
   );
 }

@@ -19,14 +19,10 @@ export default function ScopeCreateView() {
         heading="创建一个新的作用域"
         links={[
           {
-            name: 'Dashboard',
-            href: paths.dashboard.root,
-          },
-          {
-            name: 'Scope',
+            name: '作用域',
             href: paths.dashboard.job.root,
           },
-          { name: 'New job' },
+          { name: '新的作用域' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

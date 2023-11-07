@@ -24,11 +24,11 @@ import Lightbox, { useLightBox } from 'src/components/lightbox';
 
 export default function BroadcastDetailsContent ({ broadcast }) {
   const {
-    name,
+    label,
     images,
     content,
     services,
-    tourGuides,
+    leaders,
     available,
     durations,
     destination,
@@ -111,29 +111,37 @@ export default function BroadcastDetailsContent ({ broadcast }) {
     <>
       <Stack direction="row" sx={{ mb: 3 }}>
         <Typography variant="h4" sx={{ flexGrow: 1 }}>
-          {name}
+          {label}
         </Typography>
 
-        <IconButton>
-          <Iconify icon="solar:share-bold" />
-        </IconButton>
-
-        <Checkbox
-          defaultChecked
-          color="error"
-          icon={<Iconify icon="solar:heart-outline" />}
-          checkedIcon={<Iconify icon="solar:heart-bold" />}
-        />
+        {
+          /** 
+           <IconButton>
+           <Iconify icon="solar:share-bold" />
+         </IconButton>
+ 
+         <Checkbox
+           defaultChecked
+           color="error"
+           icon={<Iconify icon="solar:heart-outline" />}
+           checkedIcon={<Iconify icon="solar:heart-bold" />}
+         />
+           * */
+        }
       </Stack>
 
       <Stack spacing={3} direction="row" flexWrap="wrap" alignItems="center">
-        <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'body2' }}>
-          <Iconify icon="eva:star-fill" sx={{ color: 'warning.main' }} />
-          <Box component="span" sx={{ typography: 'subtitle2' }}>
-            {ratingNumber}
-          </Box>
-          <Link sx={{ color: 'text.secondary' }}>(234 reviews)</Link>
-        </Stack>
+      {
+        /**
+         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'body2' }}>
+         <Iconify icon="eva:star-fill" sx={{ color: 'warning.main' }} />
+         <Box component="span" sx={{ typography: 'subtitle2' }}>
+           {ratingNumber}
+         </Box>
+         <Link sx={{ color: 'text.secondary' }}>(234 reviews)</Link>
+       </Stack>
+         * */
+      }
 
         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'body2' }}>
           <Iconify icon="mingcute:location-fill" sx={{ color: 'error.main' }} />
@@ -143,9 +151,9 @@ export default function BroadcastDetailsContent ({ broadcast }) {
         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'subtitle2' }}>
           <Iconify icon="solar:flag-bold" sx={{ color: 'info.main' }} />
           <Box component="span" sx={{ typography: 'body2', color: 'text.secondary' }}>
-            Guide by
+            负责人: 
           </Box>
-          {tourGuides.map((tourGuide) => tourGuide.name).join(', ')}
+          {leaders.map((tourGuide) => tourGuide.name).join(', ')}
         </Stack>
       </Stack>
     </>
@@ -162,23 +170,23 @@ export default function BroadcastDetailsContent ({ broadcast }) {
     >
       {[
         {
-          label: 'Available',
+          label: '有效期',
           value: `${fDate(available.startDate)} - ${fDate(available.endDate)}`,
           icon: <Iconify icon="solar:calendar-date-bold" />,
         },
         {
-          label: 'Contact name',
-          value: tourGuides.map((tourGuide) => tourGuide.phoneNumber).join(', '),
+          label: '联系人',
+          value: leaders.map((leader) => leader.username).join(', '),
           icon: <Iconify icon="solar:user-rounded-bold" />,
         },
         {
-          label: 'Durations',
+          label: '时间长度',
           value: durations,
           icon: <Iconify icon="solar:clock-circle-bold" />,
         },
         {
-          label: 'Contact phone',
-          value: tourGuides.map((tourGuide) => tourGuide.name).join(', '),
+          label: '手机号',
+          value: leaders.map((leader) => leader.phoneNumber).join(', '),
           icon: <Iconify icon="solar:phone-bold" />,
         },
       ].map((item) => (
@@ -206,44 +214,47 @@ export default function BroadcastDetailsContent ({ broadcast }) {
   const renderContent = (
     <>
       <Markdown children={content} />
-
-      <Stack spacing={2}>
-        <Typography variant="h6"> Services</Typography>
-
-        <Box
-          rowGap={2}
-          display="grid"
-          gridTemplateColumns={{
-            xs: 'repeat(1, 1fr)',
-            md: 'repeat(2, 1fr)',
-          }}
-        >
-          {TOUR_SERVICE_OPTIONS.map((benefit) => (
-            <Stack
-              key={benefit.label}
-              spacing={1}
-              direction="row"
-              alignItems="center"
-              sx={{
-                ...(services.includes(benefit.label) && {
-                  color: 'text.disabled',
-                }),
-              }}
-            >
-              <Iconify
-                icon="eva:checkmark-circle-2-outline"
-                sx={{
-                  color: 'primary.main',
-                  ...(services.includes(benefit.label) && {
-                    color: 'text.disabled',
-                  }),
-                }}
-              />
-              {benefit.label}
-            </Stack>
-          ))}
-        </Box>
-      </Stack>
+      {
+        /** 
+         <Stack spacing={2}>
+         <Typography variant="h6"> Services</Typography>
+ 
+         <Box
+           rowGap={2}
+           display="grid"
+           gridTemplateColumns={{
+             xs: 'repeat(1, 1fr)',
+             md: 'repeat(2, 1fr)',
+           }}
+         >
+           {services && TOUR_SERVICE_OPTIONS.map((benefit) => (
+             <Stack
+               key={benefit.label}
+               spacing={1}
+               direction="row"
+               alignItems="center"
+               sx={{
+                 ...(services.includes(benefit.label) && {
+                   color: 'text.disabled',
+                 }),
+               }}
+             >
+               <Iconify
+                 icon="eva:checkmark-circle-2-outline"
+                 sx={{
+                   color: 'primary.main',
+                   ...(services.includes(benefit.label) && {
+                     color: 'text.disabled',
+                   }),
+                 }}
+               />
+               {benefit.label}
+             </Stack>
+           ))}
+         </Box>
+       </Stack>
+         */
+      }
     </>
   );
 
