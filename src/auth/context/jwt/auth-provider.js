@@ -94,7 +94,6 @@ export function AuthProvider ({ children }) {
     });
 
     reactiveCollection.onChange((newData) => {
-      console.log('更新2', newData)
       dispatch({
         type: 'NOTIFICATION',
         payload: {
@@ -121,7 +120,7 @@ export function AuthProvider ({ children }) {
         // const { user } = response.data;
         // 获取用户信息
         const { user, profile, roles, permissions } = await userService.info()
-        // getNotifications(user)
+        getNotifications(user)
         dispatch({
           type: 'INITIAL',
           payload: {
@@ -156,7 +155,7 @@ export function AuthProvider ({ children }) {
         },
       });
     }
-  }, []);
+  }, [getNotifications]);
 
   useEffect(() => {
     initialize();
@@ -186,7 +185,7 @@ export function AuthProvider ({ children }) {
     setSession(accessToken);
 
     const { user, profile, roles, permissions } = await userService.info()
-    // getNotifications(user)
+    getNotifications(user)
     dispatch({
       type: 'LOGIN',
       payload: {
@@ -198,7 +197,7 @@ export function AuthProvider ({ children }) {
         }
       },
     });
-  }, []);
+  }, [getNotifications]);
 
   const sendPublish = useCallback(async (data) => {
     // socket.emit("notification", data);
@@ -264,7 +263,7 @@ export function AuthProvider ({ children }) {
   const memoizedValue = useMemo(
     () => ({
       user: state.user,
-      notifications: state.notifications,
+      state,
       method: 'jwt',
       loading: status === 'loading',
       authenticated: status === 'authenticated',
@@ -279,7 +278,7 @@ export function AuthProvider ({ children }) {
       register,
       logout
     }),
-    [login, logout, state.notifications, sendPublish, register, state.isAuthenticated, state.isInitialized, state.user, status]
+    [login, logout, state, sendPublish, register, status]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 // utils
-import { notificationService } from 'src/composables/context-provider';
+import { ddpclient } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
 const initialState = {
@@ -25,12 +25,23 @@ export default slice.reducer;
 
 export function getNotifications () {
   return async (dispatch) => {
-    dispatch(slice.actions.startLoading());
-    try {
-      const data = await notificationService.getWithCurrentUser()
-      dispatch(slice.actions.getConversationsSuccess(data));
-    } catch (error) {
-      dispatch(slice.actions.hasError(error));
-    }
+    // try {
+
+    //   const notificationsSub = await ddpclient.subscribe("notifications");
+
+    //   await notificationsSub.ready();
+
+    //   const reactiveCollection = ddpclient.collection('notifications').reactive();
+
+    //   dispatch(slice.actions.getNotificationsSuccess(reactiveCollection.data()));
+
+    //   reactiveCollection.onChange((newData) => {
+    //     console.log('更新更新')
+    //     dispatch(slice.actions.getNotificationsSuccess(newData));
+    //   });
+    // } catch (error) {
+    //   console.log(error)
+    //   // dispatch(slice.actions.hasError(error));
+    // }
   };
 }
