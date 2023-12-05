@@ -152,7 +152,10 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
   }, [currentBroadcast, getUserData, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('执行')
+    if(values.images.filter((file) => file.isLoacl).length> 0){
+      enqueueSnackbar("照片集有图片未上传,请先上传");
+      return; 
+    }
     try {
       if (!isEdit) {
         await broadcastService.post({
@@ -182,6 +185,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
       const newFiles = acceptedFiles.map((file) =>
         Object.assign(file, {
           preview: URL.createObjectURL(file),
+          isLoacl: true
         })
       );
 
@@ -208,9 +212,11 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
       formData.append('file', file);
       const { link } = await fileService.avatar(formData)
       Object.assign(file, {
-        preview: link
+        preview: link,
+        isLoacl: false
       })
     })
+    enqueueSnackbar('照片上传成功');
   }
 
   const renderDetails = (

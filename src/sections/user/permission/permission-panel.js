@@ -273,6 +273,7 @@ export default function PermissionPanel ({ maxRole,current, onClose }) {
       parentName: current._id,
     })
     setIsSubmitting(false)
+    onClose()
     enqueueSnackbar('更新成功!');
   }
   const providerValue = useMemo(() => ({ maxRole,selectedNodes, selectedNodesNotChild, handleNodeSelect, setOpenForm, setItem, setParent, setOpenDeleteConfirm }), [maxRole,selectedNodes, selectedNodesNotChild, handleNodeSelect, setOpenForm, setItem, setParent, setOpenDeleteConfirm]);

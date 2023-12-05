@@ -118,8 +118,8 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
       </Stack>
       {
         images[1] && <Stack spacing={0.5}>
-          <Image alt={images[1] || ""} src={images[1] || ""} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
-          <Image alt={images[2] || ""} src={images[2] || ""} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
+          <Image alt={images[1] || ""} src={images[1].preview || ""} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
+          <Image alt={images[2] || ""} src={images[2].preview || ""} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
         </Stack>
       }
     </Stack>

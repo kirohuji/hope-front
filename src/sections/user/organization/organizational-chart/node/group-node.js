@@ -23,6 +23,10 @@ GroupNode.propTypes = {
 };
 
 export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, onCreate, onToggle, onPermission, onManager, onClick }) {
+  const name = node.label;
+  const group = node.scope;
+  const role = node.value;
+
   const [openPopover, setOpenPopover] = useState(null);
 
   const handleOpenPopover = (event) => {
@@ -43,26 +47,23 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
     color: isLight ? theme.palette[color].darker : theme.palette[color].lighter,
   });
 
-  // const isLabel = depth === 1;
   const isLabel = node.type === ("org" || "role") && !node.root;
 
-  const isGrRoot = node.group === 'root' || node.root;
+  const isGrRoot = group === 'root' || node.root;
 
-  const isGrProduct = node.group === 'product design';
+  const isGrProduct = group === 'product design';
 
-  const isGrDevelopment = node.group === 'development';
-
-  // const isGrMarketing = node.group === 'marketing';
+  const isGrDevelopment = group === 'development';
 
   const { isMaxRole } = node
 
-  const isGrMarketing = node.group === 'marketing';
+  const isGrMarketing = group === 'marketing';
 
   return (
     <Stack sx={{ position: 'relative', display: 'inline-flex', cursor: 'pointer' }} alignItems="center" className='card'>
       {!isLabel && false && (
         <Avatar
-          alt={node.name}
+          alt={name}
           src={node.avatar || ''}
           sx={{
             mt: -3.5,
@@ -121,7 +122,7 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
           />
         )}
         <Typography variant={isLabel ? 'subtitle1' : 'subtitle2'} noWrap onClick={onClick}>
-          {node.name}
+          {name}
           {isLabel && (
             <Label
               color={(isGrDevelopment && 'info') || (isGrMarketing && 'warning') || 'primary'}
@@ -131,22 +132,12 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
             </Label>
           )}
         </Typography>
-        {
-          /**
-
-        {!isLabel && (
-          <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
-            {node.role}
-          </Typography>
-        )}
-           */
-        }
         <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
-          {node.role}
+          {role}
         </Typography>
         {
           node.type === "org" && <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
-            负责人: {node.leader?.account?.username || "无"}
+            负责人: {node.leader?.username || "无"}
           </Typography>
         }
       </Card>

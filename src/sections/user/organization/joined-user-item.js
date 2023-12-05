@@ -44,15 +44,10 @@ export default function JoinedUserItem ({ node, leader, person, onSelectMain }) 
     setOpenPopover(null);
   };
 
-
-  // const handleChangePermission = (newPermission) => {
-  //   setPermission(newPermission);
-  // };
-
   return (
     <>
       <ListItem disableGutters>
-        <Badge variant="dot" invisible={leader?.account?._id !== person._id} size="small" color="secondary" anchorOrigin={{
+        <Badge variant="dot" invisible={leader?._id !== person._id} size="small" color="secondary" anchorOrigin={{
           vertical: 'top',
           horizontal: 'left',
         }} >

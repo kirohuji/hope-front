@@ -27,10 +27,6 @@ import PermissionNewEditForm from '../permission/permission-new-edit-form';
 
 export function getTree (data) {
   let root = data
-  // .filter((item) => item.root)
-  // .map((item) => ({
-  //   ...item,
-  // }));
   const tree = [];
   function serverArray (list, parent) {
     // eslint-disable-next-line no-plusplus
@@ -45,9 +41,7 @@ export function getTree (data) {
       }
       if (parent && parent.children) {
         if (item) {
-          parent.children[i] = {
-            ...item,
-          };
+          parent.children[i] = item;
           root = root.filter((r) => r._id !== item._id)
         } else {
           delete parent.children[i];
@@ -160,22 +154,24 @@ StyledTreeItem.propTypes = {
 }
 
 List.propTypes = {
-  data: PropTypes.object
+  data: PropTypes.object,
+  parentNode: PropTypes.object,
 }
 
-export function List ({ data }) {
+export function List ({ data, parentNode }) {
   const hasChild = data.children && !!data.children && data.children.length;
   return (
     <userContext.Consumer>
       {({ setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, handleEdit, handleDelete }) =>
         <StyledTreeItem nodeId={data._id} label={data.label}
           onEdit={() => {
-            setParent(null);
+            setParent(parentNode);
             setItem(data)
             setOpenForm(true)
           }}
           onDelete={() => {
             setItem(data);
+            setParent(parentNode);
             setOpenDeleteConfirm(true)
           }}
           onAddChildren={() => {
@@ -184,21 +180,21 @@ export function List ({ data }) {
             setOpenForm(true)
           }}
         >
-          {hasChild && <SubList data={data.children} />}
+          {hasChild ? <SubList data={data} /> : ""}
         </StyledTreeItem>
       }
     </userContext.Consumer>
   )
 }
 SubList.propTypes = {
-  data: PropTypes.array
+  data: PropTypes.object
 }
 
 export function SubList ({ data }) {
   return (
     <>
-      {data.map((item) => (
-        <List key={item._id} data={item} />
+      {data && data.children && data.children.length > 1 && data.children.map((item) => (
+        item && <List key={item._id} parentNode={data} data={item} />
       ))}
     </>
   );
@@ -208,6 +204,7 @@ const userContext = createContext({ item: {}, setOpenForm: null, setItem: null, 
 export default function UserPermissionView () {
   // const { active } = useSelector((state) => state.scope);
   const [permissions, setPermissions] = useState([]);
+  const [tree, setTree] = useState([]);
   const { themeStretch } = useSettingsContext();
   const [openForm, setOpenForm] = useState(false);
   const [item, setItem] = useState({});
@@ -215,9 +212,36 @@ export default function UserPermissionView () {
   const { enqueueSnackbar } = useSnackbar();
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const providerValue = useMemo(() => ({ setOpenForm, setItem, setParent, setOpenDeleteConfirm }), [setOpenForm, setItem, setParent, setOpenDeleteConfirm]);
-  const handleCloseModal = () => {
+  const handleCloseModal = (getData) => {
+    if (parent && parent.type !== "root" && getData && getData.data) {
+      if (getData.type === "new") {
+        if (parent.children) {
+          parent.children.push(getData.data)
+        }
+      } else if (parent.children) {
+        for (let i = 0; i < parent.children.length; i += 1) {
+          if (parent.children[i]._id === getData.data._id) {
+            parent.children[i] = getData.data;
+            break;
+          }
+        }
+      }
+    } else if(parent && parent.type === "root"){
+      if (getData.type === "new") {
+        tree.push(getData.data)
+        setTree(tree)
+      } else if (getData.type === "alter") {
+        for (let i = 0; i < tree.length; i += 1) {
+          if (tree[i] && tree[i]._id ===  item._id) {
+            tree[i] = getData.data;
+            setTree(tree)
+            break;
+          }
+        }
+      }
+    }
     setOpenForm(false);
-    getData();
+
   };
   const handleOpenModal = () => {
     setOpenForm(true);
@@ -227,11 +251,23 @@ export default function UserPermissionView () {
       .delete({
         _id: item._id,
       })
+    if(parent && parent.type === "root"){
+      setTree(tree.filter(node => node._id !== item._id))
+    } else {
+      for (let i = 0; i < parent.children.length; i += 1) {
+        if (parent.children[i] && parent.children[i]._id ===  item._id) {
+          parent.children[i] = null;
+          break;
+        }
+      }
+    }
     enqueueSnackbar('删除成功');
     getData()
     handleCloseDeleteConfirm();
   }
   const handleAddChildren = () => {
+    setItem({})
+    setParent({ type: "root" });
     setOpenForm(true);
   }
   const handleCloseDeleteConfirm = () => {
@@ -245,7 +281,8 @@ export default function UserPermissionView () {
       },
     });
     setPermissions(response)
-  }, [setPermissions]);
+    setTree(getTree(response))
+  }, [setPermissions, setTree]);
 
 
   useEffect(() => {
@@ -267,7 +304,7 @@ export default function UserPermissionView () {
             sx={{ px: 2.5, pt: 2.5 }}>
             <StyledTreeItem nodeId="0" label="根节点" isRoot onAddChildren={() => handleAddChildren()}>
               {
-                getTree(permissions).map((perm) => <List data={perm} key={perm._id} />)
+                tree.map((perm) => <List parentNode={{ type: 'root' }} data={perm} key={perm._id} />)
               }
             </StyledTreeItem>
           </StyledTreeView>

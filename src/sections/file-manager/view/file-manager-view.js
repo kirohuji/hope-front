@@ -8,8 +8,9 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 // utils
 import { fTimestamp } from 'src/utils/format-time';
+import { fileManagerService } from 'src/composables/context-provider';
 // _mock
-import { _allFiles, FILE_TYPE_OPTIONS } from 'src/_mock';
+import { FILE_TYPE_OPTIONS } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -22,7 +23,6 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import { useTable, getComparator } from 'src/components/table';
 //
-import { fileManagerService } from 'src/composables/context-provider';
 import FileManagerTable from '../file-manager-table';
 import FileManagerFilters from '../file-manager-filters';
 import FileManagerGridView from '../file-manager-grid-view';
@@ -42,8 +42,9 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function FileManagerView () {
-  const upMd = useResponsive('up', 'md');
+  // const upMd = useResponsive('up', 'md');
   const { enqueueSnackbar } = useSnackbar();
+
   const table = useTable({ defaultRowsPerPage: 10 });
 
   const settings = useSettingsContext();
@@ -112,36 +113,27 @@ export default function FileManagerView () {
     [table]
   );
 
-  const handleDeleteItem = useCallback(
-    async (id) => {
+  const handleDeleteItem = useCallback(async (id) => {
+    try {
       await fileManagerService.deleteCurrentUser({
         _id: id
       })
-      getTableData()
-      // const deleteRow = tableData.filter((row) => row.id !== id);
-      // setTableData(deleteRow);
-
-      // table.onUpdatePageDeleteRow(dataInPage.length);
-    },
-    [getTableData]
+      enqueueSnackbar('删除成功')
+    } catch (e) {
+      enqueueSnackbar(e.response.data.message)
+    }
+    getTableData()
+  },
+    [getTableData, enqueueSnackbar]
   );
 
   const handleDeleteItems = useCallback(async () => {
     await table.selected.map(async row => {
-      console.log('row', row)
       await fileManagerService.deleteCurrentUser({
         _id: row
       })
     })
     getTableData();
-    // const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    // setTableData(deleteRows);
-
-    // table.onUpdatePageDeleteRows({
-    //   totalRows: tableData.length,
-    //   totalRowsInPage: dataInPage.length,
-    //   totalRowsFiltered: dataFiltered.length,
-    // });
   }, [getTableData, table]);
 
   const handleResetFilters = useCallback(() => {

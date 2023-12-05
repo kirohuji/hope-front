@@ -88,7 +88,7 @@ export default function TrainingSearchDetailView () {
         <Box sx={{ color: 'black' }}>
           <List>
             {
-              !isLoading && posts.map((item, index) => <ListItemButton key={index}>
+              !isLoading && posts.map((item, index) => item && <ListItemButton key={index}>
                 <ListItemText primary={`${item.title}`} secondary={item.title} />
                 {
                   false && <>

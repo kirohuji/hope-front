@@ -10,6 +10,7 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useDebounce } from 'src/hooks/use-debounce';
 // _mock
 import {
   _jobs,
@@ -27,6 +28,8 @@ import Iconify from 'src/components/iconify';
 import EmptyContent from 'src/components/empty-content';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 //
 import { bookService } from 'src/composables/context-provider';
 import BookList from '../book-list';
@@ -66,17 +69,23 @@ export default function BookListView () {
 
   const [filters, setFilters] = useState(defaultFilters);
 
+
+  const debouncedFilters = useDebounce(filters);
+
   const getTableData = useCallback(async (selector = {}, options = {}) => {
     try {
       const response = await bookService.pagination({
-        ...selector,
+        ...{
+          ...selector,
+          label: debouncedFilters.label
+        },
         ...options
       })
       setTableData(response.data);
     } catch (error) {
       enqueueSnackbar(error.message);
     }
-  }, [setTableData, enqueueSnackbar]);
+  }, [setTableData, enqueueSnackbar,debouncedFilters]);
 
   useEffect(() => {
     getTableData()
@@ -135,34 +144,56 @@ export default function BookListView () {
       alignItems={{ xs: 'flex-end', sm: 'center' }}
       direction={{ xs: 'column', sm: 'row' }}
     >
-      <BookSearch
-        query={search.query}
-        results={search.results}
-        onSearch={handleSearch}
-        hrefItem={(id) => paths.dashboard.book.details.root(id)}
-      />
-
-      <Stack direction="row" spacing={1} flexShrink={0}>
-        <BookFilters
-          open={openFilters.value}
-          onOpen={openFilters.onTrue}
-          onClose={openFilters.onFalse}
-          //
-          filters={filters}
-          onFilters={handleFilters}
-          //
-          canReset={canReset}
-          onResetFilters={handleResetFilters}
-          //
-          locationOptions={countries}
-          roleOptions={_roles}
-          benefitOptions={JOB_BENEFIT_OPTIONS.map((option) => option.label)}
-          experienceOptions={['all', ...JOB_EXPERIENCE_OPTIONS.map((option) => option.label)]}
-          employmentTypeOptions={JOB_EMPLOYMENT_TYPE_OPTIONS.map((option) => option.label)}
+      <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <TextField
+          fullWidth
+          value={filters.label}
+          onChange={(event) => {
+            handleFilters('label', event.target.value);
+          }}
+          placeholder="请输入..."
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+              </InputAdornment>
+            ),
+          }}
         />
-
-        <BookSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} />
       </Stack>
+      {
+        /**
+         * 
+               <BookSearch
+          query={search.query}
+          results={search.results}
+          onSearch={handleSearch}
+          hrefItem={(id) => paths.dashboard.book.details.root(id)}
+        />
+  
+        <Stack direction="row" spacing={1} flexShrink={0}>
+          <BookFilters
+            open={openFilters.value}
+            onOpen={openFilters.onTrue}
+            onClose={openFilters.onFalse}
+            //
+            filters={filters}
+            onFilters={handleFilters}
+            //
+            canReset={canReset}
+            onResetFilters={handleResetFilters}
+            //
+            locationOptions={countries}
+            roleOptions={_roles}
+            benefitOptions={JOB_BENEFIT_OPTIONS.map((option) => option.label)}
+            experienceOptions={['all', ...JOB_EXPERIENCE_OPTIONS.map((option) => option.label)]}
+            employmentTypeOptions={JOB_EMPLOYMENT_TYPE_OPTIONS.map((option) => option.label)}
+          />
+  
+          <BookSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} />
+        </Stack>
+         */
+      }
     </Stack>
   );
 
@@ -211,7 +242,7 @@ export default function BookListView () {
           mb: { xs: 3, md: 5 },
         }}
       >
-        {false && renderFilters}
+        {renderFilters}
 
         {canReset && renderResults}
       </Stack>

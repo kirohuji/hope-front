@@ -6,16 +6,16 @@ import { useForm } from 'react-hook-form';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import { styled } from '@mui/material/styles';
-import Chip from '@mui/material/Chip';
+// import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog'
 import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
+// import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
+// import FormControlLabel from '@mui/material/FormControlLabel';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -24,7 +24,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // _mock
-import { _tags } from 'src/_mock';
+// import { _tags } from 'src/_mock';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import {
@@ -37,7 +37,7 @@ import FormProvider, {
   RHFUpload,
   RHFTextField,
   RHFSwitch,
-  RHFAutocomplete,
+  // RHFAutocomplete,
 } from 'src/components/hook-form';
 //
 import { articleService, bookService, fileService } from 'src/composables/context-provider';
@@ -290,99 +290,99 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
     </>
   );
 
-  const renderProperties = (
-    <>
-      {mdUp && (
-        <Grid md={4}>
-          <Typography variant="h6" sx={{ mb: 0.5 }}>
-            属性
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            额外的功能和属性
-          </Typography>
-        </Grid>
-      )}
+  // const renderProperties = (
+  //   <>
+  //     {mdUp && (
+  //       <Grid md={4}>
+  //         <Typography variant="h6" sx={{ mb: 0.5 }}>
+  //           属性
+  //         </Typography>
+  //         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+  //           额外的功能和属性
+  //         </Typography>
+  //       </Grid>
+  //     )}
 
-      <Grid xs={12} md={8}>
-        <Card>
-          {!mdUp && <CardHeader title="属性" />}
+  //     <Grid xs={12} md={8}>
+  //       <Card>
+  //         {!mdUp && <CardHeader title="属性" />}
 
-          <Stack spacing={3} sx={{ p: 3 }}>
-            <RHFAutocomplete
-              name="tags"
-              label="标签"
-              placeholder="+ Tags"
-              multiple
-              freeSolo
-              options={_tags.map((option) => option)}
-              getOptionLabel={(option) => option}
-              renderOption={(props, option) => (
-                <li {...props} key={option}>
-                  {option}
-                </li>
-              )}
-              renderTags={(selected, getTagProps) =>
-                selected.map((option, index) => (
-                  <Chip
-                    {...getTagProps({ index })}
-                    key={option}
-                    label={option}
-                    size="small"
-                    color="info"
-                    variant="soft"
-                  />
-                ))
-              }
-            />
-            {
-              false && <div>
-                <RHFTextField name="metaTitle" label="Meta title" />
+  //         <Stack spacing={3} sx={{ p: 3 }}>
+  //           <RHFAutocomplete
+  //             name="tags"
+  //             label="标签"
+  //             placeholder="+ Tags"
+  //             multiple
+  //             freeSolo
+  //             options={_tags.map((option) => option)}
+  //             getOptionLabel={(option) => option}
+  //             renderOption={(props, option) => (
+  //               <li {...props} key={option}>
+  //                 {option}
+  //               </li>
+  //             )}
+  //             renderTags={(selected, getTagProps) =>
+  //               selected.map((option, index) => (
+  //                 <Chip
+  //                   {...getTagProps({ index })}
+  //                   key={option}
+  //                   label={option}
+  //                   size="small"
+  //                   color="info"
+  //                   variant="soft"
+  //                 />
+  //               ))
+  //             }
+  //           />
+  //           {
+  //             false && <div>
+  //               <RHFTextField name="metaTitle" label="Meta title" />
 
-                <RHFTextField
-                  name="metaDescription"
-                  label="Meta description"
-                  fullWidth
-                  multiline
-                  rows={3}
-                />
+  //               <RHFTextField
+  //                 name="metaDescription"
+  //                 label="Meta description"
+  //                 fullWidth
+  //                 multiline
+  //                 rows={3}
+  //               />
 
-                <RHFAutocomplete
-                  name="metaKeywords"
-                  label="Meta keywords"
-                  placeholder="+ Keywords"
-                  multiple
-                  freeSolo
-                  disableCloseOnSelect
-                  options={_tags.map((option) => option)}
-                  getOptionLabel={(option) => option}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option}>
-                      {option}
-                    </li>
-                  )}
-                  renderTags={(selected, getTagProps) =>
-                    selected.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option}
-                        label={option}
-                        size="small"
-                        color="info"
-                        variant="soft"
-                      />
-                    ))
-                  }
-                />
+  //               <RHFAutocomplete
+  //                 name="metaKeywords"
+  //                 label="Meta keywords"
+  //                 placeholder="+ Keywords"
+  //                 multiple
+  //                 freeSolo
+  //                 disableCloseOnSelect
+  //                 options={_tags.map((option) => option)}
+  //                 getOptionLabel={(option) => option}
+  //                 renderOption={(props, option) => (
+  //                   <li {...props} key={option}>
+  //                     {option}
+  //                   </li>
+  //                 )}
+  //                 renderTags={(selected, getTagProps) =>
+  //                   selected.map((option, index) => (
+  //                     <Chip
+  //                       {...getTagProps({ index })}
+  //                       key={option}
+  //                       label={option}
+  //                       size="small"
+  //                       color="info"
+  //                       variant="soft"
+  //                     />
+  //                   ))
+  //                 }
+  //               />
 
-              </div>
-            }
-            {/**   <FormControlLabel control={<Switch defaultChecked />} label="Enable comments" /> * */}
-            <RHFSwitch name="comments" label="可以评论" />
-          </Stack>
-        </Card>
-      </Grid>
-    </>
-  );
+  //             </div>
+  //           }
+  //           {/**   <FormControlLabel control={<Switch defaultChecked />} label="Enable comments" /> * */}
+  //           <RHFSwitch name="comments" label="可以评论" />
+  //         </Stack>
+  //       </Card>
+  //     </Grid>
+  //   </>
+  // );
 
   const renderActions = (
     <>

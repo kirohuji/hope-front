@@ -98,9 +98,10 @@ export default function OrganNewEditForm ({ type, isEdit = false, current, onClo
 
   const onSubmit = async (data) => {
     try {
+      let roleData;
       if (!isEdit) {
         const uuid = UUID();
-        await roleService.post({
+        roleData = await roleService.post({
           ...data,
           _id: uuid,
 
@@ -115,14 +116,24 @@ export default function OrganNewEditForm ({ type, isEdit = false, current, onClo
             parentName: parent._id,
           });
         }
+        onClose({
+          type: 'new',
+          data: roleData
+        })
       } else {
         await roleService.patch({
           _id: current._id,
           ...data,
         });
+        onClose({
+          type: 'alter',
+          data: {
+            _id: current._id,
+            ...data,
+          }
+        })
       }
       enqueueSnackbar(!isEdit ? '创建成功' : '更新成功!');
-      onClose()
     } catch (error) {
       console.error(error);
     }

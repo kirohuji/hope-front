@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from 'src/redux/store';
 import { getOrganizations, getConversations, resetActiveConversation, getMessages, getConversation, getContacts, deleteConversation, newMessageGet } from 'src/redux/slices/chat';
 import { ddpclient } from 'src/composables/context-provider';
 import _ from 'lodash'
+import { useSnackbar } from 'src/components/snackbar';
 import ChatNav from '../chat-nav';
 import ChatRoom from '../chat-room';
 import ChatMessageList from '../chat-message-list';
@@ -78,9 +79,10 @@ let conversations2Publish = null;
 let conversations2Collection = null;
 
 export default function ChatView () {
+  const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState('conversations');
-  const { conversations, contacts } = useSelector((state) => state.chat);
+  const { conversations, sendingMessage, contacts } = useSelector((state) => state.chat);
 
   const conversation = useSelector((state) => conversationSelector(state));
 
@@ -229,6 +231,10 @@ export default function ChatView () {
     setRecipients(selected);
   }, []);
 
+  const removeConversation = async (conversationId)=>{
+    await dispatch(deleteConversation(conversationId))
+    enqueueSnackbar('删除成功')
+  }
   const details = !!conversation && conversation._id;
 
   const renderHead = (
@@ -269,7 +275,7 @@ export default function ChatView () {
         overflow: 'hidden',
       }}
     >
-      <ChatMessageList messages={conversation?.messages} participants={participants} onRefresh={onRefresh} />
+      <ChatMessageList messages={conversation?.messages} sendingMessage={sendingMessage} participants={participants} onRefresh={onRefresh} />
 
       <ChatMessageInput
         recipients={recipients}
@@ -397,7 +403,9 @@ export default function ChatView () {
                 !conversations.byId[conversationId].isRemove &&
                 <ChatNavItem
                   key={conversationId}
-                  deleteConversation={() => dispatch(deleteConversation(conversationId))}
+                  deleteConversation={() => {
+                    removeConversation(conversationId);
+                  }}
                   conversation={{
                     ...conversations.byId[conversationId],
                     type: "conversation"

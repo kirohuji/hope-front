@@ -41,6 +41,7 @@ export default function FileManagerFileDetails ({
   ...other
 }) {
   const { user } = useAuthContext();
+
   const { label, size, url, type, shared, lastModified } = item;
 
   const hasShared = shared && !!shared.length;
@@ -56,7 +57,6 @@ export default function FileManagerFileDetails ({
   const [inviteEmail, setInviteEmail] = useState('');
 
   const [tags, setTags] = useState([]);
-  // const [tags, setTags] = useState(item?.tags.slice(0, 3) || []);
 
   const handleChangeInvite = useCallback((event) => {
     setInviteEmail(event.target.value);
@@ -163,7 +163,7 @@ export default function FileManagerFileDetails ({
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2.5 }}>
         <Typography variant="subtitle2"> 文件共享 </Typography>
         {
-          fileUser.isMain && <IconButton
+          fileUser && fileUser.isMain && <IconButton
             size="small"
             color="primary"
             onClick={share.onTrue}
@@ -185,7 +185,7 @@ export default function FileManagerFileDetails ({
       {hasShared && (
         <Box sx={{ pl: 2.5, pr: 1 }}>
           {shared.map((person) => (
-            <FileManagerInvitedItem key={person._id} person={person} isMain={fileUser.isMain} />
+            <FileManagerInvitedItem key={person._id} person={person} isMain={fileUser?.isMain} />
           ))}
         </Box>
       )}
@@ -249,7 +249,7 @@ export default function FileManagerFileDetails ({
           {renderShared}
         </Scrollbar>
 
-        {fileUser.isMain && <Box sx={{ p: 2.5 }}>
+        {fileUser && fileUser.isMain && <Box sx={{ p: 2.5 }}>
           <Button
             fullWidth
             variant="soft"

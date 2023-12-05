@@ -77,17 +77,24 @@ const STORAGE_KEY = 'accessToken';
 export function AuthProvider ({ children }) {
 
   const [state, dispatch] = useReducer(reducer, initialState);
+
   const getNotifications = useCallback(async (user) => {
+
     const notifications = await ddpclient.subscribe("notifications", user._id);
+
     await notifications.ready();
+
     const reactiveCollection = ddpclient.collection('notifications').reactive();
+
     dispatch({
       type: 'NOTIFICATION',
       payload: {
         notifications: reactiveCollection.data()
       },
     });
+
     reactiveCollection.onChange((newData) => {
+      console.log('更新2', newData)
       dispatch({
         type: 'NOTIFICATION',
         payload: {
@@ -95,6 +102,7 @@ export function AuthProvider ({ children }) {
         },
       });
     });
+
   }, [])
 
   const initialize = useCallback(async () => {
@@ -113,7 +121,7 @@ export function AuthProvider ({ children }) {
         // const { user } = response.data;
         // 获取用户信息
         const { user, profile, roles, permissions } = await userService.info()
-        getNotifications(user)
+        // getNotifications(user)
         dispatch({
           type: 'INITIAL',
           payload: {
@@ -148,7 +156,7 @@ export function AuthProvider ({ children }) {
         },
       });
     }
-  }, [getNotifications]);
+  }, []);
 
   useEffect(() => {
     initialize();
@@ -178,7 +186,7 @@ export function AuthProvider ({ children }) {
     setSession(accessToken);
 
     const { user, profile, roles, permissions } = await userService.info()
-    getNotifications(user)
+    // getNotifications(user)
     dispatch({
       type: 'LOGIN',
       payload: {
@@ -190,7 +198,7 @@ export function AuthProvider ({ children }) {
         }
       },
     });
-  }, [getNotifications]);
+  }, []);
 
   const sendPublish = useCallback(async (data) => {
     // socket.emit("notification", data);

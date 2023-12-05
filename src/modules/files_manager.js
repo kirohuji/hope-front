@@ -20,8 +20,8 @@ export default class FilesManagerService extends Service {
         return this.api.patch(`${this.model}/current/${target._id}`, target)
     }
 
-    inviteEmailWithCurrent(target){
-        return this.api.post(`${this.model}/current/inviteEmail`,target)
+    inviteEmailsWithCurrent(target){
+        return this.api.post(`${this.model}/current/inviteEmails`,target)
     }
 
     accpetShareFile(target){

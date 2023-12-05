@@ -26,6 +26,7 @@ export default function FileManagerShareDialog ({
   shared,
   inviteEmail,
   onInviteEmail,
+  onInviteEmails,
   onCopyLink,
   onChangeInvite,
   //
@@ -33,7 +34,8 @@ export default function FileManagerShareDialog ({
   onClose,
   ...other
 }) {
-  const hasShared = shared && !!shared.length;
+  const hasShared = true;
+  // const hasShared = shared && !!shared.length;
 
   const [searchContacts, setSearchContacts] = useState({
     query: '',
@@ -77,9 +79,6 @@ export default function FileManagerShareDialog ({
       }));
 
       if (inputValue) {
-        // const results = [].filter((contact) =>
-        //   contact.username.toLowerCase().includes(inputValue)
-        // );
         const response = await userService.pagination(
           {
             username: inputValue
@@ -150,7 +149,9 @@ export default function FileManagerShareDialog ({
             <Stack direction="row" justifyContent="space-between">
               <Typography variant="h6" sx={{ mb: 1 }}>待邀请列表</Typography>
               <Button
-                onClick={onInviteEmail}
+                onClick={()=>{
+                  onInviteEmails(sendSearchContacts)
+                }}
                 color="inherit"
                 variant="contained"
                 disabled={!inviteEmail}
@@ -173,7 +174,7 @@ export default function FileManagerShareDialog ({
             {hasShared && (
               <Scrollbar sx={{ maxHeight: 60 * 6 }}>
                 <List disablePadding>
-                  {shared.map((person) => (
+                  {shared && shared.map((person) => (
                     <FileManagerInvitedItem key={person._id} person={person} />
                   ))}
                 </List>
@@ -209,6 +210,7 @@ FileManagerShareDialog.propTypes = {
   inviteEmail: PropTypes.string,
   onChangeInvite: PropTypes.func,
   onInviteEmail: PropTypes.func,
+  onInviteEmails: PropTypes.func,
   onClose: PropTypes.func,
   onCopyLink: PropTypes.func,
   open: PropTypes.bool,

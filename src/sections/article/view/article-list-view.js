@@ -15,19 +15,19 @@ import { RouterLink } from 'src/routes/components';
 // hooks
 import { useDebounce } from 'src/hooks/use-debounce';
 // _mock
-import { POST_SORT_OPTIONS } from 'src/_mock';
+// import { POST_SORT_OPTIONS } from 'src/_mock';
 // api
 // import { useSearchPosts } from 'src/api/blog';
 // components
 import { useSnackbar } from 'src/components/snackbar';
-import Label from 'src/components/label';
+// import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import { articleService } from 'src/composables/context-provider';
-import ArticleSort from '../article-sort';
-import ArticleSearch from '../article-search';
+// import ArticleSort from '../article-sort';
+// import ArticleSearch from '../article-search';
 import ArticleListHorizontal from '../article-list-horizontal';
 
 // ----------------------------------------------------------------------
@@ -92,15 +92,15 @@ export default function ArticleListView ({ book }) {
       let response = {}
       response = await articleService.pagination({
         ...selector,
-        published: true,
-        title: debouncedFilters.title
+        // published: true,
+        // title: debouncedFilters.title
       }, options)
       setArticles(response.data);
       setLoading(false)
     } catch (error) {
       enqueueSnackbar(error.message);
     }
-  }, [setArticles, enqueueSnackbar, debouncedFilters]);
+  }, [setArticles, enqueueSnackbar]);
 
   useEffect(() => {
     getTableData()

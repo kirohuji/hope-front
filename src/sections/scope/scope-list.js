@@ -1,20 +1,25 @@
 import PropTypes from 'prop-types';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 // @mui
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 // components
 import { useSnackbar } from 'src/components/snackbar';
+import { useBoolean } from 'src/hooks/use-boolean';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { scopeService } from 'src/composables/context-provider';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import ScopeItem from './scope-item';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeList({ scopes ,onRefresh}) {
+export default function ScopeList ({ scopes, onRefresh }) {
+  const confirm = useBoolean();
+  const [current, setCurrent] = useState(null)
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
 
@@ -57,7 +62,10 @@ export default function ScopeList({ scopes ,onRefresh}) {
             scope={scope}
             onView={() => handleView(scope._id)}
             onEdit={() => handleEdit(scope._id)}
-            onDelete={() => handleDelete(scope._id)}
+            onDelete={() => {
+              setCurrent(scope);
+              confirm.onTrue()
+            }}
           />
         ))}
       </Box>
@@ -73,6 +81,28 @@ export default function ScopeList({ scopes ,onRefresh}) {
           }}
         />
       )}
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title="删除"
+        content={
+          <>
+            确定要删除吗?
+          </>
+        }
+        action={
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              handleDelete();
+              confirm.onFalse();
+            }}
+          >
+            删除
+          </Button>
+        }
+      />
     </>
   );
 }

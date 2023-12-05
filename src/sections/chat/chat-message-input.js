@@ -5,6 +5,7 @@ import { useRef, useState, useCallback, useMemo } from 'react';
 import Stack from '@mui/material/Stack';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
+import { useSnackbar } from 'src/components/snackbar';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -36,6 +37,8 @@ export default function ChatMessageInput ({
   const router = useRouter();
 
   const dispatch = useDispatch();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const { user } = useAuthContext();
 
@@ -111,6 +114,7 @@ export default function ChatMessageInput ({
     }
     return conversationKey;
   }, [recipients])
+
   const handleSendMessage = useCallback(
     async (event) => {
       try {
@@ -119,12 +123,15 @@ export default function ChatMessageInput ({
           if (message) {
             if (selectedConversationId) {
               setType('text')
-              await dispatch(sendMessage(selectedConversationId, messageData));
+              try{
+                await dispatch(sendMessage(selectedConversationId, messageData));
+              } catch(e){
+                enqueueSnackbar(e.message)
+              }
               // sendMessageToOpenVidu(message)
             } else {
               const conversationKey = await createConversation(conversationData);
               router.push(`${paths.chat}?id=${conversationKey}`);
-
               onAddRecipients([]);
             }
           }
@@ -134,7 +141,7 @@ export default function ChatMessageInput ({
         console.error(error);
       }
     },
-    [conversationData, message, messageData, dispatch, createConversation, onAddRecipients, router, selectedConversationId]
+    [conversationData, message, messageData, dispatch, createConversation, onAddRecipients, router, selectedConversationId, enqueueSnackbar]
   );
 
   const uploadImage = async () => {
@@ -142,7 +149,7 @@ export default function ChatMessageInput ({
       const file = fileRef.current.files[0]
       const formData = new FormData();
       formData.append('file', file);
-      const { link } = await fileService.avatar(formData)
+      const { link } = await fileService.upload(formData)
       await dispatch(sendMessage(selectedConversationId, {
         ...messageData,
         body: link,
@@ -159,7 +166,7 @@ export default function ChatMessageInput ({
         value={message}
         onKeyUp={handleSendMessage}
         onChange={handleChangeMessage}
-        placeholder="Type a message"
+        placeholder="请输入内容"
         disabled={disabled}
         maxRows={3}
         multiline

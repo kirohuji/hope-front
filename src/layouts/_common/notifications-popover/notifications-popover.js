@@ -18,7 +18,7 @@ import { useSelector } from 'src/redux/store';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { notificationService } from 'src/composables/context-provider';
+import { notificationService, ddpclient } from 'src/composables/context-provider';
 
 // _mock
 // import { _notifications } from 'src/_mock';
@@ -53,7 +53,8 @@ const TABS = [
 
 // ----------------------------------------------------------------------
 
-export default function NotificationsPopover() {
+export default function NotificationsPopover () {
+
   const drawer = useBoolean();
 
   const smUp = useResponsive('up', 'sm');
@@ -64,19 +65,25 @@ export default function NotificationsPopover() {
     setCurrentTab(newValue);
   }, []);
 
-  // const { notifications } = useSelector((state) => state.notification);
-  const { notifications } = useAuthContext()
+  const [notifications, setnNotifications] = useState([]);
 
-  // const [notifications, setNotifications] = useState([]);
+  const { user } = useAuthContext()
 
-  // const getAllNotification = useCallback(async () => {
-  //   const response = await notificationService.getWithCurrentUser();
-  //   setNotifications(response);
-  // }, [setNotifications]);
+  const getNotifications = useCallback(async () => {
 
-  // useEffect(()=>{
-  //   getAllNotification()
-  // }, [getAllNotification])
+    const notificationsSub = await ddpclient.subscribe("notifications", user._id);
+
+    await notificationsSub.ready();
+
+    const reactiveCollection = ddpclient.collection('notifications').reactive();
+
+    setnNotifications(reactiveCollection.data())
+
+    reactiveCollection.onChange((newData) => {
+      setnNotifications(newData)
+    });
+
+  }, [user])
 
 
   const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
@@ -89,6 +96,9 @@ export default function NotificationsPopover() {
     //   }))
     // );
   };
+  useEffect(() => {
+    getNotifications()
+  })
 
   const renderHead = (
     <Stack direction="row" alignItems="center" sx={{ py: 2, pl: 2.5, pr: 1, minHeight: 68 }}>

@@ -84,7 +84,7 @@ export default function BookPlayer () {
   
     const scrollContainer = useScroll({ container: containerRef });
 
-    return book && <>
+    return book && article && <>
         <Card sx={{ display: 'flex', p: 0, borderRadius: 0 }} >
             <CardMedia
                 component="img"
@@ -144,7 +144,7 @@ export default function BookPlayer () {
                 },
             }}
         >
-            {list.map((item) => (
+            {list.map((item) => item && (
                 <MenuItem
                     key={item._id}
                 // selected={item._id === current._id}

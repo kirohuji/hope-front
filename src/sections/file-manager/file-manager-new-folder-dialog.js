@@ -9,6 +9,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Dialog from '@mui/material/Dialog';
 // components
+import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
 import { Upload } from 'src/components/upload';
 import { fileManagerService, fileService } from 'src/composables/context-provider';
@@ -26,6 +27,9 @@ export default function FileManagerNewFolderDialog ({
   onChangeFolderName,
   ...other
 }) {
+
+  const { enqueueSnackbar } = useSnackbar();
+
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
@@ -48,22 +52,26 @@ export default function FileManagerNewFolderDialog ({
   );
 
   const handleUpload = async () => {
-    await Promise.all(
-      files.map(async (file) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        const { link } = await fileService.upload(formData)
-        await fileManagerService.createCurrentUser({
-          url: link,
-          label: file.name,
-          size: file.size,
-          type: `${file.name.split('.').pop()}`,
-          lastModified: new Date(file.lastModified)
+    try{
+      await Promise.all(
+        files.map(async (file) => {
+          const formData = new FormData();
+          formData.append('file', file);
+          const { link } = await fileService.upload(formData)
+          await fileManagerService.createCurrentUser({
+            url: link,
+            label: file.name,
+            size: file.size,
+            type: `${file.name.split('.').pop()}`,
+            lastModified: new Date(file.lastModified)
+          })
         })
-      })
-    )
-    onClose();
-    console.info('ON UPLOAD');
+      )
+      onClose();
+      enqueueSnackbar('上传成功')
+    }catch(e){
+      enqueueSnackbar(e.response.data.message)
+    }
   };
 
   const handleRemoveFile = (inputFile) => {

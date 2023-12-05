@@ -43,7 +43,7 @@ export default function FileManagerFileItem ({ file, selected, onSelect, onDelet
 
   const dispatch = useDispatch()
   const { copy } = useCopyToClipboard();
-  
+
 
   const [inviteEmail, setInviteEmail] = useState('');
 
@@ -74,7 +74,24 @@ export default function FileManagerFileItem ({ file, selected, onSelect, onDelet
     enqueueSnackbar('发送成功!');
     loading.onFalse()
     share.onFalse();
-  }, [share,loading, inviteEmail, file._id, enqueueSnackbar]);
+  }, [share, loading, inviteEmail, file._id, enqueueSnackbar]);
+
+  const handleInviteEmails = useCallback(async (inviteEmails) => {
+    loading.onTrue()
+    try{
+      await fileManagerService.inviteEmailsWithCurrent({
+        inviteEmails: inviteEmails.results,
+        fileId: file._id,
+      })
+      enqueueSnackbar('发送成功!');
+    } catch(e){
+      enqueueSnackbar(e.response.data.message);
+    }
+    loading.onFalse()
+    share.onFalse();
+  }, [share, loading, file._id, enqueueSnackbar]);
+
+
 
   const handleCopy = useCallback(() => {
     enqueueSnackbar('拷贝成功!');
@@ -236,17 +253,18 @@ export default function FileManagerFileItem ({ file, selected, onSelect, onDelet
           <Iconify icon="eva:link-2-fill" />
           下载
         </MenuItem>
+        {
+          file && file.type === 'mp3' && <MenuItem
+            onClick={() => {
+              dispatch(getList(file))
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="eva:link-2-fill" />
+            播放
+          </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            dispatch(getList(file))
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="eva:link-2-fill" />
-          播放
-        </MenuItem>
-
+        }
         <MenuItem
           onClick={() => {
             popover.onClose();
@@ -287,6 +305,7 @@ export default function FileManagerFileItem ({ file, selected, onSelect, onDelet
       <FileManagerShareDialog
         open={share.value}
         onInviteEmail={handleInvite}
+        onInviteEmails={handleInviteEmails}
         shared={file.shared}
         inviteEmail={inviteEmail}
         onChangeInvite={handleChangeInvite}

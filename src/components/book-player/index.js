@@ -15,6 +15,7 @@ import Iconify from 'src/components/iconify';
 import IconButton from '@mui/material/IconButton';
 import Slider from '@mui/material/Slider';
 import { useBoolean } from 'src/hooks/use-boolean';
+import _ from 'lodash';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { next, select } from 'src/redux/slices/trainning';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
@@ -75,7 +76,7 @@ export default function BookPlayer () {
         setOpenList(event.currentTarget);
     }, []);
     const container = window !== undefined ? () => window.document.body : undefined;
-    return book && <>
+    return book && article && <>
         <Card sx={{ display: 'flex', p: 0, borderRadius: 0 }} >
             <CardMedia
                 component="img"
@@ -135,7 +136,7 @@ export default function BookPlayer () {
                 },
             }}
         >
-            {list.map((item) => (
+            {_.compact(list).length > 0 && list.map((item) => (
                 <MenuItem
                     key={item._id}
                 // selected={item._id === current._id}
@@ -164,7 +165,7 @@ export default function BookPlayer () {
                     overflow: 'auto',
                 }}
             >
-                <Header isOffset={isOffset} onClose={toggleDrawer(false)}/>
+                <Header isOffset={isOffset} onClose={toggleDrawer(false)} />
                 <Box
                     sx={{
                         display: { lg: 'flex' },
@@ -172,7 +173,7 @@ export default function BookPlayer () {
                         height: 'calc(100% - 64px)'
                     }}
                 >
-                 1
+                    1
                 </Box>
             </StyledBox>
         </SwipeableDrawer>

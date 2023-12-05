@@ -112,7 +112,7 @@ export default function ChatNavItem ({ deleteConversation, onSwipe, selected, on
         overlap="circular"
         badgeContent={collapse ? conversation.unreadCount : 0}
       >
-        {group && participants ? renderGroup : renderSingle}
+        {group && participants ? renderGroup : singleParticipant && renderSingle}
       </Badge>
 
       {!collapse && (

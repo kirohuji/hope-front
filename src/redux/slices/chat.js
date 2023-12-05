@@ -1,6 +1,7 @@
 import keyBy from 'lodash/keyBy';
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash'
+import { useSnackbar } from 'src/components/snackbar';
 // utils
 import { friendService, roleService, messagingService } from 'src/composables/context-provider';
 
@@ -69,6 +70,7 @@ const initialState = {
   participants: [],
   recipients: [],
   lastMessage: {},
+  sendingMessage: {},
 };
 
 const slice = createSlice({
@@ -88,8 +90,15 @@ const slice = createSlice({
 
     // HAS ERROR
     hasError (state, action) {
+      state.sendingMessage = {};
       state.isLoading = false;
       state.error = action.payload;
+    },
+    hasErrorMessage (state, action) {
+      state.sendingMessage = {};
+      state.isLoading = false;
+      state.error = action.payload;
+      throw new Error( state.error )
     },
 
     // GET CONTACT SSUCCESS
@@ -146,13 +155,14 @@ const slice = createSlice({
         createdAt,
         senderId,
       };
-
-      state.conversations.byId[conversationId].messages.push(newMessage);
+      state.sendingMessage = newMessage;
+      // state.conversations.byId[conversationId].messages.push(newMessage);
     },
 
     getMessagesSuccess (state, action) {
       const { conversationId, data } = action.payload;
       const orderData = _.orderBy(data, ["createdAt", "asc"]);
+      state.sendingMessage = {};
       if (!state.conversations.byId[conversationId]?.messages) {
         state.conversations.byId[conversationId].messages = [];
       }
@@ -163,6 +173,7 @@ const slice = createSlice({
     getNewMessagesSuccess (state, action) {
       const { conversationId, data } = action.payload;
       const orderData = _.orderBy(data, ["createdAt", "asc"]);
+      state.sendingMessage = {};
       if (!state.conversations.byId[conversationId]?.messages) {
         state.conversations.byId[conversationId].messages = [];
       }
@@ -228,7 +239,7 @@ export function sendMessage (conversationKey, body) {
       await messagingService.sendMessage({ _id: conversationKey, body: body.message, contentType: body.contentType })
       dispatch(slice.actions.stopSending());
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(slice.actions.hasErrorMessage(error));
     }
   };
 }

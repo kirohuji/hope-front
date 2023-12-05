@@ -137,8 +137,10 @@ export default function OrganContactsDialog ({ open, onClose, current }) {
     getData();
   }
   useEffect(() => {
-    getData();
-  }, [getData]);
+    if(open){
+      getData();
+    }
+  }, [getData, open]);
   // const dataFiltered = applyFilter({
   //   inputData: _contacts,
   //   query: searchContacts,

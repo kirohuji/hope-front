@@ -35,7 +35,7 @@ OrganDetailsDrawer.propTypes = {
   item: PropTypes.object,
   onClose: PropTypes.func,
   onDelete: PropTypes.func,
-  onFlash: PropTypes.func,
+  onChangeLeader: PropTypes.func,
 };
 
 export default function OrganDetailsDrawer ({
@@ -43,11 +43,10 @@ export default function OrganDetailsDrawer ({
   open,
   onClose,
   onDelete,
-  onFlash,
+  onChangeLeader,
   ...other
 }) {
   const { name, size, type, dateModified, leader } = item;
-
 
   const { active } = useSelector((state) => state.scope);
 
@@ -73,8 +72,10 @@ export default function OrganDetailsDrawer ({
     setUsers(response.data)
   }, [active, item, setUsers]);
   useEffect(() => {
-    getUsers();
-  }, [getUsers]);
+    if(open){
+      getUsers();
+    }
+  }, [open, getUsers]);
 
   const handleToggleTags = () => {
     setToggleTags(!toggleTags);
@@ -98,7 +99,7 @@ export default function OrganDetailsDrawer ({
       leader_id: person._id
     })
     getUsers();
-    onFlash()
+    onChangeLeader(person)
   }
 
   return (
@@ -193,7 +194,7 @@ export default function OrganDetailsDrawer ({
                 <Stack spacing={1.5}>
                   {false && <Row label="负责人" value={fData(size)} />}
 
-                  {item.type === "org" && <Row label="负责人" value={leader?.account?.username} />}
+                  {item.type === "org" && <Row label="负责人" value={leader?.username} />}
 
                   {false && <Row label="代码" value={fDateTime(dateModified)} />}
 

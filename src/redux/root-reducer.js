@@ -10,6 +10,7 @@ import articleReducer from './slices/article';
 import chatReducer from './slices/chat';
 import audioReducer from './slices/audio';
 import trainningReducer from './slices/trainning';
+import roleReducer from './slices/role';
 // import notificationReducer from './slices/notification';
 // ----------------------------------------------------------------------
 
@@ -37,6 +38,12 @@ export const dashboardPersistConfig = {
   keyPrefix: 'redux-'
 };
 
+export const rolePersistConfig = {
+  key: 'role',
+  storage,
+  keyPrefix: 'redux-'
+};
+
 export const articlePersistConfig = {
   key: 'article',
   storage,
@@ -51,6 +58,7 @@ export const rootReducer = combineReducers({
   trainning: trainningReducer,
   // notification: notificationReducer,
   dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
+  role: persistReducer(rolePersistConfig, roleReducer),
   checkout: persistReducer(checkoutPersistConfig, checkoutReducer),
   scope: persistReducer(scopePersistConfig, scopeReducer),
   article: persistReducer(articlePersistConfig, articleReducer),

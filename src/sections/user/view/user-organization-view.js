@@ -8,15 +8,12 @@ import { compact, find } from 'lodash'
 import OrganizationalChart from 'src/sections/user/organization/organizational-chart';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-// _mock
-// import _mock from 'src/_mock';
 // routes
 import { paths } from 'src/routes/paths';
 // redux
 import { useSelector } from 'src/redux/store';
 
 import { roleService } from 'src/composables/context-provider';
-import { useBoolean } from 'src/hooks/use-boolean';
 import OraginChangeViewButton from '../organization/organ-change-view-button';
 
 function serverArray (list, parent, data, permissions, maxRole) {
@@ -31,9 +28,6 @@ function serverArray (list, parent, data, permissions, maxRole) {
       if (parent && parent.children) {
         if (list[i]) {
           parent.children[i] = {
-            name: list[i].label,
-            group: list[i].scope,
-            role: list[i].value,
             isMaxRole: maxRole._id === list[i]._id,
             disabled: permissions.indexOf(list[i]._id) === -1,
             ...list[i],
@@ -47,20 +41,17 @@ function serverArray (list, parent, data, permissions, maxRole) {
 }
 function getTree (data, maxRole) {
   const permissions = maxRole && maxRole.children ? maxRole.children.map(item => item._id) : [];
-  const list = data.map(item => ({
-    name: item.label,
-    group: item.scope,
-    role: item.value,
-    ...item
-  }))
-  const root = list.filter((item) => item.isScope).map(item => ({
-    name: item.label,
-    group: item.scope,
-    role: item.value,
+  // const list = data.map(item => ({
+  //   name: item.label,
+  //   group: item.scope,
+  //   role: item.value,
+  //   ...item
+  // }))
+  const root = data.filter((item) => item.isScope).map(item => ({
     ...item,
-    children: list.filter(d => d.root && !d.isScope)
+    children: data.filter(d => d.root && !d.isScope)
   }))
-  serverArray(root, null, list, permissions, maxRole);
+  serverArray(root, null, data, permissions, maxRole);
   return root;
 }
 
@@ -111,12 +102,11 @@ export default function UserOrganizationView () {
       <CustomBreadcrumbs
         heading="组织/角色架构"
         links={[
-          // { name: 'Dashboard', href: PATH_DASHBOARD.root },
           { name: '组织/角色架构', href: paths.dashboard.user.organization },
         ]}
       />
       <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ background: '#fff', color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isLoading}
       >
         <CircularProgress color="inherit" />
@@ -130,7 +120,14 @@ export default function UserOrganizationView () {
       >
         <OraginChangeViewButton value={view} onChange={handleChangeView} />
       </Stack>
-      {!!org.length && !isLoading &&  <OrganizationalChart maxRole={maxRole} type={view} data={org[0]} variant="group" lineHeight="64px" onFlash={getData} />}
+      {!!org.length && !isLoading &&
+        <OrganizationalChart
+          maxRole={maxRole}
+          type={view}
+          data={org[0]}
+          variant="group"
+          lineHeight="64px"
+          onFlash={getData} />}
     </Container>
   )
 }

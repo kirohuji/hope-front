@@ -4,18 +4,18 @@ import { Tree, TreeNode } from 'react-organizational-chart';
 import { useTheme } from '@mui/material/styles';
 import { Button, DialogTitle, Dialog, DialogContent } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import Divider from '@mui/material/Divider';
 // utils
 import { useState, createContext, useMemo } from 'react';
 import flattenArray from 'src/utils/flatten-array';
-//
+// compoennts 
 import ConfirmDialog from "src/components/confirm-dialog";
 import { roleService } from 'src/composables/context-provider';
 import { useSnackbar } from 'src/components/snackbar';
 import OrganDetailsDrawer from '../organ-details-drawer';
-import { SimpleNode, StandardNode, GroupNode } from './node';
 import OrganNewEditForm from '../organ-new-edit-form';
 import PermissionPanel from '../../permission/permission-panel';
+import { SimpleNode, StandardNode, GroupNode } from './node';
+
 // ----------------------------------------------------------------------
 
 OrganizationalChart.propTypes = {
@@ -29,8 +29,8 @@ OrganizationalChart.propTypes = {
   }),
   onFlash: PropTypes.any
 };
-const userContext = createContext({ item: {}, setOpenForm: null, setItem: null, openForm: false });
 
+const userContext = createContext({ item: {}, setOpenForm: null, setItem: null, openForm: false });
 
 export default function OrganizationalChart ({ maxRole, type, data, variant = 'simple', sx, onFlash, ...other }) {
   const theme = useTheme();
@@ -41,9 +41,25 @@ export default function OrganizationalChart ({ maxRole, type, data, variant = 's
   const [item, setItem] = useState({});
   const [parent, setParent] = useState({});
   const { enqueueSnackbar } = useSnackbar();
-  const providerValue = useMemo(() => ({ setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, setOpenPermission }), [setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, setOpenPermission]);
-  const handleCloseModal = () => {
-    onFlash()
+  const providerValue = useMemo(() => (
+    { setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, setOpenPermission }),
+    [setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, setOpenPermission]
+  );
+  const handleCloseModal = (getData) => {
+    if(getData && getData.data){
+      if (getData.type === "new") {
+        if (parent.children) {
+          parent.children.push(getData.data)
+        }
+      } else if (parent.children) {
+        for (let i = 0; i < parent.children.length; i += 1) {
+          if (parent.children[i]._id === getData.data._id) {
+            parent.children[i] = getData.data;
+            break;
+          }
+        }
+      }
+    }
     setOpenForm(false);
   };
   const handleClosePermissionModal = () => {
@@ -64,9 +80,31 @@ export default function OrganizationalChart ({ maxRole, type, data, variant = 's
         _id: item._id,
       })
     enqueueSnackbar('删除成功');
-    onFlash()
+    // onFlash()
+    for (let i = 0; i < parent.children.length; i += 1) {
+      if (parent.children[i] && parent.children[i]._id ===  item._id) {
+        parent.children[i] = null;
+        break;
+      }
+    }
     handleCloseDeleteConfirm();
     setOpenManager(false);
+  }
+  const handleChangeLeader = async (person) => {
+    for (let i = 0; i < parent.children.length; i += 1) {
+      if (parent.children[i]._id ===  item._id) {
+        parent.children[i].leader = {
+          _id: person._id,
+          username: person.username
+        }
+        break;
+      }
+    }
+  }
+  const onCreate = () => {
+    setItem({});
+    setParent(data);
+    handleOpenModal()
   }
   return (
     <userContext.Provider value={providerValue}>
@@ -76,40 +114,18 @@ export default function OrganizationalChart ({ maxRole, type, data, variant = 's
         lineBorderRadius="24px"
         lineColor={theme.palette.divider}
         label={
-          (variant === 'simple' && <SimpleNode
-            sx={sx}
-            node={data} />) ||
-          (variant === 'standard' && (
-            <StandardNode
-              sx={sx}
-              node={data}
-              onEdit={() => handleOpenModal()}
-              onDelete={() => console.log('DELETE', data.name)}
-            />
-          )) ||
           (variant === 'group' && <GroupNode
             sx={sx}
             node={data}
-            onCreate={() => {
-              setItem({});
-              setParent(data);
-              setOpenForm(true)
-            }} />)
+            onCreate={onCreate} />)
         }
         {...other}
       >
         {data.children && data.children.map((list) => (
-          <List key={list.name} depth={1} data={list} variant={variant} sx={sx} />
+          list && <List parentNode={data} key={list._id} depth={1} data={list} variant={variant} sx={sx} />
         ))}
       </Tree>
-      {/**
-          <OrganContactsDialog
-        current={item}
-        assignee={item.users}
-        open={openContacts}
-        onClose={handleCloseContacts}
-      />
-    */}
+
       <Dialog fullWidth maxWidth="md" open={openForm} onClose={handleCloseModal}>
         <DialogTitle>{item._id ? '编辑' : '新增'}</DialogTitle>
         <DialogContent dividers>
@@ -118,17 +134,23 @@ export default function OrganizationalChart ({ maxRole, type, data, variant = 's
           }
         </DialogContent>
       </Dialog>
-      <OrganDetailsDrawer onFlash={onFlash} item={item} open={openManager} onClose={handleCloseManagerModal} onDelete={() => setOpenDeleteConfirm(true)} />
-      {
-        /**
-            <Dialog fullWidth maxWidth="md" open={openManager} onClose={handleCloseManagerModal}>
-              <DialogTitle>{item.label}</DialogTitle>
-              <DialogContent dividers>
-                <OrganDetail current={item} />
-              </DialogContent>
-            </Dialog>
-         */
-      }
+
+      <OrganDetailsDrawer
+        onChangeLeader={handleChangeLeader}
+        item={item}
+        open={openManager}
+        onClose={handleCloseManagerModal}
+        onDelete={() => setOpenDeleteConfirm(true)} />
+
+      <Dialog fullWidth maxWidth="md" open={openPermission} onClose={handleClosePermissionModal}>
+        <DialogTitle>权限配置</DialogTitle>
+        <DialogContent dividers>
+          <Grid container direction="row" alignItems="center" sx={{ p: 1 }}>
+            {openPermission && <PermissionPanel maxRole={maxRole} current={item} onClose={handleClosePermissionModal} />}
+          </Grid>
+        </DialogContent>
+      </Dialog>
+
       <ConfirmDialog
         open={openDeleteConfirm}
         onClose={handleCloseDeleteConfirm}
@@ -140,14 +162,6 @@ export default function OrganizationalChart ({ maxRole, type, data, variant = 's
           </Button>
         }
       />
-      <Dialog fullWidth maxWidth="md" open={openPermission} onClose={handleClosePermissionModal}>
-        <DialogTitle>权限配置</DialogTitle>
-        <DialogContent dividers>
-          <Grid container direction="row" alignItems="center" sx={{ p: 1 }}>
-            <PermissionPanel maxRole={maxRole} current={item} onClose={handleClosePermissionModal} />
-          </Grid>
-        </DialogContent>
-      </Dialog>
     </userContext.Provider>
   );
 }
@@ -161,26 +175,18 @@ List.propTypes = {
     users: PropTypes.array,
     isUser: PropTypes.bool
   }),
+  parentNode: PropTypes.object,
   sx: PropTypes.object,
   depth: PropTypes.number,
   variant: PropTypes.string,
 };
 
-export function List ({ data, depth, variant, sx }) {
-  const hasChild = data.children && !!data.children && data.children.length;
+export function List ({ data, parentNode, depth, variant, sx }) {
+  const hasChild = data.children && !!data.children && data.children.length > 0;
   return (
     <userContext.Consumer>
       {({ setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, setOpenPermission }) => <TreeNode
         label={
-          (variant === 'simple' && <SimpleNode sx={sx} node={data} />) ||
-          (variant === 'standard' && (
-            <StandardNode
-              sx={sx}
-              node={data}
-              onEdit={() => console.log('EDIT', data.name)}
-              onDelete={() => console.log('DELETE', data.name)}
-            />
-          )) ||
           (variant === 'group' && (
             <GroupNode
               sx={sx}
@@ -188,12 +194,12 @@ export function List ({ data, depth, variant, sx }) {
               depth={depth}
               onEdit={() => {
                 setItem(data);
-                setParent(null);
+                setParent(parentNode);
                 setOpenForm(true)
               }}
               onClick={() => {
                 setItem(data);
-                setParent(null);
+                setParent(parentNode);
                 setOpenManager(true)
               }}
               onCreate={() => {
@@ -203,7 +209,7 @@ export function List ({ data, depth, variant, sx }) {
               }}
               onManager={() => {
                 setItem(data);
-                setParent(null);
+                setParent(parentNode);
                 setOpenManager(true)
               }}
               onPermission={() => {
@@ -223,24 +229,6 @@ export function List ({ data, depth, variant, sx }) {
         }
       >
         {hasChild && <SubList data={data.children} depth={depth} variant={variant} sx={sx} />}
-        {/**
-              <Fade in={checked}>
-          <div style={{ display: "flex", justifyContent: "center"}}>
-            {hasUsers && data.users.map((user) => {
-              const profile = {
-                ...user.profile,
-                name: user.profile.displayName,
-                group: user.profile.state,
-                role: user.profile.state,
-                isUser: true,
-              }
-              return <UserNode key={profile.name || profile._id} data={profile} depth={depth + 1} variant={variant} sx={sx} />
-            }
-            )}
-          </div>
-        </Fade>
-      
-      */}
       </TreeNode>}
     </userContext.Consumer>
   );
@@ -259,57 +247,8 @@ function SubList ({ data, depth, variant, sx }) {
   return (
     <>
       {data.map((list) => list.name && (
-        <List key={list.name || list._id} data={list} depth={depth + 1} variant={variant} sx={sx} />
+        <List  parentNode={data} key={list.name || list._id} data={list} depth={depth + 1} variant={variant} sx={sx} />
       ))}
     </>
-  );
-}
-
-
-UserNode.propTypes = {
-  data: PropTypes.shape({
-    name: PropTypes.string,
-    children: PropTypes.array,
-    users: PropTypes.array,
-    isUser: PropTypes.bool
-  }),
-  sx: PropTypes.object,
-  depth: PropTypes.number,
-  variant: PropTypes.string,
-};
-
-export function UserNode ({ data, depth, variant, sx }) {
-
-  return (
-    <userContext.Consumer>
-      {({ setOpenForm, setItem, setParent, setOpenManager }) => <TreeNode
-        label={
-          (variant === 'simple' && <SimpleNode sx={sx} node={data} />) ||
-          (variant === 'standard' && (
-            <StandardNode
-              sx={sx}
-              node={data}
-              onEdit={() => console.log('EDIT', data.name)}
-              onDelete={() => console.log('DELETE', data.name)}
-            />
-          )) ||
-          (variant === 'group' && (
-            <GroupNode
-              sx={sx}
-              node={data}
-              depth={depth}
-              onCreate={() => {
-                setItem({});
-
-                setParent(data);
-                setOpenForm(true)
-              }}
-              onDelete={() => console.log('DELETE', data.name)}
-              length={flattenArray(data.children, 'children')?.length}
-            />
-          ))
-        }
-      />}
-    </userContext.Consumer>
   );
 }
