@@ -1,5 +1,5 @@
 import { m } from 'framer-motion';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -14,14 +14,8 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // hooks
-import { useSelector } from 'src/redux/store';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
-
-import { notificationService } from 'src/composables/context-provider';
-
-// _mock
-// import { _notifications } from 'src/_mock';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -64,20 +58,7 @@ export default function NotificationsPopover() {
     setCurrentTab(newValue);
   }, []);
 
-  // const { notifications } = useSelector((state) => state.notification);
   const { state } = useAuthContext()
-
-  // const [notifications, setNotifications] = useState([]);
-
-  // const getAllNotification = useCallback(async () => {
-  //   const response = await notificationService.getWithCurrentUser();
-  //   setNotifications(response);
-  // }, [setNotifications]);
-
-  // useEffect(()=>{
-  //   getAllNotification()
-  // }, [getAllNotification])
-
 
   const totalUnRead = state.notifications.filter((item) => item.isUnRead === true).length;
 

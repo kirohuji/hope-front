@@ -59,12 +59,11 @@ export const BROADCAST_SERVICE_OPTIONS = [
 export const BROAECAST_TYPE_OPTIONS = [
   { value: 'activity', label: '活动通知' },
   { value: 'notification', label: '消息公告' },
+  { value: 'familyGathering', label: '家庭聚会' },
   // { value: 'book', label: '灵修' },
 ];
 export default function BroadcastNewEditForm ({ currentBroadcast }) {
   const router = useRouter();
-
-  const [users, setUsers] = useState([])
 
   const isEdit = !!currentBroadcast;
 
@@ -76,17 +75,16 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
     label: Yup.string().required('请输入标题'),
     content: Yup.string().required('请输入内容'),
     images: Yup.array(),
-    type: Yup.string().required(1, 'Type is required'),
-    leaders: Yup.array().min(1, 'Must have at least 1 guide'),
-    durations: Yup.string().required('Duration is required'),
+    type: Yup.string().required('请选择类型'),
+    // leaders: Yup.array().min(1, 'Must have at least 1 guide'),
+    durations: Yup.string(),
     // tags: Yup.array().min(2, 'Must have at least 2 tags'),
     // services: Yup.array().min(2, 'Must have at least 2 services'),
-    destination: Yup.string().required('Destination is required'),
+    destination: Yup.string().required('目的地是必填的'),
     published: Yup.boolean(),
     available: Yup.object().shape({
-      startDate: Yup.mixed().nullable().required('Start date is required'),
-      endDate: Yup.mixed()
-        .required('End date is required')
+      startDate: Yup.mixed().nullable(),
+      endDate: Yup.mixed().nullable(),
     }),
   });
 
@@ -127,29 +125,11 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
 
   const values = watch();
 
-  const getUserData = useCallback(async () => {
-    try {
-      const response = await userService.pagination({
-        status: "active",
-      },
-        {});
-      setUsers(response.data.map(item=> ({ 
-        _id: item._id,
-        username: item.username,
-        photoURL: item.photoURL,
-      })))
-      console.log('setUsers', response.data)
-    } catch (error) {
-      console.log(error)
-    }
-  }, [setUsers]);
-
   useEffect(() => {
     if (currentBroadcast) {
       reset(defaultValues);
     }
-    getUserData()
-  }, [currentBroadcast, getUserData, defaultValues, reset]);
+  }, [currentBroadcast, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     if(values.images.filter((file) => file.isLoacl).length> 0){
@@ -210,7 +190,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
     values.images.map(async (file) => {
       const formData = new FormData();
       formData.append('file', file);
-      const { link } = await fileService.avatar(formData)
+      const { link } = await fileService.upload(formData)
       Object.assign(file, {
         preview: link,
         isLoacl: false
@@ -287,45 +267,6 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
             <Stack spacing={1}>
               <Typography variant="subtitle2">类型</Typography>
               <RHFRadioGroup row spacing={4} name="type" options={BROAECAST_TYPE_OPTIONS} />
-            </Stack>
-            <Stack>
-              <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-                负责人
-              </Typography>
-
-              <RHFAutocomplete
-                multiple
-                name="leaders"
-                placeholder="+ Broadcast Guides"
-                disableCloseOnSelect
-                options={users}
-                getOptionLabel={(option) => option.username}
-                isOptionEqualToValue={(option, value) => option._id === value._id}
-                renderOption={(props, user) => (
-                  <li {...props} key={user._id}>
-                    <Avatar
-                      key={user._id}
-                      alt={user?.photoURL}
-                      src={user?.photoURL}
-                      sx={{ width: 24, height: 24, flexShrink: 0, mr: 1 }}
-                    />
-
-                    {user.username}
-                  </li>
-                )}
-                renderTags={(selected, getTagProps) =>
-                  selected.map((user, index) => (
-                    <Chip
-                      {...getTagProps({ index })}
-                      key={user._id}
-                      size="small"
-                      variant="soft"
-                      label={user.username}
-                      avatar={<Avatar alt={user.username} src={user?.photoURL} />}
-                    />
-                  ))
-                }
-              />
             </Stack>
 
             <Stack spacing={1.5}>

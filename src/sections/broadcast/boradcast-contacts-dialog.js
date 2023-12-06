@@ -30,7 +30,7 @@ import SearchNotFound from 'src/components/search-not-found';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { getOrganizations } from 'src/redux/slices/chat';
 
-import { roleService, userService, broadcastService } from 'src/composables/context-provider';
+import { roleService, broadcastService } from 'src/composables/context-provider';
 import { useSnackbar } from 'src/components/snackbar';
 import ConfirmDialog from 'src/components/confirm-dialog';
 import FormProvider, {
@@ -43,7 +43,6 @@ const ITEM_HEIGHT = 64;
 BroadCastContactsDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
-  // assignee: PropTypes.array,
   current: PropTypes.object,
 };
 const styles = {
@@ -77,15 +76,8 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
     searchContacts: Yup.string(),
     isShowJoinedUser: Yup.boolean()
   });
-  const defaultValues = useMemo(
-    () => ({
-
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  const defaultValues = useMemo(() => ({}), []);
   const onChildren = (organization) => {
-    console.log('gx')
     if (organization.children) {
       const level = {
         name: organization.label,
@@ -133,7 +125,6 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
   const {
     control,
     handleSubmit,
-    // formState,
   } = methods;
 
 
@@ -157,9 +148,6 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
   const handleSearchContacts = (event) => {
     setSearchContacts(event.target.value);
   };
-  // const handleIsShowJoinedUser = (event) => {
-  //   setIsShowJoinedUser(event.target.value);
-  // }; 
   const handleDelete = async () => {
     await broadcastService.deleteUser({
       _id: user._id,
@@ -169,17 +157,10 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
     getData();
   }
   const handleAdd = async (contact) => {
-    // if (contact.type === "org") {
-    //   await broadcastService.addUsers({
-    //     users_id: contact.users.map(item => item.account._id),
-    //     broadcast_id: current._id
-    //   })
-    // } else {
-      await broadcastService.addUser({
-        user_id: contact._id,
-        broadcast_id: current._id
-      })
-    // }
+    await broadcastService.addUser({
+      user_id: contact._id,
+      broadcast_id: current._id
+    })
     enqueueSnackbar('添加成功');
     getData();
   }
@@ -189,10 +170,6 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
       dispatch(getOrganizations(active._id));
     }
   }, [getData, active._id, dispatch, open]);
-  // const dataFiltered = applyFilter({
-  //   inputData: _contacts,
-  //   query: searchContacts,
-  // });
   const onSubmit = async (data) => {
     console.log(data)
   };
@@ -311,7 +288,6 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
                         checked={field.value !== 'on'}
                         onChange={(event) => {
                           field.onChange(event.target.checked ? 'on' : 'off');
-                          // handleIsShowJoinedUser(event.target.checked === "on")
                         }}
                       />
                     )}
@@ -346,17 +322,3 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
     </>
   );
 }
-
-// ----------------------------------------------------------------------
-
-// function applyFilter ({ inputData, query }) {
-//   if (query) {
-//     inputData = inputData.filter(
-//       (contact) =>
-//         contact.name.toLowerCase().indexOf(query.toLowerCase()) !== -1 ||
-//         contact.email.toLowerCase().indexOf(query.toLowerCase()) !== -1
-//     );
-//   }
-
-//   return inputData;
-// }

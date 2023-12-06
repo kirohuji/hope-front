@@ -2,12 +2,7 @@
 import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
 
-// utils
-// import axios, { endpoints } from 'src/utils/axios';
-//
-import { authService, notificationService, userService, ddpclient } from 'src/composables/context-provider';
-
-// import { useDispatch } from 'src/redux/store';
+import { authService, userService, ddpclient } from 'src/composables/context-provider';
 
 import { AuthContext } from './auth-context';
 import { setSession } from './utils';
@@ -108,19 +103,19 @@ export function AuthProvider ({ children }) {
     try {
       const accessToken = localStorage.getItem(STORAGE_KEY);
 
-      // if (accessToken && isValidToken(accessToken)) {
       if (accessToken) {
-        await ddpclient.call("login",{
+
+        await ddpclient.call("login", {
           resume: accessToken
         })
+
         setSession(accessToken);
 
-        // const response = await axios.get(endpoints.auth.me);
-
-        // const { user } = response.data;
         // 获取用户信息
-        const { user, profile, roles, permissions } = await userService.info()
-        getNotifications(user)
+        const { user, profile, roles, permissions } = await userService.info();
+
+        getNotifications(user);
+
         dispatch({
           type: 'INITIAL',
           payload: {
@@ -131,10 +126,7 @@ export function AuthProvider ({ children }) {
               permissions,
               roles
             }
-          },
-          // payload: {
-          //   user,
-          // },
+          }
         });
       } else {
         dispatch({
@@ -146,7 +138,6 @@ export function AuthProvider ({ children }) {
         });
       }
     } catch (error) {
-      console.error(error);
       dispatch({
         type: 'INITIAL',
         payload: {
@@ -163,24 +154,14 @@ export function AuthProvider ({ children }) {
 
   // LOGIN
   const login = useCallback(async (email, password) => {
-    const data = {
-      email,
-      password,
-    };
-
-    // const response = await axios.post(endpoints.auth.login, data);
-
-    // const { accessToken, user } = response.data;
     const response = await ddpclient.login({
       password,
       user: {
-          email
+        email
       }
     });
-    const { token: accessToken } = response;
-    // const response = await authService.login(data);
 
-    // const { authToken: accessToken } = response;
+    const { token: accessToken } = response;
 
     setSession(accessToken);
 
@@ -199,28 +180,14 @@ export function AuthProvider ({ children }) {
     });
   }, [getNotifications]);
 
-  const sendPublish = useCallback(async (data) => {
-    // socket.emit("notification", data);
-  }, []);
-
   // REGISTER
-  const register = useCallback(async (email, password, firstName, lastName, username) => {
-    // const data = {
-    //   email,
-    //   password,
-    //   firstName,
-    //   lastName,
-    // };
+  const register = useCallback(async (email, password, username) => {
 
     await userService.register({
       email,
       username,
       password,
     })
-
-    // const response = await axios.post(endpoints.auth.register, data);
-
-    // const { accessToken, user } = response.data;
 
     const { authToken: accessToken } = await authService.login({
       email,
@@ -272,13 +239,11 @@ export function AuthProvider ({ children }) {
       isAuthenticated: state.isAuthenticated,
       permissions: state.user?.permissions?.map(item => item.value),
       isAdmin: state.user?.roles?.map(item => item._id).indexOf("admin") !== -1,
-      //
       login,
-      sendPublish,
       register,
       logout
     }),
-    [login, logout, state, sendPublish, register, status]
+    [login, logout, state, register, status]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

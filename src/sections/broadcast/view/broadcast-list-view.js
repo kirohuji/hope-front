@@ -8,15 +8,16 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 // hooks
-import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useDebounce } from 'src/hooks/use-debounce';
 // utils
 import { fTimestamp } from 'src/utils/format-time';
 // _mock
-import { _tours, _tourGuides, TOUR_SERVICE_OPTIONS, TOUR_SORT_OPTIONS } from 'src/_mock';
-// assets
-import { countries } from 'src/assets/data';
+import { _tours } from 'src/_mock';
+// redux
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getDatas } from 'src/redux/slices/broadcast';
+
 // components
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
@@ -24,13 +25,11 @@ import EmptyContent from 'src/components/empty-content';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
-import { broadcastService } from 'src/composables/context-provider';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import BroadcastList from '../broadcast-list';
-import BroadcastSort from '../broadcast-sort';
-import BroadcastFilters from '../broadcast-filters';
 import BroadcastFiltersResult from '../broadcast-filters-result';
+
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
@@ -46,11 +45,14 @@ const defaultFilters = {
 
 export default function BroadcastListView () {
   const { enqueueSnackbar } = useSnackbar();
-  const settings = useSettingsContext();
-  const lgUp = useResponsive('up', 'lg');
-  const [tableData, setTableData] = useState([]);
 
-  const openFilters = useBoolean();
+  const settings = useSettingsContext();
+
+  const lgUp = useResponsive('up', 'lg');
+
+  const { data } = useSelector((state) => state.broadcast);
+
+  const dispatch = useDispatch();
 
   const [sortBy, setSortBy] = useState('latest');
 
@@ -63,24 +65,23 @@ export default function BroadcastListView () {
 
   const debouncedFilters = useDebounce(filters);
 
-  const getTableData = useCallback(async (selector = {}, options = {}) => {
+  const onRefresh = useCallback(async (selector = {}, options = {}) => {
     try {
-      const response = await broadcastService.pagination({
+      dispatch(getDatas({
         ...{
           ...selector,
           label: debouncedFilters.label
         },
         ...options
-      })
-      setTableData(response.data);
+      }))
     } catch (error) {
       enqueueSnackbar(error.message);
     }
-  }, [setTableData, enqueueSnackbar, debouncedFilters]);
+  }, [debouncedFilters.label, dispatch, enqueueSnackbar])
 
   useEffect(() => {
-    getTableData()
-  }, [getTableData]);
+    onRefresh()
+  }, [onRefresh]);
   const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
@@ -242,7 +243,7 @@ export default function BroadcastListView () {
 
       {notFound && <EmptyContent title="No Data" filled sx={{ py: 10 }} />}
 
-      <BroadcastList broadcasts={tableData} refresh={() => getTableData()} />
+      <BroadcastList broadcasts={data} refresh={() => onRefresh()} />
     </Container>
   );
 }

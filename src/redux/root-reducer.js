@@ -11,6 +11,8 @@ import chatReducer from './slices/chat';
 import audioReducer from './slices/audio';
 import trainningReducer from './slices/trainning';
 import roleReducer from './slices/role';
+import fileReducer from './slices/file';
+import broadcastReducer from './slices/broadcast';
 // import notificationReducer from './slices/notification';
 // ----------------------------------------------------------------------
 
@@ -51,6 +53,19 @@ export const articlePersistConfig = {
   whitelist: ['sortBy', 'checkout'],
 };
 
+
+export const filePersistConfig = {
+  key: 'file',
+  storage,
+  keyPrefix: 'redux-',
+};
+
+export const broadcastPersistConfig = {
+  key: 'broadcast',
+  storage,
+  keyPrefix: 'redux-',
+};
+
 export const rootReducer = combineReducers({
   calendar: calendarReducer,
   chat: chatReducer,
@@ -62,5 +77,7 @@ export const rootReducer = combineReducers({
   checkout: persistReducer(checkoutPersistConfig, checkoutReducer),
   scope: persistReducer(scopePersistConfig, scopeReducer),
   article: persistReducer(articlePersistConfig, articleReducer),
-  book: persistReducer(bookPersistConfig, scopeReducer),
+  // book: persistReducer(bookPersistConfig, bookPersistConfig),
+  file: persistReducer(filePersistConfig, fileReducer),
+  broadcast: persistReducer(broadcastPersistConfig, broadcastReducer),
 });

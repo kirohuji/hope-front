@@ -17,11 +17,10 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
 // _mock
-import { _userList, _roles } from 'src/_mock';
+import { _roles } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -31,7 +30,6 @@ import Restricted from 'src/auth/guard/restricted';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
-  // getComparator,
   emptyRows,
   TableNoData,
   TableEmptyRows,
@@ -41,6 +39,8 @@ import {
 } from 'src/components/table';
 // service
 import { fileService, userService } from 'src/composables/context-provider';
+// hooks
+import { useDebounce } from 'src/hooks/use-debounce';
 //
 import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';
@@ -82,12 +82,9 @@ export default function UserListView () {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const table = useTable({
-    defaultCurrentPage: 0,
-  });
+  const table = useTable({ defaultCurrentPage: 0 });
 
   const settings = useSettingsContext();
-
 
   const router = useRouter();
 
@@ -99,20 +96,11 @@ export default function UserListView () {
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  // applyFilter({
-  //   inputData: tableData,
-  //   comparator: getComparator(table.order, table.orderBy),
-  //   filters,
-  // });
-
-  // const dataInPage = dataFiltered.slice(
-  //   table.page * table.rowsPerPage,
-  //   table.page * table.rowsPerPage + table.rowsPerPage
-  // );
-
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset = !_.isEqual(defaultFilters, filters);
+
+  const debouncedFilters = useDebounce(filters);
 
   const notFound = (!tableDataCount && canReset) || !tableDataCount;
 
@@ -121,7 +109,7 @@ export default function UserListView () {
       const response = await userService.pagination(
         {
           ...selector,
-          ..._.pickBy(_.omit(filters, ["role"]))
+          ..._.pickBy(_.omit(debouncedFilters, ["role"]))
         },
         options
       )
@@ -130,7 +118,7 @@ export default function UserListView () {
     } catch (error) {
       enqueueSnackbar(error.message)
     }
-  }, [filters, setTableData, setTableDataCount, enqueueSnackbar]);
+  }, [debouncedFilters, setTableData, setTableDataCount, enqueueSnackbar]);
 
   useEffect(() => {
     getTableData()
@@ -149,10 +137,6 @@ export default function UserListView () {
 
   const handleDeleteRow = useCallback(
     async (id) => {
-      // const deleteRow = tableData.filter((row) => row.id !== id);
-      // setTableData(deleteRow);
-
-      // table.onUpdatePageDeleteRow(dataInPage.length);
       await userService.delete({
         _id: id
       })
@@ -161,17 +145,6 @@ export default function UserListView () {
     },
     [getTableData,enqueueSnackbar]
   );
-
-  // const handleDeleteRows = useCallback(() => {
-  //   const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-  //   setTableData(deleteRows);
-
-  //   table.onUpdatePageDeleteRows({
-  //     totalRows: tableData.length,
-  //     totalRowsInPage: dataInPage.length,
-  //     totalRowsFiltered: dataFiltered.length,
-  //   });
-  // }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
   const handleEditRow = useCallback(
     (id) => {
@@ -214,7 +187,6 @@ export default function UserListView () {
         <CustomBreadcrumbs
           heading="列表"
           links={[
-            // { name: 'Dashboard', href: paths.dashboard.root },
             { name: '用户', href: paths.dashboard.user.root },
             { name: '列表' },
           ]}
@@ -372,35 +344,3 @@ export default function UserListView () {
     </>
   );
 }
-
-// ----------------------------------------------------------------------
-
-// function applyFilter ({ inputData, comparator, filters }) {
-//   const { name, status, role } = filters;
-
-//   const stabilizedThis = inputData.map((el, index) => [el, index]);
-
-//   stabilizedThis.sort((a, b) => {
-//     const order = comparator(a[0], b[0]);
-//     if (order !== 0) return order;
-//     return a[1] - b[1];
-//   });
-
-//   inputData = stabilizedThis.map((el) => el[0]);
-
-//   if (name) {
-//     inputData = inputData.filter(
-//       (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-//     );
-//   }
-
-//   if (status !== 'all') {
-//     inputData = inputData.filter((user) => user.status === status);
-//   }
-
-//   if (role.length) {
-//     inputData = inputData.filter((user) => role.includes(user.role));
-//   }
-
-//   return inputData;
-// }

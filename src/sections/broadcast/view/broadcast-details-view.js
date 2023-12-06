@@ -46,7 +46,7 @@ export default function BroadcastDetailsView () {
   const [isAdmin, setIsAdmin] = useState(false)
   const [participantsCount, setParticipantsCount] = useState([])
   const [openContacts, setOpenContacts] = useState(false);
-  const { user, sendPublish  } = useAuthContext();
+  const { user } = useAuthContext();
   const handleOpenContacts = () => {
     setOpenContacts(true);
   };
@@ -88,9 +88,8 @@ export default function BroadcastDetailsView () {
   }, []);
 
   const handlePublish = useCallback(async () => {
-    await sendPublish(id)
     enqueueSnackbar('发布成功');
-  }, [enqueueSnackbar, sendPublish, id])
+  }, [enqueueSnackbar])
   const onRefresh = useCallback(async () => {
     getParticipants()
     const getUsersCount = await broadcastService.getUsersCount({
@@ -105,7 +104,8 @@ export default function BroadcastDetailsView () {
           _id: id
         })
         // console.log(_.find(response.tourGuides, ["_id", user._id]))
-        setIsAdmin(_.find(response.leader, ["_id", user._id]))
+        // setIsAdmin(_.find(response.leader, ["_id", user._id]))
+        setIsAdmin(response.createdBy === user._id)
         setCurrentBroadcast(response)
       } else {
         getParticipants()

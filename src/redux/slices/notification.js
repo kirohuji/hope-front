@@ -1,21 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 // utils
-import { ddpclient } from 'src/composables/context-provider';
+import { fileManagerService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
 const initialState = {
-  notifications: []
+  data: []
 };
 
 const slice = createSlice({
-  name: 'notification',
+  name: 'file',
   initialState,
   reducers: {
-    // GET CONVERSATIONS
-    getNotificationsSuccess (state, action) {
-      const notifications = action.payload;
-      state.notifications = notifications;
+    getSuccess (state, action) {
+      state.data = action.payload;;
     },
   }
 })
@@ -23,25 +21,16 @@ const slice = createSlice({
 // Reducer
 export default slice.reducer;
 
-export function getNotifications () {
+export function getFiles () {
   return async (dispatch) => {
-    // try {
+    try {
 
-    //   const notificationsSub = await ddpclient.subscribe("notifications");
+      const data = await fileManagerService.getWithCurrentUser()
 
-    //   await notificationsSub.ready();
+      dispatch(slice.actions.getSuccess(data));
 
-    //   const reactiveCollection = ddpclient.collection('notifications').reactive();
-
-    //   dispatch(slice.actions.getNotificationsSuccess(reactiveCollection.data()));
-
-    //   reactiveCollection.onChange((newData) => {
-    //     console.log('更新更新')
-    //     dispatch(slice.actions.getNotificationsSuccess(newData));
-    //   });
-    // } catch (error) {
-    //   console.log(error)
-    //   // dispatch(slice.actions.hasError(error));
-    // }
+    } catch (error) {
+      console.log(error)
+    }
   };
 }

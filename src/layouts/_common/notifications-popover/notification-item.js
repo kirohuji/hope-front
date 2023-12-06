@@ -15,6 +15,10 @@ import Label from 'src/components/label';
 import FileThumbnail from 'src/components/file-thumbnail';
 import { fileManagerService } from 'src/composables/context-provider';
 
+// redux
+import { useDispatch } from 'src/redux/store';
+import { getFiles } from 'src/redux/slices/file';
+
 // ----------------------------------------------------------------------
 
 function category (notification) {
@@ -28,11 +32,16 @@ function category (notification) {
   return value
 }
 export default function NotificationItem ({ notification }) {
-  const onShareFile = ()=>{
-    fileManagerService.accpetShareFile(notification);
+
+  const dispatch = useDispatch();
+
+  const onShareFile = async () => {
+    await fileManagerService.accpetShareFile(notification);
+    dispatch(getFiles())
   }
-  const onDenyShareFile = ()=>{
-    fileManagerService.denyShareFile(notification);
+  const onDenyShareFile = async () => {
+    await fileManagerService.denyShareFile(notification);
+    dispatch(getFiles())
   }
   const renderAvatar = (
     <ListItemAvatar>

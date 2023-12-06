@@ -22,12 +22,16 @@ import { fileFormat } from 'src/components/file-thumbnail';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import { useTable, getComparator } from 'src/components/table';
+// redux
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getFiles } from 'src/redux/slices/file';
 //
 import FileManagerTable from '../file-manager-table';
 import FileManagerFilters from '../file-manager-filters';
 import FileManagerGridView from '../file-manager-grid-view';
 import FileManagerFiltersResult from '../file-manager-filters-result';
 import FileManagerNewFolderDialog from '../file-manager-new-folder-dialog';
+
 
 
 // ----------------------------------------------------------------------
@@ -43,6 +47,13 @@ const defaultFilters = {
 
 export default function FileManagerView () {
   // const upMd = useResponsive('up', 'md');
+
+  const dispatch = useDispatch();
+
+  const { active } = useSelector((state) => state.scope);
+
+  const { data } = useSelector((state) => state.file);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const table = useTable({ defaultRowsPerPage: 10 });
@@ -57,20 +68,12 @@ export default function FileManagerView () {
 
   const [view, setView] = useState('grid');
 
-  const [tableData, setTableData] = useState([]);
-
-  const getTableData = useCallback(async () => {
-    try {
-      const response = await fileManagerService.getWithCurrentUser()
-      setTableData(response);
-    } catch (error) {
-      enqueueSnackbar(error.message);
-    }
-  }, [setTableData, enqueueSnackbar]);
-
+  const onRefresh = useCallback(async () => {
+    dispatch(getFiles())
+  }, [dispatch])
   useEffect(() => {
-    getTableData()
-  }, [getTableData]);
+    onRefresh()
+  }, [onRefresh]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -80,7 +83,7 @@ export default function FileManagerView () {
       : false;
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: data,
     comparator: getComparator(table.order, table.orderBy),
     filters,
     dateError,
@@ -122,9 +125,9 @@ export default function FileManagerView () {
     } catch (e) {
       enqueueSnackbar(e.response.data.message)
     }
-    getTableData()
+    onRefresh()
   },
-    [getTableData, enqueueSnackbar]
+    [onRefresh, enqueueSnackbar]
   );
 
   const handleDeleteItems = useCallback(async () => {
@@ -133,8 +136,8 @@ export default function FileManagerView () {
         _id: row
       })
     })
-    getTableData();
-  }, [getTableData, table]);
+    onRefresh();
+  }, [onRefresh, table]);
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -221,7 +224,7 @@ export default function FileManagerView () {
             {view === 'list' ? (
               <FileManagerTable
                 table={table}
-                tableData={tableData}
+                tableData={data}
                 dataFiltered={dataFiltered}
                 onDeleteRow={handleDeleteItem}
                 notFound={notFound}
@@ -229,9 +232,9 @@ export default function FileManagerView () {
               />
             ) : (
               <FileManagerGridView
-                onRefresh={getTableData}
+                onRefresh={onRefresh}
                 table={table}
-                data={tableData}
+                data={data}
                 dataFiltered={dataFiltered}
                 onDeleteItem={handleDeleteItem}
                 onOpenConfirm={confirm.onTrue}
@@ -243,7 +246,7 @@ export default function FileManagerView () {
 
       <FileManagerNewFolderDialog open={upload.value} onClose={() => {
         upload.onFalse();
-        getTableData();
+        onRefresh();
       }} />
 
       <ConfirmDialog
