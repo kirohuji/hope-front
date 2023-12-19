@@ -198,11 +198,11 @@ export function useNavData () {
           //   icon: ICONS.mail,
           // },
           // DICTIONARY
-          {
-            title: t('dictionary'),
-            path: paths.dashboard.dictionary.root,
-            icon: ICONS.mail,
-          },
+          // {
+          //   title: t('dictionary'),
+          //   path: paths.dashboard.dictionary.root,
+          //   icon: ICONS.mail,
+          // },
           // TOUR
           // {
           //   title: t('tour'),

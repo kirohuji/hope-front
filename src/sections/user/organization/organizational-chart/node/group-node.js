@@ -123,17 +123,17 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
         )}
         <Typography variant={isLabel ? 'subtitle1' : 'subtitle2'} noWrap onClick={onClick}>
           {name}
-          {isLabel && (
+          {node.count && (
             <Label
               color={(isGrDevelopment && 'info') || (isGrMarketing && 'warning') || 'primary'}
               sx={{ ml: 1 }}
             >
-              {length || node.count}
+              {node.count}
             </Label>
           )}
         </Typography>
         <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
-          {role}
+          {role || node.value}
         </Typography>
         {
           node.type === "org" && <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>

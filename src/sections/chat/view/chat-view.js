@@ -79,9 +79,13 @@ let conversations2Publish = null;
 let conversations2Collection = null;
 
 export default function ChatView () {
+
   const { enqueueSnackbar } = useSnackbar();
+
   const dispatch = useDispatch();
+
   const [currentTab, setCurrentTab] = useState('conversations');
+
   const { conversations, sendingMessage, contacts } = useSelector((state) => state.chat);
 
   const conversation = useSelector((state) => conversationSelector(state));
@@ -108,9 +112,7 @@ export default function ChatView () {
 
   const [recipients, setRecipients] = useState([]);
 
-
   const [conversationsLoading, setConversationsLoading] = useState(true);
-
 
   const onChildren = (organization) => {
     if (organization.children || organization.users) {
@@ -119,18 +121,13 @@ export default function ChatView () {
         to: organization._id,
       }
       levels.push(level);
-      setCurrentOrganization(_.compact([...(organization.children || []), ...(organization.users || []).map(item => {
-        if (item.profile) {
-          return {
-            name: item.account.username,
-            photoURL: item.profile.photoURL,
-            _id: item.profile._id
-          }
-        }
-        return null;
-
-      })]))
+      setCurrentOrganization(_.compact([...(organization.children || []), ...(organization.users || []).map(item => ({
+          name: item.username,
+          photoURL: item.photoURL,
+          _id: item._id
+        }))]))
       setLevels(levels)
+      console.log('currentOrganization',currentOrganization)
     }
   }
   const onGoTo = async (level) => {
@@ -148,9 +145,9 @@ export default function ChatView () {
     }
     if (isChildren) {
       await setCurrentOrganization([...currentOrganizations.children, ...currentOrganizations.users.map(item => ({
-        _id: item.account._id,
-        name: item.account.username,
-        photoURL: item.profile.photoURL
+        _id: item._id,
+        name: item.username,
+        photoURL: item.photoURL
       }))]);
     } else {
       await setCurrentOrganization(currentOrganizations);
@@ -330,7 +327,7 @@ export default function ChatView () {
           }
         </Stack>
       }
-      {currentOrganization && currentOrganization.length > 0 ? currentOrganization.map((item, i) => renderOrganizationsMenuItem(item, i)) : organizations.map((item, i) => renderOrganizationsMenuItem(item, i))}
+      {levels && levels.length > 0 ? currentOrganization.map((item, i) => renderOrganizationsMenuItem(item, i)) : organizations.map((item, i) => renderOrganizationsMenuItem(item, i))}
     </Scrollbar>
   )
 

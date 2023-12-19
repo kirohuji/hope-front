@@ -53,18 +53,31 @@ const styles = {
 };
 
 export default function BroadCastContactsDialog ({ open, onClose, current }) {
+
   const dispatch = useDispatch();
+
   const { active } = useSelector((state) => state.scope);
+
   const { organizations } = useSelector((state) => state.chat);
+
   const [currentOrganization, setCurrentOrganization] = useState([]);
+
   const [levels, setLevels] = useState([]);
+
   const [searchContacts, setSearchContacts] = useState('');
+
   const [openConfirm, setOpenConfirm] = useState(false);
-  const [users, setUsers] = useState([]);
+
+  // const [users, setUsers] = useState([]);
+
   const [assignee, setAssignee] = useState([]);
+
   const [user, setUser] = useState([]);
+
   const { enqueueSnackbar } = useSnackbar();
+
   const handleOpenConfirm = (contact) => {
+    setLevels([])
     setUser(contact)
     setOpenConfirm(true);
   };
@@ -72,11 +85,14 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
   const handleCloseConfirm = () => {
     setOpenConfirm(false);
   };
+
   const NewUserSchema = Yup.object().shape({
     searchContacts: Yup.string(),
     isShowJoinedUser: Yup.boolean()
   });
+
   const defaultValues = useMemo(() => ({}), []);
+
   const onChildren = (organization) => {
     if (organization.children) {
       const level = {
@@ -85,10 +101,10 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
       }
       levels.push(level);
       setCurrentOrganization([...organization.children, ...organization.users.map(item => ({
-        name: item.account.username,
-        photoURL: item.profile.photoURL,
-        email: item.profile.email,
-        _id: item.profile._id
+        _id: item._id,
+        name: item.username,
+        photoURL: item.photoURL,
+        email: item.email
       }))])
       setLevels(levels)
     }
@@ -108,9 +124,10 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
     }
     if (isChildren) {
       await setCurrentOrganization([...currentOrganizations.children, ...currentOrganizations.users.map(item => ({
-        _id: item.account._id,
-        name: item.account.username,
-        photoURL: item.profile.photoURL
+        _id: item._id,
+        name: item.username,
+        photoURL: item.photoURL,
+        email: item.email
       }))]);
     } else {
       await setCurrentOrganization(currentOrganizations);
@@ -122,6 +139,7 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
     resolver: yupResolver(NewUserSchema),
     defaultValues,
   });
+
   const {
     control,
     handleSubmit,
@@ -129,25 +147,27 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
 
 
   const getData = useCallback(async () => {
-    const response = await roleService.getUsersInNotRoleOnly({
-      queryOptions: {
-        username: searchContacts,
-        isShowJoinedUser: "on"
-      },
-      options: {
-        scope: active._id,
-      },
-      roles: current._id,
-    });
-    setUsers(response.data)
-    const response2 = await broadcastService.getUsers({
+    // const response = await roleService.getUsersInNotRoleOnly({
+    //   queryOptions: {
+    //     username: searchContacts,
+    //     isShowJoinedUser: "on"
+    //   },
+    //   options: {
+    //     scope: active._id,
+    //   },
+    //   roles: current._id,
+    // });
+    // setUsers(response.data)
+    const response = await broadcastService.getUsers({
       _id: current._id
     });
-    setAssignee(response2)
-  }, [searchContacts, active, current, setUsers]);
+    setAssignee(response)
+  }, [current]);
+
   const handleSearchContacts = (event) => {
     setSearchContacts(event.target.value);
   };
+
   const handleDelete = async () => {
     await broadcastService.deleteUser({
       _id: user._id,
@@ -164,6 +184,7 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
     enqueueSnackbar('添加成功');
     getData();
   }
+
   useEffect(() => {
     if (open) {
       getData();
@@ -175,7 +196,6 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
   };
   const isNotFound = !!searchContacts;
 
-  console.log('organizations', organizations);
   const renderOrganizationsItem = (contact, id, checked) =>
     <Box key={id} onClick={() => onChildren(contact)}>
       <ListItem
@@ -241,12 +261,12 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
           }
         </Stack>
       }
-      {currentOrganization && currentOrganization.length > 0 ?
+      {levels && levels.length > 0 ?
         currentOrganization.map((contact, id) => {
-          const checked = assignee.filter((person) => person._id === contact._id).length > 0;
+          const checked = assignee.filter((person) => person.user_id === contact._id).length > 0;
           return renderOrganizationsItem(contact, id, checked)
         }) : organizations.map((contact, id) => {
-          const checked = assignee.filter((person) => person._id === contact._id).length > 0;
+          const checked = assignee.filter((person) => person.user_id === contact._id).length > 0;
           return renderOrganizationsItem(contact, id, checked)
         })}
     </Scrollbar>
@@ -260,7 +280,8 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
           {/** <Typography component="span">({_contacts.length})</Typography> */}
         </DialogTitle>
         <DialogContent sx={{ p: 0 }}>
-
+        {
+          /**
           <Box sx={{ px: 3, py: 0.5 }}>
             <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
               <RHFTextField
@@ -302,6 +323,8 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
               />
             </FormProvider>
           </Box>
+           */
+        }
           <Divider />
           {isNotFound ? (
             <SearchNotFound query={searchContacts} sx={{ mt: 3, mb: 10 }} />

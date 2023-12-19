@@ -1,4 +1,5 @@
 import orderBy from 'lodash/orderBy';
+import isEqual from 'lodash/isEqual';
 import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
@@ -8,7 +9,6 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 // hooks
-import { useResponsive } from 'src/hooks/use-responsive';
 import { useDebounce } from 'src/hooks/use-debounce';
 // utils
 import { fTimestamp } from 'src/utils/format-time';
@@ -47,8 +47,6 @@ export default function BroadcastListView () {
   const { enqueueSnackbar } = useSnackbar();
 
   const settings = useSettingsContext();
-
-  const lgUp = useResponsive('up', 'lg');
 
   const { data } = useSelector((state) => state.broadcast);
 
@@ -93,12 +91,7 @@ export default function BroadcastListView () {
     sortBy,
     dateError,
   });
-
-  const canReset =
-    !!filters.destination.length ||
-    !!filters.tourGuides.length ||
-    !!filters.services.length ||
-    (!!filters.startDate && !!filters.endDate);
+  const canReset = !isEqual(defaultFilters, filters);
 
   const notFound = !dataFiltered.length && canReset;
 
@@ -108,31 +101,6 @@ export default function BroadcastListView () {
       [name]: value,
     }));
   }, []);
-
-  const handleSortBy = useCallback((newValue) => {
-    setSortBy(newValue);
-  }, []);
-
-  const handleSearch = useCallback(
-    (inputValue) => {
-      setSearch((prevState) => ({
-        ...prevState,
-        query: inputValue,
-      }));
-
-      if (inputValue) {
-        const results = _tours.filter(
-          (broadcast) => broadcast.name.toLowerCase().indexOf(search.query.toLowerCase()) !== -1
-        );
-
-        setSearch((prevState) => ({
-          ...prevState,
-          results,
-        }));
-      }
-    },
-    [search.query]
-  );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -162,32 +130,6 @@ export default function BroadcastListView () {
           }}
         />
       </Stack>
-      {
-        /** 
-               <Stack direction="row" spacing={1} flexShrink={0}>
-        <BroadcastFilters
-          open={openFilters.value}
-          onOpen={openFilters.onTrue}
-          onClose={openFilters.onFalse}
-          //
-          filters={filters}
-          onFilters={handleFilters}
-          //
-          canReset={canReset}
-          onResetFilters={handleResetFilters}
-          //
-          serviceOptions={TOUR_SERVICE_OPTIONS.map((option) => option.label)}
-          tourGuideOptions={_tourGuides}
-          destinationOptions={countries}
-          //
-          dateError={dateError}
-        />
-
-        <BroadcastSort sort={sortBy} onSort={handleSortBy} sortOptions={TOUR_SORT_OPTIONS} />
-      </Stack> 
-         
-         */
-      }
     </Stack>
   );
 

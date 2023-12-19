@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { useMemo, useEffect, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm} from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Card from '@mui/material/Card';
@@ -52,7 +52,7 @@ export default function ScopeNewEditForm ({ currentScope }) {
       value: currentScope?.value || '',
       description: currentScope?.description || '',
       cover: currentScope?.cover || '',
-      published: currentScope?.published || false,
+      // published: currentScope?.published || false,
     }),
     [currentScope]
   );
@@ -81,7 +81,7 @@ export default function ScopeNewEditForm ({ currentScope }) {
       const file = acceptedFiles[0];
       const formData = new FormData();
       formData.append('file', file);
-      const { link } = await fileService.avatar(formData)
+      const { link } = await fileService.upload(formData)
       if (file) {
         setValue('cover', link, { shouldValidate: true });
       }
@@ -91,7 +91,6 @@ export default function ScopeNewEditForm ({ currentScope }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // await new Promise((resolve) => setTimeout(resolve, 500));
       if (currentScope && currentScope._id) {
         await scopeService.patch({
           _id: currentScope._id,
@@ -104,8 +103,8 @@ export default function ScopeNewEditForm ({ currentScope }) {
       reset();
       enqueueSnackbar(currentScope ? '更新成功!' : '创建成功!');
       router.push(paths.dashboard.scope.root);
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      enqueueSnackbar(e.response.data.message);
     }
   });
 
@@ -162,11 +161,15 @@ export default function ScopeNewEditForm ({ currentScope }) {
   const renderActions = (
     <>
       {mdUp && <Grid md={4} />}
-      <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
-        <FormControlLabel
-          control={<RHFSwitch name="published" defaultChecked label="是否发布" />}
-          sx={{ flexGrow: 1, pl: 3 }}
-        />
+      <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'right' }}>
+        {
+          /**
+           <FormControlLabel
+           control={<RHFSwitch name="published" defaultChecked label="是否发布" />}
+           sx={{ flexGrow: 1, pl: 3 }}
+         />
+           */
+        }
 
         <LoadingButton
           type="submit"

@@ -11,6 +11,7 @@ import flattenArray from 'src/utils/flatten-array';
 import ConfirmDialog from "src/components/confirm-dialog";
 import { roleService } from 'src/composables/context-provider';
 import { useSnackbar } from 'src/components/snackbar';
+import _ from 'lodash'
 import OrganDetailsDrawer from '../organ-details-drawer';
 import OrganNewEditForm from '../organ-new-edit-form';
 import PermissionPanel from '../../permission/permission-panel';
@@ -46,9 +47,12 @@ export default function OrganizationalChart ({ maxRole, type, data, variant = 's
     [setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, setOpenPermission]
   );
   const handleCloseModal = (getData) => {
-    if(getData && getData.data){
+    if (getData && getData.data) {
       if (getData.type === "new") {
-        if (parent.children) {
+        if (parent) {
+          if (!parent.children) {
+            parent.children = []
+          }
           parent.children.push(getData.data)
         }
       } else if (parent.children) {
@@ -60,6 +64,7 @@ export default function OrganizationalChart ({ maxRole, type, data, variant = 's
         }
       }
     }
+    console.log('data', data)
     setOpenForm(false);
   };
   const handleClosePermissionModal = () => {
@@ -81,10 +86,15 @@ export default function OrganizationalChart ({ maxRole, type, data, variant = 's
       })
     enqueueSnackbar('删除成功');
     // onFlash()
-    for (let i = 0; i < parent.children.length; i += 1) {
-      if (parent.children[i] && parent.children[i]._id ===  item._id) {
-        parent.children[i] = null;
-        break;
+    if (parent && parent.children) {
+      for (let i = 0; i < parent.children.length; i += 1) {
+        if (parent.children[i] && parent.children[i]._id === item._id) {
+          parent.children[i] = null;
+          break;
+        }
+      }
+      if (_.compact(parent.children).length === 0) {
+        parent.children=null
       }
     }
     handleCloseDeleteConfirm();
@@ -92,7 +102,7 @@ export default function OrganizationalChart ({ maxRole, type, data, variant = 's
   }
   const handleChangeLeader = async (person) => {
     for (let i = 0; i < parent.children.length; i += 1) {
-      if (parent.children[i]._id ===  item._id) {
+      if (parent.children[i]._id === item._id) {
         parent.children[i].leader = {
           _id: person._id,
           username: person.username
@@ -182,7 +192,7 @@ List.propTypes = {
 };
 
 export function List ({ data, parentNode, depth, variant, sx }) {
-  const hasChild = data.children && !!data.children && data.children.length > 0;
+  const hasChild = data.children && !!data.children && _.compact(data.children).length > 0;
   return (
     <userContext.Consumer>
       {({ setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, setOpenPermission }) => <TreeNode
@@ -223,12 +233,12 @@ export function List ({ data, parentNode, depth, variant, sx }) {
                 setOpenDeleteConfirm(true)
                 setOpenManager(false);
               }}
-              length={flattenArray(data.children, 'children')?.length}
+              length={_.compact(data.children) ? flattenArray(_.compact(data.children), 'children')?.length : 0}
             />
           ))
         }
       >
-        {hasChild && <SubList data={data.children} depth={depth} variant={variant} sx={sx} />}
+        {hasChild && <SubList data={data} depth={depth} variant={variant} sx={sx} />}
       </TreeNode>}
     </userContext.Consumer>
   );
@@ -238,7 +248,7 @@ export function List ({ data, parentNode, depth, variant, sx }) {
 
 SubList.propTypes = {
   sx: PropTypes.object,
-  data: PropTypes.array,
+  data: PropTypes.object,
   depth: PropTypes.number,
   variant: PropTypes.string,
 };
@@ -246,8 +256,8 @@ SubList.propTypes = {
 function SubList ({ data, depth, variant, sx }) {
   return (
     <>
-      {data.map((list) => list.name && (
-        <List  parentNode={data} key={list.name || list._id} data={list} depth={depth + 1} variant={variant} sx={sx} />
+      {data.children.map((list) => list && list._id && (
+        <List parentNode={data} key={list._id} data={list} depth={depth + 1} variant={variant} sx={sx} />
       ))}
     </>
   );

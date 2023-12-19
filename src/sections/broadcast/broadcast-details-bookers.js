@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
+import { useAuthContext } from 'src/auth/hooks';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -14,15 +15,26 @@ import { useSnackbar } from 'src/components/snackbar';
 // components
 import Iconify from 'src/components/iconify';
 
-import { broadcastService } from 'src/composables/context-provider';
+// routes
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hook';
+
+import { broadcastService, messagingService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
 export default function BroadcastDetailsBookers ({ onRefresh, participants }) {
+
+  const { user } = useAuthContext();
+
+  const router = useRouter();
+
   const [openConfirm, setOpenConfirm] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
+
   const [currentParticipant, setCurrentParticipant] = useState({});
+
   const handleOpenConfirm = (p) => {
     setCurrentParticipant(p)
     setOpenConfirm(true);
@@ -45,6 +57,13 @@ export default function BroadcastDetailsBookers ({ onRefresh, participants }) {
     onRefresh()
   }, [onRefresh, enqueueSnackbar]);
 
+  const handleChat = async (target) => {
+    const newConversation = await messagingService.room({
+      participants: [user._id, target.user_id]
+    })
+    router.push(`${paths.chat}?id=${newConversation._id}`);
+  }
+
   return (
     <Box
       gap={3}
@@ -58,8 +77,10 @@ export default function BroadcastDetailsBookers ({ onRefresh, participants }) {
       {participants.map((participant) => (
         <BookerItem
           key={participant._id}
+          isOwner={user._id === participant.user_id}
           participant={participant}
           onDelete={() => handleOpenConfirm(participant)}
+          onChat={() => handleChat(participant)}
           selected={participant.status === "signIn"}
           onSelected={() => signIn(participant)}
         />
@@ -85,7 +106,7 @@ BroadcastDetailsBookers.propTypes = {
 
 // ----------------------------------------------------------------------
 
-function BookerItem ({ participant, selected, onDelete, onSelected }) {
+function BookerItem ({ isOwner, participant, selected, onDelete, onSelected, onChat }) {
   return (
     <Stack component={Card} direction="row" spacing={2} key={participant._id} sx={{ p: 3 }}>
       <Avatar alt={participant.username} src={participant.profile?.photoURL} sx={{ width: 48, height: 48 }} />
@@ -125,19 +146,22 @@ function BookerItem ({ participant, selected, onDelete, onSelected }) {
             </IconButton>
           }
 
-          <IconButton
-            size="small"
-            color="info"
-            sx={{
-              borderRadius: 1,
-              bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
-              '&:hover': {
-                bgcolor: (theme) => alpha(theme.palette.info.main, 0.16),
-              },
-            }}
-          >
-            <Iconify width={18} icon="solar:chat-round-dots-bold" />
-          </IconButton>
+          {
+            !isOwner && <IconButton
+              onClick={onChat}
+              size="small"
+              color="info"
+              sx={{
+                borderRadius: 1,
+                bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
+                '&:hover': {
+                  bgcolor: (theme) => alpha(theme.palette.info.main, 0.16),
+                },
+              }}
+            >
+              <Iconify width={18} icon="solar:chat-round-dots-bold" />
+            </IconButton>
+          }
 
           <IconButton
             onClick={onDelete}
@@ -172,8 +196,10 @@ function BookerItem ({ participant, selected, onDelete, onSelected }) {
 }
 
 BookerItem.propTypes = {
+  isOwner: PropTypes.bool,
   participant: PropTypes.object,
   onSelected: PropTypes.func,
   onDelete: PropTypes.func,
+  onChat: PropTypes.func,
   selected: PropTypes.bool,
 };

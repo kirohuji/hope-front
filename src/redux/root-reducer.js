@@ -13,6 +13,7 @@ import trainningReducer from './slices/trainning';
 import roleReducer from './slices/role';
 import fileReducer from './slices/file';
 import broadcastReducer from './slices/broadcast';
+import bookReducer from './slices/book';
 // import notificationReducer from './slices/notification';
 // ----------------------------------------------------------------------
 
@@ -73,6 +74,7 @@ export const rootReducer = combineReducers({
   trainning: trainningReducer,
   // notification: notificationReducer,
   dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
+  book: persistReducer(bookPersistConfig, bookReducer),
   role: persistReducer(rolePersistConfig, roleReducer),
   checkout: persistReducer(checkoutPersistConfig, checkoutReducer),
   scope: persistReducer(scopePersistConfig, scopeReducer),

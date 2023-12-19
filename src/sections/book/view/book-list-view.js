@@ -9,19 +9,14 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 // hooks
-import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
 // _mock
 import {
   _jobs,
-  _roles,
-  JOB_SORT_OPTIONS,
-  JOB_BENEFIT_OPTIONS,
-  JOB_EXPERIENCE_OPTIONS,
-  JOB_EMPLOYMENT_TYPE_OPTIONS,
 } from 'src/_mock';
-// assets
-import { countries } from 'src/assets/data';
+// redux
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getDatas } from 'src/redux/slices/book';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
@@ -31,17 +26,14 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 //
-import { bookService } from 'src/composables/context-provider';
 import BookList from '../book-list';
-import BookSort from '../book-sort';
-import BookSearch from '../book-search';
-import BookFilters from '../book-filters';
 import BookFiltersResult from '../book-filters-result';
 
 
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
+  label: '',
   roles: [],
   locations: [],
   benefits: [],
@@ -56,9 +48,9 @@ export default function BookListView () {
 
   const settings = useSettingsContext();
 
-  const [tableData, setTableData] = useState([]);
+  const { data } = useSelector((state) => state.book);
 
-  const openFilters = useBoolean();
+  const dispatch = useDispatch();
 
   const [sortBy, setSortBy] = useState('latest');
 
@@ -69,27 +61,26 @@ export default function BookListView () {
 
   const [filters, setFilters] = useState(defaultFilters);
 
-
   const debouncedFilters = useDebounce(filters);
 
-  const getTableData = useCallback(async (selector = {}, options = {}) => {
+  const onRefresh = useCallback(async (selector = {}, options = {}) => {
     try {
-      const response = await bookService.pagination({
+      dispatch(getDatas({
         ...{
           ...selector,
           label: debouncedFilters.label
         },
         ...options
-      })
-      setTableData(response.data);
+      }))
     } catch (error) {
       enqueueSnackbar(error.message);
     }
-  }, [setTableData, enqueueSnackbar,debouncedFilters]);
+  }, [debouncedFilters.label, dispatch, enqueueSnackbar])
+
 
   useEffect(() => {
-    getTableData()
-  }, [getTableData]);
+    onRefresh()
+  }, [onRefresh]);
 
   const dataFiltered = applyFilter({
     inputData: _jobs,
@@ -107,31 +98,6 @@ export default function BookListView () {
       [name]: value,
     }));
   }, []);
-
-  const handleSortBy = useCallback((newValue) => {
-    setSortBy(newValue);
-  }, []);
-
-  const handleSearch = useCallback(
-    (inputValue) => {
-      setSearch((prevState) => ({
-        ...prevState,
-        query: inputValue,
-      }));
-
-      if (inputValue) {
-        const results = _jobs.filter(
-          (book) => book.title.toLowerCase().indexOf(search.query.toLowerCase()) !== -1
-        );
-
-        setSearch((prevState) => ({
-          ...prevState,
-          results,
-        }));
-      }
-    },
-    [search.query]
-  );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -161,39 +127,6 @@ export default function BookListView () {
           }}
         />
       </Stack>
-      {
-        /**
-         * 
-               <BookSearch
-          query={search.query}
-          results={search.results}
-          onSearch={handleSearch}
-          hrefItem={(id) => paths.dashboard.book.details.root(id)}
-        />
-  
-        <Stack direction="row" spacing={1} flexShrink={0}>
-          <BookFilters
-            open={openFilters.value}
-            onOpen={openFilters.onTrue}
-            onClose={openFilters.onFalse}
-            //
-            filters={filters}
-            onFilters={handleFilters}
-            //
-            canReset={canReset}
-            onResetFilters={handleResetFilters}
-            //
-            locationOptions={countries}
-            roleOptions={_roles}
-            benefitOptions={JOB_BENEFIT_OPTIONS.map((option) => option.label)}
-            experienceOptions={['all', ...JOB_EXPERIENCE_OPTIONS.map((option) => option.label)]}
-            employmentTypeOptions={JOB_EMPLOYMENT_TYPE_OPTIONS.map((option) => option.label)}
-          />
-  
-          <BookSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} />
-        </Stack>
-         */
-      }
     </Stack>
   );
 
@@ -249,7 +182,7 @@ export default function BookListView () {
 
       {notFound && <EmptyContent filled title="No Data" sx={{ py: 10 }} />}
 
-      <BookList books={tableData} refresh={() => getTableData()} />
+      <BookList books={data} refresh={() => onRefresh()} />
     </Container>
   );
 }

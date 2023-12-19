@@ -32,6 +32,7 @@ JoinedUserItem.propTypes = {
 };
 
 export default function JoinedUserItem ({ node, leader, person, onSelectMain }) {
+  
   const [permission] = useState(person.permission);
 
   const [openPopover, setOpenPopover] = useState(null);

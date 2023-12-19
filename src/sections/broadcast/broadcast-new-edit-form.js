@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
 // @mui
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import Autocomplete from '@mui/material/Autocomplete';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
@@ -18,12 +19,9 @@ import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useDebounce } from 'src/hooks/use-debounce';
 // routes
 import { paths } from 'src/routes/paths';
-// assets
-import { countries } from 'src/assets/data';
-// _mock
-import { _tourGuides, TOUR_SERVICE_OPTIONS, _tags } from 'src/_mock';
 // components
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
@@ -69,6 +67,50 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
 
   const mdUp = useResponsive('up', 'md');
 
+  const [users, setUsers] = useState([]);
+
+  const [searchLeaders, setSearchLeaders] = useState('');
+
+  const debouncedFilters = useDebounce(searchLeaders);
+
+
+  const handleSearchLeaders = useCallback(async () => {
+    if (debouncedFilters) {
+      const response = await userService.paginationByProfile(
+        {
+          username: debouncedFilters
+        },
+        {
+          fields: {
+            photoURL: 1,
+            username: 1
+          }
+        }
+      )
+      setUsers(response.data)
+    }
+  }, [debouncedFilters])
+
+  useEffect(() => {
+    handleSearchLeaders();
+  }, [debouncedFilters, handleSearchLeaders])
+
+  // const getTableData = useCallback(async (selector = {}, options = {}) => {
+  //   try {
+  //     const response = await userService.pagination(
+  //       {
+  //         ...selector,
+  //         ..._.pickBy(_.omit(debouncedFilters, ["role"]))
+  //       },
+  //       options
+  //     )
+  //     setTableData(response.data);
+  //     setTableDataCount(response.total);
+  //   } catch (error) {
+  //     enqueueSnackbar(error.message)
+  //   }
+  // }, [debouncedFilters, setTableData, setTableDataCount, enqueueSnackbar]);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const NewBroadcastSchema = Yup.object().shape({
@@ -95,7 +137,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
       images: currentBroadcast?.images || [],
       type: currentBroadcast?.type || '',
       //
-      leaders: currentBroadcast?.tourGuides || [],
+      leaders: currentBroadcast?.leaders || [],
       // tags: currentBroadcast?.tags || [],
       durations: currentBroadcast?.durations || '',
       destination: currentBroadcast?.destination || '',
@@ -132,20 +174,22 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
   }, [currentBroadcast, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
-    if(values.images.filter((file) => file.isLoacl).length> 0){
+    if (values.images.filter((file) => file.isLoacl).length > 0) {
       enqueueSnackbar("照片集有图片未上传,请先上传");
-      return; 
+      return;
     }
     try {
       if (!isEdit) {
         await broadcastService.post({
           ...data,
+          leaders: data.leaders && data.leaders.length > 0 ? data.leaders.map(l => l._id) : [],
           modifiedDate: moment(new Date()).format('YYYY/MM/DD')
         });
       } else {
         await broadcastService.patch({
           _id: currentBroadcast._id,
           ...data,
+          leaders: data.leaders && data.leaders.length > 0 ? data.leaders.map(l => l._id) : [],
           modifiedDate: moment(new Date()).format('YYYY/MM/DD')
         });
       }
@@ -269,6 +313,50 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
               <RHFRadioGroup row spacing={4} name="type" options={BROAECAST_TYPE_OPTIONS} />
             </Stack>
 
+            <Stack>
+              <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
+                负责人
+              </Typography>
+
+              <RHFAutocomplete
+                multiple
+                name="leaders"
+                placeholder="+ 负责人"
+                disableCloseOnSelect
+                options={users}
+                onInputChange={(event, newValue) => {
+                  setSearchLeaders(newValue);
+
+                }}
+                getOptionLabel={(option) => option.username}
+                isOptionEqualToValue={(option, value) => option._id === value._id}
+                renderOption={(props, user) => (
+                  <li {...props} key={user._id}>
+                    <Avatar
+                      key={user._id}
+                      alt={user?.photoURL}
+                      src={user?.photoURL}
+                      sx={{ width: 24, height: 24, flexShrink: 0, mr: 1 }}
+                    />
+
+                    {user.username}
+                  </li>
+                )}
+                renderTags={(selected, getTagProps) =>
+                  selected.map((user, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={user._id}
+                      size="small"
+                      variant="soft"
+                      label={user.username}
+                      avatar={<Avatar alt={user.username} src={user?.photoURL} />}
+                    />
+                  ))
+                }
+              />
+            </Stack>
+
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">有效期</Typography>
               <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
@@ -377,12 +465,14 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
   const renderActions = (
     <>
       {mdUp && <Grid md={4} />}
-      <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
-        <FormControlLabel
-          control={<RHFSwitch name="published" label="是否发布" />}
-          sx={{ flexGrow: 1, pl: 3 }}
-        />
+      <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'right' }}>
+        {
+          false && <FormControlLabel
+            control={<RHFSwitch name="published" label="是否发布" />}
+            sx={{ flexGrow: 1, pl: 3 }}
+          />
 
+        }
 
         <LoadingButton
           type="submit"

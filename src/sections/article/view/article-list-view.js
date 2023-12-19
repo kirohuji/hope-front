@@ -14,26 +14,23 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useDebounce } from 'src/hooks/use-debounce';
-// _mock
-// import { POST_SORT_OPTIONS } from 'src/_mock';
-// api
-// import { useSearchPosts } from 'src/api/blog';
 // components
 import { useSnackbar } from 'src/components/snackbar';
+// redux
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getDatas } from 'src/redux/slices/article';
 // import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import { articleService } from 'src/composables/context-provider';
-// import ArticleSort from '../article-sort';
-// import ArticleSearch from '../article-search';
 import ArticleListHorizontal from '../article-list-horizontal';
 
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
-  publish: 'all',
+  published: 'all',
   title: ''
 };
 
@@ -47,7 +44,7 @@ const TABS = [
     label: '所有',
   },
   {
-    value: 'published',
+    value: 'hasPublished',
     label: '已经发布的',
   },
   {
@@ -63,7 +60,9 @@ export default function ArticleListView ({ book }) {
 
   const settings = useSettingsContext();
 
-  const [articles, setArticles] = useState([]);
+  const { data } = useSelector((state) => state.article);
+
+  const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
 
@@ -76,35 +75,31 @@ export default function ArticleListView ({ book }) {
 
   const debouncedFilters = useDebounce(filters);
 
-  // const { articles } = useGetPosts();
-
-  // const { searchResults, searchLoading } = useSearchPosts(debouncedQuery);
-
-  // const dataFiltered = applyFilter({
-  //   inputData: articles,
-  //   filters,
-  //   sortBy,
-  // });
-
-  const getTableData = useCallback(async (selector = {}, options = {}) => {
+  const onRefresh = useCallback(async (selector = {}, options = {}) => {
+    let published = 'all';
+    if (debouncedFilters.published !== 'all') {
+      published = debouncedFilters.published === "hasPublished"
+    } else {
+      published = ''
+    }
     try {
-      setLoading(true)
-      let response = {}
-      response = await articleService.pagination({
-        ...selector,
-        // published: true,
-        // title: debouncedFilters.title
-      }, options)
-      setArticles(response.data);
-      setLoading(false)
+      dispatch(getDatas({
+        ...{
+          ...selector,
+          title: debouncedFilters.title,
+          published,
+          book_id: book ? book._id : '',
+        },
+        ...options
+      }))
     } catch (error) {
       enqueueSnackbar(error.message);
     }
-  }, [setArticles, enqueueSnackbar]);
+  }, [book, debouncedFilters, dispatch, enqueueSnackbar])
 
   useEffect(() => {
-    getTableData()
-  }, [getTableData]);
+    onRefresh()
+  }, [onRefresh]);
 
   const handleSortBy = useCallback((newValue) => {
     setSortBy(newValue);
@@ -123,7 +118,7 @@ export default function ArticleListView ({ book }) {
 
   const handleFilterPublish = useCallback(
     (event, newValue) => {
-      handleFilters('publish', newValue);
+      handleFilters('published', newValue);
     },
     [handleFilters]
   );
@@ -220,7 +215,7 @@ export default function ArticleListView ({ book }) {
       </Stack>
 
       <Tabs
-        value={filters.publish}
+        value={filters.published}
         onChange={handleFilterPublish}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -249,7 +244,7 @@ export default function ArticleListView ({ book }) {
         ))}
       </Tabs>
 
-      {articles && <ArticleListHorizontal onRefresh={() => getTableData()} book={book} articles={articles} loading={loading} />}
+      {data && <ArticleListHorizontal onRefresh={() => onRefresh()} book={book} articles={data} loading={loading} />}
     </Container>
   );
 }

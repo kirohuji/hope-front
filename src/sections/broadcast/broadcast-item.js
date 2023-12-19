@@ -34,6 +34,7 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
     available,
     priceSale,
     destination,
+    leaders,
     ratingNumber,
     type,
   } = broadcast;
@@ -172,7 +173,7 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
           icon: <Iconify icon="solar:clock-circle-bold" sx={{ color: 'info.main' }} />,
         },
         {
-          label: `${participants?.length || "无"} 参与者`,
+          label: `负责人: ${leaders.map(leader=> leader.username) || "无"} `,
           icon: <Iconify icon="solar:users-group-rounded-bold" sx={{ color: 'primary.main' }} />,
         },
       ].map((item, i) => (

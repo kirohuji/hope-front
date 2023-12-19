@@ -63,42 +63,6 @@ function isAllChildrenChecked (permissions, selectedNodes, selectedNodesNotChild
   );
 }
 
-
-export function getTree (data) {
-  let root = data
-  // .filter((item) => item.root)
-  // .map((item) => ({
-  //   ...item,
-  // }));
-  const tree = [];
-  function serverArray (list, parent) {
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < list.length; i++) {
-      const item = _.find(data, ['_id', list[i]._id]);
-      if (item && item.children) {
-        if (item.children.length) {
-          serverArray(item.children, item);
-        } else {
-          delete item.children;
-        }
-      }
-      if (parent && parent.children) {
-        if (item) {
-          parent.children[i] = {
-            ...item,
-          };
-          root = root.filter((r) => r._id !== item._id)
-        } else {
-          delete parent.children[i];
-        }
-      }
-    }
-    return tree;
-  }
-  serverArray(root, null);
-  return root;
-}
-
 const StyledTreeView = styled(TreeView)({
   height: 500,
   flexGrow: 1,
@@ -223,9 +187,10 @@ export default function PermissionPanel ({ maxRole,current, onClose }) {
   const [item, setItem] = useState({});
   const [parent, setParent] = useState({});
   const getData = useCallback(async () => {
-    const response = await roleService.getRoleWithUser({
-      scope: active._id,
-      type: "permission"
+    const response = await roleService.permissions({
+      selector: {
+        type: "permission"
+      }
     });
     const children = await roleService.getChildrenRoleNames({
       _id: current._id,
@@ -233,10 +198,10 @@ export default function PermissionPanel ({ maxRole,current, onClose }) {
     const notChildren = await roleService.getInheritedRoleNamesOnly({
       _id: current._id,
     })
-    setPermissions(getTree(response))
+    setPermissions(response)
     setSelectedNodes(children.map(child => child._id))
     setSelectedNodesChild(notChildren.map(child => child._id))
-  }, [setPermissions, setSelectedNodes, setSelectedNodesChild, active,current]);
+  }, [setPermissions, setSelectedNodes, setSelectedNodesChild, current]);
 
 
   useEffect(() => {

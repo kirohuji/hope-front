@@ -1,13 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 // utils
-import { scopeService } from '../../composables/context-provider';
+import { roleService } from '../../composables/context-provider';
 // ----------------------------------------------------------------------
 
 const initialState = {
   isLoading: true,
   error: null,
-  scopes: [],
-  organization: {},
+  organizations: {},
   role: {},
 };
 
@@ -15,7 +14,7 @@ const slice = createSlice({
   name: 'role',
   initialState,
   reducers: {
-    setActive(state, action){
+    setActive (state, action) {
       state.active = action.payload;
     },
     // START LOADING
@@ -28,6 +27,11 @@ const slice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
+
+    getOrganizationsSuccess (state, action) {
+      state.isLoading = false;
+      state.organizations = action.payload;
+    },
   },
 });
 
@@ -36,35 +40,20 @@ export default slice.reducer;
 
 // Actions
 export const {
-    setActive
+  setActive
 } = slice.actions;
 
 // ----------------------------------------------------------------------
 
-export function getScope (id) {
+export function getOrganizations (query) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await scopeService.getPost({
-        _id: id,
-      })
-      dispatch(slice.actions.getPostsSuccess(response));
+      const response = await roleService.getRolesTreeByCurrentUser(query);
+      dispatch(slice.actions.getOrganizationsSuccess(response));
     } catch (error) {
       console.error(error);
       dispatch(slice.actions.hasError(error));
     }
   };
 }
-export function getScopes () {
-    return async (dispatch) => {
-      dispatch(slice.actions.startLoading());
-      try {
-        const response = await scopeService.getAll()
-        dispatch(slice.actions.getScopesSuccess(response));
-        dispatch(slice.actions.setActive(response[0]));
-      } catch (error) {
-        console.error(error);
-        dispatch(slice.actions.hasError(error));
-      }
-    };
-  }

@@ -10,7 +10,7 @@ import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
-import { broadcastService } from 'src/composables/context-provider';
+import { broadcastService, userService } from 'src/composables/context-provider';
 import BroadcastNewEditForm from '../broadcast-new-edit-form';
 
 
@@ -30,6 +30,22 @@ export default function BroadcastEditView() {
       const response = await broadcastService.get({
         _id: id
       })
+      if(response?.leaders){
+        const leaders = await userService.paginationByProfile(
+          {
+            _id: {
+              $in: response.leaders
+            }
+          },
+          {
+            fields: {
+              photoURL: 1,
+              username: 1
+            }
+          }
+        )
+        response.leaders = leaders.data;
+      }
       setCurrentBroadcast(response)
     } catch (error) {
       console.log(error)

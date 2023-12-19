@@ -1,54 +1,10 @@
 import keyBy from 'lodash/keyBy';
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash'
-import { useSnackbar } from 'src/components/snackbar';
 // utils
 import { friendService, roleService, messagingService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
-
-
-function serverArray (list, parent, data, parentList) {
-  // eslint-disable-next-line no-plusplus
-  for (let i = 0; i < list.length; i++) {
-    if (list[i] && list[i].value) {
-      if (list[i] && list[i].children && _.compact(list[i].children).length) {
-        serverArray(list[i].children.map(item => _.find(data, ["_id", item._id])), list[i], data, list);
-      } else {
-        list[i].children = undefined;
-      }
-      if (parent && parent.children) {
-        if (list[i]) {
-          parent.children[i] = {
-            name: list[i].label,
-            group: list[i].scope,
-            role: list[i].value,
-            ...list[i],
-          };
-        } else {
-          delete parent.children[i];
-        }
-      }
-    }
-  }
-}
-function getTree (data) {
-  const list = data.map(item => ({
-    name: item.label,
-    group: item.scope,
-    role: item.value,
-    ...item
-  }))
-  const root = list.filter((item) => item.root).map(item => ({
-    name: item.label,
-    group: item.scope,
-    role: item.value,
-    ...item,
-  }))
-  serverArray(root, null, list);
-  return root;
-}
-
 
 function objFromArray (array, key = '_id') {
   return array.reduce((accumulator, current) => {
@@ -111,10 +67,7 @@ const slice = createSlice({
     },
 
     getOrganizationsSuccess (state, action) {
-      const organizations = action.payload;
-
-      state.organizations = getTree(organizations);
-      console.log(state.organizations)
+      state.organizations =  action.payload;
     },
 
     // GET CONVERSATIONS

@@ -15,7 +15,6 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-// import FormControlLabel from '@mui/material/FormControlLabel';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -23,8 +22,6 @@ import { useResponsive } from 'src/hooks/use-responsive';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-// _mock
-// import { _tags } from 'src/_mock';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import {
@@ -108,7 +105,7 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
       content: currentArticle?.content || '',
       coverUrl: currentArticle?.coverUrl || null,
       tags: currentArticle?.tags || [],
-      published: currentArticle?.published || null,
+      published: currentArticle?.published || false,
       metaKeywords: currentArticle?.metaKeywords || [],
       metaTitle: currentArticle?.metaTitle || '',
       metaDescription: currentArticle?.metaDescription || '',
@@ -150,11 +147,11 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
         onNextStep();
       } else {
         if (!isEdit) {
-          const id = await articleService.addWithCurrentUser(data);
+          const article = await articleService.post(data);
           if (book) {
             await bookService.addBookArticle({
               book_id: book._id,
-              article_id: id,
+              article_id: article._id,
               date: data.date
             })
           }
@@ -212,7 +209,7 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
       const file = acceptedFiles[0];
       const formData = new FormData();
       formData.append('file', file);
-      const { link } = await fileService.avatar(formData)
+      const { link } = await fileService.upload(formData)
       if (file) {
         setValue('coverUrl', link, { shouldValidate: true });
         // setValue('photoURL', Object.assign(file, {
@@ -290,105 +287,10 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
     </>
   );
 
-  // const renderProperties = (
-  //   <>
-  //     {mdUp && (
-  //       <Grid md={4}>
-  //         <Typography variant="h6" sx={{ mb: 0.5 }}>
-  //           属性
-  //         </Typography>
-  //         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-  //           额外的功能和属性
-  //         </Typography>
-  //       </Grid>
-  //     )}
-
-  //     <Grid xs={12} md={8}>
-  //       <Card>
-  //         {!mdUp && <CardHeader title="属性" />}
-
-  //         <Stack spacing={3} sx={{ p: 3 }}>
-  //           <RHFAutocomplete
-  //             name="tags"
-  //             label="标签"
-  //             placeholder="+ Tags"
-  //             multiple
-  //             freeSolo
-  //             options={_tags.map((option) => option)}
-  //             getOptionLabel={(option) => option}
-  //             renderOption={(props, option) => (
-  //               <li {...props} key={option}>
-  //                 {option}
-  //               </li>
-  //             )}
-  //             renderTags={(selected, getTagProps) =>
-  //               selected.map((option, index) => (
-  //                 <Chip
-  //                   {...getTagProps({ index })}
-  //                   key={option}
-  //                   label={option}
-  //                   size="small"
-  //                   color="info"
-  //                   variant="soft"
-  //                 />
-  //               ))
-  //             }
-  //           />
-  //           {
-  //             false && <div>
-  //               <RHFTextField name="metaTitle" label="Meta title" />
-
-  //               <RHFTextField
-  //                 name="metaDescription"
-  //                 label="Meta description"
-  //                 fullWidth
-  //                 multiline
-  //                 rows={3}
-  //               />
-
-  //               <RHFAutocomplete
-  //                 name="metaKeywords"
-  //                 label="Meta keywords"
-  //                 placeholder="+ Keywords"
-  //                 multiple
-  //                 freeSolo
-  //                 disableCloseOnSelect
-  //                 options={_tags.map((option) => option)}
-  //                 getOptionLabel={(option) => option}
-  //                 renderOption={(props, option) => (
-  //                   <li {...props} key={option}>
-  //                     {option}
-  //                   </li>
-  //                 )}
-  //                 renderTags={(selected, getTagProps) =>
-  //                   selected.map((option, index) => (
-  //                     <Chip
-  //                       {...getTagProps({ index })}
-  //                       key={option}
-  //                       label={option}
-  //                       size="small"
-  //                       color="info"
-  //                       variant="soft"
-  //                     />
-  //                   ))
-  //                 }
-  //               />
-
-  //             </div>
-  //           }
-  //           {/**   <FormControlLabel control={<Switch defaultChecked />} label="Enable comments" /> * */}
-  //           <RHFSwitch name="comments" label="可以评论" />
-  //         </Stack>
-  //       </Card>
-  //     </Grid>
-  //   </>
-  // );
-
   const renderActions = (
     <>
       {mdUp && <Grid md={4} />}
-      <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
-        {activeStep === 0 && <div style={{ flexGrow: 1, pl: 3 }}> <RHFSwitch name="published" label="是否发布" /></div>}
+      <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'right' }}>
         <Button color="inherit" variant="outlined" size="large" onClick={preview.onTrue}>
           预览
         </Button>

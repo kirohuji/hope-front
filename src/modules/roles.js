@@ -201,4 +201,14 @@ export default class RoleService extends Service {
     });
   }
   
+
+  getRolesTreeByCurrentUser (target ) {
+    return this.api.request({
+      url: `${this.model}/getRolesTreeByCurrentUser`,
+      method: 'post',
+      data: target,
+    });
+  }
+  
+
 }

@@ -16,43 +16,11 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import ConfirmDialog from "src/components/confirm-dialog";
 import { paths } from 'src/routes/paths';
 import { useSnackbar } from 'src/components/snackbar';
-// import { useSelector } from 'src/redux/store';
 import { roleService } from 'src/composables/context-provider';
-import _ from 'lodash';
 import PermissionNewEditForm from '../permission/permission-new-edit-form';
 // routes
 
 // ----------------------------------------------------------------------
-
-
-export function getTree (data) {
-  let root = data
-  const tree = [];
-  function serverArray (list, parent) {
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < list.length; i++) {
-      const item = _.find(data, ['_id', list[i]._id]);
-      if (item && item.children) {
-        if (item.children.length) {
-          serverArray(item.children, item);
-        } else {
-          delete item.children;
-        }
-      }
-      if (parent && parent.children) {
-        if (item) {
-          parent.children[i] = item;
-          root = root.filter((r) => r._id !== item._id)
-        } else {
-          delete parent.children[i];
-        }
-      }
-    }
-    return tree;
-  }
-  serverArray(root, null);
-  return root;
-}
 
 const StyledTreeView = styled(TreeView)({
   height: 500,
@@ -159,7 +127,7 @@ List.propTypes = {
 }
 
 export function List ({ data, parentNode }) {
-  const hasChild = data.children && !!data.children && data.children.length;
+  const hasChild = data.children && !!data.children && data.children.length > 0;
   return (
     <userContext.Consumer>
       {({ setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, handleEdit, handleDelete }) =>
@@ -193,7 +161,7 @@ SubList.propTypes = {
 export function SubList ({ data }) {
   return (
     <>
-      {data && data.children && data.children.length > 1 && data.children.map((item) => (
+      {data && data.children && data.children.length > 0 && data.children.map((item) => (
         item && <List key={item._id} parentNode={data} data={item} />
       ))}
     </>
@@ -215,9 +183,10 @@ export default function UserPermissionView () {
   const handleCloseModal = (getData) => {
     if (parent && parent.type !== "root" && getData && getData.data) {
       if (getData.type === "new") {
-        if (parent.children) {
-          parent.children.push(getData.data)
+        if (!parent.children) {
+          parent.children = [];
         }
+        parent.children.push(getData.data)
       } else if (parent.children) {
         for (let i = 0; i < parent.children.length; i += 1) {
           if (parent.children[i]._id === getData.data._id) {
@@ -226,13 +195,13 @@ export default function UserPermissionView () {
           }
         }
       }
-    } else if(parent && parent.type === "root"){
+    } else if (parent && parent.type === "root") {
       if (getData.type === "new") {
         tree.push(getData.data)
         setTree(tree)
       } else if (getData.type === "alter") {
         for (let i = 0; i < tree.length; i += 1) {
-          if (tree[i] && tree[i]._id ===  item._id) {
+          if (tree[i] && tree[i]._id === item._id) {
             tree[i] = getData.data;
             setTree(tree)
             break;
@@ -251,11 +220,11 @@ export default function UserPermissionView () {
       .delete({
         _id: item._id,
       })
-    if(parent && parent.type === "root"){
+    if (parent && parent.type === "root") {
       setTree(tree.filter(node => node._id !== item._id))
     } else {
       for (let i = 0; i < parent.children.length; i += 1) {
-        if (parent.children[i] && parent.children[i]._id ===  item._id) {
+        if (parent.children[i] && parent.children[i]._id === item._id) {
           parent.children[i] = null;
           break;
         }
@@ -274,14 +243,15 @@ export default function UserPermissionView () {
     setOpenDeleteConfirm(false);
   }
   const getData = useCallback(async () => {
-    const response = await roleService.getRoleWith({
+    const response = await roleService.permissions({
       selector: {
         // scope: active._id,
         type: 'permission',
       },
     });
     setPermissions(response)
-    setTree(getTree(response))
+    // setTree(getTree(response))
+    setTree(response)
   }, [setPermissions, setTree]);
 
 
@@ -310,12 +280,17 @@ export default function UserPermissionView () {
           </StyledTreeView>
         </userContext.Provider>
       </Container>
-      <Backdrop
+      {
+        /**
+         * 
+         *       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={!permissions.length}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
+         * */
+      }
       <Dialog fullWidth maxWidth="md" open={openForm} onClose={handleCloseModal}>
         <DialogTitle>{item._id ? '编辑' : '新增'}</DialogTitle>
         <DialogContent dividers>

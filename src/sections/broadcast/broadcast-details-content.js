@@ -2,17 +2,12 @@ import PropTypes from 'prop-types';
 import { m } from 'framer-motion';
 // @mui
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 // utils
 import { fDate } from 'src/utils/format-time';
-// _mock
-import { TOUR_SERVICE_OPTIONS } from 'src/_mock';
 // components
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';

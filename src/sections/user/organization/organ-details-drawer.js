@@ -149,7 +149,7 @@ export default function OrganDetailsDrawer ({
                */
             }
             <Typography variant="h6" sx={{ wordBreak: 'break-all' }}>
-              {name}
+              {item.label}
             </Typography>
 
             <Divider sx={{ borderStyle: 'dashed' }} />

@@ -4,16 +4,18 @@ import { Stack, Container } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 // components
-import { compact, find } from 'lodash'
+import { compact, find, cloneDeep } from 'lodash'
 import OrganizationalChart from 'src/sections/user/organization/organizational-chart';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 // routes
 import { paths } from 'src/routes/paths';
 // redux
-import { useSelector } from 'src/redux/store';
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getOrganizations } from 'src/redux/slices/role';
 
-import { roleService } from 'src/composables/context-provider';
+
+// import { roleService } from 'src/composables/context-provider';
 import OraginChangeViewButton from '../organization/organ-change-view-button';
 
 function serverArray (list, parent, data, permissions, maxRole) {
@@ -41,12 +43,6 @@ function serverArray (list, parent, data, permissions, maxRole) {
 }
 function getTree (data, maxRole) {
   const permissions = maxRole && maxRole.children ? maxRole.children.map(item => item._id) : [];
-  // const list = data.map(item => ({
-  //   name: item.label,
-  //   group: item.scope,
-  //   role: item.value,
-  //   ...item
-  // }))
   const root = data.filter((item) => item.isScope).map(item => ({
     ...item,
     children: data.filter(d => d.root && !d.isScope)
@@ -56,46 +52,41 @@ function getTree (data, maxRole) {
 }
 
 export default function UserOrganizationView () {
+
+  const dispatch = useDispatch();
+
   const [org, setOrg] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  const [isLoading, setIsLoading] = useState(false);
+
   const [maxRole, setMaxRole] = useState({});
+
   const { active } = useSelector((state) => state.scope);
+
+  const { organizations } = useSelector((state) => state.role);
+
   const [view, setView] = useState('org');
+
   const { themeStretch } = useSettingsContext();
+
   const handleChangeView = (event, newView) => {
     if (newView !== null) {
       setView(newView);
     }
   };
-  const getData = useCallback(async () => {
-    setIsLoading(true);
-    const response = await roleService.getRoleWith({
+
+  const onRefresh = useCallback(() => {
+    dispatch(getOrganizations({
       selector: {
         scope: active._id,
         type: view,
-      },
-    });
-    const getMaxRole = await roleService.getMaxRole({
-      roles: response.map(item => item._id)
-    })
-    const currentScope = {
-      ...active,
-      root: true,
-      role: active.value,
-      scope: active.id,
-      isScope: true,
-      children: [],
-    }
-    response.push(currentScope);
-    setMaxRole(getMaxRole)
-    setOrg(getTree(response, getMaxRole))
-    setIsLoading(false);
-  }, [active, view]);
-
+      }
+    }))
+  }, [active._id, dispatch, view])
 
   useEffect(() => {
-    getData();
-  }, [getData]);
+    onRefresh();
+  }, [onRefresh]);
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -120,14 +111,14 @@ export default function UserOrganizationView () {
       >
         <OraginChangeViewButton value={view} onChange={handleChangeView} />
       </Stack>
-      {!!org.length && !isLoading &&
+      {!!organizations.length && !isLoading &&
         <OrganizationalChart
           maxRole={maxRole}
           type={view}
-          data={org[0]}
+          data={cloneDeep(organizations[0])}
           variant="group"
           lineHeight="64px"
-          onFlash={getData} />}
+          onFlash={onRefresh} />}
     </Container>
   )
 }

@@ -14,7 +14,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
 //
-import { broadcastService } from 'src/composables/context-provider';
+import { broadcastService, userService } from 'src/composables/context-provider';
 import _ from 'lodash';
 // redux
 import { useSnackbar } from 'src/components/snackbar';
@@ -59,14 +59,13 @@ export default function BroadcastDetailsView () {
 
   const params = useParams();
 
-  const { id } = params;
+  const { id, selectedTab } = params;
 
   const getParticipants = useCallback(async () => {
     try {
       const response = await broadcastService.getUsers({
         _id: id
       })
-      console.log('getParticipants', response)
       setParticipants(response)
     } catch (error) {
       console.log(error)
@@ -87,9 +86,6 @@ export default function BroadcastDetailsView () {
     setPublish(newValue);
   }, []);
 
-  const handlePublish = useCallback(async () => {
-    enqueueSnackbar('发布成功');
-  }, [enqueueSnackbar])
   const onRefresh = useCallback(async () => {
     getParticipants()
     const getUsersCount = await broadcastService.getUsersCount({
@@ -97,15 +93,31 @@ export default function BroadcastDetailsView () {
     })
     setParticipantsCount(getUsersCount);
   }, [getParticipants, id])
+
   const getData = useCallback(async () => {
     try {
       if (currentTab === 'content') {
         const response = await broadcastService.get({
           _id: id
         })
-        // console.log(_.find(response.tourGuides, ["_id", user._id]))
-        // setIsAdmin(_.find(response.leader, ["_id", user._id]))
-        setIsAdmin(response.createdBy === user._id)
+        if(response?.leaders){
+          const leaders = await userService.paginationByProfile(
+            {
+              _id: {
+                $in: response.leaders
+              }
+            },
+            {
+              fields: {
+                photoURL: 1,
+                username: 1,
+                phoneNumber: 1
+              }
+            }
+          )
+          response.leaders = leaders.data;
+        }
+        setIsAdmin(_.find(response.leaders, ["_id", user._id]))
         setCurrentBroadcast(response)
       } else {
         getParticipants()
@@ -119,7 +131,21 @@ export default function BroadcastDetailsView () {
     }
   }, [id, currentTab, setCurrentBroadcast, user, getParticipants])
 
+  const handlePublish = useCallback(async () => {
+    await broadcastService.publish({
+      broadcast_id: id
+    })
+    getData(id)
+    enqueueSnackbar('发布成功');
+  }, [enqueueSnackbar,getData, id])
 
+  const handleCancelPublish = useCallback(async () => {
+    await broadcastService.unpublish({
+      broadcast_id: id
+    })
+    getData(id)
+    enqueueSnackbar('取消发布成功');
+  }, [enqueueSnackbar, getData,id])
 
   useEffect(() => {
     console.log('获取')
@@ -180,8 +206,13 @@ export default function BroadcastDetailsView () {
           </Button>
         }
         {
-          isAdmin && <Button variant="contained" color="success" onClick={() => handlePublish()}>
+          isAdmin && !currentBroadcast.published && <Button variant="contained" color="success" onClick={() => handlePublish()}>
             发布公告
+          </Button>
+        }
+        {
+          isAdmin && currentBroadcast.published && <Button variant="contained" color="success" onClick={() => handleCancelPublish()}>
+            取消发布
           </Button>
         }
       </Stack>

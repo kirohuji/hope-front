@@ -9,6 +9,7 @@ import { articleService } from '../../composables/context-provider';
 const initialState = {
   isLoading: true,
   error: null,
+  data: [],
   article: null,
   activeStep: 0,
 };
@@ -35,6 +36,11 @@ const slice = createSlice({
     getArticlesSuccess (state, action) {
       state.isLoading = false;
       state.article = action.payload;
+    },
+
+    getDataSuccess (state, action) {
+      state.isLoading = false;
+      state.data = action.payload;
     },
 
     backStep(state) {
@@ -75,6 +81,17 @@ export function getArticle (id) {
       dispatch(slice.actions.getArticlesSuccess(response));
     } catch (error) {
       console.error(error);
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+export function getDatas (query) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try{
+      const response = await articleService.pagination(query);
+      dispatch(slice.actions.getDataSuccess(response.data));
+    } catch(error){
       dispatch(slice.actions.hasError(error));
     }
   };
