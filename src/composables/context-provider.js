@@ -39,7 +39,7 @@ export const notificationService = new NotificationService({ api, model: 'notifi
 const {simpleDDPLogin} = require("simpleddp-plugin-login");
 
 export const ddpclient = new SimpleDDP({
-    endpoint: "ws://localhost:3000/websocket",
+    endpoint: "ws://lourd.online:5000/websocket",
     SocketConstructor: WebSocket,
     reconnectInterval: 5000,
     clearDataOnReconnection: false,

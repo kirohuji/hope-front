@@ -2,12 +2,15 @@ import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+import { Divider, Stack } from '@mui/material';
+import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
 // _mock
 import { JOB_PUBLISH_OPTIONS } from 'src/_mock';
+import { useAuthContext } from 'src/auth/hooks';
 // components
 import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
@@ -15,6 +18,8 @@ import { useSettingsContext } from 'src/components/settings';
 import { bookService } from 'src/composables/context-provider';
 // sections
 import { ArticleListView } from 'src/sections/article/view';
+import _ from 'lodash';
+import { useSnackbar } from 'src/components/snackbar';
 import BookDetailsToolbar from '../book-details-toolbar';
 import BookDetailsContent from '../book-details-content';
 import BookDetailsCandidates from '../book-details-candidates';
@@ -27,32 +32,51 @@ const JOB_DETAILS_TABS = [
   { value: 'chapter', label: '内容' },
 ];
 
-
-export default function BookDetailsView () {
+export default function BookDetailsView() {
+  const { enqueueSnackbar } = useSnackbar();
+  const [isAdmin, setIsAdmin] = useState(false);
   const settings = useSettingsContext();
-  const [book, setBook] = useState(null)
+  const [book, setBook] = useState(null);
   const params = useParams();
-
+  const { user } = useAuthContext();
   const { id, tabId } = params;
 
   const getData = useCallback(async () => {
     try {
       const response = await bookService.get({
-        _id: id
-      })
-      setBook(response)
+        _id: id,
+      });
+      setBook(response);
+      // setIsAdmin(_.find(response.createdBy, ['_id', user._id]));
+      setIsAdmin((response.createdBy === user._id));
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }, [id, setBook])
+  }, [id, user._id]);
 
   const [publish, setPublish] = useState(book?.publish);
-  
+
   const [currentTab, setCurrentTab] = useState(tabId || 'content');
+
+  const handlePublish = useCallback(async () => {
+    await bookService.publish({
+      book_id: id
+    })
+    getData(id)
+    enqueueSnackbar('发布成功');
+  }, [enqueueSnackbar,getData, id])
+
+  const handleCancelPublish = useCallback(async () => {
+    await bookService.unpublish({
+      book_id: id
+    })
+    getData(id)
+    enqueueSnackbar('取消发布成功');
+  }, [enqueueSnackbar, getData,id])
 
   useEffect(() => {
     if (id) {
-      getData(id)
+      getData(id);
     }
   }, [getData, id]);
 
@@ -104,8 +128,23 @@ export default function BookDetailsView () {
 
       {currentTab === 'content' && book && <BookDetailsContent book={book} />}
 
-      {currentTab === 'candidates' && book && <BookDetailsCandidates candidates={book?.candidates} />}
+      {currentTab === 'candidates' && book && (
+        <BookDetailsCandidates candidates={book?.candidates} />
+      )}
       {currentTab === 'chapter' && book && <ArticleListView book={book} />}
+      <Divider sx={{ m: 2 }} />
+      <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
+        {isAdmin && !book.published && (
+          <Button variant="contained" color="success" onClick={() => handlePublish()}>
+            发布公告
+          </Button>
+        )}
+        {isAdmin && book.published && (
+          <Button variant="contained" color="success" onClick={() => handleCancelPublish()}>
+            取消发布
+          </Button>
+        )}
+      </Stack>
     </Container>
   );
 }
