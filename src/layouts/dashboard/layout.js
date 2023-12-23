@@ -85,16 +85,16 @@ export default function DashboardLayout ({ children }) {
       >
         {renderNavVertical}
 
-        <Main>{children}</Main>
+        <Main className="main">{children}</Main>
         {
           !lgUp && <DashboardFooter />
         }
-        {
+        {/* {
           !lgUp && <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 55 }}>
             <MusicPlayer />
             <BookPlayer />
           </AppBar>
-        }
+        } */}
       </Box>
     </>
   );

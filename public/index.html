@@ -45,9 +45,37 @@
       .ql-align-left {
         text-align: left;
       }
-      body {
-        --ion-safe-area-top: env(safe-area-inset-top);
-        --ion-safe-area-bottom: env(safe-area-inset-bottom);
+      main, 
+        .main{
+          padding-top: calc(constant(safe-area-inset-top) * 2.5) !important;
+          padding-top:  calc(env(safe-area-inset-top) * 2.5) !important;
+          padding-bottom: calc(constant(safe-area-inset-bottom) * 2.5) !important;
+          padding-bottom: calc(env(safe-area-inset-bottom) * 2.5) !important;
+        }
+      @supports (top: env(safe-area-inset-top)) {
+        /* body, */
+        header,
+        .header {
+          background-color: white;
+          padding-top: constant(safe-area-inset-top);
+          padding-top: env(safe-area-inset-top);
+          /* padding-bottom: calc(constant(safe-area-inset-bottom) / 2);
+          padding-bottom: calc(env(safe-area-inset-bottom) / 2); */
+          height: unset !important;
+        }
+      }
+      @supports (bottom: env(safe-area-inset-bottom)) {
+        .bottom-navigation {
+          background-color: white;
+          /* padding-bottom: 150px; */
+        }
+        .bottom-navigation > div {
+          padding-bottom: calc(constant(safe-area-inset-bottom) * 2.5) !important;
+          padding-bottom: calc(env(safe-area-inset-bottom) * 2.5) !important;
+        }
+        .bottom-navigation div a {
+          height: 56px !important;
+        }
       }
     </style>
   </head>
