@@ -17,6 +17,9 @@ import Lightbox, { useLightBox } from 'src/components/lightbox';
 
 // ----------------------------------------------------------------------
 
+function isAssetTypeAnImage(ext) {
+  return /\.(jpg|jpeg|png|gif)$/i.test(ext.toLowerCase());
+}
 export default function BroadcastDetailsContent ({ broadcast }) {
   const {
     label,
@@ -30,7 +33,7 @@ export default function BroadcastDetailsContent ({ broadcast }) {
     ratingNumber,
   } = broadcast;
 
-  const slides = images ? images.map((slide) => ({
+  const slides = images ? images.filter(img => isAssetTypeAnImage(img.path)).map((slide) => ({
     src: slide.preview,
   })) : [];
 

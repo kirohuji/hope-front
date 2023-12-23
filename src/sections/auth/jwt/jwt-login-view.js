@@ -68,10 +68,10 @@ export default function JwtLoginView() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       await login?.(data.email, data.password);
-      if(returnTo){
+      if (returnTo) {
         router.push(returnTo);
       } else {
-        dispatch(updateBottomNavigationActionValue(3));
+        dispatch(updateBottomNavigationActionValue(1));
         router.push(PATH_AFTER_LOGIN);
       }
     } catch (error) {
@@ -83,14 +83,14 @@ export default function JwtLoginView() {
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">Sign in to Minimal</Typography>
+      <Typography variant="h4">登录到希望之家</Typography>
 
       <Stack direction="row" spacing={0.5}>
-        <Typography variant="body2">New user?</Typography>
+        <Typography variant="body2">欢迎加入大家庭</Typography>
 
-        <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
+        {/* <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
           Create an account
-        </Link>
+        </Link> */}
       </Stack>
     </Stack>
   );
@@ -99,11 +99,11 @@ export default function JwtLoginView() {
     <Stack spacing={2.5}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
-      <RHFTextField name="email" label="Email address" />
+      <RHFTextField name="email" label="电子邮件" />
 
       <RHFTextField
         name="password"
-        label="Password"
+        label="密码"
         type={password.value ? 'text' : 'password'}
         InputProps={{
           endAdornment: (
@@ -116,9 +116,9 @@ export default function JwtLoginView() {
         }}
       />
 
-      <Link variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
+      {/* <Link variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
         Forgot password?
-      </Link>
+      </Link> */}
 
       <LoadingButton
         fullWidth
@@ -128,7 +128,7 @@ export default function JwtLoginView() {
         variant="contained"
         loading={isSubmitting}
       >
-        Login
+        登录
       </LoadingButton>
     </Stack>
   );
@@ -137,10 +137,13 @@ export default function JwtLoginView() {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       {renderHead}
 
-      <Alert severity="info" sx={{ mb: 3 }}>
+      {/* <Alert severity="info" sx={{ mb: 3 }}>
         Use email : <strong>demo@minimals.cc</strong> / password :<strong> demo1234</strong>
-      </Alert>
+      </Alert> */}
 
+      <Alert severity="info" sx={{ mb: 3 }}>
+        遇到什么问题,欢迎及时反馈
+      </Alert>
       {renderForm}
     </FormProvider>
   );

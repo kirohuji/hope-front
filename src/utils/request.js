@@ -2,7 +2,7 @@ import axios from 'axios'
 // import qs from 'qs'
 // create an axios instance
 const service = axios.create({
-  baseURL: 'http://lourd.online:5000/api/v1/',
+  baseURL: 'https://www.lourd.online/api/v1/',
   timeout: 10000
 })
 service.interceptors.request.use(
@@ -26,8 +26,8 @@ service.interceptors.response.use(
 export default service
 
 export const fileService = axios.create({
-  baseURL: 'http://lourd.online:8080/api/v1/',
-  timeout: 10000,
+  baseURL: 'http://85.31.235.82:8080/api/v1/',
+  timeout: 100000,
   // processData: false,
   headers: {
     "Content-Type": "multipart/form-data"

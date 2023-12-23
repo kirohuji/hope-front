@@ -294,7 +294,7 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
         <Button color="inherit" variant="outlined" size="large" onClick={preview.onTrue}>
           预览
         </Button>
-        {isEdit && activeStep !== 0 && <Button  sx={{ ml: 2 }} color="inherit" variant="outlined" size="large" onClick={()=> {
+        {activeStep !== 0 && <Button  sx={{ ml: 2 }} color="inherit" variant="outlined" size="large" onClick={()=> {
           setActiveStep(activeStep -1)
         }}>
           上一步

@@ -104,15 +104,19 @@ export default function ArticleDetailsView ({ onClose,articleId }) {
 
   const onSubmit = async () => {
     setIsSubmitting(true)
-    await articleService.updateArticleCurrentUser({
-      _id: articleUser._id,
-      article_id: article._id,
-      answers
-    })
-    setIsSubmitting(false)
-    onClose()
-    enqueueSnackbar('提交成功!');
-
+    try{
+      await articleService.updateArticleCurrentUser({
+        _id: articleUser._id,
+        article_id: article._id,
+        answers
+      })
+      enqueueSnackbar('保存成功!');
+      setIsSubmitting(false)
+      onClose()
+    } catch(e){
+      setIsSubmitting(false)
+      enqueueSnackbar('保存失败!');
+    }
   }
   const renderError = (
     <EmptyContent
@@ -245,7 +249,7 @@ export default function ArticleDetailsView ({ onClose,articleId }) {
             </div>)
           }
           <Divider sx={{ mt: 1, mb: 1 }} />
-          <LoadingButton onClick={() => onSubmit()} variant="contained" loading={isSubmitting}>
+          <LoadingButton onClick={() => onSubmit()} variant="contained">
             完成阅读
           </LoadingButton>
         </Stack>

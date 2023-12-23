@@ -21,6 +21,9 @@ import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
 // ----------------------------------------------------------------------
 
+function isAssetTypeAnImage(ext) {
+  return /\.(jpg|jpeg|png|gif)$/i.test(ext.toLowerCase());
+}
 export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) {
   const popover = usePopover();
 
@@ -39,6 +42,7 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
     type,
   } = broadcast;
 
+  const imageSet = images.filter(img => isAssetTypeAnImage(img.path));
   const shortLabel = shortDateLabel(new Date(available.startDate), new Date(available.endDate));
 
   // const renderRating = (
@@ -115,12 +119,12 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
       <Stack flexGrow={1} sx={{ position: 'relative' }}>
         {renderPrice}
         {renderType}
-        {images[0] && <Image alt={images[0].preview || ""} src={images[0].preview || ""} sx={{ borderRadius: 1, height: 164, w_idth: 1 }} />}
+        {imageSet[0] && <Image alt={imageSet[0].preview || ""} src={imageSet[0].preview || ""} sx={{ borderRadius: 1, height: 164, w_idth: 1 }} />}
       </Stack>
       {
-        images[1] && <Stack spacing={0.5}>
-          <Image alt={images[1] || ""} src={images[1].preview || ""} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
-          <Image alt={images[2] || ""} src={images[2].preview || ""} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
+        imageSet[1] && <Stack spacing={0.5}>
+          <Image alt={imageSet[1] || ""} src={imageSet[1].preview || ""} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
+          {imageSet[2] && <Image alt={imageSet[2] || ""} src={imageSet[2].preview || ""} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />}
         </Stack>
       }
     </Stack>

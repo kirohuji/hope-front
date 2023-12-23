@@ -17,14 +17,24 @@ import Markdown from 'src/components/markdown';
 
 // ----------------------------------------------------------------------
 
-export default function BookDetailsContent ({ book }) {
+const TYPE_OPTIONS = new Map([
+  ['children', '儿童'],
+  ['adolescent', '青少年'],
+  ['adult', '成人'],
+  ['newBelievers', '初信'],
+]);
+
+export default function BookDetailsContent({ book }) {
   const {
     label,
     // skills,
     // salary,
+    type,
     description,
     // benefits,
+    publishedDate,
     createdAt,
+    createdUser,
     // experience,
     // // expiredDate,
     // employmentTypes,
@@ -36,8 +46,7 @@ export default function BookDetailsContent ({ book }) {
 
       <Markdown children={description} />
 
-      {
-        /**
+      {/**
          * 
          *       <Stack spacing={2}>
         <Typography variant="h6">Skills</Typography>
@@ -56,8 +65,7 @@ export default function BookDetailsContent ({ book }) {
           ))}
         </Stack>
       </Stack>
-         */
-      }
+         */}
     </Stack>
   );
 
@@ -71,22 +79,22 @@ export default function BookDetailsContent ({ book }) {
         },
         {
           label: '作者',
-          value: fDate(createdAt),
+          value: createdUser?.username || '未知',
           icon: <Iconify icon="solar:calendar-date-bold" />,
         },
         {
           label: '发布时间',
-          value: fDate(createdAt),
+          value: fDate(publishedDate),
           icon: <Iconify icon="solar:calendar-date-bold" />,
         },
-        {
-          label: '所属',
-          value: fDate(createdAt),
-          icon: <Iconify icon="solar:calendar-date-bold" />,
-        },
+        // {
+        //   label: '所属',
+        //   value: fDate(createdAt),
+        //   icon: <Iconify icon="solar:calendar-date-bold" />,
+        // },
         {
           label: '分类',
-          value: fDate(createdAt),
+          value: TYPE_OPTIONS.get(type),
           icon: <Iconify icon="solar:calendar-date-bold" />,
         },
         // {

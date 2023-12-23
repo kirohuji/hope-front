@@ -21,13 +21,21 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFUpload,
   RHFEditor,
-  RHFSwitch,
+  RHFRadioGroup,
   RHFTextField,
 } from 'src/components/hook-form';
 
 import { bookService, fileService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
+
+export const TYPE_OPTIONS = [
+  { value: 'children', label: '儿童' },
+  { value: 'adolescent', label: '青少年' },
+  { value: 'adult', label: '成人' },
+  { value: 'newBelievers', label: '初信' },
+  // { value: 'book', label: '灵修' },
+];
 
 export default function BookNewEditForm ({ currentBook }) {
   const router = useRouter();
@@ -67,6 +75,8 @@ export default function BookNewEditForm ({ currentBook }) {
       cover: currentBook?.cover || '',
       title: currentBook?.title || '',
       published: currentBook?.published || false,
+      publishedDate: currentBook?.publishedDate || '',
+      type: currentBook?.type || '',
       content: currentBook?.content || '',
       // employmentTypes: currentBook?.employmentTypes || [],
       // experience: currentBook?.experience || '1 year exp',
@@ -182,6 +192,35 @@ export default function BookNewEditForm ({ currentBook }) {
     </>
   );
 
+  const renderProperties = (
+    <>
+      {mdUp && (
+        <Grid md={4}>
+          <Typography variant="h6" sx={{ mb: 0.5 }}>
+            属性
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            额外的功能和属性
+          </Typography>
+        </Grid>
+      )}
+
+      <Grid xs={12} md={8}>
+        <Card>
+          {!mdUp && <CardHeader title="Properties" />}
+
+          <Stack spacing={3} sx={{ p: 3 }}>
+            <Stack spacing={1}>
+              <Typography variant="subtitle2">类型</Typography>
+              <RHFRadioGroup row spacing={4} name="type" options={TYPE_OPTIONS} />
+            </Stack>
+          </Stack>
+        </Card>
+      </Grid>
+    </>
+  );
+
+
   const renderActions = (
     <>
       {mdUp && <Grid md={4} />}
@@ -204,6 +243,8 @@ export default function BookNewEditForm ({ currentBook }) {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         {renderDetails}
+
+        {renderProperties}
 
         {renderActions}
       </Grid>

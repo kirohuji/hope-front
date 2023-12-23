@@ -175,7 +175,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
 
   const onSubmit = handleSubmit(async (data) => {
     if (values.images.filter((file) => file.isLoacl).length > 0) {
-      enqueueSnackbar("照片集有图片未上传,请先上传");
+      enqueueSnackbar("资源集有资源未上传,请先上传");
       return;
     }
     try {
@@ -240,7 +240,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
         isLoacl: false
       })
     })
-    enqueueSnackbar('照片上传成功');
+    enqueueSnackbar('资源上传成功');
   }
 
   const renderDetails = (
@@ -272,12 +272,12 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
             </Stack>
 
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">照片集</Typography>
+              <Typography variant="subtitle2">资源</Typography>
               <RHFUpload
                 multiple
                 thumbnail
                 name="images"
-                maxSize={3145728}
+                maxSize={31457280}
                 onDrop={handleDrop}
                 onRemove={handleRemoveFile}
                 onRemoveAll={handleRemoveAllFiles}

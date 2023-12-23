@@ -23,13 +23,37 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
+const TYPE_OPTIONS = new Map([
+  ['children', '儿童'],
+  ['adolescent', '青少年'],
+  ['adult', '成人'],
+  ['newBelievers', '初信'],
+]);
 export default function BookItem ({ book, onView, onEdit, onDelete }) {
   const theme = useTheme();
   const popover = usePopover();
 
-  const { _id, label, cover, createdAt, candidates } =
+  const { _id, label, cover, createdAt, type, candidates } =
     book;
-
+    
+    const renderType = (
+      <Stack
+        direction="row"
+        alignItems="center"
+        sx={{
+          top: 8,
+          left: 8,
+          zIndex: 9,
+          borderRadius: 1,
+          position: 'absolute',
+          p: '2px 6px 2px 4px',
+          typography: 'subtitle2',
+          bgcolor: 'warning.lighter',
+        }}
+      >
+       {TYPE_OPTIONS.get(type)}
+      </Stack>
+    );
   return (
     <>
       <Card>
@@ -38,6 +62,7 @@ export default function BookItem ({ book, onView, onEdit, onDelete }) {
         </IconButton>
 
         <Stack sx={{ p: 2, pb: 2 }} direction="row">
+          {renderType}
           <Image
             alt={label}
             src={cover}

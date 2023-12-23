@@ -6196,6 +6196,11 @@
   dependencies:
     "esutils" "^2.0.2"
 
+"docviewhelper@>= 0.0.1":
+  "integrity" "sha512-4ETJdDT//5Q8qcEGY9UjYo6dZiFzn3CHXAoSli4w35uehVdkKschIoRjG3exesc5jyVc9Zrch3oZKZR/5i4ZQQ=="
+  "resolved" "https://registry.npmmirror.com/docviewhelper/-/docviewhelper-0.0.2.tgz"
+  "version" "0.0.2"
+
 "dom-converter@^0.2.0":
   "integrity" "sha512-gd3ypIPfOMr9h5jIKq8E3sHOTCjeirnl0WK5ZdS1AW0Odt0b1PaWaHdJ4Qk4klv+YB9aJBS7mESXjFoDQPu6DA=="
   "resolved" "https://registry.npmmirror.com/dom-converter/-/dom-converter-0.2.0.tgz"
@@ -11858,6 +11863,13 @@
     "shell-quote" "^1.7.3"
     "strip-ansi" "^6.0.1"
     "text-table" "^0.2.0"
+
+"react-documents@^1.2.1":
+  "integrity" "sha512-Ciea+BozydpMwzWrE6NFdl//YPSx/7H1rLjYjZmwmuFwESuDWa6eQRObqvaihWmg8i/4Jy+qYRIRgbfvXrB1GA=="
+  "resolved" "https://registry.npmmirror.com/react-documents/-/react-documents-1.2.1.tgz"
+  "version" "1.2.1"
+  dependencies:
+    "docviewhelper" ">= 0.0.1"
 
 "react-dom@^0.14.0 || ^15.0.1 || ^16.0.0 || ^17.0.0 || ^18.0.0", "react-dom@^15.x.x || ^16.x.x || ^17.x.x || ^18.x.x", "react-dom@^16 || ^17 || ^18", "react-dom@^16.11.0 || ^17 || ^18", "react-dom@^16.3.0 || ^17.0.0 || ^18.0.0", "react-dom@^16.6.0 || ^17.0.0 || ^18.0.0", "react-dom@^16.7.0 || ^17 || ^18", "react-dom@^16.8 || ^17.0 || ^18.0", "react-dom@^16.8.0 || ^17.0.0 || ^18.0.0", "react-dom@^16.8.5 || ^17.0.0 || ^18.0.0", "react-dom@^17.0.0 || ^18.0.0", "react-dom@^17.0.2 || ^18.0.0", "react-dom@^18.0.0", "react-dom@^18.2.0", "react-dom@>= 16.12.0", "react-dom@>=16", "react-dom@>=16.6.0", "react-dom@>=16.8", "react-dom@>=16.8.0":
   "integrity" "sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g=="

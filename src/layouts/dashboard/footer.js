@@ -29,8 +29,8 @@ export default function DashboardFooter () {
         {
           /**         <BottomNavigationAction label="工作台" icon={ICONS.kanban} /> */
         }
-        <BottomNavigationAction label="聊天" icon={ICONS.chat} component={Link} to="/dashboard/chat"/>
-        <BottomNavigationAction label="文件" icon={ICONS.file} component={Link} to="/dashboard/file-manager"/>
+        {/* <BottomNavigationAction label="聊天" icon={ICONS.chat} component={Link} to="/dashboard/chat"/>
+        <BottomNavigationAction label="文件" icon={ICONS.file} component={Link} to="/dashboard/file-manager"/> */}
         <BottomNavigationAction label="活动" icon={ICONS.tour} component={Link} to="/dashboard/broadcast"/>
         <BottomNavigationAction label="日程" icon={ICONS.user} component={Link} to="/dashboard/calendar"/>
         <BottomNavigationAction label="灵修" icon={ICONS.blog} component={Link} to="/dashboard/training/dashboard" />

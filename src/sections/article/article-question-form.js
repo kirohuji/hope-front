@@ -28,7 +28,7 @@ export default function ArticleQuestionForm ({
   const CommentSchema = Yup.object().shape({
     label: Yup.string().required('请输入问题标题'),
     content: Yup.string().required('请输入问题内容'),
-    necessary: Yup.string().required('City is required'),
+    necessary: Yup.string().required('必选'),
   });
 
   const defaultValues = {
@@ -68,7 +68,7 @@ export default function ArticleQuestionForm ({
       <Stack spacing={3}>
         <RHFTextField
           name="comment"
-          placeholder="Write some of your comments..."
+          placeholder="写下你的想法..."
           multiline
           rows={4}
           onChange={(e)=>{

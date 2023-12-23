@@ -33,22 +33,10 @@ const TABS = [
 ];
 
 const TAGS = [
-  {
-    value: 'one',
-    label: '版本一',
-  },
-  {
-    value: 'two',
-    label: '版本二',
-  },
-  {
-    value: 'three',
-    label: '版本三',
-  },
-  {
-    value: 'four',
-    label: '版本四',
-  },
+  { value: 'children', label: '儿童' },
+  { value: 'adolescent', label: '青少年' },
+  { value: 'adult', label: '成人' },
+  { value: 'newBelievers', label: '初信' },
 ];
 
 function TabPanel (props) {

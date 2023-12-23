@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import TrainingCard from 'src/sections/training/training-card'
 import Iconify from 'src/components/iconify'
 import { bookService } from 'src/composables/context-provider';
+import { useSnackbar } from 'src/components/snackbar';
 
 export default function TrainingSearchDetailView () {
   const [book, setBook] = useState({});
@@ -14,6 +15,7 @@ export default function TrainingSearchDetailView () {
   const [posts, setPosts] = useState([]);
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
+  const { enqueueSnackbar } = useSnackbar();
   const getDetail = useCallback(async () => {
     try {
       await Promise.all([bookService.get({ _id: id }), bookService.paginationWithArticleByBookId({
@@ -45,20 +47,29 @@ export default function TrainingSearchDetailView () {
       setIsLoading(false);
     }
   }, [getDetail, id])
+
   const onActive = async () => {
-    await bookService.addBookCurrentUser({
-      book_id: id
-    });
-    await bookService.activeBookWithCurrentUser({
-      book_id: id
-    });
-    getDetail();
+    try{
+      await bookService.addBookCurrentUser({
+        book_id: id
+      });
+      await bookService.activeBookWithCurrentUser({
+        book_id: id
+      });
+      getDetail();
+    } catch(e){
+      enqueueSnackbar('更新失败!');
+    }
   }
   const onDeactive = async () => {
-    await bookService.deactiveBookWithCurrentUser({
-      book_id: id
-    });
-    getDetail();
+    try{
+      await bookService.deactiveBookWithCurrentUser({
+        book_id: id
+      });
+      getDetail();
+    } catch(e){
+      enqueueSnackbar('退出阅读失败!');
+    }
   }
   const onSelect = () => {
     bookService.addBookCurrentUser({
@@ -125,7 +136,7 @@ export default function TrainingSearchDetailView () {
               }
             </div>
           </Button>
-          <Button
+          {/* <Button
             variant="soft"
             to="/training"
             sx={{
@@ -141,7 +152,7 @@ export default function TrainingSearchDetailView () {
             }}>
               添加到列表
             </div>
-          </Button>
+          </Button> */}
         </Stack>
       </Container>
     </>
