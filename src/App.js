@@ -48,6 +48,8 @@ import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 
 // ----------------------------------------------------------------------
 
+import { Capacitor } from '@capacitor/core';
+
 export default function App() {
   const charAt = `
 
@@ -62,6 +64,15 @@ export default function App() {
   console.info(`%c${charAt}`, 'color: #5BE49B');
 
   useScrollToTop();
+
+  if (Capacitor.getPlatform() === 'ios') {
+    console.log('iOS!');
+    import('./ios.css')
+  } else if (Capacitor.getPlatform() === 'android') {
+    console.log('Android!');
+  } else {
+    console.log('Web!');
+  }
 
   return (
     <AuthProvider>

@@ -48,7 +48,7 @@ export default function BroadcastListView () {
 
   const settings = useSettingsContext();
 
-  const { data } = useSelector((state) => state.broadcast);
+  const { data, total } = useSelector((state) => state.broadcast);
 
   const dispatch = useDispatch();
 
@@ -141,7 +141,7 @@ export default function BroadcastListView () {
       canReset={canReset}
       onFilters={handleFilters}
       //
-      results={dataFiltered.length}
+      results={total}
     />
   );
 

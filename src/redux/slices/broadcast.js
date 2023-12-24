@@ -5,6 +5,7 @@ import { broadcastService } from 'src/composables/context-provider';
 
 const initialState = {
   data: [],
+  total: 0,
   error: null,
 };
 
@@ -17,8 +18,10 @@ const slice = createSlice({
       state.isLoading = true;
     },
     getDataSuccess (state, action) {
+      const { data, total } =  action.payload;
       state.isLoading = false;
-      state.data = action.payload;
+      state.data = data;
+      state.total = total;
     },
     // HAS ERROR
     hasError (state, action) {
@@ -36,7 +39,7 @@ export function getDatas (query) {
     dispatch(slice.actions.startLoading());
     try{
       const response = await broadcastService.pagination(query);
-      dispatch(slice.actions.getDataSuccess(response.data));
+      dispatch(slice.actions.getDataSuccess(response));
     } catch(error){
       dispatch(slice.actions.hasError(error));
     }

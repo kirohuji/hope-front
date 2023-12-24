@@ -197,9 +197,9 @@ export default function BroadcastDetailsView () {
       {currentTab === 'participants' && <BroadcastDetailsBookers participants={participants} onRefresh={onRefresh} />}
       <Divider sx={{ m: 2 }} />
       <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
-        <Button variant="contained" color="primary">
+        {/* <Button variant="contained" color="primary">
           联系负责人
-        </Button>
+        </Button> */}
         {
           isAdmin && <Button variant="contained" color="secondary" onClick={() => handleOpenContacts()}>
             添加参加者

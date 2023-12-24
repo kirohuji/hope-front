@@ -20,7 +20,7 @@ import Lightbox, { useLightBox } from 'src/components/lightbox';
 function isAssetTypeAnImage(ext) {
   return /\.(jpg|jpeg|png|gif)$/i.test(ext.toLowerCase());
 }
-export default function BroadcastDetailsContent ({ broadcast }) {
+export default function BroadcastDetailsContent({ broadcast }) {
   const {
     label,
     images,
@@ -33,9 +33,14 @@ export default function BroadcastDetailsContent ({ broadcast }) {
     ratingNumber,
   } = broadcast;
 
-  const slides = images ? images.filter(img => isAssetTypeAnImage(img.path)).map((slide) => ({
-    src: slide.preview,
-  })) : [];
+  // const slides = images ? images.filter(img => isAssetTypeAnImage(img.path)).map((slide) => ({
+  //   src: slide.preview,
+  // })) : [];
+  const slides = images
+    ? images.map((slide) => ({
+        src: slide.preview,
+      }))
+    : [];
 
   const {
     selected: selectedImage,
@@ -112,8 +117,7 @@ export default function BroadcastDetailsContent ({ broadcast }) {
           {label}
         </Typography>
 
-        {
-          /** 
+        {/** 
            <IconButton>
            <Iconify icon="solar:share-bold" />
          </IconButton>
@@ -124,13 +128,11 @@ export default function BroadcastDetailsContent ({ broadcast }) {
            icon={<Iconify icon="solar:heart-outline" />}
            checkedIcon={<Iconify icon="solar:heart-bold" />}
          />
-           * */
-        }
+           * */}
       </Stack>
 
       <Stack spacing={3} direction="row" flexWrap="wrap" alignItems="center">
-      {
-        /**
+        {/**
          <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'body2' }}>
          <Iconify icon="eva:star-fill" sx={{ color: 'warning.main' }} />
          <Box component="span" sx={{ typography: 'subtitle2' }}>
@@ -138,8 +140,7 @@ export default function BroadcastDetailsContent ({ broadcast }) {
          </Box>
          <Link sx={{ color: 'text.secondary' }}>(234 reviews)</Link>
        </Stack>
-         * */
-      }
+         * */}
 
         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'body2' }}>
           <Iconify icon="mingcute:location-fill" sx={{ color: 'error.main' }} />
@@ -149,7 +150,7 @@ export default function BroadcastDetailsContent ({ broadcast }) {
         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'subtitle2' }}>
           <Iconify icon="solar:flag-bold" sx={{ color: 'info.main' }} />
           <Box component="span" sx={{ typography: 'body2', color: 'text.secondary' }}>
-            负责人: 
+            负责人:
           </Box>
           {leaders.map((tourGuide) => tourGuide.name).join(', ')}
         </Stack>
@@ -212,8 +213,7 @@ export default function BroadcastDetailsContent ({ broadcast }) {
   const renderContent = (
     <>
       <Markdown children={content} />
-      {
-        /** 
+      {/** 
          <Stack spacing={2}>
          <Typography variant="h6"> Services</Typography>
  
@@ -251,8 +251,7 @@ export default function BroadcastDetailsContent ({ broadcast }) {
            ))}
          </Box>
        </Stack>
-         */
-      }
+         */}
     </>
   );
 

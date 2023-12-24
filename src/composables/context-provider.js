@@ -41,6 +41,6 @@ const {simpleDDPLogin} = require("simpleddp-plugin-login");
 export const ddpclient = new SimpleDDP({
     endpoint: "wss://www.lourd.online/websocket",
     SocketConstructor: WebSocket,
-    reconnectInterval: 200000,
+    reconnectInterval: 5000,
     clearDataOnReconnection: false,
 }, [simpleDDPLogin]);

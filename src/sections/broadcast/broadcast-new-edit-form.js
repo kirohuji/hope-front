@@ -40,7 +40,6 @@ import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
-
 export const BROADCAST_SERVICE_OPTIONS = [
   { value: 'Audio guide', label: 'Audio guide' },
   { value: 'Food and drinks', label: 'Food and drinks' },
@@ -60,7 +59,7 @@ export const BROAECAST_TYPE_OPTIONS = [
   { value: 'familyGathering', label: '家庭聚会' },
   // { value: 'book', label: '灵修' },
 ];
-export default function BroadcastNewEditForm ({ currentBroadcast }) {
+export default function BroadcastNewEditForm({ currentBroadcast }) {
   const router = useRouter();
 
   const isEdit = !!currentBroadcast;
@@ -73,27 +72,26 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
 
   const debouncedFilters = useDebounce(searchLeaders);
 
-
   const handleSearchLeaders = useCallback(async () => {
     if (debouncedFilters) {
       const response = await userService.paginationByProfile(
         {
-          username: debouncedFilters
+          username: debouncedFilters,
         },
         {
           fields: {
             photoURL: 1,
-            username: 1
-          }
+            username: 1,
+          },
         }
-      )
-      setUsers(response.data)
+      );
+      setUsers(response.data);
     }
-  }, [debouncedFilters])
+  }, [debouncedFilters]);
 
   useEffect(() => {
     handleSearchLeaders();
-  }, [debouncedFilters, handleSearchLeaders])
+  }, [debouncedFilters, handleSearchLeaders]);
 
   // const getTableData = useCallback(async (selector = {}, options = {}) => {
   //   try {
@@ -116,10 +114,10 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
   const NewBroadcastSchema = Yup.object().shape({
     label: Yup.string().required('请输入标题'),
     content: Yup.string().required('请输入内容'),
-    images: Yup.array(),
+    images: Yup.array().required('请选择资源'),
     type: Yup.string().required('请选择类型'),
-    // leaders: Yup.array().min(1, 'Must have at least 1 guide'),
-    durations: Yup.string(),
+    leaders: Yup.array().min(1, '至少选择一位负责人'),
+    durations: Yup.string().required('请选择时间程度'),
     // tags: Yup.array().min(2, 'Must have at least 2 tags'),
     // services: Yup.array().min(2, 'Must have at least 2 services'),
     destination: Yup.string().required('目的地是必填的'),
@@ -175,22 +173,22 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
 
   const onSubmit = handleSubmit(async (data) => {
     if (values.images.filter((file) => file.isLoacl).length > 0) {
-      enqueueSnackbar("资源集有资源未上传,请先上传");
+      enqueueSnackbar('资源集有资源未上传,请先上传');
       return;
     }
     try {
       if (!isEdit) {
         await broadcastService.post({
           ...data,
-          leaders: data.leaders && data.leaders.length > 0 ? data.leaders.map(l => l._id) : [],
-          modifiedDate: moment(new Date()).format('YYYY/MM/DD')
+          leaders: data.leaders && data.leaders.length > 0 ? data.leaders.map((l) => l._id) : [],
+          modifiedDate: moment(new Date()).format('YYYY/MM/DD'),
         });
       } else {
         await broadcastService.patch({
           _id: currentBroadcast._id,
           ...data,
-          leaders: data.leaders && data.leaders.length > 0 ? data.leaders.map(l => l._id) : [],
-          modifiedDate: moment(new Date()).format('YYYY/MM/DD')
+          leaders: data.leaders && data.leaders.length > 0 ? data.leaders.map((l) => l._id) : [],
+          modifiedDate: moment(new Date()).format('YYYY/MM/DD'),
         });
       }
       reset();
@@ -209,7 +207,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
       const newFiles = acceptedFiles.map((file) =>
         Object.assign(file, {
           preview: URL.createObjectURL(file),
-          isLoacl: true
+          isLoacl: true,
         })
       );
 
@@ -234,14 +232,14 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
     values.images.map(async (file) => {
       const formData = new FormData();
       formData.append('file', file);
-      const { link } = await fileService.upload(formData)
+      const { link } = await fileService.upload(formData);
       Object.assign(file, {
         preview: link,
-        isLoacl: false
-      })
-    })
+        isLoacl: false,
+      });
+    });
     enqueueSnackbar('资源上传成功');
-  }
+  };
 
   const renderDetails = (
     <>
@@ -326,7 +324,6 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
                 options={users}
                 onInputChange={(event, newValue) => {
                   setSearchLeaders(newValue);
-
                 }}
                 getOptionLabel={(option) => option.username}
                 isOptionEqualToValue={(option, value) => option._id === value._id}
@@ -408,8 +405,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
               <Typography variant="subtitle2">目的地</Typography>
               <RHFTextField name="destination" placeholder="比如: 详细地址..." />
             </Stack>
-            {
-              /**
+            {/**
                *            <Stack spacing={1}>
               <Typography variant="subtitle2">活动提供情况</Typography>
               <RHFMultiCheckbox
@@ -421,10 +417,8 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
                 }}
               />
             </Stack>
-               * */
-            }
-            {
-              /**
+               * */}
+            {/**
                
             <Stack spacing={1.5}>
             <Typography variant="subtitle2">标签</Typography>
@@ -454,8 +448,7 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
               }
             />
           </Stack>
-               * */
-            }
+               * */}
           </Stack>
         </Card>
       </Grid>
@@ -466,13 +459,12 @@ export default function BroadcastNewEditForm ({ currentBroadcast }) {
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'right' }}>
-        {
-          false && <FormControlLabel
+        {false && (
+          <FormControlLabel
             control={<RHFSwitch name="published" label="是否发布" />}
             sx={{ flexGrow: 1, pl: 3 }}
           />
-
-        }
+        )}
 
         <LoadingButton
           type="submit"

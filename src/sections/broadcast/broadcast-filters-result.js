@@ -50,7 +50,7 @@ export default function BroadcastFiltersResult({
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          results found
+          项结果被发现
         </Box>
       </Box>
 
@@ -107,7 +107,7 @@ export default function BroadcastFiltersResult({
             onClick={onResetFilters}
             startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
           >
-            Clear
+            清除
           </Button>
         )}
       </Stack>

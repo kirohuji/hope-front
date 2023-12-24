@@ -74,9 +74,9 @@ export default function BroadcastDetailsBookers ({ onRefresh, participants }) {
         md: 'repeat(3, 1fr)',
       }}
     >
-      {participants.map((participant) => (
+      {participants.map((participant, index) => (
         <BookerItem
-          key={participant._id}
+          key={index}
           isOwner={user._id === participant.user_id}
           participant={participant}
           onDelete={() => handleOpenConfirm(participant)}

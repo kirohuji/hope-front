@@ -262,7 +262,7 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
         </Stack>
       }
       {levels && levels.length > 0 ?
-        currentOrganization.map((contact, id) => {
+        currentOrganization.filter(contact=> !!contact).map((contact, id) => {
           const checked = assignee.filter((person) => person.user_id === contact._id).length > 0;
           return renderOrganizationsItem(contact, id, checked)
         }) : organizations.map((contact, id) => {

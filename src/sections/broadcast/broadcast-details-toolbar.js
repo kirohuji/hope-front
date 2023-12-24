@@ -6,6 +6,8 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import Iconify from 'src/components/iconify';
 import { RouterLink } from 'src/routes/components';
@@ -13,7 +15,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function BroadcastDetailsToolbar ({
+export default function BroadcastDetailsToolbar({
   publish,
   backLink,
   editLink,
@@ -24,6 +26,8 @@ export default function BroadcastDetailsToolbar ({
   ...other
 }) {
   const popover = usePopover();
+
+  const lgUp = useResponsive('up', 'lg');
 
   return (
     <>
@@ -46,11 +50,13 @@ export default function BroadcastDetailsToolbar ({
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <Tooltip title="编辑">
-          <IconButton component={RouterLink} href={editLink}>
-            <Iconify icon="solar:pen-bold" />
-          </IconButton>
-        </Tooltip>
+        {lgUp && (
+          <Tooltip title="编辑">
+            <IconButton component={RouterLink} href={editLink}>
+              <Iconify icon="solar:pen-bold" />
+            </IconButton>
+          </Tooltip>
+        )}
       </Stack>
 
       <CustomPopover

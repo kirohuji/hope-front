@@ -89,12 +89,12 @@ export default function DashboardLayout ({ children }) {
         {
           !lgUp && <DashboardFooter />
         }
-        {/* {
-          !lgUp && <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 55 }}>
-            <MusicPlayer />
+        {
+          !lgUp && <Box position="fixed" color="primary" sx={{ top: 'auto', bottom: 55, background: 'none' }} className='book-player'>
+            {/* <MusicPlayer /> */}
             <BookPlayer />
-          </AppBar>
-        } */}
+          </Box>
+        }
       </Box>
     </>
   );
