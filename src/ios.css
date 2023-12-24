@@ -16,8 +16,8 @@
    .main {
       padding-top: calc(constant(safe-area-inset-top) * 2.5) !important;
       padding-top: calc(env(safe-area-inset-top) * 2.5) !important;
-      padding-bottom: calc(56px + constant(safe-area-inset-bottom) * 2.5) !important;
-      padding-bottom: calc(56px + (safe-area-inset-bottom) * 2.5) !important;
+      padding-bottom: calc(126px + constant(safe-area-inset-bottom) * 2.5) !important;
+      padding-bottom: calc(126px + (safe-area-inset-bottom) * 2.5) !important;
    }
    .book-player {
       background-color: none !important;

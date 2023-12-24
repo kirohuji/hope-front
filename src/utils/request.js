@@ -26,7 +26,7 @@ service.interceptors.response.use(
 export default service
 
 export const fileService = axios.create({
-  baseURL: 'http://85.31.235.82:8080/api/v1/',
+  baseURL: 'https://www.lourd.online',
   timeout: 100000,
   // processData: false,
   headers: {
