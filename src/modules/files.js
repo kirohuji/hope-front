@@ -13,9 +13,9 @@ export default class FileService {
     avatar (target) {
         const token = localStorage.getItem('accessToken')
         if (token) {
-            return this.api.post(`${this.model}/avatar/upload?authToken=${token}`, target)
+            return this.api.post(`${this.model}/storage/avatar?authToken=${token}`, target)
         }
-        return this.api.post(`${this.model}/avatar/upload`, target)
+        return this.api.post(`${this.model}/storage/avatar`, target)
     }
 
     upload (target) {
@@ -29,9 +29,9 @@ export default class FileService {
     excel (target) {
         const token = localStorage.getItem('accessToken')
         if (token) {
-            return this.api.post(`${this.model}/excel?authToken=${token}`, target)
+            return this.api.post(`${this.model}/storage/excel?authToken=${token}`, target)
         }
-        return this.api.post(`${this.model}/excel`, target)
+        return this.api.post(`${this.model}/storage/excel`, target)
 
         // return fetch('http://localhost:5005/api/v1/avatar', {
         //     method: 'POST',

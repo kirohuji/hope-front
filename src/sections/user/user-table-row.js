@@ -22,7 +22,7 @@ import UserQuickEditForm from './user-quick-edit-form';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow ({ row, selected, onClose, onEditRow, onSelectRow, onDeleteRow }) {
+export default function UserTableRow({ row, selected, onClose, onEditRow, onSelectRow, onDeleteRow }) {
   const { username, displayName, baptized, gender, age, photoURL, address, status, available, email, phoneNumber } = row;
 
   const confirm = useBoolean();
@@ -34,16 +34,9 @@ export default function UserTableRow ({ row, selected, onClose, onEditRow, onSel
   return (
     <>
       <TableRow hover selected={selected}>
-      {
-        /** 
-         * 
-         *         <TableCell padding="checkbox">
+        <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
-
-         * 
-         */
-      }
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar alt={username} src={photoURL} sx={{ mr: 2 }} />
 
@@ -143,7 +136,7 @@ export default function UserTableRow ({ row, selected, onClose, onEditRow, onSel
         title="删除"
         content="你确认要删除吗?"
         action={
-          <Button variant="contained" color="error" onClick={()=>{
+          <Button variant="contained" color="error" onClick={() => {
             onDeleteRow();
             confirm.onFalse()
           }}>

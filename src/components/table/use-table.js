@@ -74,6 +74,10 @@ export default function useTable(props) {
     [page]
   );
 
+  const onUpdatePageDeleteRowsByAsync = useCallback(()=> {
+    setSelected([]);
+  },[])
+
   const onUpdatePageDeleteRows = useCallback(
     ({ totalRows, totalRowsInPage, totalRowsFiltered }) => {
       const totalSelected = selected.length;
@@ -111,6 +115,7 @@ export default function useTable(props) {
     onResetPage,
     onChangeRowsPerPage,
     onUpdatePageDeleteRow,
+    onUpdatePageDeleteRowsByAsync,
     onUpdatePageDeleteRows,
     //
     setPage,
@@ -119,5 +124,6 @@ export default function useTable(props) {
     setOrderBy,
     setSelected,
     setRowsPerPage,
+
   };
 }

@@ -12,6 +12,7 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
+import CircularProgress from '@mui/material/CircularProgress';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -76,7 +77,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function UserListView () {
+export default function UserListView() {
 
   const fileRef = useRef(null);
 
@@ -92,6 +93,8 @@ export default function UserListView () {
 
   const [tableData, setTableData] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+
   const [tableDataCount, setTableDataCount] = useState(0);
 
   const [filters, setFilters] = useState(defaultFilters);
@@ -106,6 +109,7 @@ export default function UserListView () {
 
   const getTableData = useCallback(async (selector = {}, options = {}) => {
     try {
+      setLoading(true)
       const response = await userService.pagination(
         {
           ...selector,
@@ -115,6 +119,7 @@ export default function UserListView () {
       )
       setTableData(response.data);
       setTableDataCount(response.total);
+      setLoading(false)
     } catch (error) {
       enqueueSnackbar(error.message)
     }
@@ -143,7 +148,19 @@ export default function UserListView () {
       enqueueSnackbar("删除成功")
       getTableData();
     },
-    [getTableData,enqueueSnackbar]
+    [getTableData, enqueueSnackbar]
+  );
+
+  const handleDeleteRows = useCallback( async () => {
+    await userService.deleteMany({
+      _ids: table.selected
+    })
+    table.onUpdatePageDeleteRowsByAsync();
+    confirm.onFalse()
+    enqueueSnackbar("删除成功")
+    getTableData();
+  },
+  [table, confirm, enqueueSnackbar, getTableData]
   );
 
   const handleEditRow = useCallback(
@@ -208,6 +225,7 @@ export default function UserListView () {
         />
 
         <Card>
+
           <Tabs
             value={filters.available}
             onChange={handleFilterStatus}
@@ -256,7 +274,7 @@ export default function UserListView () {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title="删除">
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -264,46 +282,48 @@ export default function UserListView () {
               }
             />
 
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      tableData.map((row) => row._id)
-                    )
-                  }
-                />
-
-                <TableBody>
-                  {tableData
-                    .map((row) => (
-                      <UserTableRow
-                        key={row._id}
-                        row={row}
-                        onClose={() => getTableData()}
-                        selected={table.selected.includes(row._id)}
-                        onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
+            {
+              loading ? <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <CircularProgress color="primary" />
+              </div> : <Scrollbar>
+                <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+                  <TableHeadCustom
+                    order={table.order}
+                    orderBy={table.orderBy}
+                    headLabel={TABLE_HEAD}
+                    rowCount={tableData.length}
+                    numSelected={table.selected.length}
+                    onSort={table.onSort}
+                    onSelectAllRows={(checked) =>
+                      table.onSelectAllRows(
+                        checked,
+                        tableData.map((row) => row._id)
+                      )
+                    }
                   />
+                  <TableBody>
+                    {tableData
+                      .map((row) => (
+                        <UserTableRow
+                          key={row._id}
+                          row={row}
+                          onClose={() => getTableData()}
+                          selected={table.selected.includes(row._id)}
+                          onSelectRow={() => table.onSelectRow(row._id)}
+                          onDeleteRow={() => handleDeleteRow(row._id)}
+                          onEditRow={() => handleEditRow(row._id)}
+                        />
+                      ))}
 
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>
-            </Scrollbar>
+                    <TableEmptyRows
+                      height={denseHeight}
+                      emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
+                    />
+                    <TableNoData notFound={notFound} />
+                  </TableBody>
+                </Table>
+              </Scrollbar>
+            }
           </TableContainer>
 
           <TablePaginationCustom
@@ -333,8 +353,8 @@ export default function UserListView () {
             variant="contained"
             color="error"
             onClick={() => {
-              // handleDeleteRows();
-              confirm.onFalse();
+              handleDeleteRows();
+              // confirm.onFalse();
             }}
           >
             删除

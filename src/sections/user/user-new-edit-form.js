@@ -34,7 +34,7 @@ import FormProvider, {
 import { profileService, userService, fileService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
-export default function UserNewEditForm ({ currentUser }) {
+export default function UserNewEditForm({ currentUser }) {
   const router = useRouter();
   const isEdit = !!currentUser;
   const scope = useSelector((state) => state.scope);
@@ -239,7 +239,7 @@ export default function UserNewEditForm ({ currentUser }) {
                   男
                 </MenuItem>
               </RHFSelect>
-              <RHFTextField name="email" label="电子邮件" />
+              <RHFTextField name="email" label="电子邮件" disabled />
               <RHFTextField name="phoneNumber" label="手机号" />
               <RHFSelect name="baptized" label="是否受洗" placeholder="是否受洗">
                 <MenuItem value="true">
@@ -260,14 +260,19 @@ export default function UserNewEditForm ({ currentUser }) {
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentUser ? '创建用户' : '保存修改'}
-              </LoadingButton>
+              <div>
+                <Button color="error" variant="contained" onClick={() => router.push(paths.dashboard.user.list)} sx={{ mr: 1 }}>
+                  返回
+                </Button>
+                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  {!currentUser ? '创建用户' : '保存修改'}
+                </LoadingButton>
+              </div>
             </Stack>
           </Card>
         </Grid>
       </Grid>
-    </FormProvider>
+    </FormProvider >
   );
 }
 
