@@ -89,6 +89,7 @@ export default function OrganContactsDialog ({ open, onClose, current }) {
       },
       options: {
         scope: active._id,
+        // anyScope: true
       },
       roles: current._id,
     });

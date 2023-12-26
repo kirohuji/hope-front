@@ -39,7 +39,7 @@ const TAGS = [
   { value: 'newBelievers', label: '初信' },
 ];
 
-function TabPanel (props) {
+function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
@@ -60,19 +60,25 @@ TabPanel.propTypes = {
   value: PropTypes.string.isRequired,
 };
 
-export default function TrainingSearchPage () {
+export default function TrainingSearchPage() {
   const navigate = useNavigate();
   const [scrollable, setScrollable] = useState('one');
   const [tableData, setTableData] = useState([]);
+  const [currentTag, setCurrentTag] = useState({
+    value: '',
+    label: ''
+  });
   const getBooks = useCallback(async () => {
     try {
-      const response = await bookService.pagination();
+      const response = await bookService.pagination({
+        type: currentTag.value
+      });
       setTableData(response.data)
     } catch (error) {
       // setLoadingPost(false);
       // setErrorMsg(error.message);
     }
-  }, [setTableData])
+  }, [setTableData, currentTag])
 
   useEffect(() => {
     getBooks()
@@ -112,12 +118,18 @@ export default function TrainingSearchPage () {
             justifyContent: "space-between",
             margin: '16px  0'
           }}>
-            {TAGS.map((tab) => (
+            {TAGS.map((tag) => (
               <Label
+                onClick={() => setCurrentTag(tag)}
+                sx={{
+                  backgroundColor: tag.value === currentTag.value ? "black" : "white",
+                  color: tag.value === currentTag.value ? "white" : "black",
+                }}
+                // color={tag.value === currentTag.value ? 'light' : 'default'}
                 style={{ width: '70px' }}
-                key={tab.value}
-                value={tab.value}>
-                {tab.label}
+                key={tag.value}
+                value={tag.value}>
+                {tag.label}
               </Label>
             ))}
           </Box>

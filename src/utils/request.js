@@ -2,8 +2,8 @@ import axios from 'axios'
 // import qs from 'qs'
 // create an axios instance
 const service = axios.create({
-  baseURL: 'https://www.lourd.online/api/v1/',
-  timeout: 10000
+  baseURL: 'http://192.168.69.250:3000/api/v1/',
+  timeout: 20000
 })
 service.interceptors.request.use(
   config => {

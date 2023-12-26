@@ -27,6 +27,7 @@ export default function ArticleDetailsHero ({ title, author, coverUrl, createdAt
 
   const smUp = useResponsive('up', 'sm');
 
+  const titleShow = title.replace(/\|\|\|/g, "\n");
   return (
     <Box
       sx={{
@@ -49,10 +50,11 @@ export default function ArticleDetailsHero ({ title, author, coverUrl, createdAt
             color: 'common.white',
             position: 'absolute',
             maxWidth: 480,
+            whiteSpace: "break-spaces",
             pt: { xs: 2, md: 8 },
           }}
         >
-          {title}
+          {titleShow}
         </Typography>
 
         <Stack

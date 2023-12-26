@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 //
+import { fData } from 'src/utils/format-number';
 import Iconify from '../iconify';
 import Image from '../image';
 //
@@ -13,8 +14,20 @@ import RejectionFiles from './errors-rejection-files';
 
 // ----------------------------------------------------------------------
 
+function sizeValidator(file) {
+  if (file.size > 3145728) {
+    return {
+      code: "file-too-large",
+      message: `文件不能超过 ${fData(3145728)} !`
+    };
+  }
+
+  return null
+}
+
 export default function UploadAvatar({ error, file, disabled, helperText, sx, ...other }) {
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
+    validator: sizeValidator,
     multiple: false,
     disabled,
     accept: {

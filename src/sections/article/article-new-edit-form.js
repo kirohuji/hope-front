@@ -141,7 +141,6 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
   const onSubmit = handleSubmit(async (data) => {
     try {
       preview.onFalse();
-      onNextStep();
       if (activeStep === 0) {
         preview.onFalse();
         onNextStep();
@@ -178,8 +177,8 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
           router.push(paths.dashboard.article.root);
         }
       }
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      enqueueSnackbar(e.response.data.message)
     }
   });
 

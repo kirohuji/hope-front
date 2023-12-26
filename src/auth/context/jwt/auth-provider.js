@@ -69,7 +69,7 @@ const reducer = (state, action) => {
 const STORAGE_KEY = 'accessToken';
 
 
-export function AuthProvider ({ children }) {
+export function AuthProvider({ children }) {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -98,6 +98,22 @@ export function AuthProvider ({ children }) {
     });
 
   }, [])
+
+  const refresh = useCallback(async () => {
+    const { user, profile, roles, permissions } = await userService.info()
+    dispatch({
+      type: 'INITIAL',
+      payload: {
+        isAuthenticated: true,
+        user: {
+          ...user,
+          ...profile,
+          permissions,
+          roles
+        }
+      }
+    });
+  }, []);
 
   const initialize = useCallback(async () => {
     try {
@@ -241,9 +257,10 @@ export function AuthProvider ({ children }) {
       isAdmin: state.user?.roles?.map(item => item._id).indexOf("admin") !== -1,
       login,
       register,
-      logout
+      logout,
+      refresh,
     }),
-    [login, logout, state, register, status]
+    [login, logout, state, register, status, refresh]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

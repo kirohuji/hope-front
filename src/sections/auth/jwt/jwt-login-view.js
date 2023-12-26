@@ -71,7 +71,7 @@ export default function JwtLoginView() {
       if (returnTo) {
         router.push(returnTo);
       } else {
-        dispatch(updateBottomNavigationActionValue(1));
+        // dispatch(updateBottomNavigationActionValue(1));
         router.push(PATH_AFTER_LOGIN);
       }
     } catch (error) {

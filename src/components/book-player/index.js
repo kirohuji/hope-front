@@ -23,7 +23,7 @@ import moment from 'moment';
 import { HEADER } from 'src/config-global';
 import Header from './header';
 
-function formatDuration (value) {
+function formatDuration(value) {
     const minute = Math.floor(value / 60);
     const secondLeft = Math.floor(value - minute * 60);
     return `${minute}:${secondLeft < 10 ? `0${secondLeft}` : secondLeft}`;
@@ -36,32 +36,12 @@ const TinyText = styled(Typography)({
     letterSpacing: 0.2,
 });
 
-const drawerBleeding = 56;
-
-
-const Root = styled('div')(({ theme }) => ({
-    height: '100%',
-    backgroundColor:
-        theme.palette.mode === 'light' ? grey[100] : theme.palette.background.default,
-}));
-
 const StyledBox = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'light' ? '#fff' : grey[800],
 }));
 
 
-const Puller = styled(Box)(({ theme }) => ({
-    width: 30,
-    height: 6,
-    backgroundColor: theme.palette.mode === 'light' ? grey[300] : grey[900],
-    borderRadius: 3,
-    position: 'absolute',
-    top: 8,
-    left: 'calc(50% - 15px)',
-}));
-
-
-export default function BookPlayer () {
+export default function BookPlayer() {
     const [isOpenList, setOpenList] = useState(null);
     // const dispatch = useDispatch();
     const isPlay = useBoolean(false)
@@ -77,7 +57,7 @@ export default function BookPlayer () {
     }, []);
     const container = window !== undefined ? () => window.document.body : undefined;
     return book && article && <>
-        <Card sx={{ display: 'flex', p: 0, borderRadius: 0 }} >
+        <Card sx={{ display: 'flex', p: 0, borderRadius: 0, paddingBottom: '8px' }} >
             <CardMedia
                 component="img"
                 sx={{ width: 60, height: 55, pl: 0.5, pr: 0.5 }}

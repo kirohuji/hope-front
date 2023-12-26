@@ -19,7 +19,9 @@ import NavHorizontal from './nav-horizontal';
 import DashboardFooter from './footer';
 // ----------------------------------------------------------------------
 
-export default function DashboardLayout ({ children }) {
+export default function DashboardLayout({ children }) {
+
+
 
   const settings = useSettingsContext();
 
@@ -39,7 +41,7 @@ export default function DashboardLayout ({ children }) {
 
   const pathname = usePathname();
 
-  console.log(pathname)
+  console.log('pathname', pathname)
   if (isHorizontal) {
     return (
       <>
@@ -90,7 +92,7 @@ export default function DashboardLayout ({ children }) {
           !lgUp && <DashboardFooter />
         }
         {
-          !lgUp && <Box position="fixed" color="primary" sx={{ top: 'auto', bottom: 55, background: 'none' }} className='book-player'>
+          !lgUp && pathname === "/dashboard/training/dashboard" && <Box position="fixed" color="primary" sx={{ top: 'auto', bottom: 55, background: 'none' }} className='book-player'>
             {/* <MusicPlayer /> */}
             <BookPlayer />
           </Box>

@@ -160,7 +160,7 @@ export default function ArticleDetailsView ({ onClose,articleId }) {
           mt: { xs: 2, md: 4 },
         }}
       >
-        <Typography variant="subtitle1" sx={{ mb: 1 }}>
+        <Typography variant="subtitle1" sx={{ mb: 1, whiteSpace: "break-spaces" }}>
           {article.description}
         </Typography>
         <Divider sx={{ mt: 1, mb: 1 }} />

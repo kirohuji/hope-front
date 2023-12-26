@@ -42,7 +42,7 @@ export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
           <ListItemText
             sx={{ mb: 1 }}
             primary={
-              <Link component={RouterLink} href={paths.dashboard.job.details(_id)} color="inherit">
+              <Link component={RouterLink} href={paths.dashboard.scope.details(_id)} color="inherit">
                 {label}
               </Link>
             }

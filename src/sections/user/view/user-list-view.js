@@ -59,10 +59,11 @@ const USER_STATUS_OPTIONS = [
 const STATUS_OPTIONS = [{ value: 'all', label: '全部' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
+  { id: 'selected', label: '选择', width: 80 },
   { id: 'username', label: '账户', width: 180 },
-  { id: 'displayName', label: '用户', width: 100 },
+  { id: 'displayName', label: '用户名', width: 150 },
   { id: 'phoneNumber', label: '手机号', width: 150 },
-  { id: 'baptized', label: ' 受洗情况', width: 90 },
+  { id: 'baptized', label: ' 受洗情况', width: 100 },
   { id: 'address', label: '地址', width: 250 },
   // { id: 'role', label: 'Role', width: 180 },
   { id: 'available', label: '状态', width: 100 },
@@ -113,9 +114,13 @@ export default function UserListView() {
       const response = await userService.pagination(
         {
           ...selector,
-          ..._.pickBy(_.omit(debouncedFilters, ["role"]))
+          ..._.pickBy(_.omit(debouncedFilters, ["role"])),
         },
-        options
+        {
+          ...options,
+          skip: table.page * table.rowsPerPage,
+          limit: table.rowsPerPage
+        }
       )
       setTableData(response.data);
       setTableDataCount(response.total);
@@ -123,7 +128,7 @@ export default function UserListView() {
     } catch (error) {
       enqueueSnackbar(error.message)
     }
-  }, [debouncedFilters, setTableData, setTableDataCount, enqueueSnackbar]);
+  }, [debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]);
 
   useEffect(() => {
     getTableData()
@@ -151,7 +156,7 @@ export default function UserListView() {
     [getTableData, enqueueSnackbar]
   );
 
-  const handleDeleteRows = useCallback( async () => {
+  const handleDeleteRows = useCallback(async () => {
     await userService.deleteMany({
       _ids: table.selected
     })
@@ -160,7 +165,7 @@ export default function UserListView() {
     enqueueSnackbar("删除成功")
     getTableData();
   },
-  [table, confirm, enqueueSnackbar, getTableData]
+    [table, confirm, enqueueSnackbar, getTableData]
   );
 
   const handleEditRow = useCallback(
@@ -282,48 +287,47 @@ export default function UserListView() {
               }
             />
 
-            {
-              loading ? <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <CircularProgress color="primary" />
-              </div> : <Scrollbar>
-                <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                  <TableHeadCustom
-                    order={table.order}
-                    orderBy={table.orderBy}
-                    headLabel={TABLE_HEAD}
-                    rowCount={tableData.length}
-                    numSelected={table.selected.length}
-                    onSort={table.onSort}
-                    onSelectAllRows={(checked) =>
-                      table.onSelectAllRows(
-                        checked,
-                        tableData.map((row) => row._id)
-                      )
-                    }
-                  />
-                  <TableBody>
-                    {tableData
-                      .map((row) => (
-                        <UserTableRow
-                          key={row._id}
-                          row={row}
-                          onClose={() => getTableData()}
-                          selected={table.selected.includes(row._id)}
-                          onSelectRow={() => table.onSelectRow(row._id)}
-                          onDeleteRow={() => handleDeleteRow(row._id)}
-                          onEditRow={() => handleEditRow(row._id)}
-                        />
-                      ))}
+            <Scrollbar>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+                <TableHeadCustom
+                  order={table.order}
+                  orderBy={table.orderBy}
+                  headLabel={TABLE_HEAD}
+                  rowCount={tableData.length}
+                  numSelected={table.selected.length}
+                  onSort={table.onSort}
+                  onSelectAllRows={(checked) =>
+                    table.onSelectAllRows(
+                      checked,
+                      tableData.map((row) => row._id)
+                    )
+                  }
+                />
+                <TableBody>
+                  {tableData
+                    .map((row) => (
+                      <UserTableRow
+                        key={row._id}
+                        row={row}
+                        onClose={() => getTableData()}
+                        selected={table.selected.includes(row._id)}
+                        onSelectRow={() => table.onSelectRow(row._id)}
+                        onDeleteRow={() => handleDeleteRow(row._id)}
+                        onEditRow={() => handleEditRow(row._id)}
+                      />
+                    ))}
 
-                    <TableEmptyRows
-                      height={denseHeight}
-                      emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                    />
-                    <TableNoData notFound={notFound} />
-                  </TableBody>
-                </Table>
-              </Scrollbar>
-            }
+                  {/* <TableEmptyRows
+                    height={denseHeight}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
+                  /> */}
+                  {
+                    notFound &&   <TableNoData notFound={notFound} />
+                  }
+                </TableBody>
+              </Table>
+            </Scrollbar>
+
           </TableContainer>
 
           <TablePaginationCustom

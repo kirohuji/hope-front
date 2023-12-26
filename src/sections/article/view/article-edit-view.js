@@ -59,12 +59,12 @@ export default function ArticleEditView () {
       <CustomBreadcrumbs
         heading="编辑"
         links={[
+          // {
+          //   name: 'Dashboard',
+          //   href: paths.dashboard.root,
+          // },
           {
-            name: 'Dashboard',
-            href: paths.dashboard.root,
-          },
-          {
-            name: 'Blog',
+            name: '灵修本',
             href: paths.dashboard.article.root,
           },
           {

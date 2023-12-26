@@ -168,11 +168,11 @@ export function useNavData () {
           // BOOK
           {
             title: t('book'),
-            auth: ['Book'],
+            auth: ['Book', 'BookList'],
             path: paths.dashboard.book.root,
             icon: ICONS.job,
             children: [
-              { title: t('list'), path: paths.dashboard.book.root },
+              { title: t('list'), path: paths.dashboard.book.root, auth: ['BookList'] },
               // { title: t('details'), path: paths.dashboard.book.demo.details },
               // { title: t('create'), path: paths.dashboard.book.new },
               // { title: t('edit'), path: paths.dashboard.book.demo.edit },

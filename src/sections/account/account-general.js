@@ -9,11 +9,14 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
+import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
 // utils
 import { fData } from 'src/utils/format-number';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 // assets
 import { countries } from 'src/assets/data';
 // components
@@ -30,10 +33,10 @@ import { profileService, fileService } from 'src/composables/context-provider'
 
 // ----------------------------------------------------------------------
 
-export default function AccountGeneral () {
+export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const { user } = useAuthContext();
+  const { user, refresh } = useAuthContext();
 
   const UpdateUserSchema = Yup.object().shape({
     displayName: Yup.string().required('请输入名字'),
@@ -49,6 +52,8 @@ export default function AccountGeneral () {
     // // not required
     // isPublic: Yup.boolean(),
   });
+
+  const loading = useBoolean(false)
 
   const defaultValues = {
     displayName: user?.displayName || '',
@@ -83,7 +88,7 @@ export default function AccountGeneral () {
         photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL
       })
       enqueueSnackbar('更新 成功!');
-      console.info('DATA', data);
+      refresh()
     } catch (error) {
       console.error(error);
     }
@@ -91,31 +96,62 @@ export default function AccountGeneral () {
 
   const handleDrop = useCallback(
     async (acceptedFiles) => {
-      const file = acceptedFiles[0];
-      const formData = new FormData();
-      formData.append('file', file);
-      const { link } = await fileService.avatar(formData)
-      if (file) {
-        setValue(
-          'photoURL',
-          Object.assign(file, {
-            preview: link
-          })
-        );
+      try{
+        const file = acceptedFiles[0];
+        console.log('file.size',file.size)
+        if(file.size < 3145728){
+          const formData = new FormData();
+          formData.append('file', file);
+          loading.onTrue()
+          const { link } = await fileService.avatar(formData)
+          if (file) {
+            setValue(
+              'photoURL',
+              Object.assign(file, {
+                preview: link
+              })
+            );
+          }
+          setTimeout(()=>{
+            loading.onFalse();
+          }, 2000)
+          enqueueSnackbar('头像上传成功!');
+        }
+      } catch(e){
+        loading.onFalse();
       }
     },
-    [setValue]
+    [setValue, enqueueSnackbar, loading]
   );
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
-          <Card sx={{ pt: 10, pb: 5, px: 3, textAlign: 'center' }}>
+          <Card sx={{ pt: 10, pb: 5, px: 3, textAlign: 'center', position: 'relative' }}>
+            {
+              loading.value && <Box sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                zIndex: 10,
+                backgroundColor: "#ffffffc4",
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+              }}>
+                <CircularProgress />
+              </Box>
+            }
             <RHFUploadAvatar
               name="photoURL"
-              maxSize={3145728}
+              // maxSize={3145728}
               onDrop={handleDrop}
+              onDropRejected={()=> {
+                loading.onFalse()
+              }}
               helperText={
                 <Typography
                   variant="caption"
