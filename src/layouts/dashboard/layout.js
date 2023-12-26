@@ -92,7 +92,7 @@ export default function DashboardLayout({ children }) {
           !lgUp && <DashboardFooter />
         }
         {
-          !lgUp && pathname === "/dashboard/training/dashboard" && <Box position="fixed" color="primary" sx={{ top: 'auto', bottom: 55, background: 'none' }} className='book-player'>
+          !lgUp && pathname === "/dashboard/training/dashboard" && <Box position="fixed" color="primary" sx={{ top: 'auto', bottom: 55, background: 'none', width: '100%' }} className='book-player'>
             {/* <MusicPlayer /> */}
             <BookPlayer />
           </Box>
