@@ -165,7 +165,7 @@ export default function ArticleDetailsView ({ onClose,articleId }) {
         </Typography>
         <Divider sx={{ mt: 1, mb: 1 }} />
         <Stack direction="row" sx={{ mb: 1, mt: 1 }}>
-          <Typography variant="h4">阅读经文</Typography>
+          {/* <Typography variant="h4">阅读经文</Typography> */}
         </Stack>
         <Markdown children={article.content} />
         {
