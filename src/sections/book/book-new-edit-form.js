@@ -19,6 +19,7 @@ import { useRouter } from 'src/routes/hook';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
+  RHFMultiCheckbox,
   RHFUpload,
   RHFEditor,
   RHFRadioGroup,
@@ -212,7 +213,17 @@ export default function BookNewEditForm ({ currentBook }) {
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1}>
               <Typography variant="subtitle2">类型</Typography>
-              <RHFRadioGroup row spacing={4} name="type" options={TYPE_OPTIONS} />
+              {/* <RHFRadioGroup row spacing={4} name="type" options={TYPE_OPTIONS} /> */}
+              <RHFMultiCheckbox
+                name="type"
+                row 
+                spacing={4} 
+                options={TYPE_OPTIONS}
+                // sx={{
+                //   display: 'grid',
+                //   gridTemplateColumns: 'repeat(2, 1fr)',
+                // }}
+              />
             </Stack>
           </Stack>
         </Card>

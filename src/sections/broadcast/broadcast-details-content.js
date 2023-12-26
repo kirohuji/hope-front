@@ -63,7 +63,7 @@ export default function BroadcastDetailsContent({ broadcast }) {
         }}
       >
         <m.div
-          key={slides[0].src}
+          key={slides[0]?.src}
           whileHover="hover"
           variants={{
             hover: { opacity: 0.8 },
@@ -71,10 +71,10 @@ export default function BroadcastDetailsContent({ broadcast }) {
           transition={varTranHover()}
         >
           <Image
-            alt={slides[0].src}
-            src={slides[0].src}
+            alt={slides[0]?.src}
+            src={slides[0]?.src}
             ratio="1/1"
-            onClick={() => handleOpenLightbox(slides[0].src)}
+            onClick={() => handleOpenLightbox(slides[0]?.src)}
             sx={{ borderRadius: 2, cursor: 'pointer' }}
           />
         </m.div>

@@ -8,6 +8,7 @@ import TrainingCard from 'src/sections/training/training-card'
 import Iconify from 'src/components/iconify'
 import { bookService } from 'src/composables/context-provider';
 import { useSnackbar } from 'src/components/snackbar';
+import { fDate } from 'src/utils/format-time';
 
 export default function TrainingSearchDetailView () {
   const [book, setBook] = useState({});
@@ -88,6 +89,8 @@ export default function TrainingSearchDetailView () {
             </div>
             <div style={{ margin: "15px 0px", width: 'calc(100% - 142px' }}>
               <Typography variant="h9" style={{ fontWeight: '700' }}>{book.label}</Typography>
+              <div style={{ fontSize: '12px' }}>{`发布者:  ${book.createdUser?.displayName}(${book.createdUser?.realName})`}</div>
+              <div style={{ fontSize: '12px' }}>{`发布时间:  ${fDate(book.updatedAt)}`}</div>
             </div>
           </div>
           <Box sx={{ margin: '15px 0 15px 15px' }}>

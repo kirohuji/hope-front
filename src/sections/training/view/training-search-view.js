@@ -70,9 +70,18 @@ export default function TrainingSearchPage() {
   });
   const getBooks = useCallback(async () => {
     try {
-      const response = await bookService.pagination({
-        type: currentTag.value
-      });
+      let response = {
+        data: []
+      }
+      if(currentTag.value){
+        response = await bookService.pagination({
+          type: {
+            $in: [currentTag.value],
+          }
+        });
+      } else {
+        response = await bookService.pagination({ });
+      }
       setTableData(response.data)
     } catch (error) {
       // setLoadingPost(false);

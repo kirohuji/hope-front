@@ -17,7 +17,7 @@ import IconButton from '@mui/material/IconButton';
 import Slider from '@mui/material/Slider';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDispatch, useSelector } from 'src/redux/store';
-import { next, select } from 'src/redux/slices/trainning';
+import { getBooksWithCurrentUserBySummarize, select } from 'src/redux/slices/trainning';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import moment from 'moment';
 import Scrollbar from 'src/components/scrollbar';
@@ -26,7 +26,7 @@ import { HEADER } from 'src/config-global';
 import { ArticleDetailsView } from 'src/sections/article/view';
 import Header from './header';
 
-function formatDuration (value) {
+function formatDuration(value) {
     const minute = Math.floor(value / 60);
     const secondLeft = Math.floor(value - minute * 60);
     return `${minute}:${secondLeft < 10 ? `0${secondLeft}` : secondLeft}`;
@@ -64,11 +64,11 @@ const Puller = styled(Box)(({ theme }) => ({
 }));
 
 
-export default function BookPlayer () {
+export default function BookPlayer() {
     const [isOpenList, setOpenList] = useState(null);
-    // const dispatch = useDispatch();
+    const dispatch = useDispatch();
     const isPlay = useBoolean(false)
-    const { book, article, list } = useSelector((state) => state.trainning);
+    const { book, article, list, selectedArticle } = useSelector((state) => state.trainning);
     const [open, setOpen] = useState(false);
     const isOffset = useOffSetTop(HEADER.H_MAIN_DESKTOP);
 
@@ -81,8 +81,13 @@ export default function BookPlayer () {
     const container = window !== undefined ? () => window.document.body : undefined;
 
     const containerRef = useRef(null);
-  
+
     const scrollContainer = useScroll({ container: containerRef });
+
+    const selectItem = useCallback(async (current) => {
+        await dispatch(select(current));
+        setOpenList(null);
+    }, [dispatch])
 
     return book && article && <>
         <Card sx={{ display: 'flex', p: 0, borderRadius: 0 }} >
@@ -147,6 +152,8 @@ export default function BookPlayer () {
             {list.map((item) => item && (
                 <MenuItem
                     key={item._id}
+                    onClick={() => selectItem(item)}
+                    selected={item._id === selectedArticle._id}
                 // selected={item._id === current._id}
                 >
                     {moment(item.date).format("YYYY/MM/DD")} - {item.title}
@@ -186,7 +193,13 @@ export default function BookPlayer () {
                     }}
                 >
                     <Scrollbar ref={containerRef} sx={{ height: '100%' }}>
-                        <ArticleDetailsView articleId={article._id} onClose={toggleDrawer(false)}/>
+                        <ArticleDetailsView articleId={article._id} onClose={() => {
+                            setOpen(false)
+                            console.log('关闭')
+                            dispatch(getBooksWithCurrentUserBySummarize({
+                                bookId: book._id
+                            }));
+                        }} />
                     </Scrollbar>
                 </Box>
             </StyledBox>

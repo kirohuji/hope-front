@@ -79,7 +79,7 @@ export default function BookDetailsContent({ book }) {
         },
         {
           label: '作者',
-          value: createdUser?.username || '未知',
+          value: `${createdUser?.username}(${createdUser?.realName})` || '未知',
           icon: <Iconify icon="solar:calendar-date-bold" />,
         },
         {

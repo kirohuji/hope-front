@@ -25,6 +25,7 @@ JoinedUserItem.propTypes = {
     emails: PropTypes.array,
     avatarUrl: PropTypes.string,
     permission: PropTypes.string,
+    realName: PropTypes.string
   }),
   leader: PropTypes.object,
   node: PropTypes.object,
@@ -57,7 +58,7 @@ export default function JoinedUserItem ({ node, leader, person, onSelectMain }) 
           </ListItemAvatar>
         </Badge>
         <ListItemText
-          primary={person.displayName}
+          primary={`${person.displayName}(${person.realName})`}
           secondary={
             <Tooltip title={person.displayName}>
               <span>{person.emails[0].address}</span>

@@ -66,7 +66,6 @@ export function getEvents () {
     dispatch(slice.actions.startLoading());
     try {
       const response = await eventService.getWithCurrentUser()
-      console.log('response',response)
       dispatch(slice.actions.getEventsSuccess(_.compact(response).map(item=> ({
           ...item,
           id: item._id,

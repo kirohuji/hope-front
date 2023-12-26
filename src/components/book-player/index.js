@@ -43,18 +43,22 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
 export default function BookPlayer() {
     const [isOpenList, setOpenList] = useState(null);
-    // const dispatch = useDispatch();
+    const dispatch = useDispatch();
     const isPlay = useBoolean(false)
-    const { book, article, list } = useSelector((state) => state.trainning);
+    const { book, article, list, selectedArticle } = useSelector((state) => state.trainning);
     const [open, setOpen] = useState(false);
     const isOffset = useOffSetTop(HEADER.H_MAIN_DESKTOP);
-
     const toggleDrawer = (newOpen) => () => {
         setOpen(newOpen);
     };
     const handleClickListItem = useCallback((event) => {
         setOpenList(event.currentTarget);
     }, []);
+    const selectItem = useCallback(async (current) => {
+        console.log('粗发')
+        await dispatch(select(current));
+        setOpenList(null);
+    }, [dispatch])
     const container = window !== undefined ? () => window.document.body : undefined;
     return book && article && <>
         <Card sx={{ display: 'flex', p: 0, borderRadius: 0, paddingBottom: '8px' }} >
@@ -119,9 +123,11 @@ export default function BookPlayer() {
             {_.compact(list).length > 0 && list.map((item) => (
                 <MenuItem
                     key={item._id}
-                // selected={item._id === current._id}
+                    selected={item._id === selectedArticle._id}
                 >
-                    {moment(item.date).format("YYYY/MM/DD")} - {item.title}
+                    <Box onClick={() => selectItem(item)}>
+                        {moment(item.date).format("YYYY/MM/DD")} - {item.title}
+                    </Box>
                 </MenuItem>
             ))}
         </Menu>

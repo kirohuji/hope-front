@@ -137,7 +137,7 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
         </Typography>
         {
           node.type === "org" && <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
-            负责人: {node.leader?.username || "无"}
+            负责人: {`${node.leader?.displayName}(${node.leader?.realName})` || "无"}
           </Typography>
         }
       </Card>

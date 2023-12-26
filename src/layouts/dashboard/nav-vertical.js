@@ -57,7 +57,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
       />
 
       <Box sx={{ flexGrow: 1 }} />
-      { false && 
+      {false &&
         <NavUpgrade />}
     </Scrollbar>
   );
@@ -75,6 +75,8 @@ export default function NavVertical({ openNav, onCloseNav }) {
       {lgUp ? (
         <Stack
           sx={{
+            background: 'white',
+            zIndex: 10,
             height: 1,
             position: 'fixed',
             width: NAV.W_VERTICAL,

@@ -102,7 +102,7 @@ export default function OrganizationalChart ({ maxRole, type, data, variant = 's
   }
   const handleChangeLeader = async (person) => {
     for (let i = 0; i < parent.children.length; i += 1) {
-      if (parent.children[i]._id === item._id) {
+      if (parent?.children[i] && parent.children[i]._id === item._id) {
         parent.children[i].leader = {
           _id: person._id,
           username: person.username

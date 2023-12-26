@@ -194,7 +194,7 @@ export default function OrganDetailsDrawer ({
                 <Stack spacing={1.5}>
                   {false && <Row label="负责人" value={fData(size)} />}
 
-                  {item.type === "org" && <Row label="负责人" value={leader?.username} />}
+                  {item.type === "org" && <Row label="负责人" value={`${leader?.displayName}(${leader?.realName})`} />}
 
                   {false && <Row label="代码" value={fDateTime(dateModified)} />}
 

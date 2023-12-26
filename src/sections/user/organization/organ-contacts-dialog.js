@@ -253,7 +253,7 @@ export default function OrganContactsDialog ({ open, onClose, current }) {
                     <ListItemText
                       primaryTypographyProps={{ typography: 'subtitle2', sx: { mb: 0.25 } }}
                       secondaryTypographyProps={{ typography: 'caption' }}
-                      primary={contact.displayName || contact.username}
+                      primary={`${contact?.displayName}(${contact?.realName})`}
                       secondary={contact.emails[0].address}
                     />
                   </ListItem>

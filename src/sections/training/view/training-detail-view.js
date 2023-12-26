@@ -92,7 +92,6 @@ export default function TrainingPage () {
 
     const getBooks = useCallback(async () => {
         const response = bookService.getBooksWithCurrentUser();
-        console.log('response',response)
         setBooks(response)
         // try {
         //   const response = await userService.pagination(

@@ -12,40 +12,47 @@ const initialState = {
     current: null,
     book: null,
     article: null,
-    index: -1
+    index: -1,
+    selectedArticle: {},
+    bookSummarize: []
 };
 
 const slice = createSlice({
     name: 'trainning',
     initialState,
     reducers: {
-        next (state) {
+        next(state) {
             if (state.index + 1 > state.list.length) {
                 state.index = -1;
             }
             state.index += 1
             state.current = state.list[state.index];
         },
-        play (state, action) {
+        select(state, action) {
             state.current = action.payload;
             state.index = _.findIndex(state.list, ["_id", state.current._id])
+            state.selectedArticle = _.findIndex(state.list, ["_id", state.current._id])
+            state.article = _.find(state.list, ["_id", state.current._id]);
         },
-        setCurrent (state, action) {
+        setCurrent(state, action) {
             state.current = action.payload;
         },
+        updateBooksWithCurrentUserBySummarize(state, action) {
+            state.bookSummarize = action.payload;
+        },
         // START LOADING
-        startLoading (state) {
+        startLoading(state) {
             state.isLoading = true;
         },
 
         // HAS ERROR
-        hasError (state, action) {
+        hasError(state, action) {
             state.isLoading = false;
             state.error = action.payload;
         },
 
         // GET POSTS
-        getPlaySuccess (state, action) {
+        getPlaySuccess(state, action) {
             state.isLoading = false;
             const { book, article, list } = action.payload;
             state.book = book;
@@ -68,7 +75,7 @@ export const {
 
 // ----------------------------------------------------------------------
 
-export function next () {
+export function next() {
     return async (dispatch) => {
         try {
             dispatch(slice.actions.next());
@@ -79,10 +86,11 @@ export function next () {
     };
 }
 
-export function select (item) {
+export function getBooksWithCurrentUserBySummarize(item) {
     return async (dispatch) => {
         try {
-            dispatch(slice.actions.play(item));
+            const bookSummarizeData = await bookService.getBooksWithCurrentUserBySummarize(item);
+            dispatch(slice.actions.updateBooksWithCurrentUserBySummarize(bookSummarizeData));
         } catch (error) {
             console.error(error);
             dispatch(slice.actions.hasError(error));
@@ -90,7 +98,24 @@ export function select (item) {
     };
 }
 
-export function getPlay () {
+
+export function select(item) {
+    return async (dispatch, getState) => {
+        try {
+            console.log('getState()',getState())
+            await bookService.select({
+                book_id: getState().trainning.book._id,
+                article_id: item._id,
+            });
+            dispatch(slice.actions.select(item));
+        } catch (error) {
+            console.error(error);
+            dispatch(slice.actions.hasError(error));
+        }
+    };
+}
+
+export function getPlay() {
     return async (dispatch) => {
         dispatch(slice.actions.startLoading());
         try {

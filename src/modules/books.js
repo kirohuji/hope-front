@@ -99,4 +99,8 @@ export default class BookService extends Service {
   unpublish(target) {
     return this.api.post(`${this.model}/${target.book_id}/unpublish`);
   }
+
+  select(target) {
+    return this.api.post(`${this.model}/${target.book_id}/select`, target);
+  }
 }

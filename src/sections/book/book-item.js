@@ -49,9 +49,10 @@ export default function BookItem ({ book, onView, onEdit, onDelete }) {
           p: '2px 6px 2px 4px',
           typography: 'subtitle2',
           bgcolor: 'warning.lighter',
+          fontSize: '12px'
         }}
       >
-       {TYPE_OPTIONS.get(type)}
+       {Array.isArray(type)? type.map(tp => TYPE_OPTIONS.get(tp)).join(',') : TYPE_OPTIONS.get(type)}
       </Stack>
     );
   return (

@@ -22,7 +22,7 @@ import isBetweenPlugin from 'dayjs/plugin/isBetween';
 import { styled } from '@mui/material/styles';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getPlay } from 'src/redux/slices/trainning';
+import { getPlay, getBooksWithCurrentUserBySummarize } from 'src/redux/slices/trainning';
 // components
 import {
     StaticDatePicker
@@ -113,10 +113,11 @@ export default function TrainingProcessPage () {
 
     const [scrollable, setScrollable] = useState('one');
     const [click, setCLick] = useState(null);
-    const [value, setValue] = useState(new Date());
+    const [value, setValue] = useState(null);
     const [open, setOpen] = useState(false);
     const [books, setBooks] = useState([]);
-    const [bookSummarize, setBookSummarize] = useState([]);
+
+    const { bookSummarize } = useSelector((state) => state.trainning);    // const [bookSummarize, setBookSummarize] = useState([]);
 
     // const { list, current } = useSelector((state) => state.training);
 
@@ -126,16 +127,19 @@ export default function TrainingProcessPage () {
             setBooks(booksData)
             const bookData = _.find(booksData, ["currentStatus", "active"])
             if (bookData) {
-                const bookSummarizeData = await bookService.getBooksWithCurrentUserBySummarize({
+                dispatch(getBooksWithCurrentUserBySummarize({
                     bookId: bookData._id
-                });
-                setBookSummarize(bookSummarizeData)
+                }))
+                // const bookSummarizeData = await bookService.getBooksWithCurrentUserBySummarize({
+                //     bookId: bookData._id
+                // });
+                // setBookSummarize(bookSummarizeData)
             }
         } catch (error) {
             // setLoadingPost(false);
             // setErrorMsg(error.message);
         }
-    }, [setBooks, setBookSummarize])
+    }, [dispatch])
 
     const getCurrentTraining = useCallback(async () => {
         try {
@@ -175,10 +179,10 @@ export default function TrainingProcessPage () {
             const isContain = date.isSame(dates[i], 'day');
             if (date.isSame(dates[i], 'day')) {
                 return <CustomPickersDay
-                    onClick={(e) => {
-                        handleDialogClose();
-                        handleDialogOpen(e)
-                    }}
+                    // onClick={(e) => {
+                    //     handleDialogClose();
+                    //     handleDialogOpen(e)
+                    // }}
                     isContain={isContain}
                     {...pickersDayProps}
                 />
@@ -310,22 +314,7 @@ export default function TrainingProcessPage () {
                             onChange={(newValue) => {
                                 setValue(newValue);
                             }}
-                            renderDay={(date, selectedDates, pickersDayProps) => renderPickerDay(date, selectedDates, pickersDayProps, [
-                                new Date('2023/04/02'),
-                                new Date('2023/04/03'),
-                                new Date('2023/04/04'),
-                                new Date('2023/04/05'),
-                                new Date('2023/04/06'),
-                                new Date('2023/04/07'),
-                                new Date('2023/04/08'),
-                                new Date('2023/05/02'),
-                                new Date('2023/05/03'),
-                                new Date('2023/05/04'),
-                                new Date('2023/05/05'),
-                                new Date('2023/05/06'),
-                                new Date('2023/05/07'),
-                                new Date('2023/05/08'),
-                            ])}
+                            renderDay={(date, selectedDates, pickersDayProps) => renderPickerDay(date, selectedDates, pickersDayProps, bookSummarize.days.map(day => new Date(day)))}
                             showToolbar={false}
                             renderInput={() => null}
                         />
