@@ -314,7 +314,7 @@ export default function TrainingProcessPage () {
                             onChange={(newValue) => {
                                 setValue(newValue);
                             }}
-                            renderDay={(date, selectedDates, pickersDayProps) => renderPickerDay(date, selectedDates, pickersDayProps, bookSummarize.days.map(day => new Date(day)))}
+                            renderDay={(date, selectedDates, pickersDayProps) => renderPickerDay(date, selectedDates, pickersDayProps, bookSummarize?.days?.map(day => new Date(day)) || [])}
                             showToolbar={false}
                             renderInput={() => null}
                         />

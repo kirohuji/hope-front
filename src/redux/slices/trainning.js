@@ -14,7 +14,9 @@ const initialState = {
     article: null,
     index: -1,
     selectedArticle: {},
-    bookSummarize: []
+    bookSummarize: {
+        days: []
+    }
 };
 
 const slice = createSlice({
