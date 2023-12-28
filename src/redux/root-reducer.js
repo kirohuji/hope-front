@@ -17,6 +17,12 @@ import bookReducer from './slices/book';
 // import notificationReducer from './slices/notification';
 // ----------------------------------------------------------------------
 
+const trainningPersistConfig = {
+  key: 'tranning',
+  storage,
+  keyPrefix: 'redux-',
+};
+
 const checkoutPersistConfig = {
   key: 'checkout',
   storage,
@@ -71,7 +77,7 @@ export const rootReducer = combineReducers({
   calendar: calendarReducer,
   chat: chatReducer,
   audio: audioReducer,
-  trainning: trainningReducer,
+  trainning:persistReducer(trainningPersistConfig, trainningReducer),
   // notification: notificationReducer,
   dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
   book: persistReducer(bookPersistConfig, bookReducer),

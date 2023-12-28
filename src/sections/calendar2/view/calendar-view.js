@@ -12,7 +12,7 @@ import localeZn from '@fullcalendar/core/locales/zh-cn'
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 // @mui
-import { Card, Button, Container, DialogTitle, Dialog, Typography} from '@mui/material';
+import { Card, Button, Container, DialogTitle, Dialog, Typography, Backdrop, CircularProgress } from '@mui/material';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
 import { getEvents, createEvent, updateEvent, deleteEvent } from 'src/redux/slices/calendar';
@@ -50,7 +50,7 @@ const COLOR_OPTIONS = [
 
 // ----------------------------------------------------------------------
 
-export default function CalendarView () {
+export default function CalendarView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const { themeStretch } = useSettingsContext();
@@ -295,6 +295,12 @@ export default function CalendarView () {
               onChangeView={handleChangeView}
               onOpenFilter={() => setOpenFilter(true)}
             />
+            {/* <Backdrop
+              sx={{ backgroun: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+              open={calendar.isLoading}
+            >
+              <CircularProgress color="inherit" />
+            </Backdrop> */}
 
             <FullCalendar
               weekends
@@ -312,7 +318,7 @@ export default function CalendarView () {
               eventDisplay="block"
               events={dataFiltered}
               headerToolbar={false}
-              initialEvents={calendar.events}
+              // initialEvents={calendar.events}
               select={handleSelectRange}
               eventDrop={handleDropEvent}
               eventClick={handleSelectEvent}
@@ -334,7 +340,7 @@ export default function CalendarView () {
       <Dialog fullWidth maxWidth="xs" open={openForm} onClose={handleCloseModal}>
         {
           isDesktop ? <DialogTitle>{selectedEvent ? '编辑活动' : '添加活动'}</DialogTitle>
-          :  <DialogTitle>详情</DialogTitle>
+            : <DialogTitle>详情</DialogTitle>
         }
 
         <CalendarForm
@@ -346,7 +352,6 @@ export default function CalendarView () {
           colorOptions={COLOR_OPTIONS}
         />
       </Dialog>
-
       <CalendarFilterDrawer
         events={calendar.events}
         picker={picker}
@@ -369,7 +374,7 @@ export default function CalendarView () {
 
 // ----------------------------------------------------------------------
 
-function applyFilter ({ inputData, filterEventColor, filterStartDate, filterEndDate, isError }) {
+function applyFilter({ inputData, filterEventColor, filterStartDate, filterEndDate, isError }) {
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   inputData = stabilizedThis.map((el) => el[0]);

@@ -14,6 +14,7 @@ const initialState = {
     article: null,
     index: -1,
     selectedArticle: {},
+    books: [],
     bookSummarize: {
         days: []
     }
@@ -41,6 +42,10 @@ const slice = createSlice({
         },
         updateBooksWithCurrentUserBySummarize(state, action) {
             state.bookSummarize = action.payload;
+        },
+
+        updateBooksWithCurrentUser(state, action) {
+            state.books = action.payload;
         },
         // START LOADING
         startLoading(state) {
@@ -88,10 +93,26 @@ export function next() {
     };
 }
 
-export function getBooksWithCurrentUserBySummarize(item) {
+export function getBooksWithCurrentUser(){
     return async (dispatch) => {
         try {
-            const bookSummarizeData = await bookService.getBooksWithCurrentUserBySummarize(item);
+            const booksData = await bookService.getBooksWithCurrentUser();
+            dispatch(slice.actions.updateBooksWithCurrentUser(booksData));
+        } catch (error) {
+            console.error(error);
+            dispatch(slice.actions.hasError(error));
+        }
+    };
+}
+
+export function getBooksWithCurrentUserBySummarize() {
+    return async (dispatch, getState) => {
+        try {
+            const { books } = getState().trainning;
+            const bookData = _.find(books, ["currentStatus", "active"])
+            const bookSummarizeData = await bookService.getBooksWithCurrentUserBySummarize({
+                bookId: bookData._id
+            });
             dispatch(slice.actions.updateBooksWithCurrentUserBySummarize(bookSummarizeData));
         } catch (error) {
             console.error(error);

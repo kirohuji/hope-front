@@ -19,7 +19,7 @@ import ScopeItem from './scope-item';
 
 export default function ScopeList ({ scopes, onRefresh }) {
   const confirm = useBoolean();
-  const [current, setCurrent] = useState(null)
+  const [current, setCurrent] = useState({})
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
 
@@ -39,11 +39,11 @@ export default function ScopeList ({ scopes, onRefresh }) {
 
   const handleDelete = useCallback(async (_id) => {
     await scopeService.delete({
-      _id
+      _id: current._id,
     })
     enqueueSnackbar('删除成功')
     onRefresh()
-  }, [onRefresh, enqueueSnackbar]);
+  }, [current._id, enqueueSnackbar, onRefresh]);
 
   return (
     <>

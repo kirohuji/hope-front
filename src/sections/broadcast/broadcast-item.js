@@ -18,12 +18,21 @@ import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { shortDateLabel } from 'src/components/custom-date-range-picker';
+import _ from 'lodash';
 
 // ----------------------------------------------------------------------
 
 function isAssetTypeAnImage(ext) {
   return /\.(jpg|jpeg|png|gif)$/i.test(ext.toLowerCase());
 }
+
+const BROAECAST_TYPE_OPTIONS = [
+  { value: 'activity', label: '活动通知' },
+  { value: 'notification', label: '消息公告' },
+  { value: 'familyGathering', label: '家庭聚会' },
+  // { value: 'book', label: '灵修' },
+];
+
 export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) {
   const popover = usePopover();
 
@@ -79,7 +88,8 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
         bgcolor: 'warning.lighter',
       }}
     >
-     {type === "activity" ? '活动通知' : "消息通告"}
+     {/* {type === "activity" ? '活动通知' : "消息通告"} */}
+     { _.find(BROAECAST_TYPE_OPTIONS,["value",type]).label}
     </Stack>
   );
 

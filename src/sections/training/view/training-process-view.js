@@ -16,13 +16,15 @@ import {
     DialogContentText,
 } from '@mui/material';
 
+import { useSnackbar } from 'src/components/snackbar';
+
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import dayjs from 'dayjs';
 import isBetweenPlugin from 'dayjs/plugin/isBetween';
 import { styled } from '@mui/material/styles';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getPlay, getBooksWithCurrentUserBySummarize } from 'src/redux/slices/trainning';
+import { getPlay, getBooksWithCurrentUserBySummarize, getBooksWithCurrentUser } from 'src/redux/slices/trainning';
 // components
 import {
     StaticDatePicker
@@ -109,32 +111,24 @@ const defaultBook = {
 export default function TrainingProcessPage () {
     const dispatch = useDispatch();
 
+    const { enqueueSnackbar } = useSnackbar();
+
     const { themeStretch } = useSettingsContext();
 
     const [scrollable, setScrollable] = useState('one');
     const [click, setCLick] = useState(null);
-    const [value, setValue] = useState(null);
+    const [value, setValue] = useState(new Date());
     const [open, setOpen] = useState(false);
-    const [books, setBooks] = useState([]);
 
-    const { bookSummarize } = useSelector((state) => state.trainning);    // const [bookSummarize, setBookSummarize] = useState([]);
+    const { bookSummarize, books } = useSelector((state) => state.trainning);    // const [bookSummarize, setBookSummarize] = useState([]);
 
     // const { list, current } = useSelector((state) => state.training);
 
     const getBooks = useCallback(async () => {
         try {
-            const booksData = await bookService.getBooksWithCurrentUser();
-            setBooks(booksData)
-            const bookData = _.find(booksData, ["currentStatus", "active"])
-            if (bookData) {
-                dispatch(getBooksWithCurrentUserBySummarize({
-                    bookId: bookData._id
-                }))
-                // const bookSummarizeData = await bookService.getBooksWithCurrentUserBySummarize({
-                //     bookId: bookData._id
-                // });
-                // setBookSummarize(bookSummarizeData)
-            }
+            await dispatch(getBooksWithCurrentUser());
+            await dispatch(getBooksWithCurrentUserBySummarize())
+            // enqueueSnackbar('灵修本同步成功!')
         } catch (error) {
             // setLoadingPost(false);
             // setErrorMsg(error.message);
@@ -314,7 +308,7 @@ export default function TrainingProcessPage () {
                             onChange={(newValue) => {
                                 setValue(newValue);
                             }}
-                            renderDay={(date, selectedDates, pickersDayProps) => renderPickerDay(date, selectedDates, pickersDayProps, bookSummarize?.days?.map(day => new Date(day)) || [])}
+                            renderDay={(date, selectedDates, pickersDayProps) => renderPickerDay(date, selectedDates, pickersDayProps, bookSummarize.days?.map(day => new Date(day)) || [])}
                             showToolbar={false}
                             renderInput={() => null}
                         />

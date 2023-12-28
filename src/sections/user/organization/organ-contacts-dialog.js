@@ -84,7 +84,10 @@ export default function OrganContactsDialog ({ open, onClose, current }) {
   const getData = useCallback(async () => {
     const response = await roleService.getUsersInNotRoleOnly({
       queryOptions: {
-        username: searchContacts,
+        username:  {
+          $regex: searchContacts,
+          $options: "i"
+        },
         isShowJoinedUser: "on"
       },
       options: {
@@ -149,7 +152,7 @@ export default function OrganContactsDialog ({ open, onClose, current }) {
   const onSubmit = async (data) => {
     console.log(data)
   };
-  const isNotFound = !!searchContacts;
+  const isNotFound = users.length <=0;
 
   return (
     <>

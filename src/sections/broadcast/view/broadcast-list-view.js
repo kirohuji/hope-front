@@ -68,7 +68,10 @@ export default function BroadcastListView () {
       dispatch(getDatas({
         ...{
           ...selector,
-          label: debouncedFilters.label
+          label: {
+            $regex: debouncedFilters.label,
+            $options: "i"
+          },
         },
         ...options
       }))

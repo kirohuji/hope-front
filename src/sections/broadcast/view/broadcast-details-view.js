@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
 // _mock
-import { Divider, Stack } from '@mui/material';
+import { Divider, Stack, Backdrop, CircularProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import { useAuthContext } from 'src/auth/hooks';
 // components
@@ -17,6 +17,8 @@ import { useSettingsContext } from 'src/components/settings';
 import { broadcastService, userService } from 'src/composables/context-provider';
 import _ from 'lodash';
 // redux
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getData } from 'src/redux/slices/broadcast';
 import { useSnackbar } from 'src/components/snackbar';
 import BoradcastContactsDialog from '../boradcast-contacts-dialog';
 import BroadcastDetailsBookers from '../broadcast-details-bookers';
@@ -40,13 +42,15 @@ export const TOUR_PUBLISH_OPTIONS = [
 ];
 // ----------------------------------------------------------------------
 
-export default function BroadcastDetailsView () {
+export default function BroadcastDetailsView() {
   const { enqueueSnackbar } = useSnackbar();
   const [participants, setParticipants] = useState([])
   const [isAdmin, setIsAdmin] = useState(false)
   const [participantsCount, setParticipantsCount] = useState([])
   const [openContacts, setOpenContacts] = useState(false);
   const { user } = useAuthContext();
+  const { details, isLoading } = useSelector((state) => state.broadcast);
+  const dispatch = useDispatch();
   const handleOpenContacts = () => {
     setOpenContacts(true);
   };
@@ -94,31 +98,35 @@ export default function BroadcastDetailsView () {
     setParticipantsCount(getUsersCount);
   }, [getParticipants, id])
 
-  const getData = useCallback(async () => {
+  const refresh = useCallback(async () => {
     try {
       if (currentTab === 'content') {
-        const response = await broadcastService.get({
-          _id: id
-        })
-        if(response?.leaders){
-          const leaders = await userService.paginationByProfile(
-            {
-              _id: {
-                $in: response.leaders
-              }
-            },
-            {
-              fields: {
-                photoURL: 1,
-                username: 1,
-                phoneNumber: 1
-              }
-            }
-          )
-          response.leaders = leaders.data;
-        }
-        setIsAdmin(_.find(response.leaders, ["_id", user._id]))
-        setCurrentBroadcast(response)
+        dispatch(getData({
+          id,
+          user
+        }))
+        // const response = await broadcastService.get({
+        //   _id: id
+        // })
+        // if(response?.leaders){
+        //   const leaders = await userService.paginationByProfile(
+        //     {
+        //       _id: {
+        //         $in: response.leaders
+        //       }
+        //     },
+        //     {
+        //       fields: {
+        //         photoURL: 1,
+        //         username: 1,
+        //         phoneNumber: 1
+        //       }
+        //     }
+        //   )
+        //   response.leaders = leaders.data;
+        // }
+        // setIsAdmin(_.find(response.leaders, ["_id", user._id]))
+        // setCurrentBroadcast(response)
       } else {
         getParticipants()
       }
@@ -129,30 +137,30 @@ export default function BroadcastDetailsView () {
     } catch (error) {
       console.log(error)
     }
-  }, [id, currentTab, setCurrentBroadcast, user, getParticipants])
+  }, [currentTab, id, dispatch, user, getParticipants])
 
   const handlePublish = useCallback(async () => {
     await broadcastService.publish({
       broadcast_id: id
     })
-    getData(id)
+    refresh(id)
     enqueueSnackbar('发布成功');
-  }, [enqueueSnackbar,getData, id])
+  }, [enqueueSnackbar, refresh, id])
 
   const handleCancelPublish = useCallback(async () => {
     await broadcastService.unpublish({
       broadcast_id: id
     })
-    getData(id)
+    refresh(id)
     enqueueSnackbar('取消发布成功');
-  }, [enqueueSnackbar, getData,id])
+  }, [enqueueSnackbar, refresh, id])
 
   useEffect(() => {
     console.log('获取')
     if (id) {
-      getData(id)
+      refresh(id)
     }
-  }, [getData, id]);
+  }, [refresh, id]);
 
   const renderTabs = (
     <Tabs
@@ -182,9 +190,16 @@ export default function BroadcastDetailsView () {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+
+      <Backdrop
+        sx={{ background: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <BroadcastDetailsToolbar
         backLink={paths.dashboard.broadcast.root}
-        editLink={paths.dashboard.broadcast.edit(`${currentBroadcast?._id}`)}
+        editLink={paths.dashboard.broadcast.edit(`${details.byId[id]?._id}`)}
         liveLink="#"
         publish={publish || ''}
         onChangePublish={handleChangePublish}
@@ -192,7 +207,7 @@ export default function BroadcastDetailsView () {
       />
       {renderTabs}
 
-      {currentTab === 'content' && currentBroadcast && <BroadcastDetailsContent broadcast={currentBroadcast} />}
+      {currentTab === 'content' && details.byId[id] && <BroadcastDetailsContent broadcast={details.byId[id]} />}
 
       {currentTab === 'participants' && <BroadcastDetailsBookers participants={participants} onRefresh={onRefresh} />}
       <Divider sx={{ m: 2 }} />
@@ -201,24 +216,24 @@ export default function BroadcastDetailsView () {
           联系负责人
         </Button> */}
         {
-          isAdmin && <Button variant="contained" color="secondary" onClick={() => handleOpenContacts()}>
+          details.byId[id]?.isAdmin && <Button variant="contained" color="secondary" onClick={() => handleOpenContacts()}>
             添加参加者
           </Button>
         }
         {
-          isAdmin && !currentBroadcast.published && <Button variant="contained" color="success" onClick={() => handlePublish()}>
+          details.byId[id]?.isAdmin && !details.byId[id]?.published && <Button variant="contained" color="success" onClick={() => handlePublish()}>
             发布公告
           </Button>
         }
         {
-          isAdmin && currentBroadcast.published && <Button variant="contained" color="success" onClick={() => handleCancelPublish()}>
+          details.byId[id]?.isAdmin && details.byId[id]?.published && <Button variant="contained" color="success" onClick={() => handleCancelPublish()}>
             取消发布
           </Button>
         }
       </Stack>
       {
-        currentBroadcast && <BoradcastContactsDialog
-          current={currentBroadcast}
+        details.byId[id] && <BoradcastContactsDialog
+          current={details.byId[id]}
           open={openContacts}
           onClose={handleCloseContacts}
         />

@@ -67,7 +67,8 @@ export default function Header ({ onOpenNav }) {
         {/* <LanguagePopover /> */}
         {/* <NotificationsPopover /> */}
 
-        { lgUp && <ScopePopover /> }
+        {/* { lgUp && <ScopePopover /> } */}
+        <ScopePopover />
 
         {/**  <ContactsPopover /> */}
 
