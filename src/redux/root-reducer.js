@@ -73,8 +73,14 @@ export const broadcastPersistConfig = {
   keyPrefix: 'redux-',
 };
 
+export const calenderPersistConfig = {
+  key: 'calender',
+  storage,
+  keyPrefix: 'redux-',
+};
+
 export const rootReducer = combineReducers({
-  calendar: calendarReducer,
+  calendar: persistReducer(calenderPersistConfig,calendarReducer),
   chat: chatReducer,
   audio: audioReducer,
   trainning:persistReducer(trainningPersistConfig, trainningReducer),

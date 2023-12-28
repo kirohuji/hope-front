@@ -18,9 +18,11 @@ import {
   DialogContent,
   FormControlLabel,
   Switch,
-  Divider
+  Divider,
+  CircularProgress,
 } from '@mui/material';
 // components
+import { useDebounce } from 'src/hooks/use-debounce';
 import Iconify from '../../../components/iconify';
 import Scrollbar from '../../../components/scrollbar';
 import SearchNotFound from '../../../components/search-not-found';
@@ -28,9 +30,7 @@ import { roleService } from '../../../composables/context-provider';
 import { useSelector } from '../../../redux/store';
 import { useSnackbar } from '../../../components/snackbar';
 import ConfirmDialog from '../../../components/confirm-dialog';
-import FormProvider, {
-  RHFTextField,
-} from '../../../components/hook-form';
+import FormProvider, { RHFTextField } from '../../../components/hook-form';
 // ----------------------------------------------------------------------
 
 const ITEM_HEIGHT = 64;
@@ -42,16 +42,18 @@ OrganContactsDialog.propTypes = {
   current: PropTypes.object,
 };
 
-export default function OrganContactsDialog ({ open, onClose, current }) {
+export default function OrganContactsDialog({ open, onClose, current }) {
   const [searchContacts, setSearchContacts] = useState('');
   const [openConfirm, setOpenConfirm] = useState(false);
   const [users, setUsers] = useState([]);
   const [assignee, setAssignee] = useState([]);
   const [user, setUser] = useState([]);
   const { active } = useSelector((state) => state.scope);
+  const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const debouncedSearchContacts = useDebounce(searchContacts, 1000);
   const handleOpenConfirm = (contact) => {
-    setUser(contact)
+    setUser(contact);
     setOpenConfirm(true);
   };
 
@@ -60,12 +62,10 @@ export default function OrganContactsDialog ({ open, onClose, current }) {
   };
   const NewUserSchema = Yup.object().shape({
     searchContacts: Yup.string(),
-    isShowJoinedUser: Yup.boolean()
+    isShowJoinedUser: Yup.boolean(),
   });
   const defaultValues = useMemo(
-    () => ({
-
-    }),
+    () => ({}),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
@@ -80,15 +80,15 @@ export default function OrganContactsDialog ({ open, onClose, current }) {
     // formState,
   } = methods;
 
-
   const getData = useCallback(async () => {
+    setLoading(true);
     const response = await roleService.getUsersInNotRoleOnly({
       queryOptions: {
-        username:  {
-          $regex: searchContacts,
-          $options: "i"
+        username: {
+          $regex: debouncedSearchContacts,
+          $options: 'i',
         },
-        isShowJoinedUser: "on"
+        isShowJoinedUser: 'on',
       },
       options: {
         scope: active._id,
@@ -96,63 +96,62 @@ export default function OrganContactsDialog ({ open, onClose, current }) {
       },
       roles: current._id,
     });
-    setUsers(response.data)
+    setLoading(false);
+    setUsers(response.data);
+  }, [debouncedSearchContacts, active, current, setUsers]);
+
+  const getUsersInRoleOnly = useCallback(async () => {
     const response2 = await roleService.getUsersInRoleOnly({
       queryOptions: {
-        username: searchContacts,
-        isShowJoinedUser: "on"
+        // username: debouncedSearchContacts,
+        isShowJoinedUser: 'on',
       },
       options: {
         scope: active._id,
       },
       roles: current._id,
     });
-    setAssignee(response2.data)
-  }, [searchContacts, active, current, setUsers]);
+    setAssignee(response2.data);
+  }, [active._id, current._id]);
+
   const handleSearchContacts = (event) => {
     setSearchContacts(event.target.value);
   };
-  // const handleIsShowJoinedUser = (event) => {
-  //   setIsShowJoinedUser(event.target.value);
-  // }; 
+
   const handleDelete = async () => {
-    await roleService
-      .removeUsersFromRolesAndInheritedRole({
-        users: user,
-        roles: current._id,
-        options: {
-          scope: active._id,
-        },
-      })
+    await roleService.removeUsersFromRolesAndInheritedRole({
+      users: user,
+      roles: current._id,
+      options: {
+        scope: active._id,
+      },
+    });
     enqueueSnackbar('删除成功');
     handleCloseConfirm();
-    getData();
-  }
-  const handleAdd = async (contact) => {
-    await roleService
-      .addUsersToRolesAndRoleParents({
-        users: contact,
-        roles: current._id,
-        options: {
-          scope: active._id,
-        },
-      })
-    enqueueSnackbar('添加成功');
-    getData();
-  }
-  useEffect(() => {
-    if(open){
-      getData();
-    }
-  }, [getData, open]);
-  // const dataFiltered = applyFilter({
-  //   inputData: _contacts,
-  //   query: searchContacts,
-  // });
-  const onSubmit = async (data) => {
-    console.log(data)
+    getUsersInRoleOnly();
   };
-  const isNotFound = users.length <=0;
+
+  const handleAdd = async (contact) => {
+    await roleService.addUsersToRolesAndRoleParents({
+      users: contact,
+      roles: current._id,
+      options: {
+        scope: active._id,
+      },
+    });
+    enqueueSnackbar('添加成功');
+    getUsersInRoleOnly();
+  };
+  useEffect(() => {
+    if (open) {
+      getData();
+      getUsersInRoleOnly();
+    }
+  }, [getData, open, getUsersInRoleOnly]);
+  const onSubmit = async (data) => {
+    console.log(data);
+  };
+  const isNotFound = !users.length;
 
   return (
     <>
@@ -162,7 +161,6 @@ export default function OrganContactsDialog ({ open, onClose, current }) {
           {/** <Typography component="span">({_contacts.length})</Typography> */}
         </DialogTitle>
         <DialogContent sx={{ p: 0 }}>
-
           <Box sx={{ px: 3, py: 0.5 }}>
             <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
               <RHFTextField
@@ -196,73 +194,88 @@ export default function OrganContactsDialog ({ open, onClose, current }) {
                     )}
                   />
                 }
-                label={
-                  <Typography variant="subtitle2" >
-                    显示已添加用户
-                  </Typography>
-                }
+                label={<Typography variant="subtitle2">显示已添加用户</Typography>}
                 sx={{ mx: 0.5, mb: 0, width: 1, justifyContent: 'space-between' }}
               />
             </FormProvider>
           </Box>
           <Divider />
-          {isNotFound ? (
-            <SearchNotFound query={searchContacts} sx={{ mt: 3, mb: 10 }} />
-          ) : (
+          {!loading ? (
             <Scrollbar
               sx={{
                 px: 2.5,
                 height: ITEM_HEIGHT * 6,
               }}
             >
-              {users.map((contact) => {
-                const checked = assignee.map((person) => person.username).includes(contact.username);
+              {!isNotFound ? (
+                users.map((contact) => {
+                  const checked = assignee
+                    .map((person) => person.username)
+                    .includes(contact.username);
 
-                return (
-                  <ListItem
-                    key={contact._id}
-                    disableGutters
-                    secondaryAction={
-                      <div>
-                        <Button
-                          size="small"
-                          color={checked ? 'primary' : 'inherit'}
-                          onClick={() => !checked && handleAdd(contact)}
-                          startIcon={
-                            <Iconify icon={checked ? 'eva:checkmark-fill' : 'eva:plus-fill'} />
-                          }
-                        >
-                          {checked ? '已添加' : '添加'}
-                        </Button>
-                        {checked && <Button
-                          size="small"
-                          disabled={!checked}
-                          onClick={() => handleOpenConfirm(contact)}
-                          color={!checked ? 'primary' : 'inherit'}
-                          startIcon={
-                            <Iconify icon="eva:close-fill" />
-                          }
-                        >
-                          移出
-                        </Button>}
-                      </div>
-                    }
-                    sx={{ height: ITEM_HEIGHT }}
-                  >
-                    <ListItemAvatar>
-                      <Avatar src={contact.avatarUrl} />
-                    </ListItemAvatar>
+                  return (
+                    <ListItem
+                      key={contact._id}
+                      disableGutters
+                      secondaryAction={
+                        <div>
+                          <Button
+                            size="small"
+                            color={checked ? 'primary' : 'inherit'}
+                            onClick={() => !checked && handleAdd(contact)}
+                            startIcon={
+                              <Iconify icon={checked ? 'eva:checkmark-fill' : 'eva:plus-fill'} />
+                            }
+                          >
+                            {checked ? '已添加' : '添加'}
+                          </Button>
+                          {checked && (
+                            <Button
+                              size="small"
+                              disabled={!checked}
+                              onClick={() => handleOpenConfirm(contact)}
+                              color={!checked ? 'primary' : 'inherit'}
+                              startIcon={<Iconify icon="eva:close-fill" />}
+                            >
+                              移出
+                            </Button>
+                          )}
+                        </div>
+                      }
+                      sx={{ height: ITEM_HEIGHT }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar src={contact.avatarUrl} />
+                      </ListItemAvatar>
 
-                    <ListItemText
-                      primaryTypographyProps={{ typography: 'subtitle2', sx: { mb: 0.25 } }}
-                      secondaryTypographyProps={{ typography: 'caption' }}
-                      primary={`${contact?.displayName}(${contact?.realName})`}
-                      secondary={contact.emails[0].address}
-                    />
-                  </ListItem>
-                );
-              })}
+                      <ListItemText
+                        primaryTypographyProps={{ typography: 'subtitle2', sx: { mb: 0.25 } }}
+                        secondaryTypographyProps={{ typography: 'caption' }}
+                        primary={`${contact?.displayName}(${contact?.realName})`}
+                        secondary={contact.emails[0].address}
+                      />
+                    </ListItem>
+                  );
+                })
+              ) : (
+                <SearchNotFound query={searchContacts} sx={{ mt: 3, mb: 10 }} />
+              )}
             </Scrollbar>
+          ) : (
+            <Box
+              sx={{
+                zIndex: 10,
+                backgroundColor: '#ffffffc4',
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                padding: '16px',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <CircularProgress />
+            </Box>
           )}
         </DialogContent>
       </Dialog>

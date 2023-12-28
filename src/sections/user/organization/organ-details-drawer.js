@@ -13,6 +13,7 @@ import {
   Typography,
   IconButton,
   Autocomplete,
+  CircularProgress
 } from '@mui/material';
 // utils
 import { fData } from 'src/utils/format-number';
@@ -38,7 +39,7 @@ OrganDetailsDrawer.propTypes = {
   onChangeLeader: PropTypes.func,
 };
 
-export default function OrganDetailsDrawer ({
+export default function OrganDetailsDrawer({
   item,
   open,
   onClose,
@@ -52,6 +53,8 @@ export default function OrganDetailsDrawer ({
 
   const [users, setUsers] = useState([]);
 
+  const [loading, setLoading] = useState([]);
+
   const hasUsers = users && !!users.length;
 
   const [openContacts, setOpenContacts] = useState(false);
@@ -63,6 +66,7 @@ export default function OrganDetailsDrawer ({
   const [toggleProperties, setToggleProperties] = useState(true);
 
   const getUsers = useCallback(async () => {
+    setLoading(true)
     const response = await roleService.getUsersInRoleOnly({
       options: {
         scope: active._id,
@@ -70,9 +74,10 @@ export default function OrganDetailsDrawer ({
       roles: item._id,
     });
     setUsers(response.data)
+    setLoading(false)
   }, [active, item, setUsers]);
   useEffect(() => {
-    if(open){
+    if (open) {
       getUsers();
     }
   }, [open, getUsers]);
@@ -226,7 +231,20 @@ export default function OrganDetailsDrawer ({
             </IconButton>
           </Stack>
 
-          {hasUsers && (
+          {
+            loading && <Box sx={{
+              zIndex: 10,
+              backgroundColor: "#ffffffc4",
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}>
+              <CircularProgress />
+            </Box>
+          }
+          {!loading && hasUsers && (
             <List disablePadding sx={{ pl: 2.5, pr: 1 }}>
               {users.map((person) => (
                 <JoinedUserItem node={item} key={person._id} leader={leader} person={person} onSelectMain={() => onSelectMain(person)} />
@@ -279,7 +297,7 @@ Panel.propTypes = {
   onToggle: PropTypes.func,
 };
 
-function Panel ({ label, toggle, onToggle, ...other }) {
+function Panel({ label, toggle, onToggle, ...other }) {
   return (
     <Stack direction="row" alignItems="center" justifyContent="space-between" {...other}>
       <Typography variant="subtitle2"> {label} </Typography>
@@ -298,7 +316,7 @@ Row.propTypes = {
   value: PropTypes.string,
 };
 
-function Row ({ label, value = '' }) {
+function Row({ label, value = '' }) {
   return (
     <Stack direction="row" sx={{ typography: 'caption', textTransform: 'capitalize' }}>
       <Box component="span" sx={{ width: 80, color: 'text.secondary', mr: 2 }}>

@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { Stack, Container } from '@mui/material';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 // components
 import { compact, find, cloneDeep } from 'lodash'
 import OrganizationalChart from 'src/sections/user/organization/organizational-chart';
@@ -18,7 +19,7 @@ import { getOrganizations } from 'src/redux/slices/role';
 // import { roleService } from 'src/composables/context-provider';
 import OraginChangeViewButton from '../organization/organ-change-view-button';
 
-function serverArray (list, parent, data, permissions, maxRole) {
+function serverArray(list, parent, data, permissions, maxRole) {
   // eslint-disable-next-line no-plusplus
   for (let i = 0; i < list.length; i++) {
     if (list[i] && list[i].value) {
@@ -41,7 +42,7 @@ function serverArray (list, parent, data, permissions, maxRole) {
     }
   }
 }
-function getTree (data, maxRole) {
+function getTree(data, maxRole) {
   const permissions = maxRole && maxRole.children ? maxRole.children.map(item => item._id) : [];
   const root = data.filter((item) => item.isScope).map(item => ({
     ...item,
@@ -51,7 +52,7 @@ function getTree (data, maxRole) {
   return root;
 }
 
-export default function UserOrganizationView () {
+export default function UserOrganizationView() {
 
   const dispatch = useDispatch();
 
@@ -75,13 +76,15 @@ export default function UserOrganizationView () {
     }
   };
 
-  const onRefresh = useCallback(() => {
-    dispatch(getOrganizations({
+  const onRefresh = useCallback(async () => {
+    setIsLoading(true)
+    await dispatch(getOrganizations({
       selector: {
         scope: active._id,
         type: view,
       }
     }))
+    setIsLoading(false)
   }, [active._id, dispatch, view])
 
   useEffect(() => {
@@ -96,12 +99,12 @@ export default function UserOrganizationView () {
           { name: '组织/角色架构', href: paths.dashboard.user.organization },
         ]}
       />
-      <Backdrop
+      {/* <Backdrop
         sx={{ background: '#fff', color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isLoading}
       >
         <CircularProgress color="inherit" />
-      </Backdrop>
+      </Backdrop> */}
       <Stack
         spacing={2.5}
         direction={{ xs: 'column', md: 'row' }}
@@ -111,6 +114,19 @@ export default function UserOrganizationView () {
       >
         <OraginChangeViewButton value={view} onChange={handleChangeView} />
       </Stack>
+      {
+        isLoading && <Box sx={{
+          zIndex: 10,
+          backgroundColor: "#ffffffc4",
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}>
+          <CircularProgress />
+        </Box>
+      }
       {!!organizations.length && !isLoading &&
         <OrganizationalChart
           maxRole={maxRole}

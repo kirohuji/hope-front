@@ -20,7 +20,8 @@ import {
   Switch,
   Divider,
   Stack,
-  Link
+  Link,
+  CircularProgress,
 } from '@mui/material';
 import _ from 'lodash';
 // components
@@ -52,7 +53,7 @@ const styles = {
   display: 'inline-flex',
 };
 
-export default function BroadCastContactsDialog ({ open, onClose, current }) {
+export default function BroadCastContactsDialog({ open, onClose, current }) {
 
   const dispatch = useDispatch();
 
@@ -67,6 +68,8 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
   const [searchContacts, setSearchContacts] = useState('');
 
   const [openConfirm, setOpenConfirm] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   // const [users, setUsers] = useState([]);
 
@@ -94,13 +97,13 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
   const defaultValues = useMemo(() => ({}), []);
 
   const onChildren = (organization) => {
-    if (organization.children) {
+    if (organization.children || organization.users) {
       const level = {
         name: organization.label,
         to: organization._id,
       }
       levels.push(level);
-      setCurrentOrganization([...organization.children, ...organization.users.map(item => ({
+      setCurrentOrganization([...(organization.children || []), ...(organization.users || []).map(item => ({
         _id: item._id,
         name: item.username,
         photoURL: item.photoURL,
@@ -158,10 +161,12 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
     //   roles: current._id,
     // });
     // setUsers(response.data)
+    setLoading(true);
     const response = await broadcastService.getUsers({
       _id: current._id
     });
     setAssignee(response)
+    setLoading(false);
   }, [current]);
 
   const handleSearchContacts = (event) => {
@@ -262,7 +267,7 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
         </Stack>
       }
       {levels && levels.length > 0 ?
-        currentOrganization.filter(contact=> !!contact).map((contact, id) => {
+        currentOrganization.filter(contact => !!contact).map((contact, id) => {
           const checked = assignee.filter((person) => person.user_id === contact._id).length > 0;
           return renderOrganizationsItem(contact, id, checked)
         }) : organizations.map((contact, id) => {
@@ -280,55 +285,73 @@ export default function BroadCastContactsDialog ({ open, onClose, current }) {
           {/** <Typography component="span">({_contacts.length})</Typography> */}
         </DialogTitle>
         <DialogContent sx={{ p: 0 }}>
-        {
-          /**
-          <Box sx={{ px: 3, py: 0.5 }}>
-            <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-              <RHFTextField
-                fullWidth
-                name="searchContacts"
-                onChange={handleSearchContacts}
-                placeholder="搜索..."
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <FormControlLabel
-                labelPlacement="start"
-                control={
-                  <Controller
-                    name="isShowJoinedUser"
-                    control={control}
-                    render={({ field }) => (
-                      <Switch
-                        {...field}
-                        checked={field.value !== 'on'}
-                        onChange={(event) => {
-                          field.onChange(event.target.checked ? 'on' : 'off');
-                        }}
-                      />
-                    )}
-                  />
-                }
-                label={
-                  <Typography variant="subtitle2" >
-                    显示已添加用户
-                  </Typography>
-                }
-                sx={{ mx: 0.5, mb: 0, width: 1, justifyContent: 'space-between' }}
-              />
-            </FormProvider>
-          </Box>
-           */
-        }
+          {
+            /**
+            <Box sx={{ px: 3, py: 0.5 }}>
+              <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+                <RHFTextField
+                  fullWidth
+                  name="searchContacts"
+                  onChange={handleSearchContacts}
+                  placeholder="搜索..."
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                <FormControlLabel
+                  labelPlacement="start"
+                  control={
+                    <Controller
+                      name="isShowJoinedUser"
+                      control={control}
+                      render={({ field }) => (
+                        <Switch
+                          {...field}
+                          checked={field.value !== 'on'}
+                          onChange={(event) => {
+                            field.onChange(event.target.checked ? 'on' : 'off');
+                          }}
+                        />
+                      )}
+                    />
+                  }
+                  label={
+                    <Typography variant="subtitle2" >
+                      显示已添加用户
+                    </Typography>
+                  }
+                  sx={{ mx: 0.5, mb: 0, width: 1, justifyContent: 'space-between' }}
+                />
+              </FormProvider>
+            </Box>
+             */
+          }
           <Divider />
-          {isNotFound ? (
-            <SearchNotFound query={searchContacts} sx={{ mt: 3, mb: 10 }} />
-          ) : renderOrganizations}
+          {
+            !loading ? <div>
+              {
+                isNotFound ? <SearchNotFound query={searchContacts} sx={{ mt: 3, mb: 10 }} /> : renderOrganizations
+              }
+            </div> : (
+              <Box
+                sx={{
+                  zIndex: 10,
+                  backgroundColor: '#ffffffc4',
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  padding: '16px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            )}
         </DialogContent>
       </Dialog>
       <ConfirmDialog
