@@ -6,7 +6,7 @@ import _ from 'lodash'
 
 const initialState = {
   data: [],
-  details: { byId: {} },
+  details: { byId: {}, participantsBy: {} },
   total: 0,
   error: null,
   isLoading: false
@@ -31,6 +31,20 @@ const slice = createSlice({
       state.isLoading = false;
       state.details.byId[id] = data;
     },
+    getParticipantsSuccess(state, action) {
+      const { id, data } = action.payload;
+      state.isLoading = false;
+      if(state.details.byId[id]){
+        state.details.participantsBy[id] = data;
+      }
+    },
+    // setParticipantsLoading(state, action){
+    //   const { participantsById, id } = action.payload;
+    //   state.details.participantsBy[participantsById][id] = data.map(item=> ({
+    //     ...item,
+    //     isLoading: false,
+    //   }));
+    // },
     // HAS ERROR
     hasError(state, action) {
       state.isLoading = false;
@@ -61,8 +75,11 @@ export function getData({
   id,
   user
 }) {
-  return async (dispatch) => {
-    dispatch(slice.actions.startLoading());
+  return async (dispatch, getState) => {
+    const { details } = getState().broadcast;
+    if(!details.byId[id]){
+      dispatch(slice.actions.startLoading());
+    }
     try {
       let isAdmin = null;
       const response = await broadcastService.get({
@@ -92,6 +109,27 @@ export function getData({
           isAdmin,
           ...response,
         }
+      }));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+export function getParticipants(id) {
+  return async (dispatch, getState) => {
+    try {
+      // const { details } = getState().broadcast;
+      // if(!details.byId[id]?.participants){
+      //   dispatch(slice.actions.startLoading());
+      // }
+      dispatch(slice.actions.startLoading());
+      const response = await broadcastService.getUsers({
+        _id: id
+      })
+      dispatch(slice.actions.getParticipantsSuccess({
+        id,
+        data: response
       }));
     } catch (error) {
       dispatch(slice.actions.hasError(error));

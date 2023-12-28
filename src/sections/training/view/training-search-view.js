@@ -1,5 +1,5 @@
 /* eslint-disable react/no-danger */
-import { Box, Container, Divider, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Container, Divider, Stack, Tab, Tabs, Typography, Backdrop, CircularProgress } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 import { useState, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types';
@@ -62,6 +62,7 @@ TabPanel.propTypes = {
 
 export default function TrainingSearchPage() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const [scrollable, setScrollable] = useState('one');
   const [tableData, setTableData] = useState([]);
   const [currentTag, setCurrentTag] = useState({
@@ -70,20 +71,23 @@ export default function TrainingSearchPage() {
   });
   const getBooks = useCallback(async () => {
     try {
+      setIsLoading(true);
       let response = {
         data: []
       }
-      if(currentTag.value){
+      if (currentTag.value) {
         response = await bookService.pagination({
           type: {
             $in: [currentTag.value],
           }
         });
       } else {
-        response = await bookService.pagination({ });
+        response = await bookService.pagination({});
       }
       setTableData(response.data)
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       // setLoadingPost(false);
       // setErrorMsg(error.message);
     }
@@ -143,19 +147,40 @@ export default function TrainingSearchPage() {
             ))}
           </Box>
           <Divider />
-          {tableData.map((post, index) =>
-            <Box style={{ display: 'flex' }} key={index} onClick={() => onDetail(post)}>
-              <div style={{ width: '142px' }}>
-                <TrainingCard post={post} index={index} />
-              </div>
-              <div style={{ margin: "15px 0px", width: 'calc(100% - 142px' }}>
-                <Typography variant="h9" style={{ fontWeight: '700' }}>{post.label}</Typography>
-                <div style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: post.description }} />
-              </div>
-            </Box>
-          )}
+          <Box sx={{ paddingTop: "100px" }}>
+            {
+              isLoading && <Box sx={{
+                zIndex: 10,
+                backgroundColor: "#ffffffc4",
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+              }}>
+                <CircularProgress />
+              </Box>
+            }
+            {!isLoading && tableData.length > 0 && tableData.map((post, index) =>
+              <Box style={{ display: 'flex' }} key={index} onClick={() => onDetail(post)}>
+                <div style={{ width: '142px' }}>
+                  <TrainingCard post={post} index={index} />
+                </div>
+                <div style={{ margin: "15px 0px", width: 'calc(100% - 142px' }}>
+                  <Typography variant="h9" style={{ fontWeight: '700' }}>{post.label}</Typography>
+                  <div style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: post.description }} />
+                </div>
+              </Box>
+            )}
 
+          </Box>
         </TabPanel>
+        {/* <Backdrop
+          sx={{ background: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={isLoading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop> */}
       </Container>
     </>
   )

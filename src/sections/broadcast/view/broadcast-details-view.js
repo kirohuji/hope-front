@@ -14,11 +14,10 @@ import { useAuthContext } from 'src/auth/hooks';
 import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
 //
-import { broadcastService, userService } from 'src/composables/context-provider';
-import _ from 'lodash';
+import { broadcastService } from 'src/composables/context-provider';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getData } from 'src/redux/slices/broadcast';
+import { getData, getParticipants } from 'src/redux/slices/broadcast';
 import { useSnackbar } from 'src/components/snackbar';
 import BoradcastContactsDialog from '../boradcast-contacts-dialog';
 import BroadcastDetailsBookers from '../broadcast-details-bookers';
@@ -44,12 +43,10 @@ export const TOUR_PUBLISH_OPTIONS = [
 
 export default function BroadcastDetailsView() {
   const { enqueueSnackbar } = useSnackbar();
-  const [participants, setParticipants] = useState([])
-  const [isAdmin, setIsAdmin] = useState(false)
   const [participantsCount, setParticipantsCount] = useState([])
   const [openContacts, setOpenContacts] = useState(false);
   const { user } = useAuthContext();
-  const { details, isLoading } = useSelector((state) => state.broadcast);
+  const { details } = useSelector((state) => state.broadcast);
   const dispatch = useDispatch();
   const handleOpenContacts = () => {
     setOpenContacts(true);
@@ -64,17 +61,6 @@ export default function BroadcastDetailsView() {
   const params = useParams();
 
   const { id, selectedTab } = params;
-
-  const getParticipants = useCallback(async () => {
-    try {
-      const response = await broadcastService.getUsers({
-        _id: id
-      })
-      setParticipants(response)
-    } catch (error) {
-      console.log(error)
-    }
-  }, [id])
 
   const [currentBroadcast, setCurrentBroadcast] = useState(null)
 
@@ -91,12 +77,12 @@ export default function BroadcastDetailsView() {
   }, []);
 
   const onRefresh = useCallback(async () => {
-    getParticipants()
+    dispatch(getParticipants(id))
     const getUsersCount = await broadcastService.getUsersCount({
       _id: id
     })
     setParticipantsCount(getUsersCount);
-  }, [getParticipants, id])
+  }, [dispatch, id])
 
   const refresh = useCallback(async () => {
     try {
@@ -105,30 +91,8 @@ export default function BroadcastDetailsView() {
           id,
           user
         }))
-        // const response = await broadcastService.get({
-        //   _id: id
-        // })
-        // if(response?.leaders){
-        //   const leaders = await userService.paginationByProfile(
-        //     {
-        //       _id: {
-        //         $in: response.leaders
-        //       }
-        //     },
-        //     {
-        //       fields: {
-        //         photoURL: 1,
-        //         username: 1,
-        //         phoneNumber: 1
-        //       }
-        //     }
-        //   )
-        //   response.leaders = leaders.data;
-        // }
-        // setIsAdmin(_.find(response.leaders, ["_id", user._id]))
-        // setCurrentBroadcast(response)
       } else {
-        getParticipants()
+        dispatch(getParticipants(id))
       }
       const getUsersCount = await broadcastService.getUsersCount({
         _id: id
@@ -137,7 +101,7 @@ export default function BroadcastDetailsView() {
     } catch (error) {
       console.log(error)
     }
-  }, [currentTab, id, dispatch, user, getParticipants])
+  }, [currentTab, id, dispatch, user])
 
   const handlePublish = useCallback(async () => {
     await broadcastService.publish({
@@ -193,7 +157,7 @@ export default function BroadcastDetailsView() {
 
       <Backdrop
         sx={{ background: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoading}
+        open={!details.byId[id]}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -209,7 +173,7 @@ export default function BroadcastDetailsView() {
 
       {currentTab === 'content' && details.byId[id] && <BroadcastDetailsContent broadcast={details.byId[id]} />}
 
-      {currentTab === 'participants' && <BroadcastDetailsBookers participants={participants} onRefresh={onRefresh} />}
+      {currentTab === 'participants' && <BroadcastDetailsBookers participants={details.participantsBy && details.participantsBy[id] || []} onRefresh={onRefresh} />}
       <Divider sx={{ m: 2 }} />
       <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
         {/* <Button variant="contained" color="primary">

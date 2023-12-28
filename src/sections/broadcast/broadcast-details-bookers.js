@@ -9,6 +9,8 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
+import LoadingButton from '@mui/lab/LoadingButton';
+import CircularProgress from '@mui/material/CircularProgress';
 import ListItemText from '@mui/material/ListItemText';
 import ConfirmDialog from 'src/components/confirm-dialog';
 import { useSnackbar } from 'src/components/snackbar';
@@ -23,7 +25,9 @@ import { broadcastService, messagingService } from 'src/composables/context-prov
 
 // ----------------------------------------------------------------------
 
-export default function BroadcastDetailsBookers ({ onRefresh, participants }) {
+export default function BroadcastDetailsBookers({ onRefresh, participants }) {
+
+  const [loadingList, setLoadingList] = useState([])
 
   const { user } = useAuthContext();
 
@@ -45,17 +49,19 @@ export default function BroadcastDetailsBookers ({ onRefresh, participants }) {
   };
 
   const handleDelete = async () => {
+    setLoadingList(true)
     await broadcastService.deleteUser(currentParticipant)
     enqueueSnackbar('删除成功');
     handleCloseConfirm();
     onRefresh();
+    setLoadingList(false)
   }
 
-  const signIn = useCallback(async (item) => {
+  const signIn = useCallback(async (item,index) => {
     await broadcastService.signIn(item)
     enqueueSnackbar('更新成功');
-    onRefresh()
-  }, [onRefresh, enqueueSnackbar]);
+    onRefresh();
+  }, [enqueueSnackbar, onRefresh]);
 
   const handleChat = async (target) => {
     const newConversation = await messagingService.room({
@@ -64,56 +70,57 @@ export default function BroadcastDetailsBookers ({ onRefresh, participants }) {
     router.push(`${paths.chat}?id=${newConversation._id}`);
   }
 
-  return (
-    <Box
-      gap={3}
-      display="grid"
-      gridTemplateColumns={{
-        xs: 'repeat(1, 1fr)',
-        sm: 'repeat(2, 1fr)',
-        md: 'repeat(3, 1fr)',
-      }}
-    >
-      {participants.map((participant, index) => (
-        <BookerItem
-          key={index}
-          isOwner={user._id === participant.user_id}
-          participant={participant}
-          onDelete={() => handleOpenConfirm(participant)}
-          onChat={() => handleChat(participant)}
-          selected={participant.status === "signIn"}
-          onSelected={() => signIn(participant)}
-        />
-      ))}
-      <ConfirmDialog
-        open={openConfirm}
-        onClose={handleCloseConfirm}
-        title="删除"
-        content="你确定删除吗?"
-        action={
-          <Button variant="contained" color="error" onClick={handleDelete}>
-            删除
-          </Button>
-        }
+  return (<Box
+    gap={3}
+    display="grid"
+    gridTemplateColumns={{
+      xs: 'repeat(1, 1fr)',
+      sm: 'repeat(2, 1fr)',
+      md: 'repeat(3, 1fr)',
+    }}
+  >
+    {participants.map((participant, index) => (
+      <BookerItem
+        key={index}
+        isOwner={user._id === participant.user_id}
+        participant={participant}
+        loading={loadingList[index]}
+        onDelete={() => handleOpenConfirm(participant)}
+        onChat={() => handleChat(participant)}
+        selected={participant.status === "signIn"}
+        onSelected={() => signIn(participant,index)}
       />
-    </Box>
-  );
+    ))}
+
+    <ConfirmDialog
+      open={openConfirm}
+      onClose={handleCloseConfirm}
+      title="删除"
+      content="你确定删除吗?"
+      action={
+        <Button variant="contained" color="error" onClick={handleDelete}>
+          删除
+        </Button>
+      }
+    />
+  </Box>)
 }
 BroadcastDetailsBookers.propTypes = {
   onRefresh: PropTypes.func,
+  // isLoading: PropTypes.bool,
   participants: PropTypes.array,
 };
 
 // ----------------------------------------------------------------------
 
-function BookerItem ({ isOwner, participant, selected, onDelete, onSelected, onChat }) {
+function BookerItem({ isOwner, participant, selected, onDelete, onSelected, onChat, loading }) {
   return (
     <Stack component={Card} direction="row" spacing={2} key={participant._id} sx={{ p: 3 }}>
       <Avatar alt={participant.username} src={participant.profile?.photoURL} sx={{ width: 48, height: 48 }} />
 
       <Stack spacing={2} flexGrow={1}>
         <ListItemText
-          primary={participant.username}
+          primary={`${participant.profile.displayName}(${participant.profile?.realName || '无'})`}
           secondary={
             <Stack direction="row" alignItems="center" spacing={0.5}>
               <Iconify icon="solar:users-group-rounded-bold" width={16} />
@@ -130,9 +137,10 @@ function BookerItem ({ isOwner, participant, selected, onDelete, onSelected, onC
 
         <Stack spacing={1} direction="row">
           {
-            true && <IconButton
+            true && <LoadingButton
               size="small"
               onClick={onSelected}
+              loading={loading}
               color="error"
               sx={{
                 borderRadius: 1,
@@ -143,13 +151,14 @@ function BookerItem ({ isOwner, participant, selected, onDelete, onSelected, onC
               }}
             >
               <Iconify width={18} icon={selected ? "streamline:interface-logout-arrow-exit-frame-leave-logout-rectangle-right" : "ph:hand"} />
-            </IconButton>
+            </LoadingButton>
           }
 
           {
-            !isOwner && <IconButton
+            !isOwner && false && <LoadingButton
               onClick={onChat}
               size="small"
+              loading={loading}
               color="info"
               sx={{
                 borderRadius: 1,
@@ -160,12 +169,13 @@ function BookerItem ({ isOwner, participant, selected, onDelete, onSelected, onC
               }}
             >
               <Iconify width={18} icon="solar:chat-round-dots-bold" />
-            </IconButton>
+            </LoadingButton>
           }
 
-          <IconButton
+          <LoadingButton
             onClick={onDelete}
             size="small"
+            loading={loading}
             color="primary"
             sx={{
               borderRadius: 1,
@@ -176,11 +186,12 @@ function BookerItem ({ isOwner, participant, selected, onDelete, onSelected, onC
             }}
           >
             <Iconify width={18} icon="fluent:delete-24-filled" />
-          </IconButton>
+          </LoadingButton>
         </Stack>
       </Stack>
 
-      <Button
+      <LoadingButton
+        loading={loading}
         size="small"
         variant={selected ? 'text' : 'outlined'}
         color={selected ? 'success' : 'inherit'}
@@ -190,7 +201,7 @@ function BookerItem ({ isOwner, participant, selected, onDelete, onSelected, onC
         onClick={onSelected}
       >
         {selected ? '已签到' : '签到'}
-      </Button>
+      </LoadingButton>
     </Stack>
   );
 }
@@ -202,4 +213,5 @@ BookerItem.propTypes = {
   onDelete: PropTypes.func,
   onChat: PropTypes.func,
   selected: PropTypes.bool,
+  loading: PropTypes.bool,
 };

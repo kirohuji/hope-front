@@ -152,7 +152,7 @@ export default function BroadcastDetailsContent({ broadcast }) {
           <Box component="span" sx={{ typography: 'body2', color: 'text.secondary' }}>
             负责人:
           </Box>
-          {leaders.map((tourGuide) => tourGuide.name).join(', ')}
+          {leaders && leaders.map((tourGuide) => tourGuide.name).join(', ')}
         </Stack>
       </Stack>
     </>
@@ -175,7 +175,7 @@ export default function BroadcastDetailsContent({ broadcast }) {
         },
         {
           label: '联系人',
-          value: leaders.map((leader) => leader.username).join(', '),
+          value: leaders && leaders.map((leader) => leader.username).join(', '),
           icon: <Iconify icon="solar:user-rounded-bold" />,
         },
         {
@@ -185,7 +185,7 @@ export default function BroadcastDetailsContent({ broadcast }) {
         },
         {
           label: '手机号',
-          value: leaders.map((leader) => leader.phoneNumber).join(', '),
+          value: leaders && leaders.map((leader) => leader.phoneNumber).join(', '),
           icon: <Iconify icon="solar:phone-bold" />,
         },
       ].map((item) => (
