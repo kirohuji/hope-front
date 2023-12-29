@@ -14,19 +14,21 @@ export default function DashboardFooter() {
   const dashboard = useSelector((state) => state.dashboard);
   const dispatch = useDispatch();
   const pathname = usePathname();
-  switch (pathname) {
-    case '/dashboard/broadcast':
-      dispatch(updateBottomNavigationActionValue(0));
-      break;
-    case '/dashboard/calendar':
-      dispatch(updateBottomNavigationActionValue(1));
-      break;
-    case '/dashboard/training/dashboard':
-      dispatch(updateBottomNavigationActionValue(2));
-      break;
-    default:
-      dispatch(updateBottomNavigationActionValue(0));
-  }
+  React.useEffect(() => {
+    switch (pathname) {
+      case '/dashboard/broadcast':
+        dispatch(updateBottomNavigationActionValue(0));
+        break;
+      case '/dashboard/calendar':
+        dispatch(updateBottomNavigationActionValue(1));
+        break;
+      case '/dashboard/training/dashboard':
+        dispatch(updateBottomNavigationActionValue(2));
+        break;
+      default:
+        dispatch(updateBottomNavigationActionValue(0));
+    }
+  }, [dispatch, pathname])
   return (
     <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100, background: 'none' }} elevation={5} className="bottom-navigation">
       <BottomNavigation

@@ -27,7 +27,9 @@ import { broadcastService, messagingService } from 'src/composables/context-prov
 
 export default function BroadcastDetailsBookers({ onRefresh, participants }) {
 
-  const [loadingList, setLoadingList] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  const [currentIndex, setCurrentIndex] = useState(-1)
 
   const { user } = useAuthContext();
 
@@ -48,19 +50,31 @@ export default function BroadcastDetailsBookers({ onRefresh, participants }) {
     setOpenConfirm(false);
   };
 
-  const handleDelete = async () => {
-    setLoadingList(true)
+  const handleDelete = async (item, index) => {
+    setLoading(true)
+    setCurrentIndex(index)
     await broadcastService.deleteUser(currentParticipant)
     enqueueSnackbar('删除成功');
     handleCloseConfirm();
-    onRefresh();
-    setLoadingList(false)
+    onRefresh({
+      data: currentParticipant,
+      type: 'delete'
+    });
+    setLoading(false)
+    setCurrentIndex(-1)
   }
 
   const signIn = useCallback(async (item,index) => {
+    setLoading(true)
+    setCurrentIndex(index)
     await broadcastService.signIn(item)
     enqueueSnackbar('更新成功');
-    onRefresh();
+    onRefresh({
+      data: item,
+      type: item.status === "signIn" ? "signOut" : "signIn"
+    });
+    setLoading(false)
+    setCurrentIndex(-1)
   }, [enqueueSnackbar, onRefresh]);
 
   const handleChat = async (target) => {
@@ -84,7 +98,8 @@ export default function BroadcastDetailsBookers({ onRefresh, participants }) {
         key={index}
         isOwner={user._id === participant.user_id}
         participant={participant}
-        loading={loadingList[index]}
+        loading={index === currentIndex && loading}
+        currentIndex={currentIndex}
         onDelete={() => handleOpenConfirm(participant)}
         onChat={() => handleChat(participant)}
         selected={participant.status === "signIn"}

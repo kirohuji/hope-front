@@ -243,8 +243,10 @@ export function getOrganizations (scope) {
         },
       })
       dispatch(slice.actions.getOrganizationsSuccess(data));
+      return data;
     } catch (error) {
       dispatch(slice.actions.hasError(error));
+      return []
     }
   };
 }

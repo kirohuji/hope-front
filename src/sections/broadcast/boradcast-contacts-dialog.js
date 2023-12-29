@@ -44,6 +44,7 @@ const ITEM_HEIGHT = 64;
 BroadCastContactsDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
+  onUpdateRefresh: PropTypes.func,
   current: PropTypes.object,
 };
 const styles = {
@@ -53,15 +54,42 @@ const styles = {
   display: 'inline-flex',
 };
 
-export default function BroadCastContactsDialog({ open, onClose, current }) {
+function traverse(node, assignee) {
+  if (node.users) {
+    const checked = _.intersectionBy((node.users || []), assignee, "_id").length === (node.users || []).length;
+    node.checked = checked;
+  }
+  if (node.children) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const child of node.children) {
+      traverse(child, assignee);
+    }
+  }
+}
+
+function traverseUser(node, data) {
+  if (node.users) {
+    data.users = _.union(data.users, node.users.map(user => user._id))
+  }
+  if (node.children) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const child of node.children) {
+      traverse(child, data);
+    }
+  }
+}
+
+export default function BroadCastContactsDialog({ open, onClose, current, onUpdateRefresh }) {
 
   const dispatch = useDispatch();
 
   const { active } = useSelector((state) => state.scope);
 
-  const { organizations } = useSelector((state) => state.chat);
+  const { details } = useSelector((state) => state.broadcast);
 
   const [currentOrganization, setCurrentOrganization] = useState([]);
+
+  const [currentFirstOrganization, setCurrentFirstOrganization] = useState([]);
 
   const [levels, setLevels] = useState([]);
 
@@ -71,16 +99,11 @@ export default function BroadCastContactsDialog({ open, onClose, current }) {
 
   const [loading, setLoading] = useState(false);
 
-  // const [users, setUsers] = useState([]);
-
-  const [assignee, setAssignee] = useState([]);
-
   const [user, setUser] = useState([]);
 
   const { enqueueSnackbar } = useSnackbar();
 
   const handleOpenConfirm = (contact) => {
-    setLevels([])
     setUser(contact)
     setOpenConfirm(true);
   };
@@ -107,30 +130,34 @@ export default function BroadCastContactsDialog({ open, onClose, current }) {
         _id: item._id,
         name: item.username,
         photoURL: item.photoURL,
-        email: item.email
+        email: item.email,
+        displayName: item.displayName,
+        realName: item.realName,
       }))])
       setLevels(levels)
     }
   }
   const onGoTo = async (level) => {
     let index = 0;
-    const length = _.findIndex(levels, ["to", level.to])
+    const length = _.findIndex(levels, ["to", level.to]);
     let isChildren = false;
-    let currentOrganizations = organizations
-    const levels2 = []
+    let currentOrganizations = currentFirstOrganization;
+    const levels2 = [];
     while (index < length) {
       isChildren = true;
       const currentLevel = levels[index];
       currentOrganizations = _.find(currentOrganizations, ["_id", currentLevel.to]);
       index += 1;
-      levels2.push(currentLevel)
+      levels2.push(currentLevel);
     }
     if (isChildren) {
       await setCurrentOrganization([...currentOrganizations.children, ...currentOrganizations.users.map(item => ({
         _id: item._id,
         name: item.username,
         photoURL: item.photoURL,
-        email: item.email
+        email: item.email,
+        displayName: item.displayName,
+        realName: item.realName,
       }))]);
     } else {
       await setCurrentOrganization(currentOrganizations);
@@ -148,27 +175,6 @@ export default function BroadCastContactsDialog({ open, onClose, current }) {
     handleSubmit,
   } = methods;
 
-
-  const getData = useCallback(async () => {
-    // const response = await roleService.getUsersInNotRoleOnly({
-    //   queryOptions: {
-    //     username: searchContacts,
-    //     isShowJoinedUser: "on"
-    //   },
-    //   options: {
-    //     scope: active._id,
-    //   },
-    //   roles: current._id,
-    // });
-    // setUsers(response.data)
-    setLoading(true);
-    const response = await broadcastService.getUsers({
-      _id: current._id
-    });
-    setAssignee(response)
-    setLoading(false);
-  }, [current]);
-
   const handleSearchContacts = (event) => {
     setSearchContacts(event.target.value);
   };
@@ -179,34 +185,82 @@ export default function BroadCastContactsDialog({ open, onClose, current }) {
     })
     enqueueSnackbar('删除成功');
     handleCloseConfirm();
-    getData();
+    onUpdateRefresh({
+      type: 'delete',
+      data: {
+        user_id: user._id
+      }
+    })
+    // getData();
   }
   const handleAdd = async (contact) => {
-    await broadcastService.addUser({
-      user_id: contact._id,
+    // setIsUpdate(false)
+    enqueueSnackbar('正在添加,请耐心稍等');
+    let datas = [];
+    let addUsers = {
+      users: [],
+    };
+    if (contact.type === 'org') {
+      traverseUser(contact, addUsers)
+    } else {
+      addUsers = {
+        users: [contact._id]
+      }
+    }
+    datas = await broadcastService.addUsers({
+      users_id: addUsers.users,
       broadcast_id: current._id
     })
+    contact.checked = true;
     enqueueSnackbar('添加成功');
-    getData();
+    onUpdateRefresh({
+      type: 'add',
+      datas,
+    })
+    // getData();
   }
 
-  useEffect(() => {
-    if (open) {
-      getData();
-      dispatch(getOrganizations(active._id));
+  const onRefresh = useCallback(async () => {
+    if (currentFirstOrganization.length <= 0) {
+      setLoading(true)
+      const data = await dispatch(getOrganizations(active._id));
+      const currentData = _.cloneDeep(data);
+      // const assignee = details.participantsBy[current._id].map(item => ({ ...item, _id: item.user_id }))
+      // for (let i = 0; i < currentData.length; i += 1) {
+      //   traverse(currentData[i], assignee)
+      // }
+      setCurrentFirstOrganization(currentData)
+      setCurrentOrganization(currentData)
+      setLoading(false)
     }
-  }, [getData, active._id, dispatch, open]);
-  const onSubmit = async (data) => {
-    console.log(data)
-  };
+
+  }, [active._id, currentFirstOrganization.length, dispatch])
+
+  useEffect(() => {
+    console.log('open', open)
+    if (open) {
+      // setIsUpdate(true);
+      console.log('触发2')
+      onRefresh()
+    } else {
+      setLevels([])
+      setCurrentOrganization([])
+      setCurrentFirstOrganization([])
+    }
+    // return () => {
+    //   setLevels([])
+    //   setCurrentOrganization([])
+    // }
+  }, [onRefresh, open]);
+
   const isNotFound = !!searchContacts;
 
   const renderOrganizationsItem = (contact, id, checked) =>
-    <Box key={id} onClick={() => onChildren(contact)}>
+    <Box>
       <ListItem
         disableGutters
         secondaryAction={
-          contact.type !== "org" && <div>
+          <div>
             <Button
               size="small"
               color={checked ? 'primary' : 'inherit'}
@@ -237,9 +291,11 @@ export default function BroadCastContactsDialog({ open, onClose, current }) {
         </ListItemAvatar>
 
         <ListItemText
+          key={id} onClick={() => onChildren(contact)}
+          sx={{ cursor: 'pointer' }}
           primaryTypographyProps={{ typography: 'subtitle2', sx: { mb: 0.25 } }}
           secondaryTypographyProps={{ typography: 'caption' }}
-          primary={contact.type === "org" ? contact.name : contact.name}
+          primary={contact.type === "org" ? contact.name : `${contact.displayName}(${contact.realName})`}
           secondary={contact.type === "org" ? "" : contact.email}
         />
       </ListItem>
@@ -266,14 +322,38 @@ export default function BroadCastContactsDialog({ open, onClose, current }) {
           }
         </Stack>
       }
-      {levels && levels.length > 0 ?
+      {
         currentOrganization.filter(contact => !!contact).map((contact, id) => {
-          const checked = assignee.filter((person) => person.user_id === contact._id).length > 0;
+          let isChecked = false;
+          if (contact.type === 'org') {
+            isChecked = _.intersectionBy((contact.users || []),  details.participantsBy[current._id].map(item=> ({ ...item, _id: item.user_id})), "_id").length === (contact.users || []).length
+          } else {
+            isChecked = details.participantsBy[current._id].filter((person) => person.user_id === contact._id).length > 0;
+          }
+          return renderOrganizationsItem(contact, id, isChecked)
+        })
+      }
+      {/* {levels && levels.length > 0 ?
+        currentOrganization.filter(contact => !!contact).map((contact, id) => {
+          let checked = false;
+          if(contact.type === 'org'){
+            console.log('contact.users',id)
+            // checked = _.intersectionBy((contact.users || []),assignee.map(item=> ({ ...item,  _id: item._id})), "_id").length === (contact.users || []).length
+          } else {
+            checked = assignee.filter((person) => person.user_id === contact._id).length > 0;
+          }
           return renderOrganizationsItem(contact, id, checked)
         }) : organizations.map((contact, id) => {
-          const checked = assignee.filter((person) => person.user_id === contact._id).length > 0;
+          let checked = false;
+          if(contact.type === 'org'){
+            console.log('contact.users2',id)
+            // checked = _.intersectionBy((contact.users || []),assignee.map(item=> ({ ...item, _id: item.user_id})), "_id").length === (contact.users || []).length
+          } else {
+            checked = assignee.filter((person) => person.user_id === contact._id).length > 0;
+          }
           return renderOrganizationsItem(contact, id, checked)
-        })}
+        })} */}
+
     </Scrollbar>
 
   )

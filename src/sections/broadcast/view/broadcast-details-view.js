@@ -17,7 +17,7 @@ import { useSettingsContext } from 'src/components/settings';
 import { broadcastService } from 'src/composables/context-provider';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getData, getParticipants } from 'src/redux/slices/broadcast';
+import { getData, getParticipants, deleteParticipant, updateParticipantStatus, getParticipantsCount, addParticipants } from 'src/redux/slices/broadcast';
 import { useSnackbar } from 'src/components/snackbar';
 import BoradcastContactsDialog from '../boradcast-contacts-dialog';
 import BroadcastDetailsBookers from '../broadcast-details-bookers';
@@ -54,7 +54,7 @@ export default function BroadcastDetailsView() {
 
   const handleCloseContacts = () => {
     setOpenContacts(false);
-    onRefresh()
+    // onRefresh()
   };
   const settings = useSettingsContext();
 
@@ -76,12 +76,39 @@ export default function BroadcastDetailsView() {
     setPublish(newValue);
   }, []);
 
-  const onRefresh = useCallback(async () => {
-    dispatch(getParticipants(id))
-    const getUsersCount = await broadcastService.getUsersCount({
-      _id: id
-    })
-    setParticipantsCount(getUsersCount);
+  const onRefresh = useCallback(async (target) => {
+    console.log('刷新')
+    if(!target){
+      dispatch(getParticipants(id))
+      dispatch(getParticipantsCount(id));
+      return;
+    }
+    switch (target.type) {
+      case 'delete':
+        dispatch(deleteParticipant({
+          data: target.data,
+          id,
+        }))
+        break;
+      case 'add':
+        dispatch(addParticipants({
+          datas: target.datas,
+          id,
+        }))
+        break;
+      case 'signIn':
+      case 'signOut':
+        dispatch(updateParticipantStatus({
+          data: target.data,
+          id,
+          status: target.type
+        }))
+        break;
+      default:
+        dispatch(getParticipants(id))
+        dispatch(getParticipantsCount(id));
+        break;
+    }
   }, [dispatch, id])
 
   const refresh = useCallback(async () => {
@@ -94,10 +121,11 @@ export default function BroadcastDetailsView() {
       } else {
         dispatch(getParticipants(id))
       }
-      const getUsersCount = await broadcastService.getUsersCount({
-        _id: id
-      })
-      setParticipantsCount(getUsersCount);
+      dispatch(getParticipantsCount(id));
+      // const getUsersCount = await broadcastService.getUsersCount({
+      //   _id: id
+      // })
+      // setParticipantsCount(getUsersCount);
     } catch (error) {
       console.log(error)
     }
@@ -142,7 +170,7 @@ export default function BroadcastDetailsView() {
           label={tab.label}
           icon={
             tab.value === 'participants' ? (
-              <Label variant="filled">{participantsCount || 0}</Label>
+              <Label variant="filled">{ details.count[id] || 0}</Label>
             ) : (
               ''
             )
@@ -199,6 +227,7 @@ export default function BroadcastDetailsView() {
         details.byId[id] && <BoradcastContactsDialog
           current={details.byId[id]}
           open={openContacts}
+          onUpdateRefresh={onRefresh}
           onClose={handleCloseContacts}
         />
       }

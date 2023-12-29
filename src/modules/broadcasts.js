@@ -1,44 +1,51 @@
 import { Service } from './base'
 
 export default class BroadcastService extends Service {
-    addCurrentUser (target) {
+    addCurrentUser(target) {
         return this.api.post(`${this.model}/users/current`, {
             broadcast_id: target._id
         })
     }
 
-    addUser (target) {
+    addUser(target) {
         return this.api.post(`${this.model}/users`, {
             user_id: target.user_id,
             broadcast_id: target.broadcast_id
         })
     }
 
-    deleteUser (target) {
+    addUsers(target) {
+        return this.api.post(`${this.model}/addUsers`, {
+            users_id: target.users_id,
+            broadcast_id: target.broadcast_id
+        })
+    }
+
+    deleteUser(target) {
         return this.api.delete(`${this.model}/${target.broadcast_id}/users/${target.user_id}`)
     }
 
-    getUsers (target) {
+    getUsers(target) {
         return this.api.get(`${this.model}/${target._id}/users`)
     }
 
-    getBook (target) {
+    getBook(target) {
         return this.api.get(`${this.model}/book`)
     }
 
-    getUsersCount (target) {
+    getUsersCount(target) {
         return this.api.get(`${this.model}/${target._id}/users/count`)
     }
 
-    signIn (target) {
+    signIn(target) {
         return this.api.post(`${this.model}/${target.broadcast_id}/users/${target.user_id}/${target.status === "signIn" ? "signOut" : "signIn"}`)
     }
 
-    publish (target) {
+    publish(target) {
         return this.api.post(`${this.model}/${target.broadcast_id}/publish`)
     }
 
-    unpublish (target) {
+    unpublish(target) {
         return this.api.post(`${this.model}/${target.broadcast_id}/unpublish`)
     }
 }

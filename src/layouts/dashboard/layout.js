@@ -42,6 +42,7 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
 
   console.log('pathname', pathname)
+  console.log('lgUp', lgUp)
   if (isHorizontal) {
     return (
       <>
@@ -69,6 +70,9 @@ export default function DashboardLayout({ children }) {
           {lgUp ? renderNavMini : renderNavVertical}
 
           <Main>{children}</Main>
+          {
+          !lgUp && <DashboardFooter />
+        }
         </Box>
       </>
     );
