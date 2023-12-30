@@ -122,6 +122,7 @@ export default function UserListView() {
             fields: {
               photoURL: 1,
               username: 1,
+              realName: 1,
               displayName: 1,
               phoneNumber: 1,
               gender: 1,

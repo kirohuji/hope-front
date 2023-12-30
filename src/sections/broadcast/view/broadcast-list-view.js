@@ -182,7 +182,7 @@ export default function BroadcastListView() {
           { name: '' },
         ]}
         action={
-          <Restricted to={['BookListAdd']}>
+          <Restricted to={['BroadcastListAdd']}>
             <Button
               component={RouterLink}
               href={paths.dashboard.broadcast.new}

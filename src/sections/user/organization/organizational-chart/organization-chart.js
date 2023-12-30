@@ -28,12 +28,14 @@ OrganizationalChart.propTypes = {
     name: PropTypes.string,
     children: PropTypes.array,
   }),
+  permissions: PropTypes.array,
   onFlash: PropTypes.any,
 };
 
 const userContext = createContext({ item: {}, setOpenForm: null, setItem: null, openForm: false });
 
 export default function OrganizationalChart({
+  permissions,
   maxRole,
   type,
   data,
@@ -189,6 +191,7 @@ export default function OrganizationalChart({
           <Grid container direction="row" alignItems="center" sx={{ p: 1 }}>
             {openPermission && (
               <PermissionPanel
+                permissions={permissions}
                 maxRole={maxRole}
                 current={item}
                 onClose={handleClosePermissionModal}

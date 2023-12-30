@@ -12,7 +12,7 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { paths } from 'src/routes/paths';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getOrganizations } from 'src/redux/slices/role';
+import { getOrganizations, getPermissions } from 'src/redux/slices/role';
 // hooks
 import { useDebounce } from 'src/hooks/use-debounce';
 
@@ -28,7 +28,7 @@ export default function UserOrganizationView() {
 
   const { active } = useSelector((state) => state.scope);
 
-  const { organizations } = useSelector((state) => state.role);
+  const { organizations, permissions } = useSelector((state) => state.role);
 
   const [view, setView] = useState('org');
 
@@ -53,6 +53,15 @@ export default function UserOrganizationView() {
         },
       })
     );
+    if (debouncedView === 'role') {
+      await dispatch(
+        getPermissions({
+          selector: {
+            type: 'permission',
+          },
+        })
+      );
+    }
     setIsLoading(false);
   }, [active._id, dispatch, debouncedView]);
 
@@ -100,6 +109,7 @@ export default function UserOrganizationView() {
         <OrganizationalChart
           maxRole={maxRole}
           type={view}
+          permissions={permissions}
           data={cloneDeep(organizations[0])}
           variant="group"
           lineHeight="64px"

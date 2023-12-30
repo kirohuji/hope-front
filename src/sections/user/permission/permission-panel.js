@@ -17,7 +17,6 @@ import _ from 'lodash';
 // redux
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getPermissions } from 'src/redux/slices/role';
 
 const userContext = createContext({ selectedNodes: [], item: {}, setItem: null });
 
@@ -191,12 +190,13 @@ PermissionPanel.propTypes = {
   current: PropTypes.object,
   maxRole: PropTypes.object,
   onClose: PropTypes.func,
+  permissions: PropTypes.array,
 };
 
-export default function PermissionPanel({ maxRole, current, onClose }) {
+export default function PermissionPanel({ permissions, maxRole, current, onClose }) {
   const dispatch = useDispatch();
   const { active } = useSelector((state) => state.scope);
-  const { permissions } = useSelector((state) => state.role);
+  // const { permissions } = useSelector((state) => state.role);
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(true);
   const [selectedNodes, setSelectedNodes] = useState([]);
@@ -208,13 +208,13 @@ export default function PermissionPanel({ maxRole, current, onClose }) {
   const [parent, setParent] = useState({});
   const getData = useCallback(async () => {
     setLoading(true);
-    await dispatch(
-      getPermissions({
-        selector: {
-          type: 'permission',
-        },
-      })
-    );
+    // await dispatch(
+    //   getPermissions({
+    //     selector: {
+    //       type: 'permission',
+    //     },
+    //   })
+    // );
     const children = await roleService.getChildrenRoleNames({
       _id: current._id,
     });
@@ -225,7 +225,7 @@ export default function PermissionPanel({ maxRole, current, onClose }) {
     setSelectedNodesChild(notChildren.map((child) => child._id));
     setSelectedNodesChild([]);
     setLoading(false);
-  }, [dispatch, current._id]);
+  }, [current._id]);
 
   useEffect(() => {
     getData();
