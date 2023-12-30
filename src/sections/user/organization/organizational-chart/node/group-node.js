@@ -22,7 +22,19 @@ GroupNode.propTypes = {
   onClick: PropTypes.func,
 };
 
-export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, onCreate, onToggle, onPermission, onManager, onClick }) {
+export default function GroupNode({
+  node,
+  depth,
+  length,
+  sx,
+  onEdit,
+  onDelete,
+  onCreate,
+  onToggle,
+  onPermission,
+  onManager,
+  onClick,
+}) {
   const name = node.label;
   const group = node.scope;
   const role = node.value;
@@ -47,7 +59,7 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
     color: isLight ? theme.palette[color].darker : theme.palette[color].lighter,
   });
 
-  const isLabel = node.type === ("org" || "role") && !node.root;
+  const isLabel = node.type === ('org' || 'role') && !node.root;
 
   const isGrRoot = group === 'root' || node.root;
 
@@ -55,12 +67,16 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
 
   const isGrDevelopment = group === 'development';
 
-  const { isMaxRole } = node
+  const { isMaxRole } = node;
 
   const isGrMarketing = group === 'marketing';
 
   return (
-    <Stack sx={{ position: 'relative', display: 'inline-flex', cursor: 'pointer' }} alignItems="center" className='card'>
+    <Stack
+      sx={{ position: 'relative', display: 'inline-flex', cursor: 'pointer' }}
+      alignItems="center"
+      className="card"
+    >
       {!isLabel && false && (
         <Avatar
           alt={name}
@@ -86,9 +102,10 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
           ...(isLabel && { py: 2 }),
           ...(isLabel && isGrProduct && styles('primary')),
           ...(isLabel && isGrProduct && styles('primary')),
-          ...(isLabel && isMaxRole && {
-            background: `red`,
-          }),
+          ...(isLabel &&
+            isMaxRole && {
+              background: `red`,
+            }),
           ...(isLabel && isGrMarketing && styles('warning')),
           ...sx,
         }}
@@ -123,23 +140,25 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
         )}
         <Typography variant={isLabel ? 'subtitle1' : 'subtitle2'} noWrap onClick={onClick}>
           {name}
-          {node.count && (
+          {node.count ? (
             <Label
               color={(isGrDevelopment && 'info') || (isGrMarketing && 'warning') || 'primary'}
               sx={{ ml: 1 }}
             >
               {node.count}
             </Label>
+          ) : (
+            ''
           )}
         </Typography>
         <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
           {role || node.value}
         </Typography>
-        {
-          node.type === "org" && <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
-            负责人: {`${node.leader?.displayName}(${node.leader?.realName})` || "无"}
+        {node.type === 'org' && (
+          <Typography variant="caption" component="div" noWrap sx={{ color: 'text.secondary' }}>
+            负责人: {`${node.leader?.displayName}(${node.leader?.realName})` || '无'}
           </Typography>
-        }
+        )}
       </Card>
       <MenuPopover
         open={openPopover}
@@ -205,8 +224,8 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
           <Iconify icon="gridicons:add-outline" />
           添加子节点
         </MenuItem>
-        {
-          onManager && false && <MenuItem
+        {onManager && false && (
+          <MenuItem
             onClick={() => {
               handleClosePopover();
               onManager();
@@ -215,9 +234,8 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
             <Iconify icon="gridicons:add-outline" />
             组织管理
           </MenuItem>
-        }
-        {
-          /**
+        )}
+        {/**
         <MenuItem
           onClick={() => {
             handleClosePopover();
@@ -227,8 +245,7 @@ export default function GroupNode ({ node, depth, length, sx, onEdit, onDelete, 
           <Iconify icon="gridicons:add-outline" />
           显示/隐藏用户
         </MenuItem>
-           */
-        }
+           */}
       </MenuPopover>
     </Stack>
   );

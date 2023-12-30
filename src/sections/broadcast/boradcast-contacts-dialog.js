@@ -31,7 +31,7 @@ import SearchNotFound from 'src/components/search-not-found';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { getOrganizations } from 'src/redux/slices/chat';
 
-import { roleService, broadcastService } from 'src/composables/context-provider';
+import { broadcastService } from 'src/composables/context-provider';
 import { useSnackbar } from 'src/components/snackbar';
 import ConfirmDialog from 'src/components/confirm-dialog';
 import FormProvider, {

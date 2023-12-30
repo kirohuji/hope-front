@@ -48,7 +48,7 @@ export const ICONS = {
 
 // ----------------------------------------------------------------------
 
-export function useNavData () {
+export function useNavData() {
   const { t } = useLocales();
 
   const data = useMemo(
@@ -75,11 +75,11 @@ export function useNavData () {
           // SCOPE
           {
             title: t('scope'),
-            auth: ['Scope'],
+            auth: ['Scope', 'ScopeList', 'ScopeListAdd', 'ScopeListEdit', 'ScopeListDelete'],
             path: paths.dashboard.scope.root,
             icon: ICONS.job,
             children: [
-              { title: t('list'), path: paths.dashboard.scope.root },
+              { title: t('list'), path: paths.dashboard.scope.root, auth: ['ScopeList'] },
               // { title: t('details'), path: paths.dashboard.scope.demo.details },
               // { title: t('create'), path: paths.dashboard.scope.new },
               // { title: t('edit'), path: paths.dashboard.scope.demo.edit },
@@ -88,7 +88,16 @@ export function useNavData () {
           // USER
           {
             title: t('user'),
-            auth: ['User', 'UserList', 'UserPermission', 'UserOrganization', 'UserListAddButton', 'UserListRemoveButton', 'UserListEditButton'],
+            auth: [
+              'User',
+              'UserList',
+              'UserPermission',
+              'UserOrganization',
+              'UserListAdd',
+              'UserListImport',
+              'UserListDelete',
+              'UserListEdit',
+            ],
             path: paths.dashboard.user.root,
             icon: ICONS.user,
             children: [
@@ -98,8 +107,16 @@ export function useNavData () {
               // { title: t('create'), path: paths.dashboard.user.new },
               // { title: t('edit'), path: paths.dashboard.user.demo.edit },
               // { title: t('account'), path: paths.dashboard.user.account },
-              { title: t('organization'), path: paths.dashboard.user.organization, auth: ['UserOrganization'] },
-              { title: t('permission'), path: paths.dashboard.user.permission, auth: ['UserPermission'] },
+              {
+                title: t('organization'),
+                path: paths.dashboard.user.organization,
+                auth: ['UserOrganization'],
+              },
+              {
+                title: t('permission'),
+                path: paths.dashboard.user.permission,
+                auth: ['UserPermission'],
+              },
             ],
           },
 
@@ -168,7 +185,7 @@ export function useNavData () {
           // BOOK
           {
             title: t('book'),
-            auth: ['Book', 'BookList'],
+            auth: ['Book', 'BookList', 'BookListAdd', 'BookListEdit', 'BookListDelete'],
             path: paths.dashboard.book.root,
             icon: ICONS.job,
             children: [
@@ -219,9 +236,16 @@ export function useNavData () {
           {
             title: t('broadcast'),
             path: paths.dashboard.broadcast.root,
+            auth: [
+              'Broadcast',
+              'BroadcastList',
+              'BroadcastListAdd',
+              'BroadcastListEdit',
+              'BroadcastListDelete',
+            ],
             icon: ICONS.broadcast,
             children: [
-              { title: t('list'), path: paths.dashboard.broadcast.root },
+              { title: t('list'), path: paths.dashboard.broadcast.root, auth: ['Broadcast'] },
               // { title: t('details'), path: paths.dashboard.broadcast.demo.details },
               // { title: t('create'), path: paths.dashboard.broadcast.new },
               // { title: t('edit'), path: paths.dashboard.broadcast.demo.edit },
@@ -229,11 +253,11 @@ export function useNavData () {
           },
 
           // FILE MANAGER
-          {
-            title: t('file_manager'),
-            path: paths.dashboard.fileManager,
-            icon: ICONS.folder,
-          },
+          // {
+          //   title: t('file_manager'),
+          //   path: paths.dashboard.fileManager,
+          //   icon: ICONS.folder,
+          // },
 
           // MAIL
           // {
@@ -253,6 +277,7 @@ export function useNavData () {
           // CALENDAR
           {
             title: t('calendar'),
+            auth: ['Calendar'],
             path: paths.dashboard.calendar,
             icon: ICONS.calendar,
           },

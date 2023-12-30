@@ -2,27 +2,27 @@ import axios from 'axios';
 // import qs from 'qs'
 // create an axios instance
 
-// const pending = []; 
-// const { CancelToken } = axios;
-// const removePending = (config) => {
-//   // eslint-disable-next-line no-restricted-syntax
-//   for (const p in pending) {
-//     if (pending[p].u === `${config.url.split('?')[0]  }&${  config.method}`) {
-//       pending[p].f();
-//       pending.splice(p, 1);
-//     }
-//   }
-// };
+const pending = []; // 声明一个数组用于存储每个请求的取消函数和axios标识
+const { CancelToken } = axios;
+const removePending = (config) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const p in pending) {
+    if (pending[p].u === `${config.url.split('?')[0]}&${config.method}`) {
+      pending[p].f();
+      pending.splice(p, 1);
+    }
+  }
+};
 
 const service = axios.create({
   baseURL: 'https://www.lourd.online/api/v1/',
-  timeout: 20000,
+  timeout: 180000,
 });
 service.interceptors.request.use(
   (config) => {
-    // removePending(config); 
-    // config.cancelToken = new CancelToken((c)=>{
-    //   pending.push({ u: `${config.url.split('?')[0] }&${  config.method}`, f: c});
+    // removePending(config);
+    // config.cancelToken = new CancelToken((c) => {
+    //   pending.push({ u: `${config.url.split('?')[0]}&${config.method}`, f: c });
     // });
     const token = localStorage.getItem('accessToken');
     if (token) {
@@ -42,7 +42,7 @@ export default service;
 
 export const fileService = axios.create({
   baseURL: 'https://www.lourd.online',
-  timeout: 100000,
+  timeout: 180000,
   // processData: false,
   headers: {
     'Content-Type': 'multipart/form-data',

@@ -8,15 +8,15 @@ import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+import Pagination from '@mui/material/Pagination';
+import Box from '@mui/material/Box';
 // hooks
 import { useDebounce } from 'src/hooks/use-debounce';
 // _mock
-import {
-  _jobs,
-} from 'src/_mock';
+import { _jobs } from 'src/_mock';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getDatas } from 'src/redux/slices/book';
+import { pagination } from 'src/redux/slices/book';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
@@ -26,9 +26,9 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 //
+import Restricted from 'src/auth/guard/restricted';
 import BookList from '../book-list';
 import BookFiltersResult from '../book-filters-result';
-
 
 // ----------------------------------------------------------------------
 
@@ -43,14 +43,18 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function BookListView () {
+export default function BookListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const settings = useSettingsContext();
 
-  const { data } = useSelector((state) => state.book);
+  const { data, total } = useSelector((state) => state.book);
 
   const dispatch = useDispatch();
+
+  const [page, setPage] = useState(1);
+
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [sortBy, setSortBy] = useState('latest');
 
@@ -59,27 +63,42 @@ export default function BookListView () {
     results: [],
   });
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
   const [filters, setFilters] = useState(defaultFilters);
 
   const debouncedFilters = useDebounce(filters);
 
-  const onRefresh = useCallback(async (selector = {}, options = {}) => {
-    try {
-      dispatch(getDatas({
-        ...{
-          ...selector,
-          label: debouncedFilters.label
-        },
-        ...options
-      }))
-    } catch (error) {
-      enqueueSnackbar(error.message);
-    }
-  }, [debouncedFilters.label, dispatch, enqueueSnackbar])
-
+  const onRefresh = useCallback(
+    async (selector = {}, options = {}) => {
+      try {
+        dispatch(
+          pagination(
+            {
+              ...selector,
+              label: {
+                $regex: debouncedFilters.label,
+                $options: 'i',
+              },
+            },
+            {
+              skip: (page - 1) * rowsPerPage,
+              limit: rowsPerPage,
+              ...options,
+            }
+          )
+        );
+      } catch (error) {
+        enqueueSnackbar(error.message);
+      }
+    },
+    [debouncedFilters.label, dispatch, enqueueSnackbar, page, rowsPerPage]
+  );
 
   useEffect(() => {
-    onRefresh()
+    onRefresh();
   }, [onRefresh]);
 
   const dataFiltered = applyFilter({
@@ -138,7 +157,7 @@ export default function BookListView () {
       canReset={canReset}
       onFilters={handleFilters}
       //
-      results={dataFiltered.length}
+      results={total}
     />
   );
 
@@ -155,14 +174,16 @@ export default function BookListView () {
           { name: '列表' },
         ]}
         action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.book.new}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            新建
-          </Button>
+          <Restricted to={['BookListAdd']}>
+            <Button
+              component={RouterLink}
+              href={paths.dashboard.book.new}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              新建
+            </Button>
+          </Restricted>
         }
         sx={{
           mb: { xs: 3, md: 5 },
@@ -183,6 +204,22 @@ export default function BookListView () {
       {notFound && <EmptyContent filled title="No Data" sx={{ py: 10 }} />}
 
       <BookList books={data} refresh={() => onRefresh()} />
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          padding: '16px',
+        }}
+      >
+        <Pagination
+          shape="rounded"
+          count={total}
+          defaultPage={page}
+          variant="outlined"
+          page={page}
+          onChange={handlePageChange}
+        />
+      </Box>
     </Container>
   );
 }

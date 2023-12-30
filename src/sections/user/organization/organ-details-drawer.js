@@ -13,7 +13,7 @@ import {
   Typography,
   IconButton,
   Autocomplete,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 // utils
 import { fData } from 'src/utils/format-number';
@@ -66,15 +66,15 @@ export default function OrganDetailsDrawer({
   const [toggleProperties, setToggleProperties] = useState(true);
 
   const getUsers = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     const response = await roleService.getUsersInRoleOnly({
       options: {
         scope: active._id,
       },
       roles: item._id,
     });
-    setUsers(response.data)
-    setLoading(false)
+    setUsers(response.data);
+    setLoading(false);
   }, [active, item, setUsers]);
   useEffect(() => {
     if (open) {
@@ -101,11 +101,23 @@ export default function OrganDetailsDrawer({
   const onSelectMain = async (person) => {
     await roleService.changeLeader({
       _id: item._id,
-      leader_id: person._id
-    })
+      leader_id: person._id,
+    });
     getUsers();
-    onChangeLeader(person)
-  }
+    onChangeLeader(person);
+  };
+
+  const onSelectDelete = async (person) => {
+    await roleService.removeUsersFromRoles({
+      roles: item._id,
+      users: person._id,
+      options: {
+        anyScope: true,
+      },
+    });
+    getUsers();
+    // onChangeLeader(person);
+  };
 
   return (
     <>
@@ -125,16 +137,14 @@ export default function OrganDetailsDrawer({
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2.5 }}>
             <Typography variant="h6"> 信息 </Typography>
 
-            {
-              /**
+            {/**
                   <Checkbox
                   color="warning"
                   icon={<Iconify icon="eva:star-outline" />}
                   checkedIcon={<Iconify icon="eva:star-fill" />}
                   sx={{ p: 0.75 }}
                 />
-               */
-            }
+               */}
           </Stack>
 
           <Stack
@@ -142,8 +152,7 @@ export default function OrganDetailsDrawer({
             justifyContent="center"
             sx={{ p: 2.5, bgcolor: 'background.neutral' }}
           >
-            {
-              /**
+            {/**
            <FileThumbnail
                     imageView
                     file={type === 'folder' ? type : url}
@@ -151,8 +160,7 @@ export default function OrganDetailsDrawer({
                     imgSx={{ borderRadius: 1 }}
                   />
       
-               */
-            }
+               */}
             <Typography variant="h6" sx={{ wordBreak: 'break-all' }}>
               {item.label}
             </Typography>
@@ -189,17 +197,15 @@ export default function OrganDetailsDrawer({
             </Stack>
 
             <Stack spacing={1.5}>
-              <Panel
-                label="基本属性"
-                toggle={toggleProperties}
-                onToggle={handleToggleProperties}
-              />
+              <Panel label="基本属性" toggle={toggleProperties} onToggle={handleToggleProperties} />
 
               {toggleProperties && (
                 <Stack spacing={1.5}>
                   {false && <Row label="负责人" value={fData(size)} />}
 
-                  {item.type === "org" && <Row label="负责人" value={`${leader?.displayName}(${leader?.realName})`} />}
+                  {item.type === 'org' && (
+                    <Row label="负责人" value={`${leader?.displayName}(${leader?.realName})`} />
+                  )}
 
                   {false && <Row label="代码" value={fDateTime(dateModified)} />}
 
@@ -231,23 +237,32 @@ export default function OrganDetailsDrawer({
             </IconButton>
           </Stack>
 
-          {
-            loading && <Box sx={{
-              zIndex: 10,
-              backgroundColor: "#ffffffc4",
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center"
-            }}>
+          {loading && (
+            <Box
+              sx={{
+                zIndex: 10,
+                backgroundColor: '#ffffffc4',
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
               <CircularProgress />
             </Box>
-          }
+          )}
           {!loading && hasUsers && (
             <List disablePadding sx={{ pl: 2.5, pr: 1 }}>
               {users.map((person) => (
-                <JoinedUserItem node={item} key={person._id} leader={leader} person={person} onSelectMain={() => onSelectMain(person)} />
+                <JoinedUserItem
+                  node={item}
+                  key={person._id}
+                  leader={leader}
+                  person={person}
+                  onSelectMain={() => onSelectMain(person)}
+                  onSelectDelete={() => onSelectDelete(person)}
+                />
               ))}
             </List>
           )}
@@ -267,11 +282,7 @@ export default function OrganDetailsDrawer({
         </Box>
       </Drawer>
 
-      <OrganContactsDialog
-        current={item}
-        open={openContacts}
-        onClose={handleCloseContacts}
-      />
+      <OrganContactsDialog current={item} open={openContacts} onClose={handleCloseContacts} />
       {/**
           <FileShareDialog
         open={openShare}

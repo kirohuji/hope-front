@@ -99,7 +99,7 @@ export function RHFUpload({ name, multiple, helperText, ...other }) {
 }
 
 RHFUpload.propTypes = {
-  helperText: PropTypes.string,
+  helperText: PropTypes.any,
   multiple: PropTypes.bool,
   name: PropTypes.string,
 };

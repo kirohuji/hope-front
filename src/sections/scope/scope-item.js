@@ -16,10 +16,11 @@ import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { RouterLink } from 'src/routes/components';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import Restricted from 'src/auth/guard/restricted';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
+export default function ScopeItem({ scope, onView, onEdit, onDelete }) {
   const popover = usePopover();
 
   const { _id, label, cover, createdAt, candidates } = scope;
@@ -32,17 +33,16 @@ export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
         </IconButton>
 
         <Stack sx={{ p: 3, pb: 2 }}>
-          <Avatar
-            alt={label}
-            src={cover}
-            variant="rounded"
-            sx={{ width: 48, height: 48, mb: 2 }}
-          />
+          <Avatar alt={label} src={cover} variant="rounded" sx={{ width: 48, height: 48, mb: 2 }} />
 
           <ListItemText
             sx={{ mb: 1 }}
             primary={
-              <Link component={RouterLink} href={paths.dashboard.scope.details(_id)} color="inherit">
+              <Link
+                component={RouterLink}
+                href={paths.dashboard.scope.details(_id)}
+                color="inherit"
+              >
                 {label}
               </Link>
             }
@@ -57,8 +57,8 @@ export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
               color: 'text.disabled',
             }}
           />
-          {
-            false && <Stack
+          {false && (
+            <Stack
               spacing={0.5}
               direction="row"
               alignItems="center"
@@ -67,13 +67,12 @@ export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
               <Iconify width={16} icon="solar:users-group-rounded-bold" />
               {candidates ? candidates.length : '无'} 参与者
             </Stack>
-          }
+          )}
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        {
-          /*
+        {/*
                 <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
                   {[
                     {
@@ -108,8 +107,7 @@ export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
                     </Stack>
                   ))}
                 </Box>
-          */
-        }
+          */}
       </Card>
 
       <CustomPopover
@@ -127,27 +125,29 @@ export default function ScopeItem ({ scope, onView, onEdit, onDelete }) {
           <Iconify icon="solar:eye-bold" />
           查看
         </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            onEdit();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          编辑
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            onDelete();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          删除
-        </MenuItem>
+        <Restricted to={['ScopeListEdit']}>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              onEdit();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            编辑
+          </MenuItem>
+        </Restricted>
+        <Restricted to={['ScopeListDelete']}>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              onDelete();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            删除
+          </MenuItem>
+        </Restricted>
       </CustomPopover>
     </>
   );

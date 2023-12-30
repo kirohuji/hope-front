@@ -5,7 +5,11 @@ import { scopeService } from '../../composables/context-provider';
 const initialState = {
   isLoading: true,
   error: null,
+  // 右上角
   scopes: [],
+  data: [],
+  total: 0,
+  details: { byId: {}, participantsBy: {}, count: {} },
   active: null,
 };
 
@@ -13,24 +17,30 @@ const slice = createSlice({
   name: 'scope',
   initialState,
   reducers: {
-    setActive (state, action) {
+    setActive(state, action) {
       state.active = action.payload;
     },
     // START LOADING
-    startLoading (state) {
+    startLoading(state) {
       state.isLoading = true;
     },
 
     // HAS ERROR
-    hasError (state, action) {
+    hasError(state, action) {
       state.isLoading = false;
       state.error = action.payload;
     },
 
     // GET Scopes
-    getScopesSuccess (state, action) {
+    getScopesSuccess(state, action) {
       state.isLoading = false;
       state.scopes = action.payload;
+    },
+    getDatasSuccess(state, action) {
+      const { data, total } = action.payload;
+      state.isLoading = false;
+      state.data = data;
+      state.total = total;
     },
   },
 });
@@ -39,22 +49,42 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const {
-  setActive
-} = slice.actions;
+export const { setActive } = slice.actions;
 
 // ----------------------------------------------------------------------
 
-export function getScopes () {
+export function getScopes() {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await scopeService.getAll()
+      const response = await scopeService.getAll();
       dispatch(slice.actions.getScopesSuccess(response));
       dispatch(slice.actions.setActive(response[0]));
     } catch (error) {
       console.error(error);
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  };
+}
+
+export function pagination(query, options) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const response = await scopeService.pagination(query, options);
+      dispatch(slice.actions.getDatasSuccess(response));
+    } catch (error) {
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }

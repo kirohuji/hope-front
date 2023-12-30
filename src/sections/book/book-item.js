@@ -20,6 +20,7 @@ import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { RouterLink } from 'src/routes/components';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import Restricted from 'src/auth/guard/restricted';
 
 // ----------------------------------------------------------------------
 
@@ -29,32 +30,33 @@ const TYPE_OPTIONS = new Map([
   ['adult', '成人'],
   ['newBelievers', '初信'],
 ]);
-export default function BookItem ({ book, onView, onEdit, onDelete }) {
+export default function BookItem({ book, onView, onEdit, onDelete }) {
   const theme = useTheme();
   const popover = usePopover();
 
-  const { _id, label, cover, createdAt, type, candidates } =
-    book;
-    
-    const renderType = (
-      <Stack
-        direction="row"
-        alignItems="center"
-        sx={{
-          top: 8,
-          left: 8,
-          zIndex: 9,
-          borderRadius: 1,
-          position: 'absolute',
-          p: '2px 6px 2px 4px',
-          typography: 'subtitle2',
-          bgcolor: 'warning.lighter',
-          fontSize: '12px'
-        }}
-      >
-       {Array.isArray(type)? type.map(tp => TYPE_OPTIONS.get(tp)).join(',') : TYPE_OPTIONS.get(type)}
-      </Stack>
-    );
+  const { _id, label, cover, createdAt, type, candidates } = book;
+
+  const renderType = (
+    <Stack
+      direction="row"
+      alignItems="center"
+      sx={{
+        top: 8,
+        left: 8,
+        zIndex: 9,
+        borderRadius: 1,
+        position: 'absolute',
+        p: '2px 6px 2px 4px',
+        typography: 'subtitle2',
+        bgcolor: 'warning.lighter',
+        fontSize: '12px',
+      }}
+    >
+      {Array.isArray(type)
+        ? type.map((tp) => TYPE_OPTIONS.get(tp)).join(',')
+        : TYPE_OPTIONS.get(type)}
+    </Stack>
+  );
   return (
     <>
       <Card>
@@ -72,11 +74,15 @@ export default function BookItem ({ book, onView, onEdit, onDelete }) {
               height: 120,
             }}
           />
-          <Stack sx={{ pl: 2}}>
+          <Stack sx={{ pl: 2 }}>
             <ListItemText
               sx={{ mb: 1 }}
               primary={
-                <Link component={RouterLink} href={paths.dashboard.book.details.root(_id)} color="inherit">
+                <Link
+                  component={RouterLink}
+                  href={paths.dashboard.book.details.root(_id)}
+                  color="inherit"
+                >
                   {label}
                 </Link>
               }
@@ -91,8 +97,7 @@ export default function BookItem ({ book, onView, onEdit, onDelete }) {
                 color: 'text.disabled',
               }}
             />
-            {
-              /**
+            {/**
                * 
                *             <Stack
               spacing={0.5}
@@ -103,14 +108,12 @@ export default function BookItem ({ book, onView, onEdit, onDelete }) {
               <Iconify width={16} icon="solar:users-group-rounded-bold" />
               {candidates ? candidates.length : '无'} 参与者
             </Stack>
-               */
-            }
+               */}
           </Stack>
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-        {
-          /**
+        {/**
                 <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
                   {[
                     {
@@ -145,8 +148,7 @@ export default function BookItem ({ book, onView, onEdit, onDelete }) {
                     </Stack>
                   ))}
                 </Box>
-           */
-        }
+           */}
       </Card>
 
       <CustomPopover
@@ -164,26 +166,29 @@ export default function BookItem ({ book, onView, onEdit, onDelete }) {
           <Iconify icon="solar:eye-bold" />
           查看
         </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            onEdit();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          编辑
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            onDelete();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          删除
-        </MenuItem>
+        <Restricted to={['BookListEdit']}>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              onEdit();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            编辑
+          </MenuItem>
+        </Restricted>
+        <Restricted to={['BookListDelete']}>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              onDelete();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            删除
+          </MenuItem>
+        </Restricted>
       </CustomPopover>
     </>
   );

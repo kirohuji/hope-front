@@ -5,23 +5,26 @@ import { useCallback, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import Pagination from '@mui/material/Pagination';
+import Box from '@mui/material/Box';
 // routes
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 // _mock
-import {
-  _jobs,
-} from 'src/_mock';
+import { _jobs } from 'src/_mock';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
 import EmptyContent from 'src/components/empty-content';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-//
-import { scopeService } from 'src/composables/context-provider';
+// redux
+import { useDispatch, useSelector } from 'src/redux/store';
+import { pagination } from 'src/redux/slices/scope';
+import Restricted from 'src/auth/guard/restricted';
 import ScopeList from '../scope-list';
 import ScopeFiltersResult from '../scope-filters-result';
+// auth
 
 // ----------------------------------------------------------------------
 
@@ -35,10 +38,16 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function ScopeListView () {
+export default function ScopeListView() {
+  const dispatch = useDispatch();
+
   const { enqueueSnackbar } = useSnackbar();
 
-  const [tableData, setTableData] = useState([]);
+  const { data, total } = useSelector((state) => state.scope);
+
+  const [page, setPage] = useState(1);
+
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const settings = useSettingsContext();
 
@@ -46,21 +55,29 @@ export default function ScopeListView () {
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const getTableData = useCallback(async (selector = {}, options = {}) => {
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const onRefresh = useCallback(() => {
     try {
-      const response = await scopeService.pagination({
-        ...selector,
-        ...options
-      })
-      setTableData(response.data);
+      dispatch(
+        pagination(
+          {},
+          {
+            skip: (page - 1) * rowsPerPage,
+            limit: rowsPerPage,
+          }
+        )
+      );
     } catch (error) {
       enqueueSnackbar(error.message);
     }
-  }, [setTableData, enqueueSnackbar]);
+  }, [dispatch, enqueueSnackbar, page, rowsPerPage]);
 
   useEffect(() => {
-    getTableData()
-  }, [getTableData]);
+    onRefresh();
+  }, [onRefresh]);
 
   const dataFiltered = applyFilter({
     inputData: _jobs,
@@ -93,7 +110,6 @@ export default function ScopeListView () {
     />
   );
 
-
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -106,14 +122,16 @@ export default function ScopeListView () {
           { name: '列表' },
         ]}
         action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.scope.new}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            新建
-          </Button>
+          <Restricted to={['ScopeListAdd']}>
+            <Button
+              component={RouterLink}
+              href={paths.dashboard.scope.new}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              新建
+            </Button>
+          </Restricted>
         }
         sx={{
           mb: { xs: 3, md: 5 },
@@ -131,7 +149,22 @@ export default function ScopeListView () {
 
       {notFound && <EmptyContent filled title="没有数据" sx={{ py: 10 }} />}
 
-      <ScopeList scopes={tableData} onRefresh={()=> getTableData()}/>
+      <ScopeList scopes={data} onRefresh={() => onRefresh()} />
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          padding: '16px',
+        }}
+      >
+        <Pagination
+          shape="rounded"
+          count={total}
+          variant="outlined"
+          page={page}
+          onChange={handlePageChange}
+        />
+      </Box>
     </Container>
   );
 }

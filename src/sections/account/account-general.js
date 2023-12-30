@@ -29,7 +29,7 @@ import FormProvider, {
   RHFAutocomplete,
 } from 'src/components/hook-form';
 
-import { profileService, fileService } from 'src/composables/context-provider'
+import { profileService, fileService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
@@ -53,7 +53,7 @@ export default function AccountGeneral() {
     // isPublic: Yup.boolean(),
   });
 
-  const loading = useBoolean(false)
+  const loading = useBoolean(false);
 
   const defaultValues = {
     displayName: user?.displayName || '',
@@ -85,10 +85,10 @@ export default function AccountGeneral() {
       await profileService.patch({
         _id: user._id,
         ...data,
-        photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL
-      })
+        photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL,
+      });
       enqueueSnackbar('更新 成功!');
-      refresh()
+      refresh();
     } catch (error) {
       console.error(error);
     }
@@ -96,28 +96,26 @@ export default function AccountGeneral() {
 
   const handleDrop = useCallback(
     async (acceptedFiles) => {
-      try{
+      try {
         const file = acceptedFiles[0];
-        console.log('file.size',file.size)
-        if(file.size < 3145728){
+        console.log('file.size', file.size);
+        if (file.size < 3145728) {
           const formData = new FormData();
           formData.append('file', file);
-          loading.onTrue()
-          const { link } = await fileService.avatar(formData)
+          loading.onTrue();
+          const { link } = await fileService.avatar(formData);
           if (file) {
             setValue(
               'photoURL',
               Object.assign(file, {
-                preview: link
+                preview: link,
               })
             );
           }
-          setTimeout(()=>{
-            loading.onFalse();
-          }, 2000)
+          loading.onFalse();
           enqueueSnackbar('头像上传成功!');
         }
-      } catch(e){
+      } catch (e) {
         loading.onFalse();
       }
     },
@@ -129,28 +127,30 @@ export default function AccountGeneral() {
       <Grid container spacing={3}>
         <Grid xs={12} md={4}>
           <Card sx={{ pt: 10, pb: 5, px: 3, textAlign: 'center', position: 'relative' }}>
-            {
-              loading.value && <Box sx={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                zIndex: 10,
-                backgroundColor: "#ffffffc4",
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-              }}>
+            {loading.value && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  zIndex: 10,
+                  backgroundColor: '#ffffffc4',
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
                 <CircularProgress />
               </Box>
-            }
+            )}
             <RHFUploadAvatar
               name="photoURL"
               // maxSize={3145728}
               onDrop={handleDrop}
-              onDropRejected={()=> {
-                loading.onFalse()
+              onDropRejected={() => {
+                loading.onFalse();
               }}
               helperText={
                 <Typography
@@ -168,20 +168,15 @@ export default function AccountGeneral() {
                 </Typography>
               }
             />
-            {
-              false && <div>
-                <RHFSwitch
-                  name="isPublic"
-                  labelPlacement="start"
-                  label="是否公开"
-                  sx={{ mt: 5 }}
-                />
+            {false && (
+              <div>
+                <RHFSwitch name="isPublic" labelPlacement="start" label="是否公开" sx={{ mt: 5 }} />
 
                 <Button variant="soft" color="error" sx={{ mt: 3 }}>
                   Delete User
                 </Button>
               </div>
-            }
+            )}
           </Card>
         </Grid>
 

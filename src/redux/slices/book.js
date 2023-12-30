@@ -5,6 +5,7 @@ import { bookService } from '../../composables/context-provider';
 
 const initialState = {
   data: [],
+  total: 0,
   error: null,
 };
 
@@ -13,15 +14,16 @@ const slice = createSlice({
   initialState,
   reducers: {
     // START LOADING
-    startLoading (state) {
+    startLoading(state) {
       state.isLoading = true;
     },
-    getDataSuccess (state, action) {
+    getDataSuccess(state, action) {
       state.isLoading = false;
-      state.data = action.payload;
+      state.data = action.payload.data;
+      state.total = action.payload.total;
     },
     // HAS ERROR
-    hasError (state, action) {
+    hasError(state, action) {
       state.isLoading = false;
       state.error = action.payload;
     },
@@ -31,13 +33,13 @@ const slice = createSlice({
 // Reducer
 export default slice.reducer;
 
-export function getDatas (query) {
+export function pagination(query, options) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
-    try{
-      const response = await bookService.pagination(query);
-      dispatch(slice.actions.getDataSuccess(response.data));
-    } catch(error){
+    try {
+      const response = await bookService.pagination(query, options);
+      dispatch(slice.actions.getDataSuccess(response));
+    } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
   };

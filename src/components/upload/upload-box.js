@@ -4,12 +4,24 @@ import { useDropzone } from 'react-dropzone';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 //
+import { fData } from 'src/utils/format-number';
 import Iconify from '../iconify';
 
 // ----------------------------------------------------------------------
 
+function sizeValidator(file) {
+  if (file.size > 3145728) {
+    return {
+      code: 'file-too-large',
+      message: `文件不能超过 ${fData(3145728)} !`,
+    };
+  }
+
+  return null;
+}
 export default function UploadBox({ placeholder, error, disabled, sx, ...other }) {
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
+    validator: sizeValidator,
     disabled,
     ...other,
   });

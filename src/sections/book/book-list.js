@@ -20,10 +20,10 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import BookItem from './book-item';
 // ----------------------------------------------------------------------
 
-export default function BookList ({ books, refresh }) {
+export default function BookList({ books, refresh }) {
   const router = useRouter();
   const confirm = useBoolean();
-  const [current, setCurrent] = useState(null)
+  const [current, setCurrent] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
   const handleView = useCallback(
     (id) => {
@@ -39,13 +39,12 @@ export default function BookList ({ books, refresh }) {
     [router]
   );
 
-
   const handleDelete = useCallback(async () => {
     await bookService.delete({
-      _id: current._id
-    })
-    enqueueSnackbar("删除成功")
-    refresh()
+      _id: current._id,
+    });
+    enqueueSnackbar('删除成功');
+    refresh();
   }, [refresh, enqueueSnackbar, current]);
 
   return (
@@ -67,7 +66,7 @@ export default function BookList ({ books, refresh }) {
             onEdit={() => handleEdit(book._id)}
             onDelete={() => {
               setCurrent(book);
-              confirm.onTrue()
+              confirm.onTrue();
             }}
           />
         ))}
@@ -88,11 +87,7 @@ export default function BookList ({ books, refresh }) {
         open={confirm.value}
         onClose={confirm.onFalse}
         title="删除"
-        content={
-          <>
-            确定要删除吗?
-          </>
-        }
+        content={<>确定要删除吗?</>}
         action={
           <Button
             variant="contained"
@@ -112,5 +107,5 @@ export default function BookList ({ books, refresh }) {
 
 BookList.propTypes = {
   books: PropTypes.array,
-  refresh: PropTypes.func
+  refresh: PropTypes.func,
 };

@@ -13,12 +13,16 @@ import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import Switch from '@mui/material/Switch';
+import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
 // routes
 import { paths } from 'src/routes/paths';
@@ -34,6 +38,9 @@ import FormProvider, {
   RHFAutocomplete,
   RHFSwitch,
 } from 'src/components/hook-form';
+
+// utils
+import { fData } from 'src/utils/format-number';
 
 import { broadcastService, userService, fileService } from 'src/composables/context-provider';
 import moment from 'moment';
@@ -60,6 +67,8 @@ export const BROAECAST_TYPE_OPTIONS = [
   // { value: 'book', label: '灵修' },
 ];
 export default function BroadcastNewEditForm({ currentBroadcast }) {
+  const loading = useBoolean(false);
+
   const router = useRouter();
 
   const isEdit = !!currentBroadcast;
@@ -203,7 +212,6 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
   const handleDrop = useCallback(
     (acceptedFiles) => {
       const files = values.images || [];
-
       const newFiles = acceptedFiles.map((file) =>
         Object.assign(file, {
           preview: URL.createObjectURL(file),
@@ -218,7 +226,16 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
 
   const handleRemoveFile = useCallback(
     (inputFile) => {
-      const filtered = values.images && values.images?.filter((file) => file !== inputFile);
+      console.log('inputFile', inputFile);
+      console.log('values.images', values.images);
+      const filtered =
+        values.images &&
+        values.images?.filter((file) => {
+          if (file.preview) {
+            return file.preview !== inputFile.preview;
+          }
+          return file !== inputFile;
+        });
       setValue('images', filtered);
     },
     [setValue, values.images]
@@ -229,16 +246,23 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
   }, [setValue]);
 
   const onUpload = () => {
-    values.images.map(async (file) => {
-      const formData = new FormData();
-      formData.append('file', file);
-      const { link } = await fileService.upload(formData);
-      Object.assign(file, {
-        preview: link,
-        isLoacl: false,
+    loading.onTrue();
+    try {
+      values.images.map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const { link } = await fileService.upload(formData);
+        Object.assign(file, {
+          preview: link,
+          isLoacl: false,
+        });
       });
-    });
-    enqueueSnackbar('资源上传成功');
+      enqueueSnackbar('资源上传成功');
+      loading.onFalse();
+    } catch (e) {
+      enqueueSnackbar('资源上传失败');
+      loading.onFalse();
+    }
   };
 
   const renderDetails = (
@@ -271,15 +295,51 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">资源</Typography>
+              {loading.value && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 10,
+                    backgroundColor: '#ffffffc4',
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              )}
               <RHFUpload
                 multiple
                 thumbnail
                 name="images"
-                maxSize={31457280}
+                // maxSize={31457280}
                 onDrop={handleDrop}
+                onDropRejected={() => {
+                  loading.onFalse();
+                }}
                 onRemove={handleRemoveFile}
                 onRemoveAll={handleRemoveAllFiles}
                 onUpload={(files) => onUpload(files)}
+                helperText={
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      mt: 3,
+                      mx: 'auto',
+                      display: 'block',
+                      textAlign: 'center',
+                      color: 'text.disabled',
+                    }}
+                  >
+                    允许 *.jpeg, *.jpg, *.png, *.gif
+                    <br /> max size of {fData(3145728)}
+                  </Typography>
+                }
               />
             </Stack>
           </Stack>
@@ -466,6 +526,14 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
           />
         )}
 
+        <Button
+          color="error"
+          variant="contained"
+          onClick={() => router.push(paths.dashboard.broadcast.root)}
+          sx={{ mr: 1 }}
+        >
+          返回
+        </Button>
         <LoadingButton
           type="submit"
           variant="contained"

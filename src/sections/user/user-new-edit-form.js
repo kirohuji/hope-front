@@ -14,11 +14,14 @@ import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import CircularProgress from '@mui/material/CircularProgress';
 // utils
 import { fData } from 'src/utils/format-number';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 
 // redux
 import { useSelector } from 'src/redux/store';
@@ -26,11 +29,7 @@ import { useSelector } from 'src/redux/store';
 // components
 import Label from 'src/components/label';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {
-  RHFSelect,
-  RHFTextField,
-  RHFUploadAvatar,
-} from 'src/components/hook-form';
+import FormProvider, { RHFSelect, RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 import { profileService, userService, fileService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
@@ -38,6 +37,8 @@ export default function UserNewEditForm({ currentUser }) {
   const router = useRouter();
   const isEdit = !!currentUser;
   const scope = useSelector((state) => state.scope);
+  const loading = useBoolean(false);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
@@ -45,6 +46,7 @@ export default function UserNewEditForm({ currentUser }) {
     displayName: Yup.string().required('请输入展示名'),
     email: Yup.string().required('请输入电子邮件').email('电子邮件必须是有效的'),
     phoneNumber: Yup.string().required('请输入手机号'),
+    realName: Yup.string().required('请输入真实名'),
     address: Yup.string().required('请选择地址'),
     age: Yup.string().required('请选择年龄'),
     gender: Yup.string().required('请选择性别'),
@@ -69,6 +71,7 @@ export default function UserNewEditForm({ currentUser }) {
       gender: currentUser?.gender || '',
       available: currentUser?.available || '',
       scope: currentUser?.scope || '',
+      realName: currentUser?.realName || '',
       baptized: currentUser?.baptized || false,
       photoURL: currentUser?.photoURL || null,
     }),
@@ -100,18 +103,18 @@ export default function UserNewEditForm({ currentUser }) {
         await profileService.patch({
           _id: user._id,
           ...data,
-          photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL
+          photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL,
         });
       } else {
         await userService.patch({
           _id: currentUser._id,
           ...data,
-          photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL
+          photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL,
         });
         await profileService.patch({
           _id: currentUser._id,
           ...data,
-          photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL
+          photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL,
         });
       }
       reset();
@@ -125,18 +128,22 @@ export default function UserNewEditForm({ currentUser }) {
 
   const handleDrop = useCallback(
     async (acceptedFiles) => {
-      const file = acceptedFiles[0];
-      const formData = new FormData();
-      formData.append('file', file);
-      const { link } = await fileService.avatar(formData)
-      if (file) {
-        setValue('photoURL', link, { shouldValidate: true });
-        // setValue('photoURL', Object.assign(file, {
-        //   preview: link
-        // }), { shouldValidate: true });
+      try {
+        const file = acceptedFiles[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        loading.onTrue();
+        const { link } = await fileService.avatar(formData);
+        if (file) {
+          setValue('photoURL', link, { shouldValidate: true });
+          loading.onFalse();
+          enqueueSnackbar('头像上传成功!');
+        }
+      } catch (e) {
+        loading.onFalse();
       }
     },
-    [setValue]
+    [setValue, enqueueSnackbar, loading]
   );
 
   return (
@@ -154,10 +161,31 @@ export default function UserNewEditForm({ currentUser }) {
             )}
 
             <Box sx={{ mb: 5 }}>
+              {loading.value && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 10,
+                    backgroundColor: '#ffffffc4',
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              )}
               <RHFUploadAvatar
                 name="photoURL"
-                maxSize={3145728}
+                // maxSize={3145728}
                 onDrop={handleDrop}
+                onDropRejected={() => {
+                  loading.onFalse();
+                }}
                 helperText={
                   <Typography
                     variant="caption"
@@ -230,38 +258,36 @@ export default function UserNewEditForm({ currentUser }) {
             >
               <RHFTextField name="username" label="用户名" />
               <RHFTextField name="displayName" label="展示名" />
+              <RHFTextField name="realName" label="真实名" />
               <RHFTextField name="age" label=" 年龄" />
               <RHFSelect name="gender" label="性别" placeholder="性别">
-                <MenuItem value="male">
-                  女
-                </MenuItem>
-                <MenuItem value="female">
-                  男
-                </MenuItem>
+                <MenuItem value="male">男</MenuItem>
+                <MenuItem value="female">女</MenuItem>
               </RHFSelect>
               <RHFTextField name="email" label="电子邮件" disabled />
               <RHFTextField name="phoneNumber" label="手机号" />
               <RHFSelect name="baptized" label="是否受洗" placeholder="是否受洗">
-                <MenuItem value="true">
-                  是
-                </MenuItem>
-                <MenuItem value="false">
-                  否
-                </MenuItem>
+                <MenuItem value="true">是</MenuItem>
+                <MenuItem value="false">否</MenuItem>
               </RHFSelect>
               <RHFTextField name="address" label="地址" />
               <RHFSelect name="scope" label="所属组织" placeholder="请选择组织架构">
-                {scope.scopes.map((option) =>
+                {scope.scopes.map((option) => (
                   <MenuItem key={option._id} value={option._id}>
                     {option.label}
                   </MenuItem>
-                )}
+                ))}
               </RHFSelect>
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <div>
-                <Button color="error" variant="contained" onClick={() => router.push(paths.dashboard.user.list)} sx={{ mr: 1 }}>
+                <Button
+                  color="error"
+                  variant="contained"
+                  onClick={() => router.push(paths.dashboard.user.list)}
+                  sx={{ mr: 1 }}
+                >
                   返回
                 </Button>
                 <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
@@ -272,7 +298,7 @@ export default function UserNewEditForm({ currentUser }) {
           </Card>
         </Grid>
       </Grid>
-    </FormProvider >
+    </FormProvider>
   );
 }
 

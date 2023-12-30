@@ -5,6 +5,8 @@ import { useState, useEffect, useCallback } from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import Pagination from '@mui/material/Pagination';
+import Box from '@mui/material/Box';
 // routes
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -16,7 +18,7 @@ import { fTimestamp } from 'src/utils/format-time';
 import { _tours } from 'src/_mock';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getDatas } from 'src/redux/slices/broadcast';
+import { pagination } from 'src/redux/slices/broadcast';
 
 // components
 import Iconify from 'src/components/iconify';
@@ -27,6 +29,7 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
+import Restricted from 'src/auth/guard/restricted';
 import BroadcastList from '../broadcast-list';
 import BroadcastFiltersResult from '../broadcast-filters-result';
 
@@ -43,12 +46,16 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function BroadcastListView () {
+export default function BroadcastListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const settings = useSettingsContext();
 
   const { data, total } = useSelector((state) => state.broadcast);
+
+  const [page, setPage] = useState(1);
+
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const dispatch = useDispatch();
 
@@ -63,26 +70,40 @@ export default function BroadcastListView () {
 
   const debouncedFilters = useDebounce(filters);
 
-  const onRefresh = useCallback(async (selector = {}, options = {}) => {
-    try {
-      dispatch(getDatas({
-        ...{
-          ...selector,
-          label: {
-            $regex: debouncedFilters.label,
-            $options: "i"
-          },
-        },
-        ...options
-      }))
-    } catch (error) {
-      enqueueSnackbar(error.message);
-    }
-  }, [debouncedFilters.label, dispatch, enqueueSnackbar])
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const onRefresh = useCallback(
+    async (selector = {}, options = {}) => {
+      try {
+        dispatch(
+          pagination(
+            {
+              ...selector,
+              label: {
+                $regex: debouncedFilters.label,
+                $options: 'i',
+              },
+            },
+            {
+              skip: (page - 1) * rowsPerPage,
+              limit: rowsPerPage,
+              ...options,
+            }
+          )
+        );
+      } catch (error) {
+        enqueueSnackbar(error.message);
+      }
+    },
+    [debouncedFilters.label, dispatch, enqueueSnackbar, page, rowsPerPage]
+  );
 
   useEffect(() => {
-    onRefresh()
+    onRefresh();
   }, [onRefresh]);
+
   const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
@@ -161,14 +182,16 @@ export default function BroadcastListView () {
           { name: '' },
         ]}
         action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.broadcast.new}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            新建一个新的活动通知
-          </Button>
+          <Restricted to={['BookListAdd']}>
+            <Button
+              component={RouterLink}
+              href={paths.dashboard.broadcast.new}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              新建一个新的活动通知
+            </Button>
+          </Restricted>
         }
         sx={{
           mb: { xs: 3, md: 5 },
@@ -189,6 +212,23 @@ export default function BroadcastListView () {
       {notFound && <EmptyContent title="No Data" filled sx={{ py: 10 }} />}
 
       <BroadcastList broadcasts={data} refresh={() => onRefresh()} />
+
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          padding: '16px',
+        }}
+      >
+        <Pagination
+          shape="rounded"
+          count={total}
+          defaultPage={page}
+          variant="outlined"
+          page={page}
+          onChange={handlePageChange}
+        />
+      </Box>
     </Container>
   );
 }
@@ -235,7 +275,9 @@ const applyFilter = ({ inputData, filters, sortBy, dateError }) => {
   }
 
   if (services.length) {
-    inputData = inputData.filter((broadcast) => broadcast.services.some((item) => services.includes(item)));
+    inputData = inputData.filter((broadcast) =>
+      broadcast.services.some((item) => services.includes(item))
+    );
   }
 
   return inputData;

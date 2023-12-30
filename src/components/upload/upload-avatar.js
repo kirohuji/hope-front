@@ -17,12 +17,12 @@ import RejectionFiles from './errors-rejection-files';
 function sizeValidator(file) {
   if (file.size > 3145728) {
     return {
-      code: "file-too-large",
-      message: `文件不能超过 ${fData(3145728)} !`
+      code: 'file-too-large',
+      message: `文件不能超过 ${fData(3145728)} !`,
     };
   }
 
-  return null
+  return null;
 }
 
 export default function UploadAvatar({ error, file, disabled, helperText, sx, ...other }) {
@@ -91,7 +91,7 @@ export default function UploadAvatar({ error, file, disabled, helperText, sx, ..
     >
       <Iconify icon="solar:camera-add-bold" width={32} />
 
-      <Typography variant="caption">{file ? 'Update photo' : 'Upload photo'}</Typography>
+      <Typography variant="caption">{file ? '更新头像' : '上传头像'}</Typography>
     </Stack>
   );
 

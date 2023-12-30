@@ -16,10 +16,10 @@ import UserNewEditForm from '../user-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export default function UserEditView () {
+export default function UserEditView() {
   // const { active } = useSelector((state) => state.scope);
   const settings = useSettingsContext();
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(null);
   const params = useParams();
 
   const { id } = params;
@@ -27,19 +27,24 @@ export default function UserEditView () {
   const getData = useCallback(async () => {
     try {
       const userProfile = await userService.infoById({
-        _id: id
-      })
+        _id: id,
+      });
+      let { email } = userProfile.profile;
+      if (!email) {
+        email = userProfile.user.emails[0].address;
+      }
       setUser({
         ...userProfile.profile,
-      })
+        email,
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }, [id, setUser])
+  }, [id, setUser]);
 
   useEffect(() => {
     if (id) {
-      getData(id)
+      getData(id);
     }
   }, [getData, id]);
 
@@ -62,15 +67,10 @@ export default function UserEditView () {
           mb: { xs: 3, md: 5 },
         }}
       />
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={!user}
-      >
-        <CircularProgress/>
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={!user}>
+        <CircularProgress />
       </Backdrop>
-      {
-        !!user && <UserNewEditForm currentUser={user} />
-      }
+      {!!user && <UserNewEditForm currentUser={user} />}
     </Container>
   );
 }

@@ -19,6 +19,7 @@ import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { shortDateLabel } from 'src/components/custom-date-range-picker';
 import _ from 'lodash';
+import Restricted from 'src/auth/guard/restricted';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +34,7 @@ const BROAECAST_TYPE_OPTIONS = [
   // { value: 'book', label: '灵修' },
 ];
 
-export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) {
+export default function BroadcastItem({ broadcast, onView, onEdit, onDelete }) {
   const popover = usePopover();
 
   const {
@@ -51,7 +52,7 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
     type,
   } = broadcast;
 
-  const imageSet = images.filter(img => isAssetTypeAnImage(img.path));
+  const imageSet = images.filter((img) => isAssetTypeAnImage(img.path));
   const shortLabel = shortDateLabel(new Date(available.startDate), new Date(available.endDate));
 
   // const renderRating = (
@@ -88,8 +89,8 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
         bgcolor: 'warning.lighter',
       }}
     >
-     {/* {type === "activity" ? '活动通知' : "消息通告"} */}
-     { _.find(BROAECAST_TYPE_OPTIONS,["value",type]).label}
+      {/* {type === "activity" ? '活动通知' : "消息通告"} */}
+      {_.find(BROAECAST_TYPE_OPTIONS, ['value', type]).label}
     </Stack>
   );
 
@@ -129,14 +130,32 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
       <Stack flexGrow={1} sx={{ position: 'relative' }}>
         {renderPrice}
         {renderType}
-        {imageSet[0] && <Image alt={imageSet[0].preview || ""} src={imageSet[0].preview || ""} sx={{ borderRadius: 1, height: 164, w_idth: 1 }} />}
+        {imageSet[0] && (
+          <Image
+            alt={imageSet[0].preview || ''}
+            src={imageSet[0].preview || ''}
+            sx={{ borderRadius: 1, height: 164, w_idth: 1 }}
+          />
+        )}
       </Stack>
-      {
-        imageSet[1] && <Stack spacing={0.5}>
-          <Image alt={imageSet[1] || ""} src={imageSet[1].preview || ""} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />
-          {imageSet[2] && <Image alt={imageSet[2] || ""} src={imageSet[2].preview || ""} ratio="1/1" sx={{ borderRadius: 1, width: 80 }} />}
+      {imageSet[1] && (
+        <Stack spacing={0.5}>
+          <Image
+            alt={imageSet[1].preview || ''}
+            src={imageSet[1].preview || ''}
+            ratio="1/1"
+            sx={{ borderRadius: 1, width: 80 }}
+          />
+          {imageSet[2] && (
+            <Image
+              alt={imageSet[2].preview || ''}
+              src={imageSet[2].preview || ''}
+              ratio="1/1"
+              sx={{ borderRadius: 1, width: 80 }}
+            />
+          )}
         </Stack>
-      }
+      )}
     </Stack>
   );
 
@@ -187,17 +206,11 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
           icon: <Iconify icon="solar:clock-circle-bold" sx={{ color: 'info.main' }} />,
         },
         {
-          label: `负责人: ${leaders.map(leader=> leader.username) || "无"} `,
+          label: `负责人: ${leaders.map((leader) => leader.username) || '无'} `,
           icon: <Iconify icon="solar:users-group-rounded-bold" sx={{ color: 'primary.main' }} />,
         },
       ].map((item, i) => (
-        <Stack
-          key={i}
-          spacing={1}
-          direction="row"
-          alignItems="center"
-          sx={{ typography: 'body2' }}
-        >
+        <Stack key={i} spacing={1} direction="row" alignItems="center" sx={{ typography: 'body2' }}>
           {item.icon}
           {item.label}
         </Stack>
@@ -230,27 +243,29 @@ export default function BroadcastItem ({ broadcast, onView, onEdit, onDelete }) 
           <Iconify icon="solar:eye-bold" />
           查看
         </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            onEdit();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          编辑
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            onDelete();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          删除
-        </MenuItem>
+        <Restricted to={['BroadcastListEdit']}>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              onEdit();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            编辑
+          </MenuItem>
+        </Restricted>
+        <Restricted to={['BroadcastListDelete']}>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              onDelete();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            删除
+          </MenuItem>
+        </Restricted>
       </CustomPopover>
     </>
   );

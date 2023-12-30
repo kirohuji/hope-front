@@ -5,17 +5,22 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
+import CircularProgress from '@mui/material/CircularProgress';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useBoolean } from 'src/hooks/use-boolean';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
+// utils
+import { fData } from 'src/utils/format-number';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
@@ -38,7 +43,9 @@ export const TYPE_OPTIONS = [
   // { value: 'book', label: '灵修' },
 ];
 
-export default function BookNewEditForm ({ currentBook }) {
+export default function BookNewEditForm({ currentBook }) {
+  const loading = useBoolean(false);
+
   const router = useRouter();
 
   const isEdit = !!currentBook;
@@ -125,7 +132,7 @@ export default function BookNewEditForm ({ currentBook }) {
       } else {
         await bookService.patch({
           _id: currentBook._id,
-          ...data
+          ...data,
         });
       }
       reset();
@@ -141,12 +148,20 @@ export default function BookNewEditForm ({ currentBook }) {
       const file = acceptedFiles[0];
       const formData = new FormData();
       formData.append('file', file);
-      const { link } = await fileService.upload(formData)
-      if (file) {
-        setValue('cover', link, { shouldValidate: true });
+      loading.onTrue();
+      try {
+        const { link } = await fileService.upload(formData);
+        if (file) {
+          setValue('cover', link, { shouldValidate: true });
+          loading.onFalse();
+          enqueueSnackbar('封面上传成功!');
+        }
+      } catch (e) {
+        loading.onFalse();
+        enqueueSnackbar('封面上传!');
       }
     },
-    [setValue]
+    [setValue, enqueueSnackbar, loading]
   );
 
   const renderDetails = (
@@ -169,7 +184,7 @@ export default function BookNewEditForm ({ currentBook }) {
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">书名</Typography>
-              <RHFTextField name="label"/>
+              <RHFTextField name="label" />
             </Stack>
 
             <Stack spacing={1.5}>
@@ -177,14 +192,50 @@ export default function BookNewEditForm ({ currentBook }) {
               <RHFEditor simple name="description" />
             </Stack>
 
-            <Stack spacing={1.5}>
+            <Stack spacing={1.5} sx={{ position: 'relative' }}>
               <Typography variant="subtitle2">封面</Typography>
+              {loading.value && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 10,
+                    backgroundColor: '#ffffffc4',
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              )}
               <RHFUpload
                 thumbnail
                 name="cover"
-                maxSize={3145728}
+                // maxSize={3145728}
+                onDropRejected={() => {
+                  loading.onFalse();
+                }}
                 onDrop={handleDrop}
                 onUpload={() => console.info('ON UPLOAD')}
+                helperText={
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      mt: 3,
+                      mx: 'auto',
+                      display: 'block',
+                      textAlign: 'center',
+                      color: 'text.disabled',
+                    }}
+                  >
+                    允许 *.jpeg, *.jpg, *.png, *.gif
+                    <br /> max size of {fData(3145728)}
+                  </Typography>
+                }
               />
             </Stack>
           </Stack>
@@ -216,8 +267,8 @@ export default function BookNewEditForm ({ currentBook }) {
               {/* <RHFRadioGroup row spacing={4} name="type" options={TYPE_OPTIONS} /> */}
               <RHFMultiCheckbox
                 name="type"
-                row 
-                spacing={4} 
+                row
+                spacing={4}
                 options={TYPE_OPTIONS}
                 // sx={{
                 //   display: 'grid',
@@ -231,12 +282,10 @@ export default function BookNewEditForm ({ currentBook }) {
     </>
   );
 
-
   const renderActions = (
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'right' }}>
-
         <LoadingButton
           type="submit"
           variant="contained"

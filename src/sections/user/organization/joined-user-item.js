@@ -10,7 +10,7 @@ import {
   MenuItem,
   ListItemText,
   ListItemAvatar,
-  Badge
+  Badge,
 } from '@mui/material';
 // components
 import Iconify from 'src/components/iconify';
@@ -25,15 +25,15 @@ JoinedUserItem.propTypes = {
     emails: PropTypes.array,
     avatarUrl: PropTypes.string,
     permission: PropTypes.string,
-    realName: PropTypes.string
+    realName: PropTypes.string,
   }),
   leader: PropTypes.object,
   node: PropTypes.object,
-  onSelectMain: PropTypes.func
+  onSelectMain: PropTypes.func,
+  onSelectDelete: PropTypes.func,
 };
 
-export default function JoinedUserItem ({ node, leader, person, onSelectMain }) {
-  
+export default function JoinedUserItem({ node, leader, person, onSelectMain, onSelectDelete }) {
   const [permission] = useState(person.permission);
 
   const [openPopover, setOpenPopover] = useState(null);
@@ -49,10 +49,16 @@ export default function JoinedUserItem ({ node, leader, person, onSelectMain }) 
   return (
     <>
       <ListItem disableGutters>
-        <Badge variant="dot" invisible={leader?._id !== person._id} size="small" color="secondary" anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }} >
+        <Badge
+          variant="dot"
+          invisible={leader?._id !== person._id}
+          size="small"
+          color="secondary"
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+        >
           <ListItemAvatar>
             <Avatar alt={person.displayName} src={person.avatarUrl} />
           </ListItemAvatar>
@@ -92,8 +98,7 @@ export default function JoinedUserItem ({ node, leader, person, onSelectMain }) 
 
       <MenuPopover open={openPopover} onClose={handleClosePopover} sx={{ width: 160 }}>
         <>
-          {
-            /**
+          {/**
                   <MenuItem
                       onClick={() => {
                         handleClosePopover();
@@ -123,10 +128,9 @@ export default function JoinedUserItem ({ node, leader, person, onSelectMain }) 
                       <Iconify icon="eva:edit-fill" />
                       Can edit
                     </MenuItem>
-             */
-          }
-          {
-            node.type === "org" && <>
+             */}
+          {node.type === 'org' && (
+            <>
               <MenuItem
                 onClick={() => {
                   handleClosePopover();
@@ -144,11 +148,12 @@ export default function JoinedUserItem ({ node, leader, person, onSelectMain }) 
               </MenuItem>
               <Divider sx={{ borderStyle: 'dashed' }} />
             </>
-          }
+          )}
 
           <MenuItem
             onClick={() => {
               handleClosePopover();
+              onSelectDelete();
             }}
             sx={{ color: 'error.main' }}
           >

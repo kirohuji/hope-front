@@ -13,6 +13,7 @@ import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -33,6 +34,7 @@ import {
   useTable,
   emptyRows,
   TableNoData,
+  TableSkeleton,
   TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
@@ -49,17 +51,15 @@ import UserTableFiltersResult from '../user-table-filters-result';
 
 // ----------------------------------------------------------------------
 
-
 const USER_STATUS_OPTIONS = [
   { value: 'active', label: '激活' },
   { value: 'banned', label: '禁用' },
 ];
 
-
 const STATUS_OPTIONS = [{ value: 'all', label: '全部' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'selected', label: '选择', width: 80 },
+  // { id: 'selected', label: '', width: 80 },
   { id: 'username', label: '账户', width: 180 },
   { id: 'displayName', label: '用户名', width: 150 },
   { id: 'phoneNumber', label: '手机号', width: 150 },
@@ -79,7 +79,6 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function UserListView() {
-
   const fileRef = useRef(null);
 
   const { enqueueSnackbar } = useSnackbar();
@@ -95,6 +94,7 @@ export default function UserListView() {
   const [tableData, setTableData] = useState([]);
 
   const [loading, setLoading] = useState(true);
+  const [importLoading, setImportLoading] = useState(false);
 
   const [tableDataCount, setTableDataCount] = useState(0);
 
@@ -108,30 +108,44 @@ export default function UserListView() {
 
   const notFound = (!tableDataCount && canReset) || !tableDataCount;
 
-  const getTableData = useCallback(async (selector = {}, options = {}) => {
-    try {
-      setLoading(true)
-      const response = await userService.pagination(
-        {
-          ...selector,
-          ..._.pickBy(_.omit(debouncedFilters, ["role"])),
-        },
-        {
-          ...options,
-          skip: table.page * table.rowsPerPage,
-          limit: table.rowsPerPage
-        }
-      )
-      setTableData(response.data);
-      setTableDataCount(response.total);
-      setLoading(false)
-    } catch (error) {
-      enqueueSnackbar(error.message)
-    }
-  }, [debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]);
+  const getTableData = useCallback(
+    async (selector = {}, options = {}) => {
+      try {
+        setLoading(true);
+        const response = await userService.pagination(
+          {
+            ...selector,
+            ..._.pickBy(_.omit(debouncedFilters, ['role'])),
+          },
+          {
+            ...options,
+            fields: {
+              photoURL: 1,
+              username: 1,
+              displayName: 1,
+              phoneNumber: 1,
+              gender: 1,
+              age: 1,
+              email: 1,
+              address: 1,
+              available: 1,
+            },
+            skip: table.page * table.rowsPerPage,
+            limit: table.rowsPerPage,
+          }
+        );
+        setTableData(response.data);
+        setTableDataCount(response.total);
+        setLoading(false);
+      } catch (error) {
+        enqueueSnackbar(error.message);
+      }
+    },
+    [debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
+  );
 
   useEffect(() => {
-    getTableData()
+    getTableData();
   }, [getTableData]);
 
   const handleFilters = useCallback(
@@ -148,25 +162,46 @@ export default function UserListView() {
   const handleDeleteRow = useCallback(
     async (id) => {
       await userService.delete({
-        _id: id
-      })
-      enqueueSnackbar("删除成功")
+        _id: id,
+      });
+      enqueueSnackbar('删除成功');
       getTableData();
     },
     [getTableData, enqueueSnackbar]
   );
 
+  const activation = useCallback(async () => {
+    setImportLoading(true);
+    try {
+      await userService.activation({
+        _ids: table.selected,
+      });
+      table.onUpdatePageDeleteRowsByAsync();
+      enqueueSnackbar('激活成功');
+      getTableData();
+      setImportLoading(false);
+    } catch (e) {
+      enqueueSnackbar('激活失败,请联系管理员!');
+      setImportLoading(false);
+    }
+  }, [enqueueSnackbar, getTableData, table]);
+
   const handleDeleteRows = useCallback(async () => {
-    await userService.deleteMany({
-      _ids: table.selected
-    })
-    table.onUpdatePageDeleteRowsByAsync();
-    confirm.onFalse()
-    enqueueSnackbar("删除成功")
-    getTableData();
-  },
-    [table, confirm, enqueueSnackbar, getTableData]
-  );
+    confirm.onFalse();
+    setImportLoading(true);
+    try {
+      await userService.deleteMany({
+        _ids: table.selected,
+      });
+      table.onUpdatePageDeleteRowsByAsync();
+      enqueueSnackbar('删除成功');
+      getTableData();
+      setImportLoading(false);
+    } catch (e) {
+      enqueueSnackbar('删除失败,请联系管理员!');
+      setImportLoading(false);
+    }
+  }, [table, confirm, enqueueSnackbar, getTableData]);
 
   const handleEditRow = useCallback(
     (id) => {
@@ -188,14 +223,21 @@ export default function UserListView() {
 
   const uploadImage = async () => {
     if (fileRef.current) {
-      const file = fileRef.current.files[0]
+      const file = fileRef.current.files[0];
       const formData = new FormData();
       formData.append('file', file);
-      await fileService.excel(formData)
-      enqueueSnackbar("导入成功")
-      getTableData()
+      setImportLoading(true);
+      try {
+        await fileService.excel(formData);
+        enqueueSnackbar('导入成功');
+        setImportLoading(false);
+        getTableData();
+      } catch (e) {
+        enqueueSnackbar('导入失败,请联系管理员!');
+        setImportLoading(false);
+      }
     }
-  }
+  };
   const handleUploadExcel = useCallback(() => {
     if (fileRef.current) {
       fileRef.current.click();
@@ -204,16 +246,19 @@ export default function UserListView() {
 
   return (
     <>
-      <input onChange={uploadImage} accept='application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' type="file" ref={fileRef} style={{ display: 'none' }} />
+      <input
+        onChange={uploadImage}
+        accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        type="file"
+        ref={fileRef}
+        style={{ display: 'none' }}
+      />
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
           heading="列表"
-          links={[
-            { name: '用户', href: paths.dashboard.user.root },
-            { name: '列表' },
-          ]}
+          links={[{ name: '用户', href: paths.dashboard.user.root }, { name: '列表' }]}
           action={
-            <Restricted to={["UserListAddButton"]}>
+            <Restricted to={['UserListAdd']}>
               <Button
                 component={RouterLink}
                 href={paths.dashboard.user.new}
@@ -230,7 +275,6 @@ export default function UserListView() {
         />
 
         <Card>
-
           <Tabs
             value={filters.available}
             onChange={handleFilterStatus}
@@ -240,12 +284,7 @@ export default function UserListView() {
             }}
           >
             {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition="end"
-                value={tab.value}
-                label={tab.label}
-              />
+              <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
             ))}
           </Tabs>
 
@@ -279,11 +318,18 @@ export default function UserListView() {
                 )
               }
               action={
-                <Tooltip title="删除">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
+                <>
+                  <Tooltip title="删除">
+                    <IconButton color="primary" onClick={confirm.onTrue}>
+                      <Iconify icon="solar:trash-bin-trash-bold" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="激活">
+                    <IconButton color="primary" onClick={() => activation()}>
+                      <Iconify icon="mdi:account-reactivate-outline" />
+                    </IconButton>
+                  </Tooltip>
+                </>
               }
             />
 
@@ -299,35 +345,49 @@ export default function UserListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      tableData.map((row) => row._id)
+                      _.compact(
+                        tableData.map((row) => {
+                          if (row.username !== 'admin') {
+                            return row._id;
+                          }
+                          return null;
+                        })
+                      )
                     )
                   }
                 />
                 <TableBody>
-                  {tableData
-                    .map((row) => (
-                      <UserTableRow
-                        key={row._id}
-                        row={row}
-                        onClose={() => getTableData()}
-                        selected={table.selected.includes(row._id)}
-                        onSelectRow={() => table.onSelectRow(row._id)}
-                        onDeleteRow={() => handleDeleteRow(row._id)}
-                        onEditRow={() => handleEditRow(row._id)}
-                      />
-                    ))}
-
+                  {loading ? (
+                    [...Array(table.rowsPerPage)].map((i, index) => (
+                      <TableSkeleton key={index} sx={{ height: denseHeight }} />
+                    ))
+                  ) : (
+                    <>
+                      {tableData.map((row) => (
+                        <UserTableRow
+                          key={row._id}
+                          row={row}
+                          onClose={() => getTableData()}
+                          selected={table.selected.includes(row._id)}
+                          onSelectRow={() => {
+                            if (row.username !== 'admin') {
+                              table.onSelectRow(row._id);
+                            }
+                          }}
+                          onDeleteRow={() => handleDeleteRow(row._id)}
+                          onEditRow={() => handleEditRow(row._id)}
+                        />
+                      ))}
+                      {notFound && <TableNoData notFound={notFound} />}
+                    </>
+                  )}
                   {/* <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
                   /> */}
-                  {
-                    notFound &&   <TableNoData notFound={notFound} />
-                  }
                 </TableBody>
               </Table>
             </Scrollbar>
-
           </TableContainer>
 
           <TablePaginationCustom
@@ -341,6 +401,12 @@ export default function UserListView() {
             onChangeDense={table.onChangeDense}
           />
         </Card>
+        <Backdrop
+          sx={{ color: '#000', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={importLoading}
+        >
+          <CircularProgress color="info" />
+        </Backdrop>
       </Container>
 
       <ConfirmDialog

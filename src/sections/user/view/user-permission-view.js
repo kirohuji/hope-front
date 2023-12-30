@@ -13,7 +13,7 @@ import { alpha, styled } from '@mui/material/styles';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import ConfirmDialog from "src/components/confirm-dialog";
+import ConfirmDialog from 'src/components/confirm-dialog';
 import { paths } from 'src/routes/paths';
 import { useSnackbar } from 'src/components/snackbar';
 import { roleService } from 'src/composables/context-provider';
@@ -28,7 +28,6 @@ const StyledTreeView = styled(TreeView)({
   maxWidth: 800,
 });
 
-
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
   [`& .${treeItemClasses.iconContainer}`]: {
     '& .close': {
@@ -42,20 +41,12 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
   },
 }));
 
-
 StyledTreeItemRoot.propTypes = {
   theme: PropTypes.object,
 };
 
-function StyledTreeItem (props) {
-  const {
-    label,
-    onEdit,
-    onDelete,
-    isRoot,
-    onAddChildren,
-    ...other
-  } = props;
+function StyledTreeItem(props) {
+  const { label, onEdit, onDelete, isRoot, onAddChildren, ...other } = props;
   return (
     <StyledTreeItemRoot
       label={
@@ -68,45 +59,63 @@ function StyledTreeItem (props) {
           <Typography variant="body2" sx={{ fontWeight: 'inherit', flexGrow: 1 }}>
             {label}
           </Typography>
-          {
-            !isRoot ? <Box
+          {!isRoot ? (
+            <Box
               sx={{
                 display: 'flex',
                 alignItems: 'center',
               }}
             >
-              <Typography variant="body2" sx={{ fontWeight: 'inherit', flexGrow: 1, mr: 1.5 }} onClick={(e) => {
-                e.stopPropagation();
-                onEdit()
-              }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 'inherit', flexGrow: 1, mr: 1.5 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit();
+                }}
+              >
                 编辑
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 'inherit', flexGrow: 1, mr: 1.5 }} onClick={(e) => {
-                e.stopPropagation();
-                onAddChildren();
-              }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 'inherit', flexGrow: 1, mr: 1.5 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddChildren();
+                }}
+              >
                 添加子节点
               </Typography>
-              <Typography variant="caption" color="inherit" onClick={(e) => {
-                e.stopPropagation();
-                onDelete()
-              }}>
+              <Typography
+                variant="caption"
+                color="inherit"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+              >
                 删除
               </Typography>
             </Box>
-              : <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <Typography variant="body2" sx={{ fontWeight: 'inherit', flexGrow: 1, mr: 1.5 }} onClick={(e) => {
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 'inherit', flexGrow: 1, mr: 1.5 }}
+                onClick={(e) => {
                   e.stopPropagation();
                   onAddChildren();
-                }}>
-                  添加子节点
-                </Typography>
-              </Box>}
+                }}
+              >
+                添加子节点
+              </Typography>
+            </Box>
+          )}
         </Box>
       }
       {...other}
@@ -119,58 +128,68 @@ StyledTreeItem.propTypes = {
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
   onAddChildren: PropTypes.func,
-}
+};
 
 List.propTypes = {
   data: PropTypes.object,
   parentNode: PropTypes.object,
-}
+};
 
-export function List ({ data, parentNode }) {
+export function List({ data, parentNode }) {
   const hasChild = data.children && !!data.children && data.children.length > 0;
   return (
     <userContext.Consumer>
-      {({ setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, handleEdit, handleDelete }) =>
-        <StyledTreeItem nodeId={data._id} label={data.label}
+      {({
+        setOpenForm,
+        setItem,
+        setParent,
+        setOpenManager,
+        setOpenDeleteConfirm,
+        handleEdit,
+        handleDelete,
+      }) => (
+        <StyledTreeItem
+          nodeId={data._id}
+          label={data.label}
           onEdit={() => {
             setParent(parentNode);
-            setItem(data)
-            setOpenForm(true)
+            setItem(data);
+            setOpenForm(true);
           }}
           onDelete={() => {
             setItem(data);
             setParent(parentNode);
-            setOpenDeleteConfirm(true)
+            setOpenDeleteConfirm(true);
           }}
           onAddChildren={() => {
             setParent(data);
-            setItem({})
-            setOpenForm(true)
+            setItem({});
+            setOpenForm(true);
           }}
         >
-          {hasChild ? <SubList data={data} /> : ""}
+          {hasChild ? <SubList data={data} /> : ''}
         </StyledTreeItem>
-      }
+      )}
     </userContext.Consumer>
-  )
+  );
 }
 SubList.propTypes = {
-  data: PropTypes.object
-}
+  data: PropTypes.object,
+};
 
-export function SubList ({ data }) {
+export function SubList({ data }) {
   return (
     <>
-      {data && data.children && data.children.length > 0 && data.children.map((item) => (
-        item && <List key={item._id} parentNode={data} data={item} />
-      ))}
+      {data &&
+        data.children &&
+        data.children.length > 0 &&
+        data.children.map((item) => item && <List key={item._id} parentNode={data} data={item} />)}
     </>
   );
 }
 const userContext = createContext({ item: {}, setOpenForm: null, setItem: null, openForm: false });
 
-export default function UserPermissionView () {
-  // const { active } = useSelector((state) => state.scope);
+export default function UserPermissionView() {
   const [permissions, setPermissions] = useState([]);
   const [tree, setTree] = useState([]);
   const { themeStretch } = useSettingsContext();
@@ -178,50 +197,55 @@ export default function UserPermissionView () {
   const [item, setItem] = useState({});
   const [parent, setParent] = useState({});
   const { enqueueSnackbar } = useSnackbar();
+  const [loading, setLoading] = useState(false);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
-  const providerValue = useMemo(() => ({ setOpenForm, setItem, setParent, setOpenDeleteConfirm }), [setOpenForm, setItem, setParent, setOpenDeleteConfirm]);
+  const providerValue = useMemo(
+    () => ({ setOpenForm, setItem, setParent, setOpenDeleteConfirm }),
+    [setOpenForm, setItem, setParent, setOpenDeleteConfirm]
+  );
   const handleCloseModal = (getData) => {
-    if (parent && parent.type !== "root" && getData && getData.data) {
-      if (getData.type === "new") {
+    if (parent && parent.type !== 'root' && getData && getData.data) {
+      if (getData.type === 'new') {
         if (!parent.children) {
           parent.children = [];
         }
-        parent.children.push(getData.data)
+        parent.children.push(getData.data);
       } else if (parent.children) {
         for (let i = 0; i < parent.children.length; i += 1) {
           if (parent.children[i]._id === getData.data._id) {
-            parent.children[i] = getData.data;
+            parent.children[i] = {
+              ...parent.children[i],
+              ...getData.data,
+            };
             break;
           }
         }
       }
-    } else if (parent && parent.type === "root") {
-      if (getData.type === "new") {
-        tree.push(getData.data)
-        setTree(tree)
-      } else if (getData.type === "alter") {
+    } else if (parent && parent.type === 'root') {
+      if (getData.type === 'new') {
+        tree.push(getData.data);
+        setTree(tree);
+      } else if (getData.type === 'alter') {
         for (let i = 0; i < tree.length; i += 1) {
           if (tree[i] && tree[i]._id === item._id) {
             tree[i] = getData.data;
-            setTree(tree)
+            setTree(tree);
             break;
           }
         }
       }
     }
     setOpenForm(false);
-
   };
   const handleOpenModal = () => {
     setOpenForm(true);
   };
   const handleDelete = async () => {
-    await roleService
-      .delete({
-        _id: item._id,
-      })
-    if (parent && parent.type === "root") {
-      setTree(tree.filter(node => node._id !== item._id))
+    await roleService.delete({
+      _id: item._id,
+    });
+    if (parent && parent.type === 'root') {
+      setTree(tree.filter((node) => node._id !== item._id));
     } else {
       for (let i = 0; i < parent.children.length; i += 1) {
         if (parent.children[i] && parent.children[i]._id === item._id) {
@@ -231,29 +255,30 @@ export default function UserPermissionView () {
       }
     }
     enqueueSnackbar('删除成功');
-    getData()
+    getData();
     handleCloseDeleteConfirm();
-  }
+  };
   const handleAddChildren = () => {
-    setItem({})
-    setParent({ type: "root" });
+    setItem({});
+    setParent({ type: 'root' });
     setOpenForm(true);
-  }
+  };
   const handleCloseDeleteConfirm = () => {
     setOpenDeleteConfirm(false);
-  }
+  };
   const getData = useCallback(async () => {
+    setLoading(true);
     const response = await roleService.permissions({
       selector: {
         // scope: active._id,
         type: 'permission',
       },
     });
-    setPermissions(response)
+    setPermissions(response);
     // setTree(getTree(response))
-    setTree(response)
+    setTree(response);
+    setLoading(false);
   }, [setPermissions, setTree]);
-
 
   useEffect(() => {
     getData();
@@ -269,34 +294,42 @@ export default function UserPermissionView () {
           ]}
         />
         <userContext.Provider value={providerValue}>
-          <StyledTreeView
-            defaultExpanded={['0']}
-            sx={{ px: 2.5, pt: 2.5 }}>
-            <StyledTreeItem nodeId="0" label="根节点" isRoot onAddChildren={() => handleAddChildren()}>
-              {
-                tree.map((perm) => <List parentNode={{ type: 'root' }} data={perm} key={perm._id} />)
-              }
-            </StyledTreeItem>
-          </StyledTreeView>
+          {!loading && (
+            <StyledTreeView defaultExpanded={['0']} sx={{ px: 2.5, pt: 2.5 }}>
+              <StyledTreeItem
+                nodeId="0"
+                label="根节点"
+                isRoot
+                onAddChildren={() => handleAddChildren()}
+              >
+                {tree.map((perm) => (
+                  <List parentNode={{ type: 'root' }} data={perm} key={perm._id} />
+                ))}
+              </StyledTreeItem>
+            </StyledTreeView>
+          )}
         </userContext.Provider>
       </Container>
-      {
-        /**
-         * 
-         *       <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={!permissions.length}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
-         * */
-      }
+      {loading && (
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={!permissions.length}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
       <Dialog fullWidth maxWidth="md" open={openForm} onClose={handleCloseModal}>
         <DialogTitle>{item._id ? '编辑' : '新增'}</DialogTitle>
         <DialogContent dividers>
-          {
-            item && <PermissionNewEditForm parent={parent} type="permission" isEdit={!!item._id} current={item} onClose={handleCloseModal} />
-          }
+          {item && (
+            <PermissionNewEditForm
+              parent={parent}
+              type="permission"
+              isEdit={!!item._id}
+              current={item}
+              onClose={handleCloseModal}
+            />
+          )}
         </DialogContent>
       </Dialog>
       <ConfirmDialog
@@ -311,5 +344,5 @@ export default function UserPermissionView () {
         }
       />
     </>
-  )
+  );
 }

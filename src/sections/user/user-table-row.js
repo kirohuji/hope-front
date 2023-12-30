@@ -22,8 +22,28 @@ import UserQuickEditForm from './user-quick-edit-form';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({ row, selected, onClose, onEditRow, onSelectRow, onDeleteRow }) {
-  const { username, realName,  displayName, baptized, gender, age, photoURL, address, status, available, email, phoneNumber } = row;
+export default function UserTableRow({
+  row,
+  selected,
+  onClose,
+  onEditRow,
+  onSelectRow,
+  onDeleteRow,
+}) {
+  const {
+    username,
+    realName,
+    displayName,
+    baptized,
+    gender,
+    age,
+    photoURL,
+    address,
+    status,
+    available,
+    email,
+    phoneNumber,
+  } = row;
 
   const confirm = useBoolean();
 
@@ -41,7 +61,7 @@ export default function UserTableRow({ row, selected, onClose, onEditRow, onSele
           <Avatar alt={username} src={photoURL} sx={{ mr: 2 }} />
 
           <ListItemText
-            primary={`${username}${realName ? `(${realName})`: ''}`}
+            primary={`${username}${realName ? `(${realName})` : ''}`}
             secondary={email}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
@@ -59,7 +79,7 @@ export default function UserTableRow({ row, selected, onClose, onEditRow, onSele
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNumber}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{baptized ? "是" : "否"}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{baptized ? '是' : '否'}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{address}</TableCell>
 
@@ -78,16 +98,19 @@ export default function UserTableRow({ row, selected, onClose, onEditRow, onSele
             {available === 'active' ? '激活' : '注销'}
           </Label>
         </TableCell>
-        <Restricted to={["UserListEditButton", "UserListRemoveButton"]}>
+        <Restricted to={['UserListEdit', 'UserListDelete']}>
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-            <Restricted to={["UserListEditButton"]} hidden>
+            <Restricted to={['UserListEdit']} hidden>
               <Tooltip title="快速编辑" placement="top" arrow>
-                <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
+                <IconButton
+                  color={quickEdit.value ? 'inherit' : 'default'}
+                  onClick={quickEdit.onTrue}
+                >
                   <Iconify icon="solar:pen-bold" />
                 </IconButton>
               </Tooltip>
             </Restricted>
-            <Restricted to={["UserListEditButton", "UserListRemoveButton"]}>
+            <Restricted to={['UserListEdit', 'UserListDelete']}>
               <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
                 <Iconify icon="eva:more-vertical-fill" />
               </IconButton>
@@ -95,17 +118,21 @@ export default function UserTableRow({ row, selected, onClose, onEditRow, onSele
           </TableCell>
         </Restricted>
       </TableRow>
-      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={() => {
-        quickEdit.onFalse()
-        onClose()
-      }} />
+      <UserQuickEditForm
+        currentUser={row}
+        open={quickEdit.value}
+        onClose={() => {
+          quickEdit.onFalse();
+          onClose();
+        }}
+      />
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        <Restricted to={["UserListEditButton"]}>
+        <Restricted to={['UserListEdit']}>
           <MenuItem
             onClick={() => {
               onEditRow();
@@ -116,7 +143,7 @@ export default function UserTableRow({ row, selected, onClose, onEditRow, onSele
             查看/编辑
           </MenuItem>
         </Restricted>
-        <Restricted to={["UserListRemoveButton"]}>
+        <Restricted to={['UserListDelete']}>
           <MenuItem
             onClick={() => {
               confirm.onTrue();
@@ -136,10 +163,14 @@ export default function UserTableRow({ row, selected, onClose, onEditRow, onSele
         title="删除"
         content="你确认要删除吗?"
         action={
-          <Button variant="contained" color="error" onClick={() => {
-            onDeleteRow();
-            confirm.onFalse()
-          }}>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              onDeleteRow();
+              confirm.onFalse();
+            }}
+          >
             删除
           </Button>
         }

@@ -21,6 +21,7 @@ import {
   Divider,
   CircularProgress,
 } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 // components
 import { useDebounce } from 'src/hooks/use-debounce';
 import Iconify from '../../../components/iconify';
@@ -50,6 +51,8 @@ export default function OrganContactsDialog({ open, onClose, current }) {
   const [user, setUser] = useState([]);
   const { active } = useSelector((state) => state.scope);
   const [loading, setLoading] = useState(false);
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const [buttonLoadingId, setButtonLoadingId] = useState(-1);
   const { enqueueSnackbar } = useSnackbar();
   const debouncedSearchContacts = useDebounce(searchContacts, 1000);
   const handleOpenConfirm = (contact) => {
@@ -119,28 +122,42 @@ export default function OrganContactsDialog({ open, onClose, current }) {
   };
 
   const handleDelete = async () => {
-    await roleService.removeUsersFromRolesAndInheritedRole({
-      users: user,
-      roles: current._id,
-      options: {
-        scope: active._id,
-      },
-    });
-    enqueueSnackbar('删除成功');
-    handleCloseConfirm();
-    getUsersInRoleOnly();
+    setButtonLoading(true);
+    try {
+      await roleService.removeUsersFromRolesAndInheritedRole({
+        users: user,
+        roles: current._id,
+        options: {
+          scope: active._id,
+        },
+      });
+      enqueueSnackbar('删除成功');
+      handleCloseConfirm();
+      getUsersInRoleOnly();
+    } catch (e) {
+      enqueueSnackbar('删除失败');
+    }
+    setButtonLoading(false);
   };
 
   const handleAdd = async (contact) => {
-    await roleService.addUsersToRolesAndRoleParents({
-      users: contact,
-      roles: current._id,
-      options: {
-        scope: active._id,
-      },
-    });
-    enqueueSnackbar('添加成功');
-    getUsersInRoleOnly();
+    setButtonLoading(true);
+    setButtonLoadingId(contact._id);
+    try {
+      await roleService.addUsersToRolesAndRoleParents({
+        users: contact,
+        roles: current._id,
+        options: {
+          scope: active._id,
+        },
+      });
+      enqueueSnackbar('添加成功');
+      getUsersInRoleOnly();
+    } catch (e) {
+      enqueueSnackbar('添加失败');
+    }
+    setButtonLoading(false);
+    setButtonLoadingId(-1);
   };
   useEffect(() => {
     if (open) {
@@ -219,8 +236,9 @@ export default function OrganContactsDialog({ open, onClose, current }) {
                       disableGutters
                       secondaryAction={
                         <div>
-                          <Button
+                          <LoadingButton
                             size="small"
+                            loading={contact._id === buttonLoadingId && buttonLoading}
                             color={checked ? 'primary' : 'inherit'}
                             onClick={() => !checked && handleAdd(contact)}
                             startIcon={
@@ -228,7 +246,7 @@ export default function OrganContactsDialog({ open, onClose, current }) {
                             }
                           >
                             {checked ? '已添加' : '添加'}
-                          </Button>
+                          </LoadingButton>
                           {checked && (
                             <Button
                               size="small"
@@ -285,9 +303,14 @@ export default function OrganContactsDialog({ open, onClose, current }) {
         title="删除"
         content="你确定删除吗?"
         action={
-          <Button variant="contained" color="error" onClick={handleDelete}>
+          <LoadingButton
+            variant="contained"
+            color="error"
+            onClick={handleDelete}
+            loading={buttonLoading}
+          >
             删除
-          </Button>
+          </LoadingButton>
         }
       />
     </>
