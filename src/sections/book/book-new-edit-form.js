@@ -8,6 +8,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import CircularProgress from '@mui/material/CircularProgress';
 import CardHeader from '@mui/material/CardHeader';
@@ -286,6 +287,14 @@ export default function BookNewEditForm({ currentBook }) {
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'right' }}>
+        <Button
+          color="error"
+          variant="contained"
+          onClick={() => router.push(paths.dashboard.book.root)}
+          sx={{ mr: 1 }}
+        >
+          返回
+        </Button>
         <LoadingButton
           type="submit"
           variant="contained"

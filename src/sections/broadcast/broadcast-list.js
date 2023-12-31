@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 // @mui
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 // routes
 import { paths } from 'src/routes/paths';
@@ -17,10 +18,11 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import BroadcastItem from './broadcast-item';
 // ----------------------------------------------------------------------
 
-export default function BroadcastList ({ broadcasts, refresh }) {
+export default function BroadcastList({ broadcasts, refresh }) {
   const router = useRouter();
   const confirm = useBoolean();
-  const [current, setCurrent] = useState(null)
+  const loading = useBoolean();
+  const [current, setCurrent] = useState({});
   const { enqueueSnackbar } = useSnackbar();
   const handleView = useCallback(
     (_id) => {
@@ -37,12 +39,20 @@ export default function BroadcastList ({ broadcasts, refresh }) {
   );
 
   const handleDelete = useCallback(async () => {
-    await broadcastService.delete({
-      _id: current._id
-    })
-    enqueueSnackbar("删除成功")
-    refresh()
-  }, [refresh, enqueueSnackbar, current]);
+    try {
+      loading.onTrue();
+      await broadcastService.delete({
+        _id: current._id,
+      });
+      enqueueSnackbar('删除成功');
+      loading.onFalse();
+      confirm.onFalse();
+      refresh();
+    } catch (e) {
+      enqueueSnackbar('删除失败');
+      loading.onFalse();
+    }
+  }, [loading, current._id, enqueueSnackbar, confirm, refresh]);
 
   return (
     <>
@@ -63,7 +73,7 @@ export default function BroadcastList ({ broadcasts, refresh }) {
             onEdit={() => handleEdit(broadcast._id)}
             onDelete={() => {
               setCurrent(broadcast);
-              confirm.onTrue()
+              confirm.onTrue();
             }}
           />
         ))}
@@ -84,22 +94,18 @@ export default function BroadcastList ({ broadcasts, refresh }) {
         open={confirm.value}
         onClose={confirm.onFalse}
         title="删除"
-        content={
-          <>
-            确定要删除吗?
-          </>
-        }
+        content={<>确定要删除吗?</>}
         action={
-          <Button
+          <LoadingButton
             variant="contained"
+            loading={loading.value}
             color="error"
             onClick={() => {
               handleDelete();
-              confirm.onFalse();
             }}
           >
             删除
-          </Button>
+          </LoadingButton>
         }
       />
     </>
@@ -108,5 +114,5 @@ export default function BroadcastList ({ broadcasts, refresh }) {
 
 BroadcastList.propTypes = {
   broadcasts: PropTypes.array,
-  refresh: PropTypes.func
+  refresh: PropTypes.func,
 };

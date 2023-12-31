@@ -8,11 +8,18 @@ import ArticleItemHorizontal from './article-item-horizontal';
 
 // ----------------------------------------------------------------------
 
-export default function ArticleListHorizontal({ onRefresh, book, articles, loading }) {
-  console.log('book',book)
+export default function ArticleListHorizontal({
+  onRefresh,
+  onChange,
+  book,
+  page,
+  articles,
+  loading,
+  total,
+}) {
   const renderSkeleton = (
     <>
-      {[...Array(16)].map((_, index) => (
+      {[...Array(4)].map((_, index) => (
         <ArticleItemSkeleton key={index} variant="horizontal" />
       ))}
     </>
@@ -20,9 +27,15 @@ export default function ArticleListHorizontal({ onRefresh, book, articles, loadi
 
   const renderList = (
     <>
-      {articles.map((article) => (
-        <ArticleItemHorizontal key={article._id} book={book} article={article} onRefresh={onRefresh}/>
-      ))}
+      {articles &&
+        articles.map((article) => (
+          <ArticleItemHorizontal
+            key={article._id}
+            book={book}
+            article={article}
+            onRefresh={onRefresh}
+          />
+        ))}
     </>
   );
 
@@ -39,17 +52,22 @@ export default function ArticleListHorizontal({ onRefresh, book, articles, loadi
         {loading ? renderSkeleton : renderList}
       </Box>
 
-      {articles.length > 8 && (
-        <Pagination
-          count={8}
-          sx={{
-            mt: 8,
-            [`& .${paginationClasses.ul}`]: {
-              justifyContent: 'center',
-            },
-          }}
-        />
-      )}
+      {/* {articles.length > 8 && ( */}
+      <Pagination
+        count={total}
+        shape="rounded"
+        defaultPage={page}
+        page={page}
+        variant="outlined"
+        onChange={onChange}
+        sx={{
+          mt: 8,
+          [`& .${paginationClasses.ul}`]: {
+            justifyContent: 'center',
+          },
+        }}
+      />
+      {/* )} */}
     </>
   );
 }
@@ -58,5 +76,8 @@ ArticleListHorizontal.propTypes = {
   onRefresh: PropTypes.func,
   loading: PropTypes.bool,
   articles: PropTypes.array,
+  total: PropTypes.any,
   book: PropTypes.object,
+  onChange: PropTypes.func,
+  page: PropTypes.any,
 };

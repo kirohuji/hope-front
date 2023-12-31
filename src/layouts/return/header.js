@@ -20,7 +20,7 @@ Header.propTypes = {
   isOffset: PropTypes.bool,
 };
 
-export default function Header ({ isOffset }) {
+export default function Header({ isOffset }) {
   const theme = useTheme();
   const router = useRouter();
   return (
@@ -41,15 +41,18 @@ export default function Header ({ isOffset }) {
               md: HEADER.H_MAIN_DESKTOP - 16,
             },
           }),
-          position: 'relative',
+          // position: 'relative',
           justifyContent: 'center',
-          background: 'white'
+          background: 'white',
         }}
       >
         <div style={{ position: 'absolute', top: '14px', left: 0 }}>
-          <IconButtonAnimate sx={{ mr: 1, color: 'text.primary' }} onClick={()=> {
-            router.back()
-          }} >
+          <IconButtonAnimate
+            sx={{ mr: 1, color: 'text.primary' }}
+            onClick={() => {
+              router.back();
+            }}
+          >
             <Iconify icon="eva:arrow-ios-back-fill" />
           </IconButtonAnimate>
         </div>
@@ -67,7 +70,7 @@ Shadow.propTypes = {
   sx: PropTypes.object,
 };
 
-function Shadow ({ sx, ...other }) {
+function Shadow({ sx, ...other }) {
   return (
     <Box
       sx={{

@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useCallback, useEffect } from 'react';
 // @mui
 import Box from '@mui/material/Box';
 // hooks
@@ -11,6 +12,8 @@ import BookPlayer from 'src/sections/training/book-player';
 import AppBar from '@mui/material/AppBar';
 //
 import { usePathname } from 'src/routes/hook';
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getScopes } from 'src/redux/slices/scope';
 import Main from './main';
 import Header from './header';
 import NavMini from './nav-mini';
@@ -20,8 +23,8 @@ import DashboardFooter from './footer';
 // ----------------------------------------------------------------------
 
 export default function DashboardLayout({ children }) {
-
-
+  const dispatch = useDispatch();
+  const scope = useSelector((state) => state.scope);
 
   const settings = useSettingsContext();
 
@@ -41,8 +44,16 @@ export default function DashboardLayout({ children }) {
 
   const pathname = usePathname();
 
-  console.log('pathname', pathname)
-  console.log('lgUp', lgUp)
+  const getAllEvents = useCallback(() => {
+    if (!scope?.active?._id) {
+      console.log('更新作用域');
+      dispatch(getScopes());
+    }
+  }, [dispatch, scope]);
+
+  useEffect(() => {
+    getAllEvents();
+  }, [getAllEvents]);
   if (isHorizontal) {
     return (
       <>
@@ -70,9 +81,7 @@ export default function DashboardLayout({ children }) {
           {lgUp ? renderNavMini : renderNavVertical}
 
           <Main>{children}</Main>
-          {
-          !lgUp && <DashboardFooter />
-        }
+          {!lgUp && <DashboardFooter />}
         </Box>
       </>
     );
@@ -92,15 +101,18 @@ export default function DashboardLayout({ children }) {
         {renderNavVertical}
 
         <Main className="main">{children}</Main>
-        {
-          !lgUp && <DashboardFooter />
-        }
-        {
-          !lgUp && pathname === "/dashboard/training/dashboard" && <Box position="fixed" color="primary" sx={{ top: 'auto', bottom: 55, background: 'none', width: '100%' }} className='book-player'>
+        {!lgUp && <DashboardFooter />}
+        {!lgUp && pathname === '/dashboard/training/dashboard' && (
+          <Box
+            position="fixed"
+            color="primary"
+            sx={{ top: 'auto', bottom: 55, background: 'none', width: '100%' }}
+            className="book-player"
+          >
             {/* <MusicPlayer /> */}
             <BookPlayer />
           </Box>
-        }
+        )}
       </Box>
     </>
   );

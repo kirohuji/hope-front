@@ -5,7 +5,6 @@ import axios from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
-
 // ----------------------------------------------------------------------
 
 export const isValidToken = (accessToken) => {
@@ -37,7 +36,7 @@ export const tokenExpired = (exp) => {
   clearTimeout(expiredTimer);
 
   expiredTimer = setTimeout(() => {
-    alert('Token expired');
+    // alert('Token expired');
 
     localStorage.removeItem('accessToken');
 
@@ -60,5 +59,13 @@ export const setSession = (accessToken) => {
     localStorage.removeItem('accessToken');
 
     delete axios.defaults.headers.common.Authorization;
+  }
+};
+
+export const setInfo = (info) => {
+  if (info) {
+    localStorage.setItem('info', JSON.stringify(info));
+  } else {
+    localStorage.removeItem('accessToken');
   }
 };

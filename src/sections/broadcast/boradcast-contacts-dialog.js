@@ -27,6 +27,7 @@ import _ from 'lodash';
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import LoadingButton from '@mui/lab/LoadingButton';
 import SearchNotFound from 'src/components/search-not-found';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { getOrganizations } from 'src/redux/slices/chat';
@@ -34,9 +35,7 @@ import { getOrganizations } from 'src/redux/slices/chat';
 import { broadcastService } from 'src/composables/context-provider';
 import { useSnackbar } from 'src/components/snackbar';
 import ConfirmDialog from 'src/components/confirm-dialog';
-import FormProvider, {
-  RHFTextField,
-} from 'src/components/hook-form';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 const ITEM_HEIGHT = 64;
@@ -56,7 +55,8 @@ const styles = {
 
 function traverse(node, assignee) {
   if (node.users) {
-    const checked = _.intersectionBy((node.users || []), assignee, "_id").length === (node.users || []).length;
+    const checked =
+      _.intersectionBy(node.users || [], assignee, '_id').length === (node.users || []).length;
     node.checked = checked;
   }
   if (node.children) {
@@ -69,7 +69,10 @@ function traverse(node, assignee) {
 
 function traverseUser(node, data) {
   if (node.users) {
-    data.users = _.union(data.users, node.users.map(user => user._id))
+    data.users = _.union(
+      data.users,
+      node.users.map((user) => user._id)
+    );
   }
   if (node.children) {
     // eslint-disable-next-line no-restricted-syntax
@@ -80,7 +83,6 @@ function traverseUser(node, data) {
 }
 
 export default function BroadCastContactsDialog({ open, onClose, current, onUpdateRefresh }) {
-
   const dispatch = useDispatch();
 
   const { active } = useSelector((state) => state.scope);
@@ -99,12 +101,16 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
 
   const [loading, setLoading] = useState(false);
 
+  const [buttonLoading, setButtonLoading] = useState(false);
+
+  const [currentIndex, setCurrentIndex] = useState(-1);
+
   const [user, setUser] = useState([]);
 
   const { enqueueSnackbar } = useSnackbar();
 
   const handleOpenConfirm = (contact) => {
-    setUser(contact)
+    setUser(contact);
     setOpenConfirm(true);
   };
 
@@ -114,7 +120,7 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
 
   const NewUserSchema = Yup.object().shape({
     searchContacts: Yup.string(),
-    isShowJoinedUser: Yup.boolean()
+    isShowJoinedUser: Yup.boolean(),
   });
 
   const defaultValues = useMemo(() => ({}), []);
@@ -124,128 +130,148 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
       const level = {
         name: organization.label,
         to: organization._id,
-      }
+      };
       levels.push(level);
-      setCurrentOrganization([...(organization.children || []), ...(organization.users || []).map(item => ({
-        _id: item._id,
-        name: item.username,
-        photoURL: item.photoURL,
-        email: item.email,
-        displayName: item.displayName,
-        realName: item.realName,
-      }))])
-      setLevels(levels)
+      setCurrentOrganization([
+        ...(organization.children || []),
+        ...(organization.users || []).map((item) => ({
+          _id: item._id,
+          name: item.username,
+          photoURL: item.photoURL,
+          email: item.email,
+          displayName: item.displayName,
+          realName: item.realName,
+        })),
+      ]);
+      setLevels(levels);
     }
-  }
+  };
+
   const onGoTo = async (level) => {
     let index = 0;
-    const length = _.findIndex(levels, ["to", level.to]);
+    const length = _.findIndex(levels, ['to', level.to]);
     let isChildren = false;
     let currentOrganizations = currentFirstOrganization;
     const levels2 = [];
     while (index < length) {
       isChildren = true;
       const currentLevel = levels[index];
-      currentOrganizations = _.find(currentOrganizations, ["_id", currentLevel.to]);
+      currentOrganizations = _.find(currentOrganizations, ['_id', currentLevel.to]);
       index += 1;
       levels2.push(currentLevel);
     }
     if (isChildren) {
-      await setCurrentOrganization([...currentOrganizations.children, ...currentOrganizations.users.map(item => ({
-        _id: item._id,
-        name: item.username,
-        photoURL: item.photoURL,
-        email: item.email,
-        displayName: item.displayName,
-        realName: item.realName,
-      }))]);
+      await setCurrentOrganization([
+        ...currentOrganizations.children,
+        ...currentOrganizations.users.map((item) => ({
+          _id: item._id,
+          name: item.username,
+          photoURL: item.photoURL,
+          email: item.email,
+          displayName: item.displayName,
+          realName: item.realName,
+        })),
+      ]);
     } else {
       await setCurrentOrganization(currentOrganizations);
     }
     setLevels(levels2);
-  }
+  };
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
     defaultValues,
   });
 
-  const {
-    control,
-    handleSubmit,
-  } = methods;
+  const { control, handleSubmit } = methods;
 
   const handleSearchContacts = (event) => {
     setSearchContacts(event.target.value);
   };
 
   const handleDelete = async () => {
-    await broadcastService.deleteUser({
-      _id: user._id,
-    })
-    enqueueSnackbar('删除成功');
-    handleCloseConfirm();
-    onUpdateRefresh({
-      type: 'delete',
-      data: {
-        user_id: user._id
-      }
-    })
-    // getData();
-  }
+    try {
+      setButtonLoading(true);
+      await broadcastService.deleteUser({
+        _id: user._id,
+      });
+      enqueueSnackbar('删除成功');
+      setButtonLoading(false);
+      handleCloseConfirm();
+      onUpdateRefresh({
+        type: 'delete',
+        data: {
+          user_id: user._id,
+        },
+      });
+    } catch (e) {
+      enqueueSnackbar('删除失败');
+      setButtonLoading(false);
+    }
+  };
   const handleAdd = async (contact) => {
     // setIsUpdate(false)
     enqueueSnackbar('正在添加,请耐心稍等');
-    let datas = [];
-    let addUsers = {
-      users: [],
-    };
-    if (contact.type === 'org') {
-      traverseUser(contact, addUsers)
-    } else {
-      addUsers = {
-        users: [contact._id]
+    setCurrentIndex(contact._id);
+    setButtonLoading(true);
+    try {
+      let datas = [];
+      let addUsers = {
+        users: [],
+      };
+      if (contact.type === 'org') {
+        traverseUser(contact, addUsers);
+      } else {
+        addUsers = {
+          users: [contact._id],
+        };
       }
+      datas = await broadcastService.addUsers({
+        users_id: addUsers.users,
+        broadcast_id: current._id,
+      });
+      contact.checked = true;
+      enqueueSnackbar('添加成功');
+      onUpdateRefresh({
+        type: 'add',
+        datas,
+      });
+      setCurrentIndex(-1);
+      setButtonLoading(false);
+    } catch (e) {
+      setCurrentIndex(-1);
+      setButtonLoading(false);
+      enqueueSnackbar('添加失败,请联系管理员!');
     }
-    datas = await broadcastService.addUsers({
-      users_id: addUsers.users,
-      broadcast_id: current._id
-    })
-    contact.checked = true;
-    enqueueSnackbar('添加成功');
-    onUpdateRefresh({
-      type: 'add',
-      datas,
-    })
     // getData();
-  }
+  };
 
   const onRefresh = useCallback(async () => {
     if (currentFirstOrganization.length <= 0) {
-      setLoading(true)
+      setLoading(true);
+      console.log('active._id', active._id);
       const data = await dispatch(getOrganizations(active._id));
       const currentData = _.cloneDeep(data);
       // const assignee = details.participantsBy[current._id].map(item => ({ ...item, _id: item.user_id }))
       // for (let i = 0; i < currentData.length; i += 1) {
       //   traverse(currentData[i], assignee)
       // }
-      setCurrentFirstOrganization(currentData)
-      setCurrentOrganization(currentData)
-      setLoading(false)
+      setCurrentFirstOrganization(currentData);
+      setCurrentOrganization(currentData);
+      setLoading(false);
     }
-
-  }, [active._id, currentFirstOrganization.length, dispatch])
+  }, [active._id, currentFirstOrganization.length, dispatch]);
 
   useEffect(() => {
-    console.log('open', open)
+    console.log('open', open);
     if (open) {
       // setIsUpdate(true);
-      console.log('触发2')
-      onRefresh()
+      console.log('触发2');
+      onRefresh();
     } else {
-      setLevels([])
-      setCurrentOrganization([])
-      setCurrentFirstOrganization([])
+      setLevels([]);
+      setCurrentOrganization([]);
+      setCurrentFirstOrganization([]);
     }
     // return () => {
     //   setLevels([])
@@ -255,51 +281,54 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
 
   const isNotFound = !!searchContacts;
 
-  const renderOrganizationsItem = (contact, id, checked) =>
+  const renderOrganizationsItem = (contact, id, checked) => (
     <Box>
       <ListItem
         disableGutters
         secondaryAction={
           <div>
-            <Button
+            <LoadingButton
               size="small"
+              loading={buttonLoading && contact._id === currentIndex}
               color={checked ? 'primary' : 'inherit'}
               onClick={() => !checked && handleAdd(contact)}
-              startIcon={
-                <Iconify icon={checked ? 'eva:checkmark-fill' : 'eva:plus-fill'} />
-              }
+              startIcon={<Iconify icon={checked ? 'eva:checkmark-fill' : 'eva:plus-fill'} />}
             >
               {checked ? '已添加' : '添加'}
-            </Button>
-            {checked && false && <Button
-              size="small"
-              disabled={!checked}
-              onClick={() => handleOpenConfirm(contact)}
-              color={!checked ? 'primary' : 'inherit'}
-              startIcon={
-                <Iconify icon="eva:close-fill" />
-              }
-            >
-              移出
-            </Button>}
+            </LoadingButton>
+            {checked && false && (
+              <Button
+                size="small"
+                disabled={!checked}
+                onClick={() => handleOpenConfirm(contact)}
+                color={!checked ? 'primary' : 'inherit'}
+                startIcon={<Iconify icon="eva:close-fill" />}
+              >
+                移出
+              </Button>
+            )}
           </div>
         }
         sx={{ height: ITEM_HEIGHT }}
       >
         <ListItemAvatar>
-          <Avatar src={contact.type === "org" ? contact?.avatarUrl?.preview : contact?.photoURL} />
+          <Avatar src={contact.type === 'org' ? contact?.avatarUrl?.preview : contact?.photoURL} />
         </ListItemAvatar>
 
         <ListItemText
-          key={id} onClick={() => onChildren(contact)}
+          key={contact._id}
+          onClick={() => onChildren(contact)}
           sx={{ cursor: 'pointer' }}
           primaryTypographyProps={{ typography: 'subtitle2', sx: { mb: 0.25 } }}
           secondaryTypographyProps={{ typography: 'caption' }}
-          primary={contact.type === "org" ? contact.name : `${contact.displayName}(${contact.realName})`}
-          secondary={contact.type === "org" ? "" : contact.email}
+          primary={
+            contact.type === 'org' ? contact.name : `${contact.displayName}(${contact.realName})`
+          }
+          secondary={contact.type === 'org' ? '' : contact.email}
         />
       </ListItem>
     </Box>
+  );
   const renderOrganizations = (
     <Scrollbar
       sx={{
@@ -307,32 +336,36 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
         height: ITEM_HEIGHT * 6,
       }}
     >
-      {
-        levels && levels.length > 0 && <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="flex-start"
-          sx={{ m: 1 }}
-        >
-          {
-            levels.map((level, index) => (<Box key={index} sx={{ display: 'flex' }}>
-              <Link onClick={() => onGoTo(level)} sx={styles}>{`${level.name}`} </Link>
+      {levels && levels.length > 0 && (
+        <Stack direction="row" alignItems="center" justifyContent="flex-start" sx={{ m: 1 }}>
+          {levels.map((level, index) => (
+            <Box key={index} sx={{ display: 'flex' }}>
+              <Link onClick={() => onGoTo(level)} sx={styles}>
+                {`${level.name}`}{' '}
+              </Link>
               <div style={{ margin: '0 4px' }}> /</div>
-            </Box>))
-          }
+            </Box>
+          ))}
         </Stack>
-      }
-      {
-        currentOrganization.filter(contact => !!contact).map((contact, id) => {
+      )}
+      {currentOrganization
+        .filter((contact) => !!contact)
+        .map((contact, id) => {
           let isChecked = false;
           if (contact.type === 'org') {
-            isChecked = _.intersectionBy((contact.users || []),  details.participantsBy[current._id].map(item=> ({ ...item, _id: item.user_id})), "_id").length === (contact.users || []).length
+            isChecked =
+              _.intersectionBy(
+                contact.users || [],
+                details.participantsBy[current._id].map((item) => ({ ...item, _id: item.user_id })),
+                '_id'
+              ).length === (contact.users || []).length;
           } else {
-            isChecked = details.participantsBy[current._id].filter((person) => person.user_id === contact._id).length > 0;
+            isChecked =
+              details.participantsBy[current._id].filter((person) => person.user_id === contact._id)
+                .length > 0;
           }
-          return renderOrganizationsItem(contact, id, isChecked)
-        })
-      }
+          return renderOrganizationsItem(contact, id, isChecked);
+        })}
       {/* {levels && levels.length > 0 ?
         currentOrganization.filter(contact => !!contact).map((contact, id) => {
           let checked = false;
@@ -353,10 +386,8 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
           }
           return renderOrganizationsItem(contact, id, checked)
         })} */}
-
     </Scrollbar>
-
-  )
+  );
   return (
     <>
       <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
@@ -365,8 +396,7 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
           {/** <Typography component="span">({_contacts.length})</Typography> */}
         </DialogTitle>
         <DialogContent sx={{ p: 0 }}>
-          {
-            /**
+          {/**
             <Box sx={{ px: 3, py: 0.5 }}>
               <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
                 <RHFTextField
@@ -408,30 +438,32 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
                 />
               </FormProvider>
             </Box>
-             */
-          }
+             */}
           <Divider />
-          {
-            !loading ? <div>
-              {
-                isNotFound ? <SearchNotFound query={searchContacts} sx={{ mt: 3, mb: 10 }} /> : renderOrganizations
-              }
-            </div> : (
-              <Box
-                sx={{
-                  zIndex: 10,
-                  backgroundColor: '#ffffffc4',
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  padding: '16px',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <CircularProgress />
-              </Box>
-            )}
+          {!loading ? (
+            <div>
+              {isNotFound ? (
+                <SearchNotFound query={searchContacts} sx={{ mt: 3, mb: 10 }} />
+              ) : (
+                renderOrganizations
+              )}
+            </div>
+          ) : (
+            <Box
+              sx={{
+                zIndex: 10,
+                backgroundColor: '#ffffffc4',
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                padding: '16px',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          )}
         </DialogContent>
       </Dialog>
       <ConfirmDialog
@@ -440,7 +472,7 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
         title="删除"
         content="你确定删除吗?"
         action={
-          <Button variant="contained" color="error" onClick={handleDelete}>
+          <Button variant="contained" color="error" onClick={handleDelete} loading={buttonLoading}>
             删除
           </Button>
         }

@@ -16,19 +16,11 @@ import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 //
 import { HEADER, NAV } from '../config-layout';
-import {
-  Searchbar,
-  AccountPopover,
-  SettingsButton,
-  LanguagePopover,
-  // ContactsPopover,
-  NotificationsPopover,
-  ScopePopover
-} from '../_common';
+import { Searchbar, AccountPopover } from '../_common';
 
 // ----------------------------------------------------------------------
 
-export default function Header ({ onOpenNav }) {
+export default function Header({ onOpenNav }) {
   const theme = useTheme();
 
   const settings = useSettingsContext();
@@ -53,9 +45,7 @@ export default function Header ({ onOpenNav }) {
         </IconButton>
       )}
 
-      {
-        false && <Searchbar />
-      }
+      {false && <Searchbar />}
 
       <Stack
         flexGrow={1}
@@ -68,7 +58,6 @@ export default function Header ({ onOpenNav }) {
         {/* <NotificationsPopover /> */}
 
         {/* { lgUp && <ScopePopover /> } */}
-        <ScopePopover />
 
         {/**  <ContactsPopover /> */}
 

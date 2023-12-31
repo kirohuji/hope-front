@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 // @mui
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 // routes
 import { paths } from 'src/routes/paths';
@@ -23,7 +24,8 @@ import BookItem from './book-item';
 export default function BookList({ books, refresh }) {
   const router = useRouter();
   const confirm = useBoolean();
-  const [current, setCurrent] = useState(null);
+  const loading = useBoolean();
+  const [current, setCurrent] = useState({});
   const { enqueueSnackbar } = useSnackbar();
   const handleView = useCallback(
     (id) => {
@@ -40,12 +42,20 @@ export default function BookList({ books, refresh }) {
   );
 
   const handleDelete = useCallback(async () => {
-    await bookService.delete({
-      _id: current._id,
-    });
-    enqueueSnackbar('删除成功');
-    refresh();
-  }, [refresh, enqueueSnackbar, current]);
+    try {
+      loading.onTrue();
+      await bookService.delete({
+        _id: current._id,
+      });
+      enqueueSnackbar('删除成功');
+      confirm.onFalse();
+      loading.onFalse();
+      refresh();
+    } catch (e) {
+      loading.onFalse();
+      enqueueSnackbar('删除失败');
+    }
+  }, [loading, current._id, enqueueSnackbar, confirm, refresh]);
 
   return (
     <>
@@ -89,16 +99,16 @@ export default function BookList({ books, refresh }) {
         title="删除"
         content={<>确定要删除吗?</>}
         action={
-          <Button
+          <LoadingButton
             variant="contained"
             color="error"
+            loading={loading.value}
             onClick={() => {
               handleDelete();
-              confirm.onFalse();
             }}
           >
             删除
-          </Button>
+          </LoadingButton>
         }
       />
     </>

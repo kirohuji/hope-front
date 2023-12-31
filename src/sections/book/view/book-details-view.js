@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import { Divider, Stack } from '@mui/material';
+import { Divider, Stack, Backdrop, CircularProgress, Box } from '@mui/material';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
@@ -16,6 +17,9 @@ import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
 //
 import { bookService } from 'src/composables/context-provider';
+// redux
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getData, updateDataPublishedStatus } from 'src/redux/slices/book';
 // sections
 import { ArticleListView } from 'src/sections/article/view';
 import _ from 'lodash';
@@ -34,51 +38,79 @@ const JOB_DETAILS_TABS = [
 
 export default function BookDetailsView() {
   const { enqueueSnackbar } = useSnackbar();
-  const [isAdmin, setIsAdmin] = useState(false);
   const settings = useSettingsContext();
-  const [book, setBook] = useState(null);
   const params = useParams();
   const { user } = useAuthContext();
+  const { details } = useSelector((state) => state.book);
   const { id, tabId } = params;
-
-  const getData = useCallback(async () => {
+  const [loading, setLoading] = useState(true);
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const dispatch = useDispatch();
+  const refresh = useCallback(async () => {
     try {
-      const response = await bookService.get({
-        _id: id,
-      });
-      setBook(response);
-      // setIsAdmin(_.find(response.createdBy, ['_id', user._id]));
-      setIsAdmin((response.createdBy === user._id));
+      setLoading(true);
+      await dispatch(
+        getData({
+          id,
+          user,
+        })
+      );
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      setLoading(false);
+      enqueueSnackbar('获取数据失败,请联系管理员');
     }
-  }, [id, user._id]);
+  }, [dispatch, enqueueSnackbar, id, user]);
 
-  const [publish, setPublish] = useState(book?.publish);
+  const [publish, setPublish] = useState(details.byId[id]?.publish);
 
   const [currentTab, setCurrentTab] = useState(tabId || 'content');
 
   const handlePublish = useCallback(async () => {
-    await bookService.publish({
-      book_id: id
-    })
-    getData(id)
-    enqueueSnackbar('发布成功');
-  }, [enqueueSnackbar,getData, id])
+    setButtonLoading(true);
+    try {
+      await bookService.publish({
+        book_id: id,
+      });
+      dispatch(
+        updateDataPublishedStatus({
+          id,
+          published: true,
+        })
+      );
+      enqueueSnackbar('发布成功');
+      setButtonLoading(false);
+    } catch (e) {
+      enqueueSnackbar('发布失败');
+      setButtonLoading(false);
+    }
+  }, [dispatch, enqueueSnackbar, id]);
 
   const handleCancelPublish = useCallback(async () => {
-    await bookService.unpublish({
-      book_id: id
-    })
-    getData(id)
-    enqueueSnackbar('取消发布成功');
-  }, [enqueueSnackbar, getData,id])
+    setButtonLoading(true);
+    try {
+      await bookService.unpublish({
+        book_id: id,
+      });
+      dispatch(
+        updateDataPublishedStatus({
+          id,
+          published: false,
+        })
+      );
+      enqueueSnackbar('取消发布成功');
+      setButtonLoading(false);
+    } catch (e) {
+      setButtonLoading(false);
+      enqueueSnackbar('取消发布失败');
+    }
+  }, [dispatch, enqueueSnackbar, id]);
 
   useEffect(() => {
     if (id) {
-      getData(id);
+      refresh(id);
     }
-  }, [getData, id]);
+  }, [refresh, id]);
 
   const handleChangeTab = useCallback((event, newValue) => {
     setCurrentTab(newValue);
@@ -104,7 +136,7 @@ export default function BookDetailsView() {
           label={tab.label}
           icon={
             tab.value === 'candidates' ? (
-              <Label variant="filled">{book?.candidates?.length || 0}</Label>
+              <Label variant="filled">{details.byId[id]?.candidates?.length || 0}</Label>
             ) : (
               ''
             )
@@ -116,35 +148,68 @@ export default function BookDetailsView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+      {/* <Backdrop
+        sx={{ background: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop> */}
       <BookDetailsToolbar
         backLink={paths.dashboard.book.root}
-        editLink={paths.dashboard.book.edit(`${book?._id}`)}
+        editLink={paths.dashboard.book.edit(`${details.byId[id]?._id}`)}
         liveLink="#"
         publish={publish || ''}
         onChangePublish={handleChangePublish}
         publishOptions={JOB_PUBLISH_OPTIONS}
       />
       {renderTabs}
+      {!details.byId[id] ? (
+        <Box
+          sx={{
+            zIndex: 10,
+            backgroundColor: '#ffffffc4',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <>
+          {currentTab === 'content' && <BookDetailsContent book={details.byId[id]} />}
 
-      {currentTab === 'content' && book && <BookDetailsContent book={book} />}
-
-      {currentTab === 'candidates' && book && (
-        <BookDetailsCandidates candidates={book?.candidates} />
+          {currentTab === 'candidates' && (
+            <BookDetailsCandidates candidates={details.byId[id]?.candidates} />
+          )}
+          {currentTab === 'chapter' && <ArticleListView book={details.byId[id]} />}
+          <Divider sx={{ m: 2 }} />
+          <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
+            {details.byId[id].isAdmin && !details.byId[id].published && (
+              <LoadingButton
+                variant="contained"
+                color="success"
+                onClick={() => handlePublish()}
+                loading={buttonLoading}
+              >
+                发布公告
+              </LoadingButton>
+            )}
+            {details.byId[id].isAdmin && details.byId[id].published && (
+              <LoadingButton
+                variant="contained"
+                color="error"
+                onClick={() => handleCancelPublish()}
+                loading={buttonLoading}
+              >
+                取消发布
+              </LoadingButton>
+            )}
+          </Stack>
+        </>
       )}
-      {currentTab === 'chapter' && book && <ArticleListView book={book} />}
-      <Divider sx={{ m: 2 }} />
-      <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
-        {isAdmin && !book.published && (
-          <Button variant="contained" color="success" onClick={() => handlePublish()}>
-            发布公告
-          </Button>
-        )}
-        {isAdmin && book.published && (
-          <Button variant="contained" color="success" onClick={() => handleCancelPublish()}>
-            取消发布
-          </Button>
-        )}
-      </Stack>
     </Container>
   );
 }

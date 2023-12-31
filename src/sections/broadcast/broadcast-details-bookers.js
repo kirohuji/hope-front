@@ -26,10 +26,11 @@ import { broadcastService, messagingService } from 'src/composables/context-prov
 // ----------------------------------------------------------------------
 
 export default function BroadcastDetailsBookers({ onRefresh, participants }) {
+  const [loading, setLoading] = useState(false);
 
-  const [loading, setLoading] = useState(false)
+  const [buttonLoading, setButtonLoading] = useState(false);
 
-  const [currentIndex, setCurrentIndex] = useState(-1)
+  const [currentIndex, setCurrentIndex] = useState(-1);
 
   const { user } = useAuthContext();
 
@@ -42,7 +43,7 @@ export default function BroadcastDetailsBookers({ onRefresh, participants }) {
   const [currentParticipant, setCurrentParticipant] = useState({});
 
   const handleOpenConfirm = (p) => {
-    setCurrentParticipant(p)
+    setCurrentParticipant(p);
     setOpenConfirm(true);
   };
 
@@ -51,74 +52,100 @@ export default function BroadcastDetailsBookers({ onRefresh, participants }) {
   };
 
   const handleDelete = async (item, index) => {
-    setLoading(true)
-    setCurrentIndex(index)
-    await broadcastService.deleteUser(currentParticipant)
-    enqueueSnackbar('删除成功');
-    handleCloseConfirm();
-    onRefresh({
-      data: currentParticipant,
-      type: 'delete'
-    });
-    setLoading(false)
-    setCurrentIndex(-1)
-  }
+    try {
+      setLoading(true);
+      setButtonLoading(true);
+      setCurrentIndex(index);
+      await broadcastService.deleteUser(currentParticipant);
+      enqueueSnackbar('删除成功');
+      handleCloseConfirm();
+      onRefresh({
+        data: currentParticipant,
+        type: 'delete',
+      });
+      setLoading(false);
+      setCurrentIndex(-1);
+      setButtonLoading(false);
+    } catch (e) {
+      enqueueSnackbar('删除失败,请联系管理员!');
+      setLoading(false);
+      setCurrentIndex(-1);
+      setButtonLoading(false);
+    }
+  };
 
-  const signIn = useCallback(async (item,index) => {
-    setLoading(true)
-    setCurrentIndex(index)
-    await broadcastService.signIn(item)
-    enqueueSnackbar('更新成功');
-    onRefresh({
-      data: item,
-      type: item.status === "signIn" ? "signOut" : "signIn"
-    });
-    setLoading(false)
-    setCurrentIndex(-1)
-  }, [enqueueSnackbar, onRefresh]);
+  const signIn = useCallback(
+    async (item, index) => {
+      try {
+        setLoading(true);
+        setCurrentIndex(index);
+        await broadcastService.signIn(item);
+        enqueueSnackbar('更新成功');
+        onRefresh({
+          data: item,
+          type: item.status === 'signIn' ? 'signOut' : 'signIn',
+        });
+        setLoading(false);
+        setCurrentIndex(-1);
+      } catch (e) {
+        enqueueSnackbar('更新失败,请联系管理员!');
+        setLoading(false);
+        setCurrentIndex(-1);
+      }
+    },
+    [enqueueSnackbar, onRefresh]
+  );
 
   const handleChat = async (target) => {
-    const newConversation = await messagingService.room({
-      participants: [user._id, target.user_id]
-    })
-    router.push(`${paths.chat}?id=${newConversation._id}`);
-  }
+    enqueueSnackbar('功能待开发!');
+    // const newConversation = await messagingService.room({
+    //   participants: [user._id, target.user_id],
+    // });
+    // router.push(`${paths.chat}?id=${newConversation._id}`);
+  };
 
-  return (<Box
-    gap={3}
-    display="grid"
-    gridTemplateColumns={{
-      xs: 'repeat(1, 1fr)',
-      sm: 'repeat(2, 1fr)',
-      md: 'repeat(3, 1fr)',
-    }}
-  >
-    {participants.map((participant, index) => (
-      <BookerItem
-        key={index}
-        isOwner={user._id === participant.user_id}
-        participant={participant}
-        loading={index === currentIndex && loading}
-        currentIndex={currentIndex}
-        onDelete={() => handleOpenConfirm(participant)}
-        onChat={() => handleChat(participant)}
-        selected={participant.status === "signIn"}
-        onSelected={() => signIn(participant,index)}
+  return (
+    <Box
+      gap={3}
+      display="grid"
+      gridTemplateColumns={{
+        xs: 'repeat(1, 1fr)',
+        sm: 'repeat(2, 1fr)',
+        md: 'repeat(3, 1fr)',
+      }}
+    >
+      {participants.map((participant, index) => (
+        <BookerItem
+          key={index}
+          isOwner={user._id === participant.user_id}
+          participant={participant}
+          loading={index === currentIndex && loading}
+          currentIndex={currentIndex}
+          onDelete={() => handleOpenConfirm(participant)}
+          onChat={() => handleChat(participant)}
+          selected={participant.status === 'signIn'}
+          onSelected={() => signIn(participant, index)}
+        />
+      ))}
+
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={handleCloseConfirm}
+        title="删除"
+        content="你确定删除吗?"
+        action={
+          <LoadingButton
+            variant="contained"
+            color="error"
+            onClick={handleDelete}
+            loading={buttonLoading}
+          >
+            删除
+          </LoadingButton>
+        }
       />
-    ))}
-
-    <ConfirmDialog
-      open={openConfirm}
-      onClose={handleCloseConfirm}
-      title="删除"
-      content="你确定删除吗?"
-      action={
-        <Button variant="contained" color="error" onClick={handleDelete}>
-          删除
-        </Button>
-      }
-    />
-  </Box>)
+    </Box>
+  );
 }
 BroadcastDetailsBookers.propTypes = {
   onRefresh: PropTypes.func,
@@ -131,7 +158,11 @@ BroadcastDetailsBookers.propTypes = {
 function BookerItem({ isOwner, participant, selected, onDelete, onSelected, onChat, loading }) {
   return (
     <Stack component={Card} direction="row" spacing={2} key={participant._id} sx={{ p: 3 }}>
-      <Avatar alt={participant.username} src={participant.profile?.photoURL} sx={{ width: 48, height: 48 }} />
+      <Avatar
+        alt={participant.username}
+        src={participant.profile?.photoURL}
+        sx={{ width: 48, height: 48 }}
+      />
 
       <Stack spacing={2} flexGrow={1}>
         <ListItemText
@@ -151,8 +182,8 @@ function BookerItem({ isOwner, participant, selected, onDelete, onSelected, onCh
         />
 
         <Stack spacing={1} direction="row">
-          {
-            true && <LoadingButton
+          {true && (
+            <LoadingButton
               size="small"
               onClick={onSelected}
               loading={loading}
@@ -165,12 +196,19 @@ function BookerItem({ isOwner, participant, selected, onDelete, onSelected, onCh
                 },
               }}
             >
-              <Iconify width={18} icon={selected ? "streamline:interface-logout-arrow-exit-frame-leave-logout-rectangle-right" : "ph:hand"} />
+              <Iconify
+                width={18}
+                icon={
+                  selected
+                    ? 'streamline:interface-logout-arrow-exit-frame-leave-logout-rectangle-right'
+                    : 'ph:hand'
+                }
+              />
             </LoadingButton>
-          }
+          )}
 
-          {
-            !isOwner && false && <LoadingButton
+          {!isOwner && false && (
+            <LoadingButton
               onClick={onChat}
               size="small"
               loading={loading}
@@ -185,7 +223,7 @@ function BookerItem({ isOwner, participant, selected, onDelete, onSelected, onCh
             >
               <Iconify width={18} icon="solar:chat-round-dots-bold" />
             </LoadingButton>
-          }
+          )}
 
           <LoadingButton
             onClick={onDelete}

@@ -32,25 +32,25 @@ const checkoutPersistConfig = {
 export const scopePersistConfig = {
   key: 'scope',
   storage,
-  keyPrefix: 'redux-'
+  keyPrefix: 'redux-',
 };
 
 export const bookPersistConfig = {
   key: 'book',
   storage,
-  keyPrefix: 'redux-'
+  keyPrefix: 'redux-',
 };
 
 export const dashboardPersistConfig = {
   key: 'dashboard',
   storage,
-  keyPrefix: 'redux-'
+  keyPrefix: 'redux-',
 };
 
 export const rolePersistConfig = {
   key: 'role',
   storage,
-  keyPrefix: 'redux-'
+  keyPrefix: 'redux-',
 };
 
 export const articlePersistConfig = {
@@ -59,7 +59,6 @@ export const articlePersistConfig = {
   keyPrefix: 'redux-',
   whitelist: ['sortBy', 'checkout'],
 };
-
 
 export const filePersistConfig = {
   key: 'file',
@@ -80,17 +79,19 @@ export const calenderPersistConfig = {
 };
 
 export const rootReducer = combineReducers({
-  calendar: persistReducer(calenderPersistConfig,calendarReducer),
+  calendar: persistReducer(calenderPersistConfig, calendarReducer),
   chat: chatReducer,
   audio: audioReducer,
-  trainning:persistReducer(trainningPersistConfig, trainningReducer),
+  trainning: persistReducer(trainningPersistConfig, trainningReducer),
   // notification: notificationReducer,
   dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
-  book: persistReducer(bookPersistConfig, bookReducer),
+  // book: persistReducer(bookPersistConfig, bookReducer),
+  book: bookReducer,
   role: persistReducer(rolePersistConfig, roleReducer),
   checkout: persistReducer(checkoutPersistConfig, checkoutReducer),
   scope: persistReducer(scopePersistConfig, scopeReducer),
-  article: persistReducer(articlePersistConfig, articleReducer),
+  article: articleReducer,
+  // article: persistReducer(articlePersistConfig, articleReducer),
   // book: persistReducer(bookPersistConfig, bookPersistConfig),
   file: persistReducer(filePersistConfig, fileReducer),
   broadcast: persistReducer(broadcastPersistConfig, broadcastReducer),

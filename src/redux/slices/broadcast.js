@@ -38,6 +38,17 @@ const slice = createSlice({
         state.details.participantsBy[id] = data;
       }
     },
+    updateDataPublishedStatusSuccess(state, action) {
+      const { id, published } = action.payload;
+      console.log('published', published);
+      state.isLoading = false;
+      if (state.details.byId[id]) {
+        state.details.byId[id] = {
+          ...state.details.byId[id],
+          published,
+        };
+      }
+    },
     addParticipantsSuccess(state, action) {
       const { id, datas } = action.payload;
       state.isLoading = false;
@@ -86,21 +97,11 @@ const slice = createSlice({
         });
       }
     },
-    // setParticipantsLoading(state, action){
-    //   const { participantsById, id } = action.payload;
-    //   state.details.participantsBy[participantsById][id] = data.map(item=> ({
-    //     ...item,
-    //     isLoading: false,
-    //   }));
-    // },
     // HAS ERROR
     hasError(state, action) {
       state.isLoading = false;
       state.error = action.payload;
     },
-    // stopLoading(state) {
-    //   state.isLoading = false;
-    // },
   },
 });
 
@@ -276,6 +277,26 @@ export function updateParticipantStatus({ id, data, status }) {
           id,
           data,
           status,
+        })
+      );
+    } catch (error) {
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  };
+}
+
+export function updateDataPublishedStatus({ id, published }) {
+  return async (dispatch) => {
+    try {
+      dispatch(
+        slice.actions.updateDataPublishedStatusSuccess({
+          id,
+          published,
         })
       );
     } catch (error) {

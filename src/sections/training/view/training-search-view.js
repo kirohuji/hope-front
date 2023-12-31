@@ -1,19 +1,29 @@
 /* eslint-disable react/no-danger */
-import { Box, Container, Divider, Stack, Tab, Tabs, Typography, Backdrop, CircularProgress } from "@mui/material";
-import { Helmet } from "react-helmet-async";
-import { useState, useEffect, useCallback } from 'react'
+import {
+  Box,
+  Container,
+  Divider,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+  Backdrop,
+  CircularProgress,
+} from '@mui/material';
+import { Helmet } from 'react-helmet-async';
+import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 // form
 import { useForm } from 'react-hook-form';
 
-import { useNavigate } from "react-router-dom";
-import TrainingCard from 'src/sections/training/training-card'
+import { useNavigate } from 'react-router-dom';
+import TrainingCard from 'src/sections/training/training-card';
 // routes
 import { paths } from 'src/routes/paths';
 // sections
-import Search from 'src/sections/training/search'
-import Label from "src/components/label";
+import Search from 'src/sections/training/search';
+import Label from 'src/components/label';
 
 import { bookService } from 'src/composables/context-provider';
 
@@ -67,47 +77,46 @@ export default function TrainingSearchPage() {
   const [tableData, setTableData] = useState([]);
   const [currentTag, setCurrentTag] = useState({
     value: '',
-    label: ''
+    label: '',
   });
   const getBooks = useCallback(async () => {
     try {
       setIsLoading(true);
       let response = {
-        data: []
-      }
+        data: [],
+      };
       if (currentTag.value) {
         response = await bookService.pagination({
           type: {
             $in: [currentTag.value],
-          }
+          },
         });
       } else {
         response = await bookService.pagination({});
       }
-      setTableData(response.data)
+      setTableData(response.data);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       // setLoadingPost(false);
       // setErrorMsg(error.message);
     }
-  }, [setTableData, currentTag])
+  }, [setTableData, currentTag]);
 
   useEffect(() => {
-    getBooks()
+    getBooks();
   }, [getBooks]);
 
-
   const onDetail = (post) => {
-    console.log(post)
+    console.log(post);
     navigate(paths.training.searchDetail(post._id));
-  }
+  };
   return (
     <>
       <Helmet>搜索 | Hope Family</Helmet>
       <Container>
-        {
-          false && <Stack
+        {false && (
+          <Stack
             spacing={2}
             direction={{ xs: 'column', sm: 'row' }}
             alignItems={{ sm: 'center' }}
@@ -115,9 +124,8 @@ export default function TrainingSearchPage() {
             sx={{ mb: 2 }}
           >
             <Search />
-
           </Stack>
-        }
+        )}
         <Box>
           <Tabs value={scrollable} onChange={(event, newValue) => setScrollable(newValue)}>
             {TABS.map((tab) => (
@@ -126,53 +134,65 @@ export default function TrainingSearchPage() {
           </Tabs>
         </Box>
         <TabPanel value={scrollable} index="one" key={0}>
-          <Box style={{
-            display: "flex",
-            justifyContent: "space-between",
-            margin: '16px  0'
-          }}>
+          <Box
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              margin: '16px  0',
+            }}
+          >
             {TAGS.map((tag) => (
               <Label
                 onClick={() => setCurrentTag(tag)}
                 sx={{
-                  backgroundColor: tag.value === currentTag.value ? "black" : "white",
-                  color: tag.value === currentTag.value ? "white" : "black",
+                  backgroundColor: tag.value === currentTag.value ? 'black' : 'white',
+                  color: tag.value === currentTag.value ? 'white' : 'black',
                 }}
                 // color={tag.value === currentTag.value ? 'light' : 'default'}
                 style={{ width: '70px' }}
                 key={tag.value}
-                value={tag.value}>
+                value={tag.value}
+              >
                 {tag.label}
               </Label>
             ))}
           </Box>
           <Divider />
-          <Box sx={{ paddingTop: "100px" }}>
-            {
-              isLoading && <Box sx={{
-                zIndex: 10,
-                backgroundColor: "#ffffffc4",
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-              }}>
+          <Box sx={{ paddingTop: '8px' }}>
+            {isLoading && (
+              <Box
+                sx={{
+                  zIndex: 10,
+                  backgroundColor: '#ffffffc4',
+                  paddingTop: '92px',
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
                 <CircularProgress />
               </Box>
-            }
-            {!isLoading && tableData.length > 0 && tableData.map((post, index) =>
-              <Box style={{ display: 'flex' }} key={index} onClick={() => onDetail(post)}>
-                <div style={{ width: '142px' }}>
-                  <TrainingCard post={post} index={index} />
-                </div>
-                <div style={{ margin: "15px 0px", width: 'calc(100% - 142px' }}>
-                  <Typography variant="h9" style={{ fontWeight: '700' }}>{post.label}</Typography>
-                  <div style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: post.description }} />
-                </div>
-              </Box>
             )}
-
+            {!isLoading &&
+              tableData.length > 0 &&
+              tableData.map((post, index) => (
+                <Box style={{ display: 'flex' }} key={index} onClick={() => onDetail(post)}>
+                  <div style={{ width: '142px' }}>
+                    <TrainingCard post={post} index={index} />
+                  </div>
+                  <div style={{ margin: '15px 0px', width: 'calc(100% - 142px' }}>
+                    <Typography variant="h9" style={{ fontWeight: '700' }}>
+                      {post.label}
+                    </Typography>
+                    <div
+                      style={{ fontSize: '12px' }}
+                      dangerouslySetInnerHTML={{ __html: post.description }}
+                    />
+                  </div>
+                </Box>
+              ))}
           </Box>
         </TabPanel>
         {/* <Backdrop
@@ -183,5 +203,5 @@ export default function TrainingSearchPage() {
         </Backdrop> */}
       </Container>
     </>
-  )
+  );
 }

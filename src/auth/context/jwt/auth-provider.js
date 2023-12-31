@@ -4,9 +4,9 @@ import { useEffect, useReducer, useCallback, useMemo } from 'react';
 
 import { authService, userService, ddpclient } from 'src/composables/context-provider';
 
+import { Capacitor } from '@capacitor/core';
 import { AuthContext } from './auth-context';
-import { setSession } from './utils';
-
+import { setSession, setInfo } from './utils';
 // ----------------------------------------------------------------------
 
 // NOTE:
@@ -58,7 +58,7 @@ const reducer = (state, action) => {
   if (action.type === 'NOTIFICATION') {
     return {
       ...state,
-      notifications: action.payload.notifications
+      notifications: action.payload.notifications,
     };
   }
   return state;
@@ -68,14 +68,11 @@ const reducer = (state, action) => {
 
 const STORAGE_KEY = 'accessToken';
 
-
 export function AuthProvider({ children }) {
-
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const getNotifications = useCallback(async (user) => {
-
-    const notifications = await ddpclient.subscribe("notifications", user._id);
+    const notifications = await ddpclient.subscribe('notifications', user._id);
 
     await notifications.ready();
 
@@ -84,7 +81,7 @@ export function AuthProvider({ children }) {
     dispatch({
       type: 'NOTIFICATION',
       payload: {
-        notifications: reactiveCollection.data()
+        notifications: reactiveCollection.data(),
       },
     });
 
@@ -92,15 +89,20 @@ export function AuthProvider({ children }) {
       dispatch({
         type: 'NOTIFICATION',
         payload: {
-          notifications: newData
+          notifications: newData,
         },
       });
     });
-
-  }, [])
+  }, []);
 
   const refresh = useCallback(async () => {
-    const { user, profile, roles, permissions } = await userService.info()
+    const { user, profile, roles, permissions } = await userService.info();
+    setInfo({
+      user,
+      profile,
+      roles,
+      permissions,
+    });
     dispatch({
       type: 'INITIAL',
       payload: {
@@ -109,9 +111,9 @@ export function AuthProvider({ children }) {
           ...user,
           ...profile,
           permissions,
-          roles
-        }
-      }
+          roles,
+        },
+      },
     });
   }, []);
 
@@ -120,30 +122,46 @@ export function AuthProvider({ children }) {
       const accessToken = localStorage.getItem(STORAGE_KEY);
 
       if (accessToken) {
-
-        await ddpclient.call("login", {
-          resume: accessToken
-        })
+        await ddpclient.call('login', {
+          resume: accessToken,
+        });
 
         setSession(accessToken);
 
-        // 获取用户信息
-        const { user, profile, roles, permissions } = await userService.info();
+        const localInfo = localStorage.getItem('info');
 
-        getNotifications(user);
-
-        dispatch({
-          type: 'INITIAL',
-          payload: {
-            isAuthenticated: true,
-            user: {
-              ...user,
-              ...profile,
-              permissions,
-              roles
-            }
-          }
-        });
+        if (localInfo) {
+          const { user, profile, roles, permissions } = JSON.parse(localInfo);
+          getNotifications(user);
+          dispatch({
+            type: 'INITIAL',
+            payload: {
+              isAuthenticated: true,
+              user: {
+                ...user,
+                ...profile,
+                permissions,
+                roles,
+              },
+            },
+          });
+        } else {
+          // 获取用户信息
+          const { user, profile, roles, permissions } = await userService.info();
+          getNotifications(user);
+          dispatch({
+            type: 'INITIAL',
+            payload: {
+              isAuthenticated: true,
+              user: {
+                ...user,
+                ...profile,
+                permissions,
+                roles,
+              },
+            },
+          });
+        }
       } else {
         dispatch({
           type: 'INITIAL',
@@ -162,6 +180,22 @@ export function AuthProvider({ children }) {
         },
       });
     }
+    // if (Capacitor.isNativePlatform()) {
+    //   // do something
+    //   alert('isNativePlatform');
+    // }
+    if (Capacitor.getPlatform() === 'ios') {
+      console.log('iOS!');
+      // alert('iOS');
+      import('../../../ios.css');
+    } else if (Capacitor.getPlatform() === 'android') {
+      console.log('Android!');
+      // alert('Android');
+    } else {
+      console.log('Web!');
+      import('../../../web.css');
+      // alert('Web');
+    }
   }, [getNotifications]);
 
   useEffect(() => {
@@ -169,50 +203,79 @@ export function AuthProvider({ children }) {
   }, [initialize]);
 
   // LOGIN
-  const login = useCallback(async (email, password) => {
-    const response = await ddpclient.login({
-      password,
-      user: {
-        email
-      }
-    });
-
-    const { token: accessToken } = response;
-
-    setSession(accessToken);
-
-    const { user, profile, roles, permissions } = await userService.info()
-    getNotifications(user)
-    dispatch({
-      type: 'LOGIN',
-      payload: {
+  const login = useCallback(
+    async (email, password) => {
+      const response = await ddpclient.login({
+        password,
         user: {
-          ...user,
-          ...profile,
-          permissions,
-          roles
-        }
-      },
-    });
-  }, [getNotifications]);
+          email,
+        },
+      });
+
+      const { token: accessToken } = response;
+
+      setSession(accessToken);
+
+      const { user, profile, roles, permissions } = await userService.info();
+
+      setInfo({
+        user,
+        profile,
+        roles,
+        permissions,
+      });
+
+      getNotifications(user);
+
+      dispatch({
+        type: 'LOGIN',
+        payload: {
+          user: {
+            ...user,
+            ...profile,
+            permissions,
+            roles,
+          },
+        },
+      });
+      if (Capacitor.getPlatform() === 'ios') {
+        console.log('iOS!');
+        // alert('iOS');
+        import('../../../ios.css');
+      } else if (Capacitor.getPlatform() === 'android') {
+        console.log('Android!');
+        // alert('Android');
+      } else {
+        console.log('Web!');
+        import('../../../web.css');
+      }
+    },
+    [getNotifications]
+  );
 
   // REGISTER
   const register = useCallback(async (email, password, username) => {
-
     await userService.register({
       email,
       username,
       password,
-    })
+    });
 
     const { authToken: accessToken } = await authService.login({
       email,
       password,
-    })
+    });
 
     localStorage.setItem(STORAGE_KEY, accessToken);
 
-    const { user, profile, roles, permissions } = await userService.info()
+    const { user, profile, roles, permissions } = await userService.info();
+
+    setInfo({
+      user,
+      profile,
+      roles,
+      permissions,
+    });
 
     dispatch({
       type: 'REGISTER',
@@ -221,7 +284,7 @@ export function AuthProvider({ children }) {
           ...user,
           ...profile,
           permissions,
-          roles
+          roles,
         },
       },
     });
@@ -232,6 +295,8 @@ export function AuthProvider({ children }) {
     // await authService.logout()
     await ddpclient.logout();
     setSession(null);
+    setInfo(null);
+    localStorage.clear();
     dispatch({
       type: 'LOGOUT',
     });
@@ -253,8 +318,8 @@ export function AuthProvider({ children }) {
       unauthenticated: status === 'unauthenticated',
       isInitialized: state.isInitialized,
       isAuthenticated: state.isAuthenticated,
-      permissions: state.user?.permissions?.map(item => item.value),
-      isAdmin: state.user?.roles?.map(item => item._id).indexOf("admin") !== -1,
+      permissions: state.user?.permissions?.map((item) => item.value),
+      isAdmin: state.user?.roles?.map((item) => item._id).indexOf('admin') !== -1,
       login,
       register,
       logout,

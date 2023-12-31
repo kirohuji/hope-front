@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Pagination from '@mui/material/Pagination';
+import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 // routes
 import { paths } from 'src/routes/paths';
@@ -57,6 +58,8 @@ export default function BroadcastListView() {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const [loading, setLoading] = useState(true);
+
   const dispatch = useDispatch();
 
   const [sortBy, setSortBy] = useState('latest');
@@ -76,8 +79,9 @@ export default function BroadcastListView() {
 
   const onRefresh = useCallback(
     async (selector = {}, options = {}) => {
+      setLoading(true);
       try {
-        dispatch(
+        await dispatch(
           pagination(
             {
               ...selector,
@@ -93,7 +97,9 @@ export default function BroadcastListView() {
             }
           )
         );
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
         enqueueSnackbar(error.message);
       }
     },
@@ -211,7 +217,23 @@ export default function BroadcastListView() {
 
       {notFound && <EmptyContent title="No Data" filled sx={{ py: 10 }} />}
 
-      <BroadcastList broadcasts={data} refresh={() => onRefresh()} />
+      {loading ? (
+        <Box
+          sx={{
+            zIndex: 10,
+            backgroundColor: '#ffffffc4',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <BroadcastList broadcasts={data} refresh={() => onRefresh()} />
+      )}
 
       <Box
         sx={{

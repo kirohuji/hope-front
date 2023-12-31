@@ -1,0 +1,35 @@
+@supports (top: env(safe-area-inset-top)) {
+  header,
+  .header {
+    background-color: white;
+    padding-top: constant(safe-area-inset-top);
+    padding-top: env(safe-area-inset-top);
+    height: unset !important;
+  }
+}
+/* @supports (bottom: env(safe-area-inset-bottom)) { */
+@supports (-webkit-touch-callout: none) {
+  /*针对IOS的css*/
+  /* main,
+  .main {
+    padding-top: calc(constant(safe-area-inset-top) * 2.5) !important;
+    padding-top: calc(env(safe-area-inset-top) * 2.5) !important;
+    padding-bottom: calc(126px + constant(safe-area-inset-bottom) * 2.5) !important;
+    padding-bottom: calc(126px + (safe-area-inset-bottom) * 2.5) !important;
+  } */
+  .book-player {
+    background-color: none !important;
+    bottom: calc(2px + constant(safe-area-inset-bottom) * 2.5) !important;
+    bottom: calc(2px + env(safe-area-inset-bottom) * 2.5) !important;
+  }
+  .bottom-navigation {
+    background-color: white;
+  }
+  .bottom-navigation > div {
+    padding-bottom: calc(constant(safe-area-inset-bottom) * 2.5) !important;
+    padding-bottom: calc(env(safe-area-inset-bottom) * 2.5) !important;
+  }
+  .bottom-navigation div a {
+    height: 56px !important;
+  }
+}

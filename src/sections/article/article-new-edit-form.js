@@ -9,7 +9,7 @@ import { styled } from '@mui/material/styles';
 // import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Dialog from '@mui/material/Dialog'
+import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 // import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -24,9 +24,7 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // components
 import { useSnackbar } from 'src/components/snackbar';
-import {
-  StaticDatePicker
-} from '@mui/x-date-pickers';
+import { StaticDatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import FormProvider, {
@@ -47,8 +45,7 @@ import QuestionnareCardForm from './questionnaire/cards/CardForm';
 const STEPS = ['阅读环节', '问答环节'];
 
 const CustomPickersDay = styled(PickersDay, {
-  shouldForwardProp: (prop) =>
-    prop !== 'isContain',
+  shouldForwardProp: (prop) => prop !== 'isContain',
 })(({ theme, isContain }) => ({
   backgroundColor: 'none',
   ...(isContain && {
@@ -65,9 +62,7 @@ const CustomPickersDay = styled(PickersDay, {
   borderBottomRightRadius: '50%',
 }));
 
-
-export default function ArticleNewEditForm ({ book, currentDates, currentArticle }) {
-
+export default function ArticleNewEditForm({ book, currentDates, currentArticle }) {
   const [activeStep, setActiveStep] = useState(0);
 
   const router = useRouter();
@@ -84,11 +79,10 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
   const [question, setQuestion] = useState(null);
   const [questions, setQuestions] = useState(currentArticle?.questions || []);
 
-
   const NewBlogSchema = Yup.object().shape({
-    title: Yup.string().required('Title is required'),
-    description: Yup.string().required('Description is required'),
-    content: Yup.string().required('Content is required'),
+    title: Yup.string().required('请输入标题'),
+    description: Yup.string().required('请输入描述'),
+    content: Yup.string().required('请输入内容'),
     coverUrl: Yup.mixed().nullable(),
     tags: Yup.array(),
     metaKeywords: Yup.array(),
@@ -135,7 +129,7 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
   }, [currentArticle, defaultValues, reset]);
 
   const onNextStep = () => {
-    setActiveStep(activeStep + 1)
+    setActiveStep(activeStep + 1);
   };
 
   const onSubmit = handleSubmit(async (data) => {
@@ -151,34 +145,34 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
             await bookService.addBookArticle({
               book_id: book._id,
               article_id: article._id,
-              date: data.date
-            })
+              date: data.date,
+            });
           }
         } else {
           if (book) {
             await bookService.updateBookArticle({
               book_id: book._id,
               article_id: currentArticle._id,
-              date: data.date
-            })
+              date: data.date,
+            });
           }
           await articleService.patch({
             _id: currentArticle._id,
             ...data,
-            questions
+            questions,
           });
         }
         reset();
         preview.onFalse();
         enqueueSnackbar(currentArticle ? '更新成功!' : '创建成功!');
         if (book) {
-          router.push(paths.dashboard.book.details.tab(book._id, "chapter"));
+          router.push(paths.dashboard.book.details.tab(book._id, 'chapter'));
         } else {
           router.push(paths.dashboard.article.root);
         }
       }
     } catch (e) {
-      enqueueSnackbar(e.response.data.message)
+      enqueueSnackbar(e.response.data.message);
     }
   });
 
@@ -196,19 +190,14 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
     //         />
     //     }
     // }
-    return (
-      <CustomPickersDay
-        isContain={false}
-        {...pickersDayProps}
-      />
-    );
+    return <CustomPickersDay isContain={false} {...pickersDayProps} />;
   };
   const handleDrop = useCallback(
     async (acceptedFiles) => {
       const file = acceptedFiles[0];
       const formData = new FormData();
       formData.append('file', file);
-      const { link } = await fileService.upload(formData)
+      const { link } = await fileService.upload(formData);
       if (file) {
         setValue('coverUrl', link, { shouldValidate: true });
         // setValue('photoURL', Object.assign(file, {
@@ -234,9 +223,7 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
             标题, 基本描述, 图片...
           </Typography>
           <div>
-            <LocalizationProvider
-              dateAdapter={AdapterDayjs}
-              adapterLocale="zh-cn">
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="zh-cn">
               <StaticDatePicker
                 orientation="portrait"
                 className="whiteBg"
@@ -244,7 +231,14 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
                 name="date"
                 value={values.date}
                 view="day"
-                renderDay={(date, selectedDates, pickersDayProps) => renderPickerDay(date, selectedDates, pickersDayProps, currentDates.map(item => new Date(item)))}
+                renderDay={(date, selectedDates, pickersDayProps) =>
+                  renderPickerDay(
+                    date,
+                    selectedDates,
+                    pickersDayProps,
+                    currentDates.map((item) => new Date(item))
+                  )
+                }
                 displayStaticWrapperAs="desktop"
                 onChange={(newValue) => {
                   setValue('date', newValue);
@@ -252,7 +246,6 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
                 renderInput={() => null}
               />
             </LocalizationProvider>
-
           </div>
         </Grid>
       )}
@@ -293,12 +286,19 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
         <Button color="inherit" variant="outlined" size="large" onClick={preview.onTrue}>
           预览
         </Button>
-        {activeStep !== 0 && <Button  sx={{ ml: 2 }} color="inherit" variant="outlined" size="large" onClick={()=> {
-          setActiveStep(activeStep -1)
-        }}>
-          上一步
-        </Button>
-        }
+        {activeStep !== 0 && (
+          <Button
+            sx={{ ml: 2 }}
+            color="inherit"
+            variant="outlined"
+            size="large"
+            onClick={() => {
+              setActiveStep(activeStep - 1);
+            }}
+          >
+            上一步
+          </Button>
+        )}
         <LoadingButton
           type="submit"
           variant="contained"
@@ -331,11 +331,11 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
           <QuestionnareCards
             questions={questions}
             onAdd={() => {
-              setQuestion({})
+              setQuestion({});
               formDialog.onTrue();
             }}
             onEdit={(obj) => {
-              setQuestion(obj)
+              setQuestion(obj);
               formDialog.onTrue();
             }}
             onDelete={(obj) => {
@@ -364,7 +364,6 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
           {activeStep === 1 && renderQuestionnaire}
 
           {activeStep === 1 && renderActions}
-
         </Grid>
 
         <ArticleDetailsPreview
@@ -383,18 +382,20 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
         />
       </FormProvider>
       <Dialog fullWidth maxWidth="sm" open={formDialog.value} onClose={formDialog.onFalse}>
-        {formDialog.value && <QuestionnareCardForm
-          item={question}
-          onClose={formDialog.onFalse}
-          onCreate={(data) => {
-            questions.push({
-              ...data,
-              _id: Math.random() * 100
-            });
-            setQuestions(questions);
-            formDialog.onFalse();
-          }}
-        />}
+        {formDialog.value && (
+          <QuestionnareCardForm
+            item={question}
+            onClose={formDialog.onFalse}
+            onCreate={(data) => {
+              questions.push({
+                ...data,
+                _id: Math.random() * 100,
+              });
+              setQuestions(questions);
+              formDialog.onFalse();
+            }}
+          />
+        )}
       </Dialog>
     </>
   );
@@ -403,5 +404,5 @@ export default function ArticleNewEditForm ({ book, currentDates, currentArticle
 ArticleNewEditForm.propTypes = {
   currentArticle: PropTypes.object,
   book: PropTypes.any,
-  currentDates: PropTypes.array
+  currentDates: PropTypes.array,
 };

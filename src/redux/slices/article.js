@@ -18,29 +18,30 @@ const slice = createSlice({
   name: 'article',
   initialState,
   reducers: {
-    setArticle(state, action){
+    setArticle(state, action) {
       state.article = action.payload;
     },
     // START LOADING
-    startLoading (state) {
+    startLoading(state) {
       state.isLoading = true;
     },
 
     // HAS ERROR
-    hasError (state, action) {
+    hasError(state, action) {
       state.isLoading = false;
       state.error = action.payload;
     },
 
     // GET POSTS
-    getArticlesSuccess (state, action) {
+    getArticleSuccess(state, action) {
       state.isLoading = false;
       state.article = action.payload;
     },
 
-    getDataSuccess (state, action) {
+    getDatasSuccess(state, action) {
       state.isLoading = false;
-      state.data = action.payload;
+      state.data = action.payload.data;
+      state.total = action.payload.total;
     },
 
     backStep(state) {
@@ -55,7 +56,6 @@ const slice = createSlice({
       const step = action.payload;
       state.activeStep = step;
     },
-
   },
 });
 
@@ -63,35 +63,31 @@ const slice = createSlice({
 export default slice.reducer;
 
 // Actions
-export const {
-  setArticle,
-  nextStep,
-  backStep
-} = slice.actions;
+export const { setArticle, nextStep, backStep } = slice.actions;
 
 // ----------------------------------------------------------------------
 
-export function getArticle (id) {
+export function getArticle(id) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
       const response = await articleService.get({
         _id: id,
-      })
-      dispatch(slice.actions.getArticlesSuccess(response));
+      });
+      dispatch(slice.actions.getArticleSuccess(response));
     } catch (error) {
       console.error(error);
       dispatch(slice.actions.hasError(error));
     }
   };
 }
-export function getDatas (query) {
+export function pagination(query, options) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
-    try{
-      const response = await articleService.pagination(query);
-      dispatch(slice.actions.getDataSuccess(response.data));
-    } catch(error){
+    try {
+      const response = await articleService.pagination(query, options);
+      dispatch(slice.actions.getDatasSuccess(response));
+    } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
   };

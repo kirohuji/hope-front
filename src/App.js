@@ -49,30 +49,37 @@ import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 // ----------------------------------------------------------------------
 
 import { Capacitor } from '@capacitor/core';
+import { useEffect } from 'react';
 
 export default function App() {
   // const charAt = `
 
-  // ░░░    ░░░ 
-  // ▒▒▒▒  ▒▒▒▒ 
-  // ▒▒ ▒▒▒▒ ▒▒ 
-  // ▓▓  ▓▓  ▓▓ 
-  // ██      ██ 
-  
+  // ░░░    ░░░
+  // ▒▒▒▒  ▒▒▒▒
+  // ▒▒ ▒▒▒▒ ▒▒
+  // ▓▓  ▓▓  ▓▓
+  // ██      ██
+
   // `;
 
   // console.info(`%c${charAt}`, 'color: #5BE49B');
 
   useScrollToTop();
 
-  if (Capacitor.getPlatform() === 'ios') {
-    console.log('iOS!');
-    import('./ios.css')
-  } else if (Capacitor.getPlatform() === 'android') {
-    console.log('Android!');
-  } else {
-    console.log('Web!');
-  }
+  // useEffect(() => {
+  //   if (Capacitor.getPlatform() === 'ios') {
+  //     console.log('iOS!');
+  //     // alert('iOS');
+  //     import('./ios.css');
+  //   } else if (Capacitor.getPlatform() === 'android') {
+  //     console.log('Android!');
+  //     // alert('Android');
+  //   } else {
+  //     console.log('Web!');
+  //     import('./web.css');
+  //     alert('Web');
+  //   }
+  // });
 
   return (
     <AuthProvider>

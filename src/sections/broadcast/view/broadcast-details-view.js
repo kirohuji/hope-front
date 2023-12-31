@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
@@ -17,7 +18,15 @@ import { useSettingsContext } from 'src/components/settings';
 import { broadcastService } from 'src/composables/context-provider';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getData, getParticipants, deleteParticipant, updateParticipantStatus, getParticipantsCount, addParticipants } from 'src/redux/slices/broadcast';
+import {
+  getData,
+  getParticipants,
+  deleteParticipant,
+  updateParticipantStatus,
+  getParticipantsCount,
+  addParticipants,
+  updateDataPublishedStatus,
+} from 'src/redux/slices/broadcast';
 import { useSnackbar } from 'src/components/snackbar';
 import BoradcastContactsDialog from '../boradcast-contacts-dialog';
 import BroadcastDetailsBookers from '../broadcast-details-bookers';
@@ -43,10 +52,10 @@ export const TOUR_PUBLISH_OPTIONS = [
 
 export default function BroadcastDetailsView() {
   const { enqueueSnackbar } = useSnackbar();
-  const [participantsCount, setParticipantsCount] = useState([])
   const [openContacts, setOpenContacts] = useState(false);
   const { user } = useAuthContext();
   const { details } = useSelector((state) => state.broadcast);
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const handleOpenContacts = () => {
     setOpenContacts(true);
@@ -54,7 +63,6 @@ export default function BroadcastDetailsView() {
 
   const handleCloseContacts = () => {
     setOpenContacts(false);
-    // onRefresh()
   };
   const settings = useSettingsContext();
 
@@ -62,95 +70,125 @@ export default function BroadcastDetailsView() {
 
   const { id, selectedTab } = params;
 
-  const [currentBroadcast, setCurrentBroadcast] = useState(null)
+  const [currentBroadcast, setCurrentBroadcast] = useState(null);
 
   const [publish, setPublish] = useState(currentBroadcast?.publish);
 
   const [currentTab, setCurrentTab] = useState('content');
 
-  const handleChangeTab = useCallback((event, newValue) => {
-    setCurrentTab(newValue);
-  }, []);
-
   const handleChangePublish = useCallback((newValue) => {
     setPublish(newValue);
   }, []);
 
-  const onRefresh = useCallback(async (target) => {
-    console.log('刷新')
-    if(!target){
-      dispatch(getParticipants(id))
-      dispatch(getParticipantsCount(id));
-      return;
-    }
-    switch (target.type) {
-      case 'delete':
-        dispatch(deleteParticipant({
-          data: target.data,
-          id,
-        }))
-        break;
-      case 'add':
-        dispatch(addParticipants({
-          datas: target.datas,
-          id,
-        }))
-        break;
-      case 'signIn':
-      case 'signOut':
-        dispatch(updateParticipantStatus({
-          data: target.data,
-          id,
-          status: target.type
-        }))
-        break;
-      default:
-        dispatch(getParticipants(id))
+  const onRefresh = useCallback(
+    async (target) => {
+      if (!target) {
+        dispatch(getParticipants(id));
         dispatch(getParticipantsCount(id));
-        break;
-    }
-  }, [dispatch, id])
+        return;
+      }
+      switch (target.type) {
+        case 'delete':
+          dispatch(
+            deleteParticipant({
+              data: target.data,
+              id,
+            })
+          );
+          break;
+        case 'add':
+          dispatch(
+            addParticipants({
+              datas: target.datas,
+              id,
+            })
+          );
+          dispatch(getParticipantsCount(id));
+          break;
+        case 'signIn':
+        case 'signOut':
+          dispatch(
+            updateParticipantStatus({
+              data: target.data,
+              id,
+              status: target.type,
+            })
+          );
+          break;
+        default:
+          dispatch(getParticipants(id));
+          dispatch(getParticipantsCount(id));
+          break;
+      }
+    },
+    [dispatch, id]
+  );
 
   const refresh = useCallback(async () => {
+    setLoading(true);
     try {
       if (currentTab === 'content') {
-        dispatch(getData({
-          id,
-          user
-        }))
+        dispatch(
+          getData({
+            id,
+            user,
+          })
+        );
       } else {
-        dispatch(getParticipants(id))
+        dispatch(getParticipants(id));
       }
       dispatch(getParticipantsCount(id));
-      // const getUsersCount = await broadcastService.getUsersCount({
-      //   _id: id
-      // })
-      // setParticipantsCount(getUsersCount);
+      setLoading(false);
     } catch (error) {
-      console.log(error)
+      setLoading(false);
+      enqueueSnackbar('获取数据失败,请重试');
     }
-  }, [currentTab, id, dispatch, user])
+  }, [currentTab, dispatch, id, user, enqueueSnackbar]);
+
+  const handleChangeTab = useCallback((event, newValue) => {
+    setLoading(true);
+    setCurrentTab(newValue);
+  }, []);
 
   const handlePublish = useCallback(async () => {
-    await broadcastService.publish({
-      broadcast_id: id
-    })
-    refresh(id)
-    enqueueSnackbar('发布成功');
-  }, [enqueueSnackbar, refresh, id])
+    try {
+      await broadcastService.publish({
+        broadcast_id: id,
+      });
+      dispatch(
+        updateDataPublishedStatus({
+          id,
+          published: true,
+        })
+      );
+      // refresh(id);
+      enqueueSnackbar('发布成功');
+    } catch (e) {
+      enqueueSnackbar('发布失败');
+    }
+  }, [dispatch, enqueueSnackbar, id]);
 
   const handleCancelPublish = useCallback(async () => {
-    await broadcastService.unpublish({
-      broadcast_id: id
-    })
-    refresh(id)
-    enqueueSnackbar('取消发布成功');
-  }, [enqueueSnackbar, refresh, id])
+    try {
+      await broadcastService.unpublish({
+        broadcast_id: id,
+      });
+      dispatch(
+        updateDataPublishedStatus({
+          id,
+          published: false,
+        })
+      );
+      enqueueSnackbar('取消发布成功');
+    } catch (e) {
+      enqueueSnackbar('取消发布失败');
+    }
+  }, [dispatch, enqueueSnackbar, id]);
 
   useEffect(() => {
-    console.log('获取')
+    console.log('获取');
     if (id) {
-      refresh(id)
+      refresh(id);
     }
   }, [refresh, id]);
 
@@ -170,7 +208,7 @@ export default function BroadcastDetailsView() {
           label={tab.label}
           icon={
             tab.value === 'participants' ? (
-              <Label variant="filled">{ details.count[id] || 0}</Label>
+              <Label variant="filled">{details.count[id] || 0}</Label>
             ) : (
               ''
             )
@@ -182,10 +220,9 @@ export default function BroadcastDetailsView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-
       <Backdrop
         sx={{ background: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={!details.byId[id]}
+        open={loading}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -198,39 +235,43 @@ export default function BroadcastDetailsView() {
         publishOptions={TOUR_PUBLISH_OPTIONS}
       />
       {renderTabs}
+      {currentTab === 'content' && details.byId[id] && (
+        <BroadcastDetailsContent broadcast={details.byId[id]} />
+      )}
 
-      {currentTab === 'content' && details.byId[id] && <BroadcastDetailsContent broadcast={details.byId[id]} />}
-
-      {currentTab === 'participants' && <BroadcastDetailsBookers participants={details.participantsBy && details.participantsBy[id] || []} onRefresh={onRefresh} />}
+      {currentTab === 'participants' && (
+        <BroadcastDetailsBookers
+          participants={(details.participantsBy && details.participantsBy[id]) || []}
+          onRefresh={onRefresh}
+        />
+      )}
       <Divider sx={{ m: 2 }} />
       <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
-        {/* <Button variant="contained" color="primary">
-          联系负责人
-        </Button> */}
-        {
-          details.byId[id]?.isAdmin && <Button variant="contained" color="secondary" onClick={() => handleOpenContacts()}>
+        {details.byId[id]?.isAdmin && (
+          <Button variant="contained" color="secondary" onClick={() => handleOpenContacts()}>
             添加参加者
           </Button>
-        }
-        {
-          details.byId[id]?.isAdmin && !details.byId[id]?.published && <Button variant="contained" color="success" onClick={() => handlePublish()}>
+        )}
+        {details.byId[id]?.isAdmin && !details.byId[id]?.published && (
+          <Button variant="contained" color="success" onClick={() => handlePublish()}>
             发布公告
           </Button>
-        }
-        {
-          details.byId[id]?.isAdmin && details.byId[id]?.published && <Button variant="contained" color="success" onClick={() => handleCancelPublish()}>
+        )}
+        {details.byId[id]?.isAdmin && details.byId[id]?.published && (
+          <Button variant="contained" color="error" onClick={() => handleCancelPublish()}>
             取消发布
           </Button>
-        }
+        )}
       </Stack>
-      {
-        details.byId[id] && <BoradcastContactsDialog
+
+      {details.byId[id] && (
+        <BoradcastContactsDialog
           current={details.byId[id]}
           open={openContacts}
           onUpdateRefresh={onRefresh}
           onClose={handleCloseContacts}
         />
-      }
+      )}
     </Container>
   );
 }

@@ -18,7 +18,7 @@ import { useDebounce } from 'src/hooks/use-debounce';
 import { useSnackbar } from 'src/components/snackbar';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getDatas } from 'src/redux/slices/article';
+import { pagination } from 'src/redux/slices/article';
 // import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
@@ -31,12 +31,12 @@ import ArticleListHorizontal from '../article-list-horizontal';
 
 const defaultFilters = {
   published: 'all',
-  title: ''
+  title: '',
 };
 
 ArticleListView.propTypes = {
   book: PropTypes.object,
-}
+};
 
 const TABS = [
   {
@@ -55,12 +55,12 @@ const TABS = [
 // ----------------------------------------------------------------------
 
 // eslint-disable-next-line react/prop-types
-export default function ArticleListView ({ book }) {
+export default function ArticleListView({ book }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const settings = useSettingsContext();
 
-  const { data } = useSelector((state) => state.article);
+  const { data, total } = useSelector((state) => state.article);
 
   const dispatch = useDispatch();
 
@@ -70,35 +70,65 @@ export default function ArticleListView ({ book }) {
 
   const [filters, setFilters] = useState(defaultFilters);
 
+  const [page, setPage] = useState(1);
+
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [searchQuery, setSearchQuery] = useState('');
 
   const debouncedFilters = useDebounce(filters);
 
-  const onRefresh = useCallback(async (selector = {}, options = {}) => {
-    let published = 'all';
-    if (debouncedFilters.published !== 'all') {
-      published = debouncedFilters.published === "hasPublished"
-    } else {
-      published = ''
-    }
-    try {
-      dispatch(getDatas({
-        ...{
-          ...selector,
-          title: debouncedFilters.title,
-          published,
-          book_id: book ? book._id : '',
-        },
-        ...options
-      }))
-    } catch (error) {
-      enqueueSnackbar(error.message);
-    }
-  }, [book, debouncedFilters, dispatch, enqueueSnackbar])
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const onRefresh = useCallback(
+    async (selector = {}, options = {}) => {
+      let published = 'all';
+      if (debouncedFilters.published !== 'all') {
+        published = debouncedFilters.published === 'hasPublished';
+      } else {
+        published = '';
+      }
+      try {
+        setLoading(true);
+        await dispatch(
+          pagination(
+            {
+              ...selector,
+              title: {
+                $regex: debouncedFilters.title,
+                $options: 'i',
+              },
+              published,
+              book_id: book ? book._id : '',
+            },
+            {
+              skip: (page - 1) * rowsPerPage,
+              limit: rowsPerPage,
+              ...options,
+            }
+          )
+        );
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        enqueueSnackbar(error.message);
+      }
+    },
+    [
+      book,
+      debouncedFilters.published,
+      debouncedFilters.title,
+      dispatch,
+      enqueueSnackbar,
+      page,
+      rowsPerPage,
+    ]
+  );
 
   useEffect(() => {
-    onRefresh()
+    onRefresh();
   }, [onRefresh]);
 
   const handleSortBy = useCallback((newValue) => {
@@ -125,35 +155,37 @@ export default function ArticleListView ({ book }) {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      {!book ? <CustomBreadcrumbs
-        heading="文章列表"
-        links={[
-          {
-            name: 'Dashboard',
-            href: paths.dashboard.root,
-          },
-          {
-            name: 'Blog',
-            href: paths.dashboard.article.root,
-          },
-          {
-            name: 'List',
-          },
-        ]}
-        action={
-          <Button
-            component={RouterLink}
-            href={paths.dashboard.article.new}
-            variant="contained"
-            startIcon={<Iconify icon="mingcute:add-line" />}
-          >
-            新建文章
-          </Button>
-        }
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      /> :
+      {!book ? (
+        <CustomBreadcrumbs
+          heading="文章列表"
+          links={[
+            {
+              name: 'Dashboard',
+              href: paths.dashboard.root,
+            },
+            {
+              name: 'Blog',
+              href: paths.dashboard.article.root,
+            },
+            {
+              name: 'List',
+            },
+          ]}
+          action={
+            <Button
+              component={RouterLink}
+              href={paths.dashboard.article.new}
+              variant="contained"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+            >
+              新建文章
+            </Button>
+          }
+          sx={{
+            mb: { xs: 3, md: 5 },
+          }}
+        />
+      ) : (
         <Stack
           spacing={3}
           justifyContent="flex-end"
@@ -171,7 +203,8 @@ export default function ArticleListView ({ book }) {
           >
             新建文章
           </Button>
-        </Stack>}
+        </Stack>
+      )}
 
       <Stack
         spacing={3}
@@ -199,8 +232,7 @@ export default function ArticleListView ({ book }) {
             }}
           />
         </Stack>
-        {
-          /**
+        {/**
           <ArticleSearch
             query={debouncedQuery}
             results={searchResults}
@@ -208,8 +240,7 @@ export default function ArticleListView ({ book }) {
             loading={searchLoading}
             // hrefItem={(title) => paths.dashboard.article.details(title)}
           />
-           */
-        }
+           */}
 
         {/**  <ArticleSort sort={sortBy} onSort={handleSortBy} sortOptions={POST_SORT_OPTIONS} /> */}
       </Stack>
@@ -244,7 +275,16 @@ export default function ArticleListView ({ book }) {
         ))}
       </Tabs>
 
-      {data && <ArticleListHorizontal onRefresh={() => onRefresh()} book={book} articles={data} loading={loading} />}
+      <ArticleListHorizontal
+        onRefresh={() => onRefresh()}
+        book={book}
+        articles={data}
+        total={total}
+        page={page}
+        defaultPage={page}
+        onChange={handlePageChange}
+        loading={loading}
+      />
     </Container>
   );
 }

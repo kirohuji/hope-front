@@ -26,7 +26,7 @@ import { articleService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
-export default function ArticleItemHorizontal ({ onRefresh, article, book }) {
+export default function ArticleItemHorizontal({ onRefresh, article, book }) {
   const popover = usePopover();
 
   const router = useRouter();
@@ -42,7 +42,7 @@ export default function ArticleItemHorizontal ({ onRefresh, article, book }) {
     totalShares,
     totalComments,
     description,
-    _id
+    _id,
   } = article;
 
   return (
@@ -55,9 +55,9 @@ export default function ArticleItemHorizontal ({ onRefresh, article, book }) {
           }}
         >
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-            <Label variant="soft" color={article.public ? 'info' : 'default'}>
-              {article.public ? "已发布" : "未发布"}
-            </Label>
+            {/* <Label variant="soft" color={article.public ? 'info' : 'default'}>
+              {article.public ? '已发布' : '未发布'}
+            </Label> */}
 
             <Box component="span" sx={{ typography: 'caption', color: 'text.disabled' }}>
               {fDate(date)}
@@ -65,7 +65,11 @@ export default function ArticleItemHorizontal ({ onRefresh, article, book }) {
           </Stack>
 
           <Stack spacing={1} flexGrow={1}>
-            <Link color="inherit" component={RouterLink} href={paths.dashboard.article.details(_id)}>
+            <Link
+              color="inherit"
+              component={RouterLink}
+              href={paths.dashboard.article.details(_id)}
+            >
               <TextMaxLine variant="subtitle2" line={2}>
                 {title}
               </TextMaxLine>
@@ -81,8 +85,8 @@ export default function ArticleItemHorizontal ({ onRefresh, article, book }) {
               <Iconify icon="eva:more-horizontal-fill" />
             </IconButton>
 
-            {
-              false && <Stack
+            {false && (
+              <Stack
                 spacing={1.5}
                 flexGrow={1}
                 direction="row"
@@ -107,17 +111,19 @@ export default function ArticleItemHorizontal ({ onRefresh, article, book }) {
                   {fShortenNumber(totalShares)}
                 </Stack>
               </Stack>
-            }
+            )}
           </Stack>
         </Stack>
 
         {mdUp && (
           <Box sx={{ width: 180, height: 240, position: 'relative', flexShrink: 0, p: 1 }}>
-            {author && <Avatar
-              alt={author?.name}
-              src={author?.avatarUrl}
-              sx={{ position: 'absolute', top: 16, right: 16, zIndex: 9 }}
-            />}
+            {author && (
+              <Avatar
+                alt={author?.name}
+                src={author?.avatarUrl}
+                sx={{ position: 'absolute', top: 16, right: 16, zIndex: 9 }}
+              />
+            )}
             <Image alt={title} src={coverUrl} sx={{ height: 1, borderRadius: 1.5 }} />
           </Box>
         )}
@@ -156,11 +162,10 @@ export default function ArticleItemHorizontal ({ onRefresh, article, book }) {
         <MenuItem
           onClick={async () => {
             await articleService.delete({
-              _id
-            })
-            onRefresh()
+              _id,
+            });
+            onRefresh();
             popover.onClose();
-
           }}
           sx={{ color: 'error.main' }}
         >
@@ -178,7 +183,8 @@ ArticleItemHorizontal.propTypes = {
   article: PropTypes.shape({
     author: PropTypes.object,
     coverUrl: PropTypes.string,
-    date: PropTypes.instanceOf(Date),
+    date: PropTypes.any,
+    // date: PropTypes.instanceOf(Date),
     description: PropTypes.string,
     public: PropTypes.bool,
     title: PropTypes.string,

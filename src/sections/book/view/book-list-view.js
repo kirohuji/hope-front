@@ -9,6 +9,7 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 import Pagination from '@mui/material/Pagination';
+import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 // hooks
 import { useDebounce } from 'src/hooks/use-debounce';
@@ -50,6 +51,8 @@ export default function BookListView() {
 
   const { data, total } = useSelector((state) => state.book);
 
+  const [loading, setLoading] = useState(true);
+
   const dispatch = useDispatch();
 
   const [page, setPage] = useState(1);
@@ -73,8 +76,9 @@ export default function BookListView() {
 
   const onRefresh = useCallback(
     async (selector = {}, options = {}) => {
+      setLoading(true);
       try {
-        dispatch(
+        await dispatch(
           pagination(
             {
               ...selector,
@@ -90,7 +94,9 @@ export default function BookListView() {
             }
           )
         );
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
         enqueueSnackbar(error.message);
       }
     },
@@ -201,9 +207,25 @@ export default function BookListView() {
         {canReset && renderResults}
       </Stack>
 
-      {notFound && <EmptyContent filled title="No Data" sx={{ py: 10 }} />}
+      {notFound && <EmptyContent filled title="没有数据" sx={{ py: 10 }} />}
 
-      <BookList books={data} refresh={() => onRefresh()} />
+      {loading ? (
+        <Box
+          sx={{
+            zIndex: 10,
+            backgroundColor: '#ffffffc4',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <BookList books={data} refresh={() => onRefresh()} />
+      )}
       <Box
         sx={{
           display: 'flex',
