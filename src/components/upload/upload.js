@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // assets
 import { UploadIllustration } from 'src/assets/illustrations';
+import { fData } from 'src/utils/format-number';
 //
 import Iconify from '../iconify';
 //
@@ -17,6 +18,17 @@ import MultiFilePreview from './preview-multi-file';
 import SingleFilePreview from './preview-single-file';
 
 // ----------------------------------------------------------------------
+
+function sizeValidator(file) {
+  if (file.size > 3145728) {
+    return {
+      code: 'file-too-large',
+      message: `文件不能超过 ${fData(3145728)} !`,
+    };
+  }
+
+  return null;
+}
 
 export default function Upload({
   disabled,
@@ -36,6 +48,7 @@ export default function Upload({
   ...other
 }) {
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
+    validator: sizeValidator,
     multiple,
     disabled,
     ...other,

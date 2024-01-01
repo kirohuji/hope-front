@@ -152,7 +152,7 @@ export default function BroadcastDetailsContent({ broadcast }) {
           <Box component="span" sx={{ typography: 'body2', color: 'text.secondary' }}>
             负责人:
           </Box>
-          {leaders && leaders.map((tourGuide) => tourGuide.name).join(', ')}
+          {leaders && leaders && leaders.map((leader) => leader.username).join(', ')}
         </Stack>
       </Stack>
     </>

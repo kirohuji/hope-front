@@ -4,30 +4,20 @@ import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import {
-  Stack,
-  Button,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from '@mui/material';
+import { Stack, Button, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // assets
-import FormProvider, {
-  RHFCheckbox,
-  RHFEditor,
-  RHFTextField,
-} from 'src/components/hook-form';
+import FormProvider, { RHFCheckbox, RHFEditor, RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
 CardForm.propTypes = {
   onClose: PropTypes.func,
   onCreate: PropTypes.func,
-  item: PropTypes.object
+  item: PropTypes.object,
 };
 
-export default function CardForm ({ onCreate, item, onClose }) {
+export default function CardForm({ onCreate, item, onClose }) {
   const NewSchema = Yup.object().shape({
     label: Yup.string().required('请输入问题标题'),
     content: Yup.string().required('请输入问题内容'),
@@ -67,7 +57,7 @@ export default function CardForm ({ onCreate, item, onClose }) {
         <DialogTitle>添加一个新的问题</DialogTitle>
         <DialogContent dividers>
           <Stack spacing={3} sx={{ mt: 1 }}>
-            <RHFTextField label="标题" simple name="label" />
+            <RHFTextField label="标题" name="label" />
             <RHFEditor label="内容" simple name="content" />
 
             <RHFCheckbox name="necessary" label="是否必答" sx={{ mt: 3 }} />

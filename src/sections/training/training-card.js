@@ -115,7 +115,7 @@ PostContent.propTypes = {
 export function PostContent({ label, view, comment, share, createdAt, index }) {
   const isDesktop = useResponsive('up', 'md');
 
-  const linkTo = paths.post.view(label);
+  // const linkTo = paths.post.view(label);
 
   const latestPostLarge = index === 0;
 
@@ -156,7 +156,7 @@ export function PostContent({ label, view, comment, share, createdAt, index }) {
         {fDate(createdAt)}
       </Typography>
 
-      <Link component={RouterLink} to={linkTo} color="inherit">
+      <Link component={RouterLink} color="inherit">
         <TextMaxLine
           variant={isDesktop && latestPostLarge ? 'h5' : 'subtitle2'}
           line={2}

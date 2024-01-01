@@ -3,8 +3,13 @@ import * as Yup from 'yup';
 import { useCallback, useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
+import 'dayjs/locale/zh-cn';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import moment from 'moment';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 // import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
@@ -26,7 +31,8 @@ import { useRouter } from 'src/routes/hook';
 import { useSnackbar } from 'src/components/snackbar';
 import { StaticDatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { fData } from 'src/utils/format-number';
 import FormProvider, {
   RHFEditor,
   RHFUpload,
@@ -63,6 +69,8 @@ const CustomPickersDay = styled(PickersDay, {
 }));
 
 export default function ArticleNewEditForm({ book, currentDates, currentArticle }) {
+  const loading = useBoolean(false);
+
   const [activeStep, setActiveStep] = useState(0);
 
   const router = useRouter();
@@ -140,7 +148,10 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
         onNextStep();
       } else {
         if (!isEdit) {
-          const article = await articleService.post(data);
+          const article = await articleService.post({
+            ...data,
+            questions,
+          });
           if (book) {
             await bookService.addBookArticle({
               book_id: book._id,
@@ -192,21 +203,22 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
     // }
     return <CustomPickersDay isContain={false} {...pickersDayProps} />;
   };
-  const handleDrop = useCallback(
-    async (acceptedFiles) => {
+  const handleDrop = async (acceptedFiles) => {
+    loading.onTrue();
+    try {
       const file = acceptedFiles[0];
       const formData = new FormData();
       formData.append('file', file);
       const { link } = await fileService.upload(formData);
       if (file) {
         setValue('coverUrl', link, { shouldValidate: true });
-        // setValue('photoURL', Object.assign(file, {
-        //   preview: link
-        // }), { shouldValidate: true });
       }
-    },
-    [setValue]
-  );
+      loading.onFalse();
+    } catch (e) {
+      enqueueSnackbar('封面上传失败');
+      loading.onFalse();
+    }
+  };
 
   const handleRemoveFile = useCallback(() => {
     setValue('coverUrl', null);
@@ -223,8 +235,9 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
             标题, 基本描述, 图片...
           </Typography>
           <div>
-            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="zh-cn">
+            <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="zh-cn">
               <StaticDatePicker
+                timezone="Asia/Shanghai"
                 orientation="portrait"
                 className="whiteBg"
                 openTo="day"
@@ -241,7 +254,8 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
                 }
                 displayStaticWrapperAs="desktop"
                 onChange={(newValue) => {
-                  setValue('date', newValue);
+                  // console.log('newValue', newValue);
+                  setValue('date', moment(newValue).utcOffset(8).format('YYYY-MM-DD HH:mm:ss'));
                 }}
                 renderInput={() => null}
               />
@@ -264,13 +278,49 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
               <RHFEditor simple name="content" />
             </Stack>
 
-            <Stack spacing={1.5}>
+            <Stack spacing={1.5} sx={{ position: 'relative' }}>
               <Typography variant="subtitle2">封面</Typography>
+              {loading.value && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 10,
+                    backgroundColor: '#ffffffc4',
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              )}
               <RHFUpload
                 name="coverUrl"
-                maxSize={3145728}
                 onDrop={handleDrop}
+                // maxSize={3145728}
                 onDelete={handleRemoveFile}
+                onDropRejected={() => {
+                  loading.onFalse();
+                }}
+                helperText={
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      mt: 3,
+                      mx: 'auto',
+                      display: 'block',
+                      textAlign: 'center',
+                      color: 'text.disabled',
+                    }}
+                  >
+                    允许 *.jpeg, *.jpg, *.png, *.gif
+                    <br /> max size of {fData(3145728)}
+                  </Typography>
+                }
               />
             </Stack>
           </Stack>
