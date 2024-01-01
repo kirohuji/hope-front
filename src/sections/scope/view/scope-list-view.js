@@ -159,7 +159,7 @@ export default function ScopeListView() {
       >
         <Pagination
           shape="rounded"
-          count={total}
+          count={Math.ceil(total / rowsPerPage)}
           variant="outlined"
           page={page}
           onChange={handlePageChange}

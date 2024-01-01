@@ -82,7 +82,7 @@ export default function BookList({ books, refresh }) {
         ))}
       </Box>
 
-      {books.length > 8 && (
+      {/* {books.length > 8 && (
         <Pagination
           count={8}
           sx={{
@@ -92,7 +92,7 @@ export default function BookList({ books, refresh }) {
             },
           }}
         />
-      )}
+      )} */}
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

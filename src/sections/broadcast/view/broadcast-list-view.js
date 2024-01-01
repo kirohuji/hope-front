@@ -244,7 +244,7 @@ export default function BroadcastListView() {
       >
         <Pagination
           shape="rounded"
-          count={total}
+          count={Math.ceil(total / rowsPerPage)}
           defaultPage={page}
           variant="outlined"
           page={page}

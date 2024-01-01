@@ -281,6 +281,7 @@ export default function ArticleListView({ book }) {
         articles={data}
         total={total}
         page={page}
+        rowsPerPage={rowsPerPage}
         defaultPage={page}
         onChange={handlePageChange}
         loading={loading}

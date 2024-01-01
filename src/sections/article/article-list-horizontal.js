@@ -16,6 +16,7 @@ export default function ArticleListHorizontal({
   articles,
   loading,
   total,
+  rowsPerPage,
 }) {
   const renderSkeleton = (
     <>
@@ -54,7 +55,7 @@ export default function ArticleListHorizontal({
 
       {/* {articles.length > 8 && ( */}
       <Pagination
-        count={total}
+        count={Math.ceil(total / rowsPerPage)}
         shape="rounded"
         defaultPage={page}
         page={page}
@@ -80,4 +81,5 @@ ArticleListHorizontal.propTypes = {
   book: PropTypes.object,
   onChange: PropTypes.func,
   page: PropTypes.any,
+  rowsPerPage: PropTypes.any,
 };

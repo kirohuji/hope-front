@@ -79,7 +79,7 @@ export default function BroadcastList({ broadcasts, refresh }) {
         ))}
       </Box>
 
-      {broadcasts.length > 8 && (
+      {/* {broadcasts.length > 8 && (
         <Pagination
           count={8}
           sx={{
@@ -89,7 +89,7 @@ export default function BroadcastList({ broadcasts, refresh }) {
             },
           }}
         />
-      )}
+      )} */}
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
