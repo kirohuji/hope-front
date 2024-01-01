@@ -4,6 +4,7 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import LoadingButton from '@mui/lab/LoadingButton';
 // routes
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
@@ -35,7 +36,7 @@ import BroadcastDetailsToolbar from '../broadcast-details-toolbar';
 
 export const TOUR_DETAILS_TABS = [
   { value: 'content', label: '内容' },
-  { value: 'participants', label: '参加者列表' },
+  { value: 'participants', label: '参加者列表', auth: ['BroadcastListPersonSignOrDelete'] },
 ];
 
 export const TOUR_PUBLISH_OPTIONS = [
@@ -56,6 +57,7 @@ export default function BroadcastDetailsView() {
   const { user } = useAuthContext();
   const { details } = useSelector((state) => state.broadcast);
   const [loading, setLoading] = useState(true);
+  const [buttonLoading, setButtonLoading] = useState(false);
   const dispatch = useDispatch();
   const handleOpenContacts = () => {
     setOpenContacts(true);
@@ -151,6 +153,7 @@ export default function BroadcastDetailsView() {
   }, []);
 
   const handlePublish = useCallback(async () => {
+    setButtonLoading(true);
     try {
       await broadcastService.publish({
         broadcast_id: id,
@@ -162,14 +165,17 @@ export default function BroadcastDetailsView() {
         })
       );
       // refresh(id);
+      setButtonLoading(false);
       enqueueSnackbar('发布成功');
     } catch (e) {
+      setButtonLoading(false);
       enqueueSnackbar('发布失败');
     }
   }, [dispatch, enqueueSnackbar, id]);
 
   const handleCancelPublish = useCallback(async () => {
     try {
+      setButtonLoading(true);
       await broadcastService.unpublish({
         broadcast_id: id,
       });
@@ -180,8 +186,10 @@ export default function BroadcastDetailsView() {
         })
       );
       enqueueSnackbar('取消发布成功');
+      setButtonLoading(false);
     } catch (e) {
       enqueueSnackbar('取消发布失败');
+      setButtonLoading(false);
     }
   }, [dispatch, enqueueSnackbar, id]);
 
@@ -248,19 +256,34 @@ export default function BroadcastDetailsView() {
       <Divider sx={{ m: 2 }} />
       <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
         {details.byId[id]?.isAdmin && (
-          <Button variant="contained" color="secondary" onClick={() => handleOpenContacts()}>
+          <LoadingButton
+            variant="contained"
+            color="secondary"
+            onClick={() => handleOpenContacts()}
+            loading={loading}
+          >
             添加参加者
-          </Button>
+          </LoadingButton>
         )}
         {details.byId[id]?.isAdmin && !details.byId[id]?.published && (
-          <Button variant="contained" color="success" onClick={() => handlePublish()}>
+          <LoadingButton
+            variant="contained"
+            color="success"
+            onClick={() => handlePublish()}
+            loading={buttonLoading}
+          >
             发布公告
-          </Button>
+          </LoadingButton>
         )}
         {details.byId[id]?.isAdmin && details.byId[id]?.published && (
-          <Button variant="contained" color="error" onClick={() => handleCancelPublish()}>
+          <LoadingButton
+            variant="contained"
+            color="error"
+            onClick={() => handleCancelPublish()}
+            loading={buttonLoading}
+          >
             取消发布
-          </Button>
+          </LoadingButton>
         )}
       </Stack>
 

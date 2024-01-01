@@ -282,7 +282,7 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
   const isNotFound = !!searchContacts;
 
   const renderOrganizationsItem = (contact, id, checked) => (
-    <Box>
+    <Box key={id}>
       <ListItem
         disableGutters
         secondaryAction={
@@ -316,7 +316,7 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
         </ListItemAvatar>
 
         <ListItemText
-          key={contact._id}
+          // key={contact._id}
           onClick={() => onChildren(contact)}
           sx={{ cursor: 'pointer' }}
           primaryTypographyProps={{ typography: 'subtitle2', sx: { mb: 0.25 } }}
@@ -356,13 +356,17 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
             isChecked =
               _.intersectionBy(
                 contact.users || [],
-                details.participantsBy[current._id].map((item) => ({ ...item, _id: item.user_id })),
+                (details?.participantsBy[current?._id] || []).map((item) => ({
+                  ...item,
+                  _id: item.user_id,
+                })),
                 '_id'
               ).length === (contact.users || []).length;
           } else {
             isChecked =
-              details.participantsBy[current._id].filter((person) => person.user_id === contact._id)
-                .length > 0;
+              (details?.participantsBy[current?._id] || []).filter(
+                (person) => person.user_id === contact._id
+              ).length > 0;
           }
           return renderOrganizationsItem(contact, id, isChecked);
         })}

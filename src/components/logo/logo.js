@@ -10,7 +10,7 @@ import Image from 'src/components/image';
 
 // ----------------------------------------------------------------------
 
-const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
+const Logo = forwardRef(({ only, disabledLink = false, sx, ...other }, ref) => {
   const theme = useTheme();
 
   const PRIMARY_LIGHT = theme.palette.primary.light;
@@ -42,7 +42,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
       {...other}
     >
       <Image
-        src="/favicon/facebook_cover_photo_1.png"
+        src={only ? '/favicon/package.png' : '/favicon/logo_transparent.png'}
         // ratio="4/3"
         // sx={{ height: 'unset', width: 'unset' }}
       />
@@ -94,6 +94,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
 });
 
 Logo.propTypes = {
+  only: PropTypes.bool,
   disabledLink: PropTypes.bool,
   sx: PropTypes.object,
 };

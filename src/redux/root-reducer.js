@@ -94,5 +94,6 @@ export const rootReducer = combineReducers({
   // article: persistReducer(articlePersistConfig, articleReducer),
   // book: persistReducer(bookPersistConfig, bookPersistConfig),
   file: persistReducer(filePersistConfig, fileReducer),
-  broadcast: persistReducer(broadcastPersistConfig, broadcastReducer),
+  // broadcast: persistReducer(broadcastPersistConfig, broadcastReducer),
+  broadcast: broadcastReducer,
 });

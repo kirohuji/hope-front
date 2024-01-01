@@ -57,8 +57,8 @@ export default function AccountPopover() {
   const handleLogout = async () => {
     try {
       await logout();
+      await router.replace('/auth/jwt/login');
       popover.onClose();
-      router.replace('/auth/jwt/login');
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Unable to logout!', { variant: 'error' });

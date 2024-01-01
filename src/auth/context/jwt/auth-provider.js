@@ -122,6 +122,7 @@ export function AuthProvider({ children }) {
       const accessToken = localStorage.getItem(STORAGE_KEY);
 
       if (accessToken) {
+        ddpclient.connect();
         await ddpclient.call('login', {
           resume: accessToken,
         });
@@ -224,7 +225,7 @@ export function AuthProvider({ children }) {
         roles,
         permissions,
       });
-
+      ddpclient.connect();
       getNotifications(user);
 
       dispatch({

@@ -16,6 +16,7 @@ import ConfirmDialog from 'src/components/confirm-dialog';
 import { useSnackbar } from 'src/components/snackbar';
 // components
 import Iconify from 'src/components/iconify';
+import Restricted from 'src/auth/guard/restricted';
 
 // routes
 import { paths } from 'src/routes/paths';
@@ -180,81 +181,83 @@ function BookerItem({ isOwner, participant, selected, onDelete, onSelected, onCh
             color: 'text.disabled',
           }}
         />
+        <Restricted to={['BroadcastListPersonSignOrDelete']}>
+          <Stack spacing={1} direction="row">
+            {true && (
+              <LoadingButton
+                size="small"
+                onClick={onSelected}
+                loading={loading}
+                color="error"
+                sx={{
+                  borderRadius: 1,
+                  bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+                  '&:hover': {
+                    bgcolor: (theme) => alpha(theme.palette.error.main, 0.16),
+                  },
+                }}
+              >
+                <Iconify
+                  width={18}
+                  icon={
+                    selected
+                      ? 'streamline:interface-logout-arrow-exit-frame-leave-logout-rectangle-right'
+                      : 'ph:hand'
+                  }
+                />
+              </LoadingButton>
+            )}
 
-        <Stack spacing={1} direction="row">
-          {true && (
+            {!isOwner && false && (
+              <LoadingButton
+                onClick={onChat}
+                size="small"
+                loading={loading}
+                color="info"
+                sx={{
+                  borderRadius: 1,
+                  bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
+                  '&:hover': {
+                    bgcolor: (theme) => alpha(theme.palette.info.main, 0.16),
+                  },
+                }}
+              >
+                <Iconify width={18} icon="solar:chat-round-dots-bold" />
+              </LoadingButton>
+            )}
+
             <LoadingButton
+              onClick={onDelete}
               size="small"
-              onClick={onSelected}
               loading={loading}
-              color="error"
+              color="primary"
               sx={{
                 borderRadius: 1,
-                bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
                 '&:hover': {
-                  bgcolor: (theme) => alpha(theme.palette.error.main, 0.16),
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.16),
                 },
               }}
             >
-              <Iconify
-                width={18}
-                icon={
-                  selected
-                    ? 'streamline:interface-logout-arrow-exit-frame-leave-logout-rectangle-right'
-                    : 'ph:hand'
-                }
-              />
+              <Iconify width={18} icon="fluent:delete-24-filled" />
             </LoadingButton>
-          )}
-
-          {!isOwner && false && (
-            <LoadingButton
-              onClick={onChat}
-              size="small"
-              loading={loading}
-              color="info"
-              sx={{
-                borderRadius: 1,
-                bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
-                '&:hover': {
-                  bgcolor: (theme) => alpha(theme.palette.info.main, 0.16),
-                },
-              }}
-            >
-              <Iconify width={18} icon="solar:chat-round-dots-bold" />
-            </LoadingButton>
-          )}
-
-          <LoadingButton
-            onClick={onDelete}
-            size="small"
-            loading={loading}
-            color="primary"
-            sx={{
-              borderRadius: 1,
-              bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-              '&:hover': {
-                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.16),
-              },
-            }}
-          >
-            <Iconify width={18} icon="fluent:delete-24-filled" />
-          </LoadingButton>
-        </Stack>
+          </Stack>
+        </Restricted>
       </Stack>
-
-      <LoadingButton
-        loading={loading}
-        size="small"
-        variant={selected ? 'text' : 'outlined'}
-        color={selected ? 'success' : 'inherit'}
-        startIcon={
-          selected ? <Iconify width={18} icon="eva:checkmark-fill" sx={{ mr: -0.75 }} /> : null
-        }
-        onClick={onSelected}
-      >
-        {selected ? '已签到' : '签到'}
-      </LoadingButton>
+      <Restricted to={['BroadcastListPersonSignOrDelete']}>
+        <LoadingButton
+          loading={loading}
+          size="small"
+          variant={selected ? 'text' : 'outlined'}
+          color={selected ? 'success' : 'inherit'}
+          startIcon={
+            selected ? <Iconify width={18} icon="eva:checkmark-fill" sx={{ mr: -0.75 }} /> : null
+          }
+          onClick={onSelected}
+        >
+          {selected ? '已签到' : '签到'}
+        </LoadingButton>
+      </Restricted>
     </Stack>
   );
 }
