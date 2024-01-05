@@ -233,9 +233,9 @@ export default function ArticleDetailsView({ onClose, articleId }) {
             </Typography>
           </Stack>
         )}
-        <Stack direction="row" sx={{ mb: 1, mt: 1 }}>
+        {/* <Stack direction="row" sx={{ mb: 1, mt: 1 }}>
           <Typography variant="h4">思考交互</Typography>
-        </Stack>
+        </Stack> */}
         {false && <ArticleCommentForm />}
 
         {false && <ArticleCommentList comments={article.comments} />}

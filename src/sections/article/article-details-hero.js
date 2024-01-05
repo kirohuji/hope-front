@@ -22,12 +22,12 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function ArticleDetailsHero ({ title, author, coverUrl, createdAt }) {
+export default function ArticleDetailsHero({ title, author, coverUrl, createdAt }) {
   const theme = useTheme();
 
   const smUp = useResponsive('up', 'sm');
 
-  const titleShow = title.replace(/\|\|\|/g, "\n");
+  const titleShow = title.replace(/\|\|\|/g, '\n');
   return (
     <Box
       sx={{
@@ -50,8 +50,10 @@ export default function ArticleDetailsHero ({ title, author, coverUrl, createdAt
             color: 'common.white',
             position: 'absolute',
             maxWidth: 480,
-            whiteSpace: "break-spaces",
+            whiteSpace: 'break-spaces',
             pt: { xs: 2, md: 8 },
+            bottom: 0,
+            pb: { xs: 2, md: 8 },
           }}
         >
           {titleShow}
@@ -90,8 +92,8 @@ export default function ArticleDetailsHero ({ title, author, coverUrl, createdAt
             </Stack>
           )}
 
-          {
-            false && <SpeedDial
+          {false && (
+            <SpeedDial
               direction={smUp ? 'left' : 'up'}
               ariaLabel="Share article"
               icon={<Iconify icon="solar:share-bold" />}
@@ -112,7 +114,7 @@ export default function ArticleDetailsHero ({ title, author, coverUrl, createdAt
                 />
               ))}
             </SpeedDial>
-          }
+          )}
         </Stack>
       </Container>
     </Box>
