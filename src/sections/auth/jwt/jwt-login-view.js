@@ -142,7 +142,7 @@ export default function JwtLoginView() {
       </Alert> */}
 
       <Alert severity="info" sx={{ mb: 3 }}>
-        遇到什么问题,欢迎及时反馈
+        遇到什么问题,欢迎及时反馈!
       </Alert>
       {renderForm}
     </FormProvider>
