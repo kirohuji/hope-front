@@ -144,7 +144,9 @@ export default function TrainingSearchDetailView() {
                 <div style={{ width: '142px' }}>
                   <TrainingCard post={book} />
                 </div>
-                <div style={{ margin: '15px 0px', width: 'calc(100% - 142px' }}>
+                <div
+                  style={{ margin: '15px 0px', width: 'calc(100% - 142px', position: 'relative' }}
+                >
                   <Typography variant="h9" style={{ fontWeight: '700' }}>
                     {book.label}
                   </Typography>
@@ -152,6 +154,30 @@ export default function TrainingSearchDetailView() {
                     style={{ fontSize: '12px' }}
                   >{`发布者:  ${book.createdUser?.displayName}(${book.createdUser?.realName})`}</div>
                   <div style={{ fontSize: '12px' }}>{`发布时间:  ${fDate(book.updatedAt)}`}</div>
+                  <LoadingButton
+                    variant="soft"
+                    loading={buttonLoading}
+                    color={bookUser.currentStatus === 'active' ? 'error' : 'inherit'}
+                    sx={{
+                      position: 'absolute',
+                      bottom: 0,
+                      borderRadius: '5%',
+                      width: '150px',
+                      padding: '8px',
+                    }}
+                    onClick={() =>
+                      bookUser.currentStatus === 'active' ? onDeactive() : onActive()
+                    }
+                  >
+                    <div
+                      style={{
+                        fontSize: '15px',
+                        fontWeight: '700',
+                      }}
+                    >
+                      {bookUser.currentStatus === 'active' ? '退出(正在阅读)' : '开始阅读'}
+                    </div>
+                  </LoadingButton>
                 </div>
               </div>
               <Box sx={{ margin: '15px 0 15px 15px' }}>
@@ -165,7 +191,7 @@ export default function TrainingSearchDetailView() {
               </Box>
             </Box>
             <Divider />
-            <Box sx={{ color: 'black' }}>
+            <Box sx={{ color: 'black', height: '90%' }}>
               <List>
                 {!isLoading &&
                   posts.map(
@@ -195,26 +221,6 @@ export default function TrainingSearchDetailView() {
                 width: '100%',
               }}
             >
-              <LoadingButton
-                variant="soft"
-                loading={buttonLoading}
-                color={bookUser.currentStatus === 'active' ? 'error' : 'inherit'}
-                sx={{
-                  borderRadius: '5%',
-                  width: '150px',
-                  padding: '8px',
-                }}
-                onClick={() => (bookUser.currentStatus === 'active' ? onDeactive() : onActive())}
-              >
-                <div
-                  style={{
-                    fontSize: '15px',
-                    fontWeight: '700',
-                  }}
-                >
-                  {bookUser.currentStatus === 'active' ? '退出(正在阅读)' : '开始阅读'}
-                </div>
-              </LoadingButton>
               {/* <Button
             variant="soft"
             to="/training"
