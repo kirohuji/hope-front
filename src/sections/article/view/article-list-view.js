@@ -106,6 +106,7 @@ export default function ArticleListView({ book }) {
             {
               skip: (page - 1) * rowsPerPage,
               limit: rowsPerPage,
+              sort: { date: -1 },
               ...options,
             }
           )
