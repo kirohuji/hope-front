@@ -16,17 +16,17 @@ export default function DashboardFooter() {
   const pathname = usePathname();
   React.useEffect(() => {
     switch (pathname) {
-      case '/dashboard/chat':
+      // case '/dashboard/chat':
+      //   dispatch(updateBottomNavigationActionValue(0));
+      //   break;
+      case '/dashboard/broadcast':
         dispatch(updateBottomNavigationActionValue(0));
         break;
-      case '/dashboard/broadcast':
+      case '/dashboard/calendar':
         dispatch(updateBottomNavigationActionValue(1));
         break;
-      case '/dashboard/calendar':
-        dispatch(updateBottomNavigationActionValue(2));
-        break;
       case '/dashboard/training/dashboard':
-        dispatch(updateBottomNavigationActionValue(3));
+        dispatch(updateBottomNavigationActionValue(2));
         break;
       default:
         dispatch(updateBottomNavigationActionValue(0));
@@ -53,12 +53,12 @@ export default function DashboardFooter() {
         {/**         <BottomNavigationAction label="工作台" icon={ICONS.kanban} /> */}
         {/* <BottomNavigationAction label="聊天" icon={ICONS.chat} component={Link} to="/dashboard/chat"/>
         <BottomNavigationAction label="文件" icon={ICONS.file} component={Link} to="/dashboard/file-manager"/> */}
-        <BottomNavigationAction
+        {/* <BottomNavigationAction
           label="聊天"
           icon={ICONS.chat}
           component={Link}
           to="/dashboard/chat"
-        />
+        /> */}
         <BottomNavigationAction
           label="活动"
           icon={ICONS.tour}
