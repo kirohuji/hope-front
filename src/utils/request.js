@@ -15,7 +15,7 @@ const removePending = (config) => {
 };
 
 const service = axios.create({
-  baseURL: 'http://localhost:3000/api/v1/',
+  baseURL: 'https://www.lourd.online/api/v1/',
   timeout: 180000,
 });
 service.interceptors.request.use(
