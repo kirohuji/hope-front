@@ -69,11 +69,11 @@ const TABS = [
     label: '聊天会话',
     count: 0,
   },
-  {
-    value: 'contacts',
-    label: ' 联系人',
-    count: 0,
-  },
+  // {
+  //   value: 'contacts',
+  //   label: ' 联系人',
+  //   count: 0,
+  // },
   {
     value: 'organizations',
     label: '组织架构',
@@ -180,7 +180,7 @@ export default function ChatView() {
   };
   const getDetails = useCallback(async () => {
     setConversationsLoading(true);
-    await dispatch(getConversations());
+    // await dispatch(getConversations());
     await dispatch(getConversation(selectedConversationId));
     await dispatch(getMessages(selectedConversationId, 0));
     setConversationsLoading(false);

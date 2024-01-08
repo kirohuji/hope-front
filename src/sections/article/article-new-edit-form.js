@@ -140,6 +140,53 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
     setActiveStep(activeStep + 1);
   };
 
+  const save = async (data) => {
+    if (!values.date) {
+      enqueueSnackbar('请选择日期');
+    }
+    try {
+      preview.onFalse();
+      if (!isEdit) {
+        const article = await articleService.post({
+          ...values,
+          questions,
+          ...data,
+        });
+        if (book) {
+          await bookService.addBookArticle({
+            book_id: book._id,
+            article_id: article._id,
+            date: values.date,
+          });
+        }
+      } else {
+        if (book) {
+          await bookService.updateBookArticle({
+            book_id: book._id,
+            article_id: currentArticle._id,
+            date: values.date,
+          });
+        }
+        await articleService.patch({
+          _id: currentArticle._id,
+          ...values,
+          questions,
+          ...data,
+        });
+      }
+      reset();
+      preview.onFalse();
+      enqueueSnackbar(currentArticle ? '更新成功!' : '创建成功!');
+      if (book) {
+        router.push(paths.dashboard.book.details.tab(book._id, 'chapter'));
+      } else {
+        router.push(paths.dashboard.article.root);
+      }
+    } catch (e) {
+      enqueueSnackbar(e.response.data.message);
+    }
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       preview.onFalse();
@@ -151,6 +198,7 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
           const article = await articleService.post({
             ...data,
             questions,
+            published: true,
           });
           if (book) {
             await bookService.addBookArticle({
@@ -171,6 +219,7 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
             _id: currentArticle._id,
             ...data,
             questions,
+            published: true,
           });
         }
         reset();
@@ -333,6 +382,20 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'right' }}>
+        <Button
+          onClick={() =>
+            save({
+              published: false,
+            })
+          }
+          color="warning"
+          variant="contained"
+          size="large"
+          loading={isSubmitting}
+          sx={{ mr: 2 }}
+        >
+          保存为草稿
+        </Button>
         <Button color="inherit" variant="outlined" size="large" onClick={preview.onTrue}>
           预览
         </Button>
