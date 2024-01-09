@@ -43,10 +43,17 @@ export default function JwtLoginView() {
   const returnTo = searchParams.get('returnTo');
 
   const password = useBoolean();
-
+  const phoneRegExp = /^(\+86)?(1[3-9][0-9])[0-9]{8}$/;
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
+    email: Yup.lazy((value) => {
+      if (value.indexOf('@') === -1) {
+        return Yup.string()
+          .required('请输入手机号或者电子邮件')
+          .matches(phoneRegExp, '手机号格式错误');
+      }
+      return Yup.string().required('请输入手机号或者电子邮件').email('电子邮件必须是有效的地址');
+    }),
+    password: Yup.string().required('请输入密码'),
   });
 
   const defaultValues = {
@@ -67,7 +74,9 @@ export default function JwtLoginView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await login?.(data.email, data.password);
+      const email = data.email.indexOf('@') === -1 ? `${data.email}@lourd.online` : data.email;
+
+      await login?.(email, data.password);
       if (returnTo) {
         router.push(returnTo);
       } else {
@@ -99,7 +108,7 @@ export default function JwtLoginView() {
     <Stack spacing={2.5}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
-      <RHFTextField name="email" label="电子邮件" />
+      <RHFTextField name="email" label="电子邮件 或者 手机号" />
 
       <RHFTextField
         name="password"

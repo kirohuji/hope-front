@@ -192,7 +192,7 @@ export default function TrainingSearchDetailView() {
             </Box>
             <Divider />
             <Box sx={{ color: 'black', height: '90%' }}>
-              <List>
+              <List sx={{ height: '90%', overflowY: 'auto', position: 'relative' }}>
                 {!isLoading &&
                   posts.map(
                     (item, index) =>
