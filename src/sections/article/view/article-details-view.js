@@ -69,6 +69,7 @@ export default function ArticleDetailsView({ onClose, articleId }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const getPost = useCallback(async (_id) => {
+    console.log('更新');
     try {
       const response = await articleService.get({
         _id,
