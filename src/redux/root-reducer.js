@@ -78,9 +78,15 @@ export const calenderPersistConfig = {
   keyPrefix: 'redux-',
 };
 
+export const chatPersistConfig = {
+  key: 'chat',
+  storage,
+  keyPrefix: 'redux-',
+};
+
 export const rootReducer = combineReducers({
   calendar: persistReducer(calenderPersistConfig, calendarReducer),
-  chat: chatReducer,
+  chat: persistReducer(chatPersistConfig, chatReducer),
   audio: audioReducer,
   trainning: persistReducer(trainningPersistConfig, trainningReducer),
   // notification: notificationReducer,

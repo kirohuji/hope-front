@@ -192,7 +192,7 @@ export default function AccountGeneral() {
               }}
             >
               <RHFTextField name="displayName" label="昵称" />
-              <RHFTextField name="email" label="电子邮件" />
+              <RHFTextField name="email" label="电子邮件" disabled />
               <RHFTextField name="phoneNumber" label="手机号码" />
               <RHFTextField name="address" label="详细地址" />
 

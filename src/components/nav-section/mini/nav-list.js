@@ -8,6 +8,7 @@ import { appBarClasses } from '@mui/material/AppBar';
 import { usePathname } from 'src/routes/hook';
 import { useActiveLink } from 'src/routes/hook/use-active-link';
 //
+import Restricted from 'src/auth/guard/restricted';
 import NavItem from './nav-item';
 
 // ----------------------------------------------------------------------
@@ -60,18 +61,19 @@ export default function NavList({ data, depth, hasChild, config }) {
 
   return (
     <>
-      <NavItem
-        ref={navRef}
-        item={data}
-        depth={depth}
-        open={open}
-        active={active}
-        externalLink={externalLink}
-        onMouseEnter={handleOpen}
-        onMouseLeave={handleClose}
-        config={config}
-      />
-
+      <Restricted to={data.auth}>
+        <NavItem
+          ref={navRef}
+          item={data}
+          depth={depth}
+          open={open}
+          active={active}
+          externalLink={externalLink}
+          onMouseEnter={handleOpen}
+          onMouseLeave={handleClose}
+          config={config}
+        />
+      </Restricted>
       {hasChild && (
         <Popover
           open={open}

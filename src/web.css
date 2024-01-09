@@ -19,6 +19,7 @@
   } */
   .book-player {
     background-color: none !important;
+    /* bottom: 56px !important; */
     bottom: calc(2px + constant(safe-area-inset-bottom) * 2.5) !important;
     bottom: calc(2px + env(safe-area-inset-bottom) * 2.5) !important;
   }
@@ -31,5 +32,52 @@
   }
   .bottom-navigation div a {
     height: 56px !important;
+  }
+}
+
+/*适配苹果XR */
+@media only screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 2) {
+  .book-player {
+    background-color: none !important;
+    bottom: 56px !important;
+  }
+}
+
+@media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+  .book-player {
+    background-color: none !important;
+    bottom: 56px !important;
+  }
+}
+
+/*适配，6，7，8*/
+@media only screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) {
+  .book-player {
+    background-color: none !important;
+    bottom: 56px !important;
+  }
+}
+
+/*适配，6+，7+，8+*/
+@media only screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) {
+  .book-player {
+    background-color: none !important;
+    bottom: 56px !important;
+  }
+}
+
+/*适配，5*/
+@media only screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) {
+  .book-player {
+    background-color: none !important;
+    bottom: 56px !important;
+  }
+}
+
+/*适配，4*/
+@media only screen and (device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2) {
+  .book-player {
+    background-color: none !important;
+    bottom: 56px !important;
   }
 }

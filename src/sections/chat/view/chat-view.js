@@ -19,9 +19,18 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { useSettingsContext } from 'src/components/settings';
 //
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getOrganizations, getConversations, resetActiveConversation, getMessages, getConversation, getContacts, deleteConversation, newMessageGet } from 'src/redux/slices/chat';
+import {
+  getOrganizations,
+  getConversations,
+  resetActiveConversation,
+  getMessages,
+  getConversation,
+  getContacts,
+  deleteConversation,
+  newMessageGet,
+} from 'src/redux/slices/chat';
 import { ddpclient } from 'src/composables/context-provider';
-import _ from 'lodash'
+import _ from 'lodash';
 import { useSnackbar } from 'src/components/snackbar';
 import ChatNav from '../chat-nav';
 import ChatRoom from '../chat-room';
@@ -47,9 +56,9 @@ const conversationSelector = (state) => {
   return initState;
 };
 
-function calcHeight (isDesktop, selectedConversationId) {
+function calcHeight(isDesktop, selectedConversationId) {
   if (isDesktop) {
-    return '72vh'
+    return '72vh';
   }
   return selectedConversationId ? 'calc(100vh - 70px)' : 'calc(100vh - 140px)';
 }
@@ -60,11 +69,11 @@ const TABS = [
     label: '聊天会话',
     count: 0,
   },
-  {
-    value: 'contacts',
-    label: ' 联系人',
-    count: 0,
-  },
+  // {
+  //   value: 'contacts',
+  //   label: ' 联系人',
+  //   count: 0,
+  // },
   {
     value: 'organizations',
     label: '组织架构',
@@ -78,8 +87,7 @@ let getMessage = null;
 let conversations2Publish = null;
 let conversations2Collection = null;
 
-export default function ChatView () {
-
+export default function ChatView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const dispatch = useDispatch();
@@ -89,6 +97,8 @@ export default function ChatView () {
   const { conversations, sendingMessage, contacts } = useSelector((state) => state.chat);
 
   const conversation = useSelector((state) => conversationSelector(state));
+
+  const [currentFirstOrganization, setCurrentFirstOrganization] = useState([]);
 
   const { active } = useSelector((state) => state.scope);
 
@@ -119,91 +129,116 @@ export default function ChatView () {
       const level = {
         name: organization.label,
         to: organization._id,
-      }
+      };
       levels.push(level);
-      setCurrentOrganization(_.compact([...(organization.children || []), ...(organization.users || []).map(item => ({
-          name: item.username,
-          photoURL: item.photoURL,
-          _id: item._id
-        }))]))
-      setLevels(levels)
-      console.log('currentOrganization',currentOrganization)
+      setCurrentOrganization(
+        _.compact([
+          ...(organization.children || []),
+          ...(organization.users || []).map((item) => ({
+            name: item.username,
+            photoURL: item.photoURL,
+            _id: item._id,
+            email: item.email,
+            displayName: item.displayName,
+            realName: item.realName,
+          })),
+        ])
+      );
+      setLevels(levels);
+      console.log('currentOrganization', currentOrganization);
     }
-  }
+  };
   const onGoTo = async (level) => {
     let index = 0;
-    const length = _.findIndex(levels, ["to", level.to])
+    const length = _.findIndex(levels, ['to', level.to]);
     let isChildren = false;
-    let currentOrganizations = organizations
-    const levels2 = []
+    let currentOrganizations = currentFirstOrganization;
+    const levels2 = [];
     while (index < length) {
       isChildren = true;
       const currentLevel = levels[index];
-      currentOrganizations = _.find(currentOrganizations, ["_id", currentLevel.to]);
+      currentOrganizations = _.find(currentOrganizations, ['_id', currentLevel.to]);
       index += 1;
-      levels2.push(currentLevel)
+      levels2.push(currentLevel);
     }
     if (isChildren) {
-      await setCurrentOrganization([...currentOrganizations.children, ...currentOrganizations.users.map(item => ({
-        _id: item._id,
-        name: item.username,
-        photoURL: item.photoURL
-      }))]);
+      await setCurrentOrganization([
+        ...currentOrganizations.children,
+        ...currentOrganizations.users.map((item) => ({
+          _id: item._id,
+          name: item.username,
+          photoURL: item.photoURL,
+          email: item.email,
+          displayName: item.displayName,
+          realName: item.realName,
+        })),
+      ]);
     } else {
       await setCurrentOrganization(currentOrganizations);
     }
     setLevels(levels2);
-  }
+  };
   const getDetails = useCallback(async () => {
-    setConversationsLoading(true)
-    await dispatch(getConversations());
-    await dispatch(getConversation(selectedConversationId))
+    setConversationsLoading(true);
+    // await dispatch(getConversations());
+    await dispatch(getConversation(selectedConversationId));
     await dispatch(getMessages(selectedConversationId, 0));
-    setConversationsLoading(false)
+    setConversationsLoading(false);
   }, [dispatch, selectedConversationId]);
 
   useEffect(() => {
-    setConversationsLoading(true)
+    setConversationsLoading(true);
     if (selectedConversationId) {
-      getDetails()
+      getDetails();
       if (ddpclient.connected && user) {
-        getMessage = ddpclient.subscribe("socialize.messagesFor2", selectedConversationId, user._id, new Date());
+        getMessage = ddpclient.subscribe(
+          'socialize.messagesFor2',
+          selectedConversationId,
+          user._id,
+          new Date()
+        );
         getMessage.ready();
         reactiveCollection = ddpclient.collection('socialize:messages').reactive();
         reactiveCollection.onChange(() => {
-          dispatch(newMessageGet(selectedConversationId))
+          dispatch(newMessageGet(selectedConversationId));
         });
       }
     } else {
       dispatch(resetActiveConversation());
     }
-    setConversationsLoading(false)
+    setConversationsLoading(false);
     return () => {
       if (reactiveCollection) {
         reactiveCollection.stop();
         getMessage.stop();
       }
-    }
+    };
   }, [dispatch, active._id, getDetails, selectedConversationId, user]);
+
+  const onRefreshWithOrganization = useCallback(async () => {
+    const organizationData = await dispatch(getOrganizations(active._id));
+    setCurrentFirstOrganization(organizationData);
+    setCurrentOrganization(organizationData);
+  }, [active._id, dispatch]);
 
   useEffect(() => {
     if (!selectedConversationId) {
       // eslint-disable-next-line default-case
       switch (currentTab) {
         case 'organizations':
-          dispatch(getOrganizations(active._id));
+          onRefreshWithOrganization();
           break;
         case 'conversations':
           dispatch(getConversations());
           try {
-            conversations2Publish = ddpclient.subscribe("socialize.conversations2", user._id);
+            conversations2Publish = ddpclient.subscribe('socialize.conversations2', user._id);
             conversations2Publish.ready();
             conversations2Collection = ddpclient.collection('socialize:conversations').reactive();
             conversations2Collection.onChange(async () => {
               dispatch(getConversations());
             });
           } catch (e) {
-            console.log(e)
+            console.log(e);
           }
           break;
         case 'contacts':
@@ -215,10 +250,17 @@ export default function ChatView () {
           conversations2Publish.stop();
           conversations2Collection.stop();
         }
-      }
+      };
     }
-    return () => { };
-  }, [active._id, currentTab, dispatch, selectedConversationId, user._id])
+    return () => {};
+  }, [
+    active._id,
+    currentTab,
+    dispatch,
+    onRefreshWithOrganization,
+    selectedConversationId,
+    user._id,
+  ]);
 
   const participants = conversation
     ? conversation.participants.filter((participant) => participant._id !== user._id)
@@ -228,10 +270,10 @@ export default function ChatView () {
     setRecipients(selected);
   }, []);
 
-  const removeConversation = async (conversationId)=>{
-    await dispatch(deleteConversation(conversationId))
-    enqueueSnackbar('删除成功')
-  }
+  const removeConversation = async (conversationId) => {
+    await dispatch(deleteConversation(conversationId));
+    enqueueSnackbar('删除成功');
+  };
   const details = !!conversation && conversation._id;
 
   const renderHead = (
@@ -242,17 +284,19 @@ export default function ChatView () {
       sx={{ pr: 1, pl: 2.5, py: 1, minHeight: 72 }}
     >
       {selectedConversationId ? (
-        <>{details && <ChatHeaderDetail
-          participants={participants} />}</>
+        <>{details && <ChatHeaderDetail participants={participants} />}</>
       ) : (
-        <ChatHeaderCompose contacts={contacts.allIds.map(id => contacts.byId[id])} onAddRecipients={handleAddRecipients} />
+        <ChatHeaderCompose
+          contacts={contacts.allIds.map((id) => contacts.byId[id])}
+          onAddRecipients={handleAddRecipients}
+        />
       )}
     </Stack>
   );
 
   const renderNav = (
     <ChatNav
-      contacts={contacts.allIds.map(id => contacts.byId[id])}
+      contacts={contacts.allIds.map((id) => contacts.byId[id])}
       conversations={conversations}
       loading={conversationsLoading}
       selectedConversationId={selectedConversationId}
@@ -261,8 +305,8 @@ export default function ChatView () {
 
   const onRefresh = async () => {
     setMessageLimit(messageLimit + 20);
-    await dispatch(getMessages(selectedConversationId, messageLimit))
-  }
+    await dispatch(getMessages(selectedConversationId, messageLimit));
+  };
 
   const renderMessages = (
     <Stack
@@ -272,7 +316,12 @@ export default function ChatView () {
         overflow: 'hidden',
       }}
     >
-      <ChatMessageList messages={conversation?.messages} sendingMessage={sendingMessage} participants={participants} onRefresh={onRefresh} />
+      <ChatMessageList
+        messages={conversation?.messages}
+        sendingMessage={sendingMessage}
+        participants={participants}
+        onRefresh={onRefresh}
+      />
 
       <ChatMessageInput
         recipients={recipients}
@@ -288,53 +337,49 @@ export default function ChatView () {
   }, []);
 
   const renderTabs = (
-    <Tabs sx={{ width: "100%" }} variant="fullWidth" value={currentTab} onChange={handleChangeTab}>
+    <Tabs sx={{ width: '100%' }} variant="fullWidth" value={currentTab} onChange={handleChangeTab}>
       {TABS.map((tab) => (
-        <Tab
-          key={tab.value}
-          iconPosition="end"
-          value={tab.value}
-          label={tab.label} />
-      ))})
+        <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
+      ))}
+      )
     </Tabs>
-  )
+  );
   const styles = {
     typography: 'body2',
     alignItems: 'center',
     color: 'text.primary',
     display: 'inline-flex',
   };
-  const renderOrganizationsMenuItem = (organization, id) => <ChatNavItem
-    key={id}
-    onChildren={onChildren}
-    conversation={organization}
-    selected={organization._id === selectedConversationId}
-  />
+  const renderOrganizationsMenuItem = (organization, id) => (
+    <ChatNavItem
+      key={id}
+      onChildren={onChildren}
+      conversation={organization}
+      selected={organization._id === selectedConversationId}
+    />
+  );
   const renderOrganizations = (
-    <Scrollbar sx={{ height: 320, ml: 1, mr: 1 }}>
-      {
-        levels && levels.length > 0 && <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="flex-start"
-          sx={{ m: 1 }}
-        >
-          {
-            levels.map((level, index) => (<Box key={index} sx={{ display: 'flex' }}>
-              <Link onClick={() => onGoTo(level)} sx={styles}>{`${level.name}`} </Link>
+    <Scrollbar sx={{ height: '100%', ml: 1, mr: 1 }}>
+      {levels && levels.length > 0 && (
+        <Stack direction="row" alignItems="center" justifyContent="flex-start" sx={{ m: 1 }}>
+          {levels.map((level, index) => (
+            <Box key={index} sx={{ display: 'flex' }}>
+              <Link onClick={() => onGoTo(level)} sx={styles}>
+                {`${level.name}`}{' '}
+              </Link>
               <div style={{ margin: '0 4px' }}> /</div>
-            </Box>))
-          }
+            </Box>
+          ))}
         </Stack>
-      }
-      {levels && levels.length > 0 ? currentOrganization.map((item, i) => renderOrganizationsMenuItem(item, i)) : organizations.map((item, i) => renderOrganizationsMenuItem(item, i))}
+      )}
+      {currentOrganization.map((item, i) => renderOrganizationsMenuItem(item, i))}
     </Scrollbar>
-  )
+  );
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-      {
-        isDesktop && <Typography
+      {isDesktop && (
+        <Typography
           variant="h4"
           sx={{
             mb: { xs: 3, md: 5 },
@@ -342,9 +387,13 @@ export default function ChatView () {
         >
           聊天
         </Typography>
-      }
-      {
-        (isDesktop || selectedConversationId) && <Stack component={!isDesktop && selectedConversationId ? null : Card} direction="row" sx={{ height: calcHeight(isDesktop, selectedConversationId) }}>
+      )}
+      {(isDesktop || selectedConversationId) && (
+        <Stack
+          component={!isDesktop && selectedConversationId ? null : Card}
+          direction="row"
+          sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
+        >
           {renderNav}
 
           <Stack
@@ -371,50 +420,55 @@ export default function ChatView () {
             </Stack>
           </Stack>
         </Stack>
-      }
-      {
-        !selectedConversationId && <Stack>
-          {!isDesktop && <>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="center"
-              sx={{ pl: 0, pr: 0 }}
-            >
-              {renderTabs}
-            </Stack>
-            <Divider />
-            {currentTab === "organizations" && renderOrganizations}
-            {currentTab === "contacts" && contacts.allIds.map(id => contacts.byId[id]).map((contact) => (
-              <ChatNavItem
-                key={contact._id}
-                conversation={{
-                  ...contact,
-                  type: 'contact'
-                }}
-                selected={contact._id === selectedConversationId}
-              />
-            ))}
-            {
-              currentTab === "conversations" && conversations.allIds.map((conversationId) => (
-                !conversations.byId[conversationId].isRemove &&
-                <ChatNavItem
-                  key={conversationId}
-                  deleteConversation={() => {
-                    removeConversation(conversationId);
-                  }}
-                  conversation={{
-                    ...conversations.byId[conversationId],
-                    type: "conversation"
-                  }}
-                  selected={conversationId === selectedConversationId}
-                />
-              ))
-            }
-          </>
-          }
+      )}
+      {!selectedConversationId && (
+        <Stack>
+          {!isDesktop && (
+            <>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="center"
+                sx={{ pl: 0, pr: 0 }}
+              >
+                {renderTabs}
+              </Stack>
+              <Divider />
+              {currentTab === 'organizations' && renderOrganizations}
+              {currentTab === 'contacts' &&
+                contacts.allIds
+                  .map((id) => contacts.byId[id])
+                  .map((contact) => (
+                    <ChatNavItem
+                      key={contact._id}
+                      conversation={{
+                        ...contact,
+                        type: 'contact',
+                      }}
+                      selected={contact._id === selectedConversationId}
+                    />
+                  ))}
+              {currentTab === 'conversations' &&
+                conversations.allIds.map(
+                  (conversationId) =>
+                    !conversations.byId[conversationId].isRemove && (
+                      <ChatNavItem
+                        key={conversationId}
+                        deleteConversation={() => {
+                          removeConversation(conversationId);
+                        }}
+                        conversation={{
+                          ...conversations.byId[conversationId],
+                          type: 'conversation',
+                        }}
+                        selected={conversationId === selectedConversationId}
+                      />
+                    )
+                )}
+            </>
+          )}
         </Stack>
-      }
+      )}
     </Container>
   );
 }
