@@ -122,7 +122,7 @@ export default function TrainingSearchDetailView() {
   return (
     <>
       <Helmet>详情 | Hope Family</Helmet>
-      <Container>
+      <Container sx={{ overflowY: 'auto' }}>
         {isLoading ? (
           <Box
             sx={{
@@ -192,7 +192,7 @@ export default function TrainingSearchDetailView() {
             </Box>
             <Divider />
             <Box sx={{ color: 'black', height: '90%' }}>
-              <List sx={{ height: '90%', overflowY: 'auto', position: 'relative' }}>
+              <List>
                 {!isLoading &&
                   posts.map(
                     (item, index) =>
