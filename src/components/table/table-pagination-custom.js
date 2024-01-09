@@ -10,7 +10,7 @@ import TablePagination from '@mui/material/TablePagination';
 export default function TablePaginationCustom({
   dense,
   onChangeDense,
-  rowsPerPageOptions = [5, 10, 25],
+  rowsPerPageOptions = [5, 10, 25, 50, 100],
   sx,
   ...other
 }) {
@@ -19,7 +19,7 @@ export default function TablePaginationCustom({
       <TablePagination
         rowsPerPageOptions={rowsPerPageOptions}
         component="div"
-        labelRowsPerPage="每页/项" 
+        labelRowsPerPage="每页/项"
         {...other}
         sx={{
           borderTopColor: 'transparent',
