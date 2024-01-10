@@ -9,6 +9,7 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
+import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 // auth
@@ -26,6 +27,7 @@ import FormProvider, {
   RHFSwitch,
   RHFTextField,
   RHFUploadAvatar,
+  RHFSelect,
   RHFAutocomplete,
 } from 'src/components/hook-form';
 
@@ -58,6 +60,8 @@ export default function AccountGeneral() {
   const defaultValues = {
     displayName: user?.displayName || '',
     email: user?.email || '',
+    gender: user?.gender || '',
+    age: user?.age || '',
     photoURL: user?.photoURL || null,
     phoneNumber: user?.phoneNumber || '',
     country: user?.country || '',
@@ -193,7 +197,12 @@ export default function AccountGeneral() {
             >
               <RHFTextField name="displayName" label="昵称" />
               <RHFTextField name="email" label="电子邮件" disabled />
-              <RHFTextField name="phoneNumber" label="手机号码" />
+              <RHFTextField name="phoneNumber" label="手机号码" disabled />
+              <RHFSelect name="gender" label="性别" placeholder="性别">
+                <MenuItem value="male">男</MenuItem>
+                <MenuItem value="female">女</MenuItem>
+              </RHFSelect>
+              <RHFTextField name="age" label=" 年龄" />
               <RHFTextField name="address" label="详细地址" />
 
               <RHFAutocomplete
