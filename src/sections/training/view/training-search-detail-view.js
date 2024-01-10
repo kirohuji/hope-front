@@ -122,7 +122,7 @@ export default function TrainingSearchDetailView() {
   return (
     <>
       <Helmet>详情 | Hope Family</Helmet>
-      <Container>
+      <Container sx={{ overflowY: 'auto' }}>
         {isLoading ? (
           <Box
             sx={{
