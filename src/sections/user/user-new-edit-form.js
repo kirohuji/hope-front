@@ -265,7 +265,7 @@ export default function UserNewEditForm({ currentUser }) {
                 <MenuItem value="female">女</MenuItem>
               </RHFSelect>
               <RHFTextField name="email" label="电子邮件" disabled />
-              <RHFTextField name="phoneNumber" label="手机号" />
+              <RHFTextField name="phoneNumber" label="手机号" disabled />
               <RHFSelect name="baptized" label="是否受洗" placeholder="是否受洗">
                 <MenuItem value="true">是</MenuItem>
                 <MenuItem value="false">否</MenuItem>
