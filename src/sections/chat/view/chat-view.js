@@ -231,7 +231,7 @@ export default function ChatView() {
         case 'conversations':
           dispatch(getConversations());
           try {
-            conversations2Publish = ddpclient.subscribe('socialize.conversations2', user._id);
+            conversations2Publish = ddpclient.subscribe('socialize.conversations2', user?._id);
             conversations2Publish.ready();
             conversations2Collection = ddpclient.collection('socialize:conversations').reactive();
             conversations2Collection.onChange(async () => {
@@ -253,17 +253,10 @@ export default function ChatView() {
       };
     }
     return () => {};
-  }, [
-    active._id,
-    currentTab,
-    dispatch,
-    onRefreshWithOrganization,
-    selectedConversationId,
-    user._id,
-  ]);
+  }, [active._id, currentTab, dispatch, onRefreshWithOrganization, selectedConversationId, user]);
 
   const participants = conversation
-    ? conversation.participants.filter((participant) => participant._id !== user._id)
+    ? conversation.participants.filter((participant) => participant._id !== user?._id)
     : [];
 
   const handleAddRecipients = useCallback((selected) => {
