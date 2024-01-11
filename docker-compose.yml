@@ -1,4 +1,4 @@
-version: "2"
+version: '2'
 services:
   nginx-react:
     container_name: ngixreactapp
@@ -6,6 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8081:80
+      - 8081:443
     environment:
       NODE_ENV: production
