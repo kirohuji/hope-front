@@ -45,15 +45,16 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
 
   const getAllEvents = useCallback(() => {
-    if (!scope?.active?._id) {
+    if (!scope.active?._id) {
       console.log('更新作用域');
       dispatch(getScopes());
     }
-  }, [dispatch, scope]);
+  }, [dispatch, scope.active]);
 
   useEffect(() => {
     getAllEvents();
   }, [getAllEvents]);
+
   if (isHorizontal) {
     return (
       <>
