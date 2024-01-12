@@ -119,7 +119,8 @@ export default function ChatMessageInput ({
     async (event) => {
       try {
         console.log('event', event.shiftKey)
-        if (event.shiftKey && event.key === 'Enter') {
+        // if (event.shiftKey && event.key === 'Enter') {
+        if (event.key === 'Enter') {
           if (message) {
             if (selectedConversationId) {
               setType('text')
