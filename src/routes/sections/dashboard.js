@@ -53,6 +53,11 @@ const ScopeListPage = lazy(() => import('src/pages/dashboard/scope/list'));
 const ScopeCreatePage = lazy(() => import('src/pages/dashboard/scope/new'));
 const ScopeEditPage = lazy(() => import('src/pages/dashboard/scope/edit'));
 
+// VERSION
+const VersionListPage = lazy(() => import('src/pages/dashboard/version/list'));
+const VersionCreatePage = lazy(() => import('src/pages/dashboard/version/new'));
+const VersionEditPage = lazy(() => import('src/pages/dashboard/version/edit'));
+
 // BOOK
 const BookDetailsPage = lazy(() => import('src/pages/dashboard/book/details'));
 const BookListPage = lazy(() => import('src/pages/dashboard/book/list'));
@@ -92,15 +97,13 @@ const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission')
 // BLANK PAGE
 const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
 // ORGANIZATION PAGE
-const UserOrganizationPage = lazy(() => import('src/pages/dashboard/user/organization'))
+const UserOrganizationPage = lazy(() => import('src/pages/dashboard/user/organization'));
 
-const UserPermissionPage = lazy(() => import('src/pages/dashboard/user/permission'))
+const UserPermissionPage = lazy(() => import('src/pages/dashboard/user/permission'));
 
-const TrainingDashboardPage = lazy(() => import('src/pages/dashboard/training/dashboard'))
+const TrainingDashboardPage = lazy(() => import('src/pages/dashboard/training/dashboard'));
 
-const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'))
-
-
+const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'));
 
 // ----------------------------------------------------------------------
 
@@ -124,7 +127,8 @@ export const dashboardRoutes = [
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
       {
-        path: 'training/dashboard', element: <TrainingPage />
+        path: 'training/dashboard',
+        element: <TrainingPage />,
       },
       {
         path: 'user',
@@ -199,6 +203,15 @@ export const dashboardRoutes = [
         ],
       },
       {
+        path: 'version',
+        children: [
+          { element: <VersionListPage />, index: true },
+          { path: 'list', element: <VersionListPage /> },
+          { path: 'new', element: <VersionCreatePage /> },
+          { path: ':id/edit', element: <VersionEditPage /> },
+        ],
+      },
+      {
         path: 'book',
         children: [
           { element: <BookListPage />, index: true },
@@ -223,15 +236,11 @@ export const dashboardRoutes = [
       },
       {
         path: 'access',
-        children: [
-          { element: <AccessPage />, index: true }
-        ]
+        children: [{ element: <AccessPage />, index: true }],
       },
       {
         path: 'dictionary',
-        children: [
-          { element: <DictionaryPage />, index: true }
-        ]
+        children: [{ element: <DictionaryPage />, index: true }],
       },
       {
         path: 'tour',

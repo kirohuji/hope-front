@@ -19,7 +19,7 @@ const ROOTS = {
 export const paths = {
   comingSoon: '/coming-soon',
   maintenance: '/maintenance',
-  reading: (id)=> `/reading/root/${id}`,
+  reading: (id) => `/reading/root/${id}`,
   pricing: '/pricing',
   payment: '/payment',
   about: '/about-us',
@@ -79,8 +79,8 @@ export const paths = {
     root: `/training`,
     dashboard: `${ROOTS.DASHBOARD}/training/dashboard`,
     search: `$/training/search`,
-    searchDetail: (id)=> `/training/search/detail/${id}`,
-    detail:`/training/detail/`,
+    searchDetail: (id) => `/training/search/detail/${id}`,
+    detail: `/training/detail/`,
   },
   authDemo: {
     classic: {
@@ -187,12 +187,17 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/job/${MOCK_ID}/edit`,
       },
     },
+    version: {
+      root: `${ROOTS.DASHBOARD}/version`,
+      new: `${ROOTS.DASHBOARD}/version/new`,
+      edit: (id) => `${ROOTS.DASHBOARD}/version/${id}/edit`,
+    },
     book: {
       root: `${ROOTS.DASHBOARD}/book`,
       new: `${ROOTS.DASHBOARD}/book/new`,
       details: {
         root: (id) => `${ROOTS.DASHBOARD}/book/${id}`,
-        tab: (id,tabId) => `${ROOTS.DASHBOARD}/book/${id}/tab/${tabId}`,
+        tab: (id, tabId) => `${ROOTS.DASHBOARD}/book/${id}/tab/${tabId}`,
       },
       edit: (id) => `${ROOTS.DASHBOARD}/book/${id}/edit`,
       article: {

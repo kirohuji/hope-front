@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 // slices
 import checkoutReducer from './slices/checkout';
 import scopeReducer from './slices/scope';
+import versionReducer from './slices/version';
 import dashboardReducer from './slices/dashboard';
 import calendarReducer from './slices/calendar';
 import articleReducer from './slices/article';
@@ -96,6 +97,7 @@ export const rootReducer = combineReducers({
   role: persistReducer(rolePersistConfig, roleReducer),
   checkout: persistReducer(checkoutPersistConfig, checkoutReducer),
   scope: persistReducer(scopePersistConfig, scopeReducer),
+  version: versionReducer,
   article: articleReducer,
   // article: persistReducer(articlePersistConfig, articleReducer),
   // book: persistReducer(bookPersistConfig, bookPersistConfig),

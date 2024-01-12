@@ -11,6 +11,7 @@ import FilesManagerService from '../modules/files_manager';
 import FriendService from '../modules/friends';
 import MessagingService from '../modules/messaging';
 import ScopeService from '../modules/scopes';
+import VersionService from '../modules/versions';
 import RoleService from '../modules/roles';
 import EventService from '../modules/events';
 import DictionaryService from '../modules/dictionaries';
@@ -31,6 +32,7 @@ export const messagingService = new MessagingService({ api, model: 'messaging' }
 export const bookService = new BookService({ api, model: 'books' });
 export const eventService = new EventService({ api, model: 'events' });
 export const scopeService = new ScopeService({ api, model: 'scopes' });
+export const versionService = new VersionService({ api, model: 'versions' });
 export const dictionaryService = new DictionaryService({ api, model: 'dictionaries' });
 export const dictionaryOptionService = new DictionaryOptionService({
   api,

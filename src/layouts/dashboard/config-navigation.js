@@ -44,6 +44,7 @@ export const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
+  version: icon('ic_product'),
 };
 
 // ----------------------------------------------------------------------
@@ -80,6 +81,25 @@ export function useNavData() {
             icon: ICONS.job,
             children: [
               { title: t('list'), path: paths.dashboard.scope.root, auth: ['ScopeList'] },
+              // { title: t('details'), path: paths.dashboard.scope.demo.details },
+              // { title: t('create'), path: paths.dashboard.scope.new },
+              // { title: t('edit'), path: paths.dashboard.scope.demo.edit },
+            ],
+          },
+          // VERSION
+          {
+            title: t('version'),
+            auth: [
+              'Version',
+              'VersionList',
+              'VersionListAdd',
+              'VersionListEdit',
+              'VersionListDelete',
+            ],
+            path: paths.dashboard.version.root,
+            icon: ICONS.job,
+            children: [
+              { title: t('list'), path: paths.dashboard.version.root, auth: ['VersionList'] },
               // { title: t('details'), path: paths.dashboard.scope.demo.details },
               // { title: t('create'), path: paths.dashboard.scope.new },
               // { title: t('edit'), path: paths.dashboard.scope.demo.edit },
