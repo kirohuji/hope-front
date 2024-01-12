@@ -18,7 +18,7 @@ import { useGetMessage } from './hooks';
 
 // ----------------------------------------------------------------------
 
-export default function ChatMessageItem ({ message, participants, onOpenLightbox }) {
+export default function ChatMessageItem({ message, participants, onOpenLightbox }) {
   const { user } = useAuthContext();
 
   const { me, senderDetails, hasImage } = useGetMessage({
@@ -46,7 +46,7 @@ export default function ChatMessageItem ({ message, participants, onOpenLightbox
       {!me && `${username},`} &nbsp;
       {formatDistanceToNowStrict(new Date(createdAt), {
         addSuffix: true,
-        locale: zhCN
+        locale: zhCN,
       })}
     </Typography>
   );
@@ -56,7 +56,7 @@ export default function ChatMessageItem ({ message, participants, onOpenLightbox
       sx={{
         p: 1.5,
         minWidth: 48,
-        maxWidth: 320,
+        maxWidth: 'calc(100vw - 120px)',
         borderRadius: 1,
         typography: 'body2',
         bgcolor: 'background.neutral',
@@ -87,7 +87,10 @@ export default function ChatMessageItem ({ message, participants, onOpenLightbox
         />
       ) : (
         // eslint-disable-next-line react/no-danger
-        <div style={{ whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: body }} />
+        <div
+          style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
+          dangerouslySetInnerHTML={{ __html: body }}
+        />
       )}
     </Stack>
   );
@@ -115,25 +118,30 @@ export default function ChatMessageItem ({ message, participants, onOpenLightbox
       <IconButton size="small">
         <Iconify icon="solar:reply-bold" width={16} />
       </IconButton>
-      {
-        false && <IconButton size="small">
+      {false && (
+        <IconButton size="small">
           <Iconify icon="eva:smiling-face-fill" width={16} />
         </IconButton>
-      }
-      {
-        false && <IconButton size="small">
+      )}
+      {false && (
+        <IconButton size="small">
           <Iconify icon="solar:trash-bin-trash-bold" width={16} />
         </IconButton>
-      }
+      )}
     </Stack>
   );
 
   return (
-    <Stack direction="row" justifyContent={me ? 'flex-end' : 'unset'} sx={{ mb: 5 }} alignItems="center">
-      {isLoading && <CircularProgress size={20} sx={{ mr: 0.5}} />}
+    <Stack
+      direction="row"
+      justifyContent={me ? 'flex-end' : 'unset'}
+      sx={{ mb: 5 }}
+      alignItems="center"
+    >
+      {isLoading && <CircularProgress size={20} sx={{ mr: 0.5 }} />}
       {!me && <Avatar alt={username} src={photoURL} sx={{ width: 32, height: 32, mr: 2 }} />}
 
-      <Stack alignItems={me ? "flex-end" : "flex-start"}>
+      <Stack alignItems={me ? 'flex-end' : 'flex-start'}>
         {!isLoading && renderInfo}
 
         <Stack

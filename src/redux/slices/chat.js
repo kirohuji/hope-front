@@ -123,12 +123,12 @@ const slice = createSlice({
     getMessagesSuccess(state, action) {
       const { conversationId, data } = action.payload;
       const orderData = _.orderBy(data, ['createdAt', 'asc']);
-      state.sendingMessage = {};
       if (!state.conversations.byId[conversationId]?.messages) {
         state.conversations.byId[conversationId].messages = [];
       }
       state.conversations.byId[conversationId].messages.unshift(...orderData);
-      state.lastMessage = orderData[orderData.length - 1];
+      state.lastMessage = _.last(orderData);
+      state.sendingMessage = {};
     },
 
     getNewMessagesSuccess(state, action) {
@@ -138,17 +138,18 @@ const slice = createSlice({
       if (!state.conversations.byId[conversationId]?.messages) {
         state.conversations.byId[conversationId].messages = [];
       }
-      state.conversations.byId[conversationId].messages = _.uniqBy(
+      const newMessages = _.uniqBy(
         [
           ...state.conversations.byId[conversationId].messages.filter((item) => item._id !== '-1'),
           ...orderData,
         ],
         '_id'
       );
-      state.lastMessage =
-        state.conversations.byId[conversationId].messages[
-          state.conversations.byId[conversationId].messages.length - 1
-        ];
+      state.lastMessage = _.last(newMessages);
+      // state.conversations.byId[conversationId].messages[
+      //   state.conversations.byId[conversationId].messages.length - 1
+      // ];
+      state.conversations.byId[conversationId].messages = _.dropRight(newMessages);
     },
 
     markConversationAsReadSuccess(state, action) {
@@ -237,6 +238,42 @@ export function getMessages(conversationKey, messageLimit) {
           data,
         })
       );
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+    }
+  };
+}
+
+export function newMessageGet(conversationId) {
+  return async (dispatch, getState) => {
+    try {
+      const { lastMessage } = getState().chat;
+      if (lastMessage && lastMessage._id) {
+        const data = await messagingService.getLastMessageBy({
+          _id: conversationId,
+          lastId: lastMessage._id,
+        });
+        await dispatch(
+          slice.actions.getNewMessagesSuccess({
+            conversationId,
+            data,
+          })
+        );
+      } else {
+        const data = await messagingService.getConversationMessagesById({
+          _id: conversationId,
+          options: {
+            limit: 20,
+            sort: { createdAt: -1 },
+          },
+        });
+        dispatch(
+          slice.actions.getMessagesSuccess({
+            conversationId,
+            data,
+          })
+        );
+      }
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }
@@ -348,42 +385,6 @@ export function getParticipants(conversationKey) {
     try {
       const data = await messagingService.getConversationParticipantsById({ _id: conversationKey });
       dispatch(slice.actions.getParticipantsSuccess(data));
-    } catch (error) {
-      dispatch(slice.actions.hasError(error));
-    }
-  };
-}
-
-export function newMessageGet(conversationId) {
-  return async (dispatch, getState) => {
-    try {
-      const { lastMessage } = getState().chat;
-      if (lastMessage && lastMessage._id) {
-        const data = await messagingService.getLastMessageBy({
-          _id: conversationId,
-          lastId: lastMessage._id,
-        });
-        await dispatch(
-          slice.actions.getNewMessagesSuccess({
-            conversationId,
-            data,
-          })
-        );
-      } else {
-        const data = await messagingService.getConversationMessagesById({
-          _id: conversationId,
-          options: {
-            limit: 20,
-            sort: { createdAt: -1 },
-          },
-        });
-        dispatch(
-          slice.actions.getMessagesSuccess({
-            conversationId,
-            data,
-          })
-        );
-      }
     } catch (error) {
       dispatch(slice.actions.hasError(error));
     }

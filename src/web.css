@@ -33,6 +33,9 @@
   .bottom-navigation div a {
     height: 56px !important;
   }
+  .bottom-chat {
+    height: calc(100vh - 140px) !important;
+  }
 }
 
 /*适配苹果XR */
@@ -41,12 +44,18 @@
     background-color: none !important;
     bottom: 56px !important;
   }
+  .bottom-chat {
+    height: calc(100vh - 70px) !important;
+  }
 }
 
 @media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
   .book-player {
     background-color: none !important;
     bottom: 56px !important;
+  }
+  .bottom-chat {
+    height: calc(100vh - 70px) !important;
   }
 }
 
@@ -56,6 +65,9 @@
     background-color: none !important;
     bottom: 56px !important;
   }
+  .bottom-chat {
+    height: calc(100vh - 70px) !important;
+  }
 }
 
 /*适配，6+，7+，8+*/
@@ -63,6 +75,9 @@
   .book-player {
     background-color: none !important;
     bottom: 56px !important;
+  }
+  .bottom-chat {
+    height: calc(100vh - 70px) !important;
   }
 }
 
@@ -72,6 +87,9 @@
     background-color: none !important;
     bottom: 56px !important;
   }
+  .bottom-chat {
+    height: calc(100vh - 70px) !important;
+  }
 }
 
 /*适配，4*/
@@ -79,5 +97,8 @@
   .book-player {
     background-color: none !important;
     bottom: 56px !important;
+  }
+  .bottom-chat {
+    height: calc(100vh - 70px) !important;
   }
 }

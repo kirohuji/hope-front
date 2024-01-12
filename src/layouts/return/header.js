@@ -56,7 +56,6 @@ export default function Header({ isOffset }) {
             <Iconify icon="eva:arrow-ios-back-fill" />
           </IconButtonAnimate>
         </div>
-        我的灵修
       </Toolbar>
 
       {isOffset && <Shadow />}

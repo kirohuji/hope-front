@@ -104,8 +104,6 @@ export default function ChatView() {
 
   const isDesktop = useResponsive('up', 'md');
 
-  const { organizations } = useSelector((state) => state.chat);
-
   const [currentOrganization, setCurrentOrganization] = useState([]);
 
   const [levels, setLevels] = useState([]);
@@ -148,6 +146,7 @@ export default function ChatView() {
       console.log('currentOrganization', currentOrganization);
     }
   };
+
   const onGoTo = async (level) => {
     let index = 0;
     const length = _.findIndex(levels, ['to', level.to]);
@@ -178,6 +177,7 @@ export default function ChatView() {
     }
     setLevels(levels2);
   };
+
   const getDetails = useCallback(async () => {
     setConversationsLoading(true);
     // await dispatch(getConversations());
@@ -200,6 +200,7 @@ export default function ChatView() {
         getMessage.ready();
         reactiveCollection = ddpclient.collection('socialize:messages').reactive();
         reactiveCollection.onChange(() => {
+          console.log('触发');
           dispatch(newMessageGet(selectedConversationId));
         });
       }
@@ -385,6 +386,7 @@ export default function ChatView() {
         <Stack
           component={!isDesktop && selectedConversationId ? null : Card}
           direction="row"
+          className="bottom-chat"
           sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
         >
           {renderNav}
