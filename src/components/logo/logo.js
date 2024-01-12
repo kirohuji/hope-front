@@ -42,7 +42,7 @@ const Logo = forwardRef(({ only, disabledLink = false, sx, ...other }, ref) => {
       {...other}
     >
       <Image
-        src={only ? '/favicon/package.png' : '/favicon/logo_transparent.png'}
+        src={only ? '/favicon3/package.png' : '/favicon3/logo_transparent.png'}
         // ratio="4/3"
         // sx={{ height: 'unset', width: 'unset' }}
       />
