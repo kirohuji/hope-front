@@ -48,7 +48,7 @@ export default function Upload({
   ...other
 }) {
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
-    validator: sizeValidator,
+    // validator: sizeValidator,
     multiple,
     disabled,
     ...other,

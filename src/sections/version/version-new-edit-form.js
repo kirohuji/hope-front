@@ -5,6 +5,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -17,6 +19,9 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+
 // redux
 import { useDispatch } from 'src/redux/store';
 import { useSnackbar } from 'src/components/snackbar';
@@ -26,35 +31,35 @@ import FormProvider, {
   RHFSwitch,
   RHFTextField,
 } from 'src/components/hook-form';
-import { scopeService, fileService } from 'src/composables/context-provider';
+import { versionService, fileService } from 'src/composables/context-provider';
 import { getScopes } from 'src/redux/slices/scope';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeNewEditForm ({ currentScope }) {
+export default function ScopeNewEditForm({ current }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const mdUp = useResponsive('up', 'md');
-
+  const loading = useBoolean(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const NewScopeSchema = Yup.object().shape({
     label: Yup.string().required('请输入标题'),
     value: Yup.string().required('请输入编码'),
     description: Yup.string().required('请输入描述'),
-    cover: Yup.string(),
-    published: Yup.boolean(),
+    file: Yup.string(),
+    isActive: Yup.boolean(),
   });
 
   const defaultValues = useMemo(
     () => ({
-      label: currentScope?.label || '',
-      value: currentScope?.value || '',
-      description: currentScope?.description || '',
-      cover: currentScope?.cover || '',
-      // published: currentScope?.published || false,
+      label: current?.label || '',
+      value: current?.value || '',
+      description: current?.description || '',
+      file: current?.file || '',
+      // published: current?.published || false,
     }),
-    [currentScope]
+    [current]
   );
 
   const methods = useForm({
@@ -71,37 +76,44 @@ export default function ScopeNewEditForm ({ currentScope }) {
   } = methods;
 
   useEffect(() => {
-    if (currentScope) {
+    if (current) {
       reset(defaultValues);
     }
-  }, [currentScope, defaultValues, reset]);
+  }, [current, defaultValues, reset]);
 
   const handleDrop = useCallback(
     async (acceptedFiles) => {
-      const file = acceptedFiles[0];
-      const formData = new FormData();
-      formData.append('file', file);
-      const { link } = await fileService.upload(formData)
-      if (file) {
-        setValue('cover', link, { shouldValidate: true });
+      try {
+        const file = acceptedFiles[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        loading.onTrue();
+        const { link } = await fileService.upload(formData);
+        if (file) {
+          setValue('file', link, { shouldValidate: true });
+          loading.onFalse();
+          enqueueSnackbar('上传成功!');
+        }
+      } catch (e) {
+        loading.onFalse();
       }
     },
-    [setValue]
+    [setValue, enqueueSnackbar, loading]
   );
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      if (currentScope && currentScope._id) {
-        await scopeService.patch({
-          _id: currentScope._id,
-          ...data
+      if (current && current._id) {
+        await versionService.patch({
+          _id: current._id,
+          ...data,
         });
       } else {
-        await scopeService.post(data);
+        await versionService.post(data);
       }
       dispatch(getScopes());
       reset();
-      enqueueSnackbar(currentScope ? '更新成功!' : '创建成功!');
+      enqueueSnackbar(current ? '更新成功!' : '创建成功!');
       router.push(paths.dashboard.scope.root);
     } catch (e) {
       enqueueSnackbar(e.response.data.message);
@@ -140,12 +152,31 @@ export default function ScopeNewEditForm ({ currentScope }) {
               <Typography variant="subtitle2">描述</Typography>
               <RHFEditor simple name="description" />
             </Stack>
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">封面</Typography>
+            <Stack spacing={1.5} sx={{ position: 'relative' }}>
+              <Typography variant="subtitle2">文件</Typography>
+              {loading.value && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 10,
+                    backgroundColor: '#ffffffc4',
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              )}
               <RHFUpload
                 thumbnail
-                name="cover"
-                maxSize={3145728}
+                accept={{ '*': [] }}
+                name="file"
+                maxSize={314572800}
                 onDrop={handleDrop}
                 // onRemove={handleRemoveFile}
                 // onRemoveAll={handleRemoveAllFiles}
@@ -162,15 +193,10 @@ export default function ScopeNewEditForm ({ currentScope }) {
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'right' }}>
-        {
-          /**
-           <FormControlLabel
-           control={<RHFSwitch name="published" defaultChecked label="是否发布" />}
-           sx={{ flexGrow: 1, pl: 3 }}
-         />
-           */
-        }
-
+        <FormControlLabel
+          control={<RHFSwitch name="isActive" defaultChecked label="设为最新版本" />}
+          sx={{ flexGrow: 1, pl: 3 }}
+        />
         <LoadingButton
           type="submit"
           variant="contained"
@@ -178,7 +204,7 @@ export default function ScopeNewEditForm ({ currentScope }) {
           loading={isSubmitting}
           sx={{ ml: 2 }}
         >
-          {!currentScope ? '创建' : '保存修改'}
+          {!current ? '创建' : '保存修改'}
         </LoadingButton>
       </Grid>
     </>
@@ -196,5 +222,5 @@ export default function ScopeNewEditForm ({ currentScope }) {
 }
 
 ScopeNewEditForm.propTypes = {
-  currentScope: PropTypes.object,
+  current: PropTypes.object,
 };

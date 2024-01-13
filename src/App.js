@@ -45,7 +45,6 @@ import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/amplify';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/firebase';
-
 // ----------------------------------------------------------------------
 
 import { Capacitor } from '@capacitor/core';
@@ -65,22 +64,6 @@ export default function App() {
   // console.info(`%c${charAt}`, 'color: #5BE49B');
 
   useScrollToTop();
-
-  // useEffect(() => {
-  //   if (Capacitor.getPlatform() === 'ios') {
-  //     console.log('iOS!');
-  //     // alert('iOS');
-  //     import('./ios.css');
-  //   } else if (Capacitor.getPlatform() === 'android') {
-  //     console.log('Android!');
-  //     // alert('Android');
-  //   } else {
-  //     console.log('Web!');
-  //     import('./web.css');
-  //     alert('Web');
-  //   }
-  // });
-
   return (
     <AuthProvider>
       <ReduxProvider>

@@ -63,7 +63,7 @@ export default function VersionList({ versions, onRefresh }) {
           <VersionItem
             key={version._id}
             version={version}
-            onView={() => handleView(version._id)}
+            // onView={() => handleView(version._id)}
             onEdit={() => handleEdit(version._id)}
             onDelete={() => {
               setCurrent(version);

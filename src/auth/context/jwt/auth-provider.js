@@ -1,12 +1,50 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
+import _ from 'lodash';
 
-import { authService, userService, ddpclient } from 'src/composables/context-provider';
+import {
+  authService,
+  userService,
+  ddpclient,
+  versionService,
+} from 'src/composables/context-provider';
 
 import { Capacitor } from '@capacitor/core';
+import { CapacitorUpdater } from '@capgo/capacitor-updater';
+import { SplashScreen } from '@capacitor/splash-screen';
+import { App } from '@capacitor/app';
 import { AuthContext } from './auth-context';
 import { setSession, setInfo } from './utils';
+
+let data = { version: '' };
+CapacitorUpdater.notifyAppReady();
+App.addListener('appStateChange', async (state) => {
+  console.log('触发', state.isActive);
+  if (state.isActive) {
+    // Do the download during user active app time to prevent failed download
+    // eslint-disable-next-line no-const-assign
+    const datas = await versionService.getAll();
+    const config = _.maxBy(datas, 'value');
+    data = await CapacitorUpdater.download({
+      id: config._id,
+      version: config.value,
+      url: config.file,
+    });
+  }
+  if (!state.isActive && data.version !== '') {
+    // Do the switch when user leave app
+    console.log('App is background');
+    console.log('bundle list', await CapacitorUpdater.list());
+    SplashScreen.show();
+    try {
+      await CapacitorUpdater.set(data);
+    } catch (err) {
+      console.log(err);
+      SplashScreen.hide(); // in case the set fail, otherwise the new app will have to hide it
+    }
+  }
+});
 // ----------------------------------------------------------------------
 
 // NOTE:
@@ -126,7 +164,6 @@ export function AuthProvider({ children }) {
         await ddpclient.call('login', {
           resume: accessToken,
         });
-
         setSession(accessToken);
 
         const localInfo = localStorage.getItem('info');

@@ -40,7 +40,7 @@ export default function VersionItem({ version, onView, onEdit, onDelete }) {
             primary={
               <Link
                 component={RouterLink}
-                href={paths.dashboard.version.details(_id)}
+                // href={paths.dashboard.version.details(_id)}
                 color="inherit"
               >
                 {label}

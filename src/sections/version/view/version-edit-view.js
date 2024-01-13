@@ -58,7 +58,7 @@ export default function VersionEditView() {
         }}
       />
 
-      {!!currentVersion && <VersionNewEditForm currentVersion={currentVersion} />}
+      {!!currentVersion && <VersionNewEditForm current={currentVersion} />}
     </Container>
   );
 }
