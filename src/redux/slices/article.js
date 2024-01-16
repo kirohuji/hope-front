@@ -77,7 +77,12 @@ export function getArticle(id) {
       dispatch(slice.actions.getArticleSuccess(response));
     } catch (error) {
       console.error(error);
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
@@ -88,7 +93,12 @@ export function pagination(query, options) {
       const response = await articleService.pagination(query, options);
       dispatch(slice.actions.getDatasSuccess(response));
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }

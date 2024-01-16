@@ -5,17 +5,24 @@ export default function useGetNavItem({ currentUserId, conversation, user }) {
 
   const participantsInConversation = participants?.filter(
     (participant) => participant._id !== currentUserId
-  ) || [{
-    ...conversation,
-    username: conversation.name || conversation.username,
-    photoURL: conversation?.avatarUrl?.preview || conversation.photoURL,
-  }];
+  ) || [
+    {
+      ...conversation,
+      username: conversation.name || conversation.username,
+      photoURL: conversation?.avatarUrl?.preview || conversation.photoURL,
+    },
+  ];
 
-  const lastMessage = messages ? messages[messages.length - 1] : { body: ''};
+  const lastMessage = messages ? messages[messages.length - 1] : { body: '' };
 
   const group = participantsInConversation.length > 2;
 
-  const displayName = group ? participantsInConversation.map((participant) => participant.username).join(', ') : participantsInConversation[0]?.username;
+  const displayName = group
+    ? participantsInConversation.map((participant) => participant.realName).join(', ')
+    : participantsInConversation[0]?.displayName || participantsInConversation[0]?.username;
+  const realName = group
+    ? participantsInConversation.map((participant) => participant.realName).join(', ')
+    : participantsInConversation[0]?.realName;
 
   const hasOnlineInGroup = group
     ? participantsInConversation.map((item) => item.status).includes('online')
@@ -34,7 +41,8 @@ export default function useGetNavItem({ currentUserId, conversation, user }) {
   return {
     group,
     displayName,
-    type: conversation.type || "contact",
+    realName,
+    type: conversation.type || 'contact',
     displayText,
     participants: participantsInConversation,
     lastActivity: lastMessage?.createdAt,

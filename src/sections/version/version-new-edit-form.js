@@ -114,7 +114,7 @@ export default function ScopeNewEditForm({ current }) {
       dispatch(getScopes());
       reset();
       enqueueSnackbar(current ? '更新成功!' : '创建成功!');
-      router.push(paths.dashboard.scope.root);
+      router.push(paths.dashboard.version.root);
     } catch (e) {
       enqueueSnackbar(e.response.data.message);
     }

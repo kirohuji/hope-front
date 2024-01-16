@@ -12,46 +12,50 @@ import {
 
 import { Capacitor } from '@capacitor/core';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
-import { SplashScreen } from '@capacitor/splash-screen';
 import { App } from '@capacitor/app';
 import { AuthContext } from './auth-context';
 import { setSession, setInfo } from './utils';
 
-let data = { version: '' };
+let data = { version: -1 };
 CapacitorUpdater.notifyAppReady();
 App.addListener('appStateChange', async (state) => {
-  console.log('触发', state.isActive);
-  if (state.isActive) {
-    // Do the download during user active app time to prevent failed download
-    // eslint-disable-next-line no-const-assign
-    const datas = await versionService.getAll();
-    const config = _.maxBy(datas, 'value');
-    data = await CapacitorUpdater.download({
-      id: config._id,
-      version: config.value,
-      url: config.file,
-    });
-  }
-  if (!state.isActive && data.version !== '') {
-    // Do the switch when user leave app
-    console.log('App is background');
-    console.log('bundle list', await CapacitorUpdater.list());
-    SplashScreen.show();
-    try {
-      await CapacitorUpdater.set(data);
-    } catch (err) {
-      console.log(err);
-      SplashScreen.hide(); // in case the set fail, otherwise the new app will have to hide it
+  if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
+    const current = await CapacitorUpdater.current();
+    if (state.isActive) {
+      console.log('安装包下载状态');
+      console.log('当前正在使用的安装包', current);
+      const datas = await versionService.getAll();
+      const config = _.maxBy(datas, 'value');
+      if (current.bundle.version !== config.value) {
+        console.log('从后台拿到的安装包URL', config);
+        console.log('从后台拿到的安装包URL开始下载', config);
+        data = await CapacitorUpdater.download({
+          version: config.value,
+          url: config.file,
+        });
+        console.log('从后台下载好的安装包', data);
+      } else {
+        console.log('当前安装包已经是最新的了');
+      }
+    }
+    if (
+      !state.isActive &&
+      data.version !== '' &&
+      data.version !== -1 &&
+      current.version !== data.version
+    ) {
+      console.log('安装包安装状态');
+      try {
+        console.log('安装包bundle list', await CapacitorUpdater.list());
+        await CapacitorUpdater.set(data);
+        console.log('安装包安装安好了');
+      } catch (err) {
+        console.log('安装包安装失败了');
+        console.log(err);
+      }
     }
   }
 });
-// ----------------------------------------------------------------------
-
-// NOTE:
-// We only build demo at basic level.
-// Customer will need to do some extra handling yourself if you want to extend the logic and other features...
-
-// ----------------------------------------------------------------------
 
 const initialState = {
   isInitialized: false,

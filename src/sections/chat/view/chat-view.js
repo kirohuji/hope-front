@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 // @mui
 import Card from '@mui/material/Card';
+import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -9,6 +10,7 @@ import Tab from '@mui/material/Tab';
 import Link from '@mui/material/Link';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 import Scrollbar from 'src/components/scrollbar';
 // routes
 import { useSearchParams } from 'src/routes/hook';
@@ -93,6 +95,7 @@ export default function ChatView() {
   const dispatch = useDispatch();
 
   const [currentTab, setCurrentTab] = useState('conversations');
+  const [loading, setLoading] = useState(true);
 
   const { conversations, sendingMessage, contacts } = useSelector((state) => state.chat);
 
@@ -178,6 +181,7 @@ export default function ChatView() {
     setLevels(levels2);
   };
 
+  // 聊天的详情
   const getDetails = useCallback(async () => {
     setConversationsLoading(true);
     // await dispatch(getConversations());
@@ -187,7 +191,6 @@ export default function ChatView() {
   }, [dispatch, selectedConversationId]);
 
   useEffect(() => {
-    setConversationsLoading(true);
     if (selectedConversationId) {
       getDetails();
       if (ddpclient.connected && user) {
@@ -200,14 +203,12 @@ export default function ChatView() {
         getMessage.ready();
         reactiveCollection = ddpclient.collection('socialize:messages').reactive();
         reactiveCollection.onChange(() => {
-          console.log('触发');
           dispatch(newMessageGet(selectedConversationId));
         });
       }
     } else {
       dispatch(resetActiveConversation());
     }
-    setConversationsLoading(false);
     return () => {
       if (reactiveCollection) {
         reactiveCollection.stop();
@@ -217,10 +218,18 @@ export default function ChatView() {
   }, [dispatch, active._id, getDetails, selectedConversationId, user]);
 
   const onRefreshWithOrganization = useCallback(async () => {
+    setLoading(true);
     const organizationData = await dispatch(getOrganizations(active._id));
     setCurrentFirstOrganization(organizationData);
     setCurrentOrganization(organizationData);
-  }, [active._id, dispatch]);
+    setLoading(false);
+  }, [active._id, dispatch, setLoading]);
+
+  const onRefreshWithConversations = useCallback(async () => {
+    setLoading(true);
+    await dispatch(getConversations());
+    setLoading(false);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!selectedConversationId) {
@@ -230,12 +239,13 @@ export default function ChatView() {
           onRefreshWithOrganization();
           break;
         case 'conversations':
-          dispatch(getConversations());
+          onRefreshWithConversations();
           try {
             conversations2Publish = ddpclient.subscribe('socialize.conversations2', user?._id);
             conversations2Publish.ready();
             conversations2Collection = ddpclient.collection('socialize:conversations').reactive();
             conversations2Collection.onChange(async () => {
+              console.log('更新');
               dispatch(getConversations());
             });
           } catch (e) {
@@ -254,7 +264,15 @@ export default function ChatView() {
       };
     }
     return () => {};
-  }, [active._id, currentTab, dispatch, onRefreshWithOrganization, selectedConversationId, user]);
+  }, [
+    active._id,
+    currentTab,
+    dispatch,
+    onRefreshWithConversations,
+    onRefreshWithOrganization,
+    selectedConversationId,
+    user,
+  ]);
 
   const participants = conversation
     ? conversation.participants.filter((participant) => participant._id !== user?._id)
@@ -382,40 +400,56 @@ export default function ChatView() {
           聊天
         </Typography>
       )}
-      {(isDesktop || selectedConversationId) && (
-        <Stack
-          component={!isDesktop && selectedConversationId ? null : Card}
-          direction="row"
-          className="bottom-chat"
-          sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
-        >
-          {renderNav}
-
-          <Stack
+      {(isDesktop || selectedConversationId) &&
+        (conversationsLoading ? (
+          <Box
             sx={{
-              width: 1,
-              height: 1,
-              overflow: 'hidden',
+              zIndex: 10,
+              backgroundColor: '#ffffffc4',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              padding: '16px',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
-            {renderHead}
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Stack
+            component={!isDesktop && selectedConversationId ? null : Card}
+            direction="row"
+            className="bottom-chat"
+            sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
+          >
+            {renderNav}
 
             <Stack
-              direction="row"
               sx={{
                 width: 1,
                 height: 1,
                 overflow: 'hidden',
-                borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
               }}
             >
-              {renderMessages}
+              {renderHead}
 
-              {details && <ChatRoom conversation={conversation} participants={participants} />}
+              <Stack
+                direction="row"
+                sx={{
+                  width: 1,
+                  height: 1,
+                  overflow: 'hidden',
+                  borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
+                }}
+              >
+                {renderMessages}
+
+                {details && <ChatRoom conversation={conversation} participants={participants} />}
+              </Stack>
             </Stack>
           </Stack>
-        </Stack>
-      )}
+        ))}
       {!selectedConversationId && (
         <Stack>
           {!isDesktop && (
@@ -429,7 +463,25 @@ export default function ChatView() {
                 {renderTabs}
               </Stack>
               <Divider />
-              {currentTab === 'organizations' && renderOrganizations}
+              {currentTab === 'organizations' &&
+                (loading ? (
+                  <Box
+                    sx={{
+                      zIndex: 10,
+                      backgroundColor: '#ffffffc4',
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      padding: '16px',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <CircularProgress />
+                  </Box>
+                ) : (
+                  renderOrganizations
+                ))}
               {currentTab === 'contacts' &&
                 contacts.allIds
                   .map((id) => contacts.byId[id])
@@ -443,23 +495,27 @@ export default function ChatView() {
                       selected={contact._id === selectedConversationId}
                     />
                   ))}
-              {currentTab === 'conversations' &&
-                conversations.allIds.map(
-                  (conversationId) =>
-                    !conversations.byId[conversationId].isRemove && (
-                      <ChatNavItem
-                        key={conversationId}
-                        deleteConversation={() => {
-                          removeConversation(conversationId);
-                        }}
-                        conversation={{
-                          ...conversations.byId[conversationId],
-                          type: 'conversation',
-                        }}
-                        selected={conversationId === selectedConversationId}
-                      />
-                    )
-                )}
+              {currentTab === 'conversations' && (
+                <>
+                  {/* {loading && <LinearProgress color="inherit" sx={{ mt: 1, mb: 1, width: 1 }} />} */}
+                  {conversations.allIds.map(
+                    (conversationId) =>
+                      !conversations.byId[conversationId].isRemove && (
+                        <ChatNavItem
+                          key={conversationId}
+                          deleteConversation={() => {
+                            removeConversation(conversationId);
+                          }}
+                          conversation={{
+                            ...conversations.byId[conversationId],
+                            type: 'conversation',
+                          }}
+                          selected={conversationId === selectedConversationId}
+                        />
+                      )
+                  )}
+                </>
+              )}
             </>
           )}
         </Stack>

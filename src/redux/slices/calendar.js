@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import _ from 'lodash'
+import _ from 'lodash';
 import { eventService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
@@ -14,31 +14,31 @@ const slice = createSlice({
   initialState,
   reducers: {
     // START LOADING
-    startLoading (state) {
+    startLoading(state) {
       state.isLoading = true;
     },
 
     // HAS ERROR
-    hasError (state, action) {
+    hasError(state, action) {
       state.isLoading = false;
       state.error = action.payload;
     },
 
     // GET EVENTS
-    getEventsSuccess (state, action) {
+    getEventsSuccess(state, action) {
       state.isLoading = false;
       state.events = action.payload;
     },
 
     // CREATE EVENT
-    createEventSuccess (state, action) {
+    createEventSuccess(state, action) {
       // const newEvent = action.payload;
       state.isLoading = false;
       // state.events = [...state.events, newEvent];
     },
 
     // UPDATE EVENT
-    updateEventSuccess (state, action) {
+    updateEventSuccess(state, action) {
       state.isLoading = false;
       // state.events = state.events.map((event) => {
       //   if (event.id === action.payload.id) {
@@ -49,7 +49,7 @@ const slice = createSlice({
     },
 
     // DELETE EVENT
-    deleteEventSuccess (state, action) {
+    deleteEventSuccess(state, action) {
       const eventId = action.payload;
       state.events = state.events.filter((event) => event.id !== eventId);
     },
@@ -61,70 +61,94 @@ export default slice.reducer;
 
 // ----------------------------------------------------------------------
 
-export function getEvents () {
+export function getEvents() {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
       // dispatch(slice.actions.getEventsSuccess([]))
-      const response = await eventService.getWithCurrentUser()
-      dispatch(slice.actions.getEventsSuccess(_.compact(response).map(item=> ({
-          ...item,
-          id: item._id,
-          start: new Date(item.start).toISOString(),
-          end: new Date(item.end).toISOString(),
-          textColor: item.color,
-          title: item.label,
-          // display: 'background'
-        }))));
+      const response = await eventService.getWithCurrentUser();
+      dispatch(
+        slice.actions.getEventsSuccess(
+          _.compact(response).map((item) => ({
+            ...item,
+            id: item._id,
+            start: new Date(item.start).toISOString(),
+            end: new Date(item.end).toISOString(),
+            textColor: item.color,
+            title: item.label,
+            // display: 'background'
+          }))
+        )
+      );
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
 
 // ----------------------------------------------------------------------
 
-export function createEvent (newEvent) {
+export function createEvent(newEvent) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await eventService.createCurrentUser(newEvent)
+      const response = await eventService.createCurrentUser(newEvent);
       dispatch(slice.actions.createEventSuccess(response));
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
 
 // ----------------------------------------------------------------------
 
-export function updateEvent (eventId, event) {
+export function updateEvent(eventId, event) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
       const response = await eventService.updateCurrentUser({
         _id: eventId,
-        ...event
-      })
+        ...event,
+      });
       dispatch(slice.actions.updateEventSuccess(response));
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
 
 // ----------------------------------------------------------------------
 
-export function deleteEvent (eventId) {
+export function deleteEvent(eventId) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
       await eventService.deleteCurrentUser({
-        _id: eventId
-      })
+        _id: eventId,
+      });
       dispatch(slice.actions.deleteEventSuccess(eventId));
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }

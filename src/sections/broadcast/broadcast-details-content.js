@@ -152,7 +152,7 @@ export default function BroadcastDetailsContent({ broadcast }) {
           <Box component="span" sx={{ typography: 'body2', color: 'text.secondary' }}>
             负责人:
           </Box>
-          {leaders && leaders && leaders.map((leader) => leader.username).join(', ')}
+          {leaders && leaders && leaders.map((leader) => leader.realName).join(', ')}
         </Stack>
       </Stack>
     </>
@@ -175,7 +175,7 @@ export default function BroadcastDetailsContent({ broadcast }) {
         },
         {
           label: '联系人',
-          value: leaders && leaders.map((leader) => leader.username).join(', '),
+          value: leaders && leaders.map((leader) => leader.realName).join(', '),
           icon: <Iconify icon="solar:user-rounded-bold" />,
         },
         {

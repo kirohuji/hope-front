@@ -8,6 +8,7 @@ const config: CapacitorConfig = {
       autoUpdate: false,
     },
   },
+  bundledWebRuntime: false,
   webDir: 'build',
   server: {
     androidScheme: 'https',

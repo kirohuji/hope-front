@@ -115,7 +115,12 @@ export function pagination(query, options) {
       const response = await broadcastService.pagination(query, options);
       dispatch(slice.actions.getDatasSuccess(response));
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
@@ -142,6 +147,8 @@ export function getData({ id, user }) {
             fields: {
               photoURL: 1,
               username: 1,
+              realName: 1,
+              displayName: 1,
               phoneNumber: 1,
             },
           }

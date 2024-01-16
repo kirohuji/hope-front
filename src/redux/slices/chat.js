@@ -146,10 +146,8 @@ const slice = createSlice({
         '_id'
       );
       state.lastMessage = _.last(newMessages);
-      // state.conversations.byId[conversationId].messages[
-      //   state.conversations.byId[conversationId].messages.length - 1
-      // ];
-      state.conversations.byId[conversationId].messages = _.dropRight(newMessages);
+      // state.conversations.byId[conversationId].messages = _.dropRight(newMessages);
+      state.conversations.byId[conversationId].messages = newMessages;
     },
 
     markConversationAsReadSuccess(state, action) {
@@ -239,7 +237,12 @@ export function getMessages(conversationKey, messageLimit) {
         })
       );
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
@@ -275,7 +278,12 @@ export function newMessageGet(conversationId) {
         );
       }
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
@@ -289,7 +297,12 @@ export function getContacts() {
       const data = await friendService.friendsAsUsers();
       dispatch(slice.actions.getContactsSuccess(data));
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
@@ -307,7 +320,12 @@ export function getOrganizations(scope) {
       dispatch(slice.actions.getOrganizationsSuccess(data));
       return data;
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
       return [];
     }
   };
@@ -329,7 +347,12 @@ export function getConversations() {
         )
       );
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
@@ -343,7 +366,12 @@ export function getConversation(conversationKey) {
       const data = await messagingService.getConversationById({ _id: conversationKey });
       dispatch(slice.actions.getConversationSuccess(data));
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
@@ -356,7 +384,12 @@ export function deleteConversation(conversationKey) {
       const data = await messagingService.usersAndConversations();
       dispatch(slice.actions.getConversationsSuccess(data));
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
@@ -372,7 +405,12 @@ export function markConversationAsRead(conversationId) {
       // });
       // dispatch(slice.actions.markConversationAsReadSuccess({ conversationId }));
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
@@ -386,7 +424,12 @@ export function getParticipants(conversationKey) {
       const data = await messagingService.getConversationParticipantsById({ _id: conversationKey });
       dispatch(slice.actions.getParticipantsSuccess(data));
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
@@ -401,7 +444,12 @@ export function mergeConversations(newData) {
         })
       );
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }

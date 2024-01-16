@@ -57,7 +57,12 @@ export function pagination(query, options) {
       const response = await bookService.pagination(query, options);
       dispatch(slice.actions.getDatasSuccess(response));
     } catch (error) {
-      dispatch(slice.actions.hasError(error));
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
     }
   };
 }
