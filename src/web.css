@@ -102,3 +102,7 @@
     height: calc(100vh - 70px) !important;
   }
 }
+
+.MuiBottomNavigationAction-label {
+  opacity: 1 !important;
+}

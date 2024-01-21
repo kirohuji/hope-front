@@ -86,9 +86,6 @@ const TABS = [
 let reactiveCollection = null;
 let getMessage = null;
 
-let conversations2Publish = null;
-let conversations2Collection = null;
-
 export default function ChatView() {
   const { enqueueSnackbar } = useSnackbar();
 
@@ -240,28 +237,11 @@ export default function ChatView() {
           break;
         case 'conversations':
           onRefreshWithConversations();
-          try {
-            conversations2Publish = ddpclient.subscribe('socialize.conversations2', user?._id);
-            conversations2Publish.ready();
-            conversations2Collection = ddpclient.collection('socialize:conversations').reactive();
-            conversations2Collection.onChange(async () => {
-              console.log('更新');
-              dispatch(getConversations());
-            });
-          } catch (e) {
-            console.log(e);
-          }
           break;
         case 'contacts':
           dispatch(getContacts());
           break;
       }
-      return () => {
-        if (conversations2Publish) {
-          conversations2Publish.stop();
-          conversations2Collection.stop();
-        }
-      };
     }
     return () => {};
   }, [

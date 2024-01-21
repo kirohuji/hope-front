@@ -1,6 +1,7 @@
 import * as React from 'react';
 // import { useRouter } from 'next/router';
 import BottomNavigation from '@mui/material/BottomNavigation';
+import Badge from '@mui/material/Badge';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Paper from '@mui/material/Paper';
 import { Link } from 'react-router-dom';
@@ -38,6 +39,7 @@ const navigations = [
 ];
 export default function DashboardFooter() {
   const dashboard = useSelector((state) => state.dashboard);
+  const chat = useSelector((state) => state.chat);
   const dispatch = useDispatch();
   const pathname = usePathname();
   const { permissions, isAdmin } = useAuthContext();
@@ -52,10 +54,26 @@ export default function DashboardFooter() {
 
   const checkAuth = (nav) => {
     if (!nav.auth) {
-      return <BottomNavigationAction {...nav} component={Link} key={nav.to} />;
+      return (
+        <BottomNavigationAction
+          {...nav}
+          component={Link}
+          key={nav.to}
+          // sx={{ width: 80, height: 50 }}
+        />
+      );
     }
     if (_.intersection(permissions, nav.auth).length > 0 || isAdmin) {
-      return <BottomNavigationAction {...nav} component={Link} key={nav.to} />;
+      return (
+        <Badge color="error" overlap="circular" badgeContent={chat.conversations.unreadCount}>
+          <BottomNavigationAction
+            {...nav}
+            component={Link}
+            key={nav.to}
+            sx={{ pt: 0, opacity: 1 }}
+          />
+        </Badge>
+      );
     }
     return null;
   };

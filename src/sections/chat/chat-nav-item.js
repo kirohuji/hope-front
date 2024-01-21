@@ -54,7 +54,7 @@ export default function ChatNavItem({
     hasOnlineInGroup,
   } = useGetNavItem({
     conversation,
-    currentUserId: user._id,
+    currentUserId: user?._id,
   });
 
   const singleParticipant = participants[0];
@@ -66,14 +66,14 @@ export default function ChatNavItem({
       onChildren(conversation);
     } else {
       try {
-        if (user._id !== conversation._id) {
+        if (user?._id !== conversation._id) {
           if (!mdUp) {
             // eslint-disable-next-line no-unused-expressions
             onCloseMobile && onCloseMobile();
           }
           if (type === 'contact') {
             const newConversation = await messagingService.room({
-              participants: [user._id, conversation._id],
+              participants: [user?._id, conversation._id],
             });
             router.push(`${paths.chat}?id=${newConversation._id}`);
           } else {
@@ -84,7 +84,7 @@ export default function ChatNavItem({
         console.error(error);
       }
     }
-  }, [type, onChildren, conversation, mdUp, onCloseMobile, user._id, router]);
+  }, [type, onChildren, conversation, mdUp, onCloseMobile, user?._id, router]);
 
   const renderGroup = (
     <Badge
@@ -121,11 +121,7 @@ export default function ChatNavItem({
         }),
       }}
     >
-      <Badge
-        color="error"
-        overlap="circular"
-        badgeContent={collapse ? conversation.unreadCount : 0}
-      >
+      <Badge color="error" overlap="circular" badgeContent={conversation.unreadCount}>
         {group && participants ? renderGroup : singleParticipant && renderSingle}
       </Badge>
 

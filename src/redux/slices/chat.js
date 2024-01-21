@@ -19,7 +19,7 @@ const initialState = {
   error: null,
   contacts: { byId: {}, allIds: [] },
   organizations: [],
-  conversations: { byId: {}, allIds: [] },
+  conversations: { byId: {}, allIds: [], unreadCount: 0 },
   conversationsByAll: [],
   contactsByAll: [],
   activeConversationId: null,
@@ -76,6 +76,10 @@ const slice = createSlice({
       state.conversationsByAll = conversations;
       state.conversations.byId = keyBy(conversations, '_id');
       state.conversations.allIds = Object.keys(state.conversations.byId);
+      state.conversations.unreadCount = conversations.reduce(
+        (previous, current) => previous + current.unreadCount,
+        0
+      );
     },
 
     // GET CONVERSATION
@@ -96,17 +100,8 @@ const slice = createSlice({
     // ON SEND MESSAGE
     onSendMessage(state, action) {
       const conversation = action.payload;
-      const {
-        conversationId,
-        messageId,
-        message,
-        contentType,
-        attachments,
-        createdAt,
-        senderId,
-        isLoading,
-      } = conversation;
-
+      const { messageId, message, contentType, attachments, createdAt, senderId, isLoading } =
+        conversation;
       const newMessage = {
         _id: messageId,
         body: message,
@@ -120,17 +115,20 @@ const slice = createSlice({
       // state.conversations.byId[conversationId].messages.push(newMessage);
     },
 
+    // 获取所有数据
     getMessagesSuccess(state, action) {
       const { conversationId, data } = action.payload;
       const orderData = _.orderBy(data, ['createdAt', 'asc']);
       if (!state.conversations.byId[conversationId]?.messages) {
         state.conversations.byId[conversationId].messages = [];
       }
-      state.conversations.byId[conversationId].messages.unshift(...orderData);
+      state.conversations.byId[conversationId].messages = orderData;
+      // state.conversations.byId[conversationId].messages.unshift(...orderData);
       state.lastMessage = _.last(orderData);
       state.sendingMessage = {};
     },
 
+    // 获取最新数据
     getNewMessagesSuccess(state, action) {
       const { conversationId, data } = action.payload;
       const orderData = _.orderBy(data, ['createdAt', 'asc']);

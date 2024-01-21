@@ -13,7 +13,10 @@ import AppBar from '@mui/material/AppBar';
 //
 import { usePathname } from 'src/routes/hook';
 import { useDispatch, useSelector } from 'src/redux/store';
+import { getConversations } from 'src/redux/slices/chat';
 import { getScopes } from 'src/redux/slices/scope';
+import { ddpclient } from 'src/composables/context-provider';
+import { useAuthContext } from 'src/auth/hooks';
 import Main from './main';
 import Header from './header';
 import NavMini from './nav-mini';
@@ -22,7 +25,10 @@ import NavHorizontal from './nav-horizontal';
 import DashboardFooter from './footer';
 // ----------------------------------------------------------------------
 
+let conversations2Publish = null;
+let conversations2Collection = null;
 export default function DashboardLayout({ children }) {
+  const { user } = useAuthContext();
   const dispatch = useDispatch();
   const scope = useSelector((state) => state.scope);
 
@@ -54,6 +60,27 @@ export default function DashboardLayout({ children }) {
   useEffect(() => {
     getAllEvents();
   }, [getAllEvents]);
+
+  useEffect(() => {
+    try {
+      if (user.id) {
+        conversations2Publish = ddpclient.subscribe('socialize.conversations2', user?._id);
+        conversations2Publish.ready();
+        conversations2Collection = ddpclient.collection('socialize:conversations').reactive();
+        conversations2Collection.onChange(async () => {
+          dispatch(getConversations());
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    return () => {
+      if (conversations2Publish) {
+        conversations2Publish.stop();
+        conversations2Collection.stop();
+      }
+    };
+  }, [dispatch, user]);
 
   if (isHorizontal) {
     return (

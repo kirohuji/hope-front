@@ -46,10 +46,6 @@ import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/amplify';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/firebase';
 // ----------------------------------------------------------------------
-
-import { Capacitor } from '@capacitor/core';
-import { useEffect } from 'react';
-
 export default function App() {
   // const charAt = `
 
