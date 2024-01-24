@@ -194,7 +194,7 @@ export default function BookDetailsView() {
                 onClick={() => handlePublish()}
                 loading={buttonLoading}
               >
-                发布灵修
+                发布阅读
               </LoadingButton>
             )}
             {details.byId[id].isAdmin && details.byId[id].published && (

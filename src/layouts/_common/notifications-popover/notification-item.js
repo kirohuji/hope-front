@@ -21,28 +21,27 @@ import { getFiles } from 'src/redux/slices/file';
 
 // ----------------------------------------------------------------------
 
-function category (notification) {
+function category(notification) {
   let value = '';
   // eslint-disable-next-line default-case
   switch (notification.category) {
     case 'training':
-      value = "灵修";
+      value = '阅读';
       break;
   }
-  return value
+  return value;
 }
-export default function NotificationItem ({ notification }) {
-
+export default function NotificationItem({ notification }) {
   const dispatch = useDispatch();
 
   const onShareFile = async () => {
     await fileManagerService.accpetShareFile(notification);
-    dispatch(getFiles())
-  }
+    dispatch(getFiles());
+  };
   const onDenyShareFile = async () => {
     await fileManagerService.denyShareFile(notification);
-    dispatch(getFiles())
-  }
+    dispatch(getFiles());
+  };
   const renderAvatar = (
     <ListItemAvatar>
       {notification.avatarUrl ? (
@@ -60,11 +59,12 @@ export default function NotificationItem ({ notification }) {
         >
           <Box
             component="img"
-            src={`/assets/icons/notification/${(notification.type === 'order' && 'ic_order') ||
+            src={`/assets/icons/notification/${
+              (notification.type === 'order' && 'ic_order') ||
               (notification.type === 'chat' && 'ic_chat') ||
               (notification.type === 'mail' && 'ic_mail') ||
               (notification.type === 'delivery' && 'ic_delivery')
-              }.svg`}
+            }.svg`}
             sx={{ width: 24, height: 24 }}
           />
         </Stack>
@@ -265,7 +265,7 @@ NotificationItem.propTypes = {
 
 // ----------------------------------------------------------------------
 
-function reader (data) {
+function reader(data) {
   return (
     <Box
       dangerouslySetInnerHTML={{ __html: data }}

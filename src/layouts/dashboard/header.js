@@ -46,7 +46,6 @@ export default function Header({ onOpenNav }) {
       )}
 
       {false && <Searchbar />}
-
       <Stack
         flexGrow={1}
         direction="row"
@@ -56,13 +55,9 @@ export default function Header({ onOpenNav }) {
       >
         {/* <LanguagePopover /> */}
         {/* <NotificationsPopover /> */}
-
         {/* { lgUp && <ScopePopover /> } */}
-
-        {/**  <ContactsPopover /> */}
-
+        {/* <ContactsPopover /> */}
         {/* <SettingsButton /> */}
-
         <AccountPopover />
       </Stack>
     </>

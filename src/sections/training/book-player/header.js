@@ -20,7 +20,7 @@ Header.propTypes = {
   onClose: PropTypes.func,
 };
 
-export default function Header ({ isOffset, onClose }) {
+export default function Header({ isOffset, onClose }) {
   const theme = useTheme();
   const router = useRouter();
   return (
@@ -43,15 +43,15 @@ export default function Header ({ isOffset, onClose }) {
           }),
           position: 'relative',
           justifyContent: 'center',
-          background: 'white'
+          background: 'white',
         }}
       >
         <div style={{ position: 'absolute', top: '14px', left: 0 }}>
-          <IconButtonAnimate sx={{ mr: 1, color: 'text.primary' }} onClick={onClose} >
+          <IconButtonAnimate sx={{ mr: 1, color: 'text.primary' }} onClick={onClose}>
             <Iconify icon="eva:arrow-ios-back-fill" />
           </IconButtonAnimate>
         </div>
-        我的灵修
+        我的阅读
       </Toolbar>
 
       {isOffset && <Shadow />}
@@ -65,7 +65,7 @@ Shadow.propTypes = {
   sx: PropTypes.object,
 };
 
-function Shadow ({ sx, ...other }) {
+function Shadow({ sx, ...other }) {
   return (
     <Box
       sx={{

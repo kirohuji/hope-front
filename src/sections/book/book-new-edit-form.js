@@ -41,7 +41,7 @@ export const TYPE_OPTIONS = [
   { value: 'adolescent', label: '青少年' },
   { value: 'adult', label: '成人' },
   { value: 'newBelievers', label: '初信' },
-  // { value: 'book', label: '灵修' },
+  // { value: 'book', label: '阅读' },
 ];
 
 export default function BookNewEditForm({ currentBook }) {

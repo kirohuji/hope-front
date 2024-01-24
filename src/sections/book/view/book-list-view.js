@@ -174,7 +174,7 @@ export default function BookListView() {
         links={[
           // { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: '灵修本',
+            name: '阅读本',
             href: paths.dashboard.book.root,
           },
           { name: '列表' },

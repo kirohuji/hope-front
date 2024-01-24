@@ -40,7 +40,7 @@ export default function TrainingDashboardView() {
     if (response && response.article_id) {
       navigate(paths.reading(response.article_id));
     } else {
-      enqueueSnackbar('今日没有灵修!');
+      enqueueSnackbar('今日没有阅读!');
     }
   };
   const onSignIn = async () => {
@@ -54,7 +54,7 @@ export default function TrainingDashboardView() {
       });
       setArticleUser(response);
     } else {
-      enqueueSnackbar('今日没有灵修!');
+      enqueueSnackbar('今日没有阅读!');
     }
   };
   useEffect(() => {
@@ -128,7 +128,7 @@ export default function TrainingDashboardView() {
               fontWeight: '700',
             }}
           >
-            今日灵修
+            今日阅读
           </div>
         </Button>
 
@@ -178,7 +178,7 @@ export default function TrainingDashboardView() {
               fontWeight: '700',
             }}
           >
-            灵修进度
+            阅读进度
           </div>
         </Button>
       </Stack>

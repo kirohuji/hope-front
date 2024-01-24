@@ -16,9 +16,7 @@ import uuidv4 from 'src/utils/uuidv4';
 
 // redux
 import { useDispatch } from 'src/redux/store';
-import {
-  sendMessage,
-} from 'src/redux/slices/chat';
+import { sendMessage } from 'src/redux/slices/chat';
 // components
 import Iconify from 'src/components/iconify';
 import moment from 'moment';
@@ -26,7 +24,7 @@ import { fileService, messagingService } from 'src/composables/context-provider'
 
 // ----------------------------------------------------------------------
 
-export default function ChatMessageInput ({
+export default function ChatMessageInput({
   recipients,
   onAddRecipients,
   sendMessageToOpenVidu,
@@ -104,30 +102,31 @@ export default function ChatMessageInput ({
 
   const createConversation = useCallback(async () => {
     let conversationKey = await messagingService.findExistingConversationWithUsers({
-      users: recipients.map(recipient => recipient._id)
-    })
-    console.log('conversationKey', conversationKey)
+      users: recipients.map((recipient) => recipient._id),
+    });
+    console.log('conversationKey', conversationKey);
     if (!conversationKey) {
       conversationKey = await messagingService.room({
-        participants: recipients.map(recipient => recipient._id)
-      })
+        participants: recipients.map((recipient) => recipient._id),
+      });
     }
     return conversationKey;
-  }, [recipients])
+  }, [recipients]);
 
   const handleSendMessage = useCallback(
     async (event) => {
       try {
-        console.log('event', event.shiftKey)
+        console.log('event', event.shiftKey);
         // if (event.shiftKey && event.key === 'Enter') {
         if (event.key === 'Enter') {
+          setMessage('');
           if (message) {
             if (selectedConversationId) {
-              setType('text')
-              try{
+              setType('text');
+              try {
                 await dispatch(sendMessage(selectedConversationId, messageData));
-              } catch(e){
-                enqueueSnackbar(e.message)
+              } catch (e) {
+                enqueueSnackbar(e.message);
               }
               // sendMessageToOpenVidu(message)
             } else {
@@ -142,28 +141,40 @@ export default function ChatMessageInput ({
         console.error(error);
       }
     },
-    [conversationData, message, messageData, dispatch, createConversation, onAddRecipients, router, selectedConversationId, enqueueSnackbar]
+    [
+      conversationData,
+      message,
+      messageData,
+      dispatch,
+      createConversation,
+      onAddRecipients,
+      router,
+      selectedConversationId,
+      enqueueSnackbar,
+    ]
   );
 
   const uploadImage = async () => {
     if (fileRef.current) {
-      const file = fileRef.current.files[0]
+      const file = fileRef.current.files[0];
       const formData = new FormData();
       formData.append('file', file);
-      const { link } = await fileService.upload(formData)
-      await dispatch(sendMessage(selectedConversationId, {
-        ...messageData,
-        body: link,
-        message: link,
-        contentType: 'image'
-      }));
+      const { link } = await fileService.upload(formData);
+      await dispatch(
+        sendMessage(selectedConversationId, {
+          ...messageData,
+          body: link,
+          message: link,
+          contentType: 'image',
+        })
+      );
     }
-  }
+  };
   return (
     <>
       <InputBase
         type="search"
-        enterKeyHint="send"
+        inputProps={{ enterKeyHint: 'send' }}
         value={message}
         onKeyUp={handleSendMessage}
         onChange={handleChangeMessage}
@@ -172,25 +183,27 @@ export default function ChatMessageInput ({
         maxRows={3}
         multiline
         startAdornment={
-          false && <IconButton>
-            <Iconify icon="eva:smiling-face-fill" />
-          </IconButton>
+          false && (
+            <IconButton>
+              <Iconify icon="eva:smiling-face-fill" />
+            </IconButton>
+          )
         }
         endAdornment={
           <Stack direction="row" sx={{ flexShrink: 0 }}>
             <IconButton onClick={handleAttach}>
               <Iconify icon="solar:gallery-add-bold" />
             </IconButton>
-            {
-              false && <IconButton onClick={handleAttach}>
+            {false && (
+              <IconButton onClick={handleAttach}>
                 <Iconify icon="eva:attach-2-fill" />
               </IconButton>
-            }
-            {
-              false && <IconButton>
+            )}
+            {false && (
+              <IconButton>
                 <Iconify icon="solar:microphone-bold" />
               </IconButton>
-            }
+            )}
           </Stack>
         }
         sx={{

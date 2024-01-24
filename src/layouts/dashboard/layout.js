@@ -17,6 +17,7 @@ import { getConversations } from 'src/redux/slices/chat';
 import { getScopes } from 'src/redux/slices/scope';
 import { ddpclient } from 'src/composables/context-provider';
 import { useAuthContext } from 'src/auth/hooks';
+import _ from 'lodash';
 import Main from './main';
 import Header from './header';
 import NavMini from './nav-mini';
@@ -52,7 +53,6 @@ export default function DashboardLayout({ children }) {
 
   const getAllEvents = useCallback(() => {
     if (!scope.active?._id) {
-      console.log('更新作用域');
       dispatch(getScopes());
     }
   }, [dispatch, scope.active]);
@@ -61,14 +61,22 @@ export default function DashboardLayout({ children }) {
     getAllEvents();
   }, [getAllEvents]);
 
+  const updateConversationsByDebounce = _.debounce((target) => {
+    dispatch(
+      getConversations({
+        ids: target.map((item) => item._id),
+      })
+    );
+  }, 2000);
+
   useEffect(() => {
     try {
-      if (user.id) {
+      if (user._id) {
         conversations2Publish = ddpclient.subscribe('socialize.conversations2', user?._id);
         conversations2Publish.ready();
         conversations2Collection = ddpclient.collection('socialize:conversations').reactive();
-        conversations2Collection.onChange(async () => {
-          dispatch(getConversations());
+        conversations2Collection.onChange(async (target) => {
+          updateConversationsByDebounce(target);
         });
       }
     } catch (e) {
@@ -80,7 +88,7 @@ export default function DashboardLayout({ children }) {
         conversations2Collection.stop();
       }
     };
-  }, [dispatch, user]);
+  }, [dispatch, updateConversationsByDebounce, user]);
 
   if (isHorizontal) {
     return (

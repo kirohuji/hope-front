@@ -73,7 +73,7 @@ export default function ArticleEditView() {
           //   href: paths.dashboard.root,
           // },
           {
-            name: '灵修本',
+            name: '阅读本',
             href: paths.dashboard.article.root,
           },
           {

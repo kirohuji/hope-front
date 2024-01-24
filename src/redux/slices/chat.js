@@ -331,11 +331,11 @@ export function getOrganizations(scope) {
 
 // ----------------------------------------------------------------------
 
-export function getConversations() {
+export function getConversations(conversationsIds) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const data = await messagingService.usersAndConversations();
+      const data = await messagingService.usersAndConversations(conversationsIds);
       dispatch(
         slice.actions.getConversationsSuccess(
           data.map((conversation) => ({

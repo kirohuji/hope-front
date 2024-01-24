@@ -32,7 +32,7 @@ const navigations = [
     to: '/dashboard/calendar',
   },
   {
-    label: '灵修',
+    label: '阅读',
     icon: ICONS.blog,
     to: '/dashboard/training/dashboard',
   },
@@ -52,7 +52,7 @@ export default function DashboardFooter() {
     }
   }, [dispatch, pathname]);
 
-  const checkAuth = (nav) => {
+  const checkAuth = (nav, index) => {
     if (!nav.auth) {
       return (
         <BottomNavigationAction
@@ -65,11 +65,16 @@ export default function DashboardFooter() {
     }
     if (_.intersection(permissions, nav.auth).length > 0 || isAdmin) {
       return (
-        <Badge color="error" overlap="circular" badgeContent={chat.conversations.unreadCount}>
+        <Badge
+          color="error"
+          overlap="circular"
+          badgeContent={chat.conversations.unreadCount}
+          key={nav.to}
+        >
           <BottomNavigationAction
+            className={dashboard.bottomNavigationActionValue === index ? 'Mui-selected' : ''}
             {...nav}
             component={Link}
-            key={nav.to}
             sx={{ pt: 0, opacity: 1 }}
           />
         </Badge>
@@ -84,7 +89,6 @@ export default function DashboardFooter() {
       className="bottom-navigation"
     >
       <BottomNavigation
-        showLabels
         value={dashboard.bottomNavigationActionValue}
         onChange={(event, newValue) => {
           dispatch(updateBottomNavigationActionValue(newValue));
@@ -98,7 +102,7 @@ export default function DashboardFooter() {
         {/**         <BottomNavigationAction label="工作台" icon={ICONS.kanban} /> */}
         {/* <BottomNavigationAction label="聊天" icon={ICONS.chat} component={Link} to="/dashboard/chat"/>
         <BottomNavigationAction label="文件" icon={ICONS.file} component={Link} to="/dashboard/file-manager"/> */}
-        {navigations.map((navigation) => checkAuth(navigation))}
+        {navigations.map((navigation, index) => checkAuth(navigation, index))}
       </BottomNavigation>
     </Paper>
   );

@@ -58,7 +58,7 @@ export default function BookEditView() {
           //   href: paths.dashboard.root,
           // },
           {
-            name: '灵修本',
+            name: '阅读本',
             href: paths.dashboard.book.root,
           },
           { name: book?.label },

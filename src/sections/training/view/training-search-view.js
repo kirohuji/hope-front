@@ -30,7 +30,7 @@ import { bookService } from 'src/composables/context-provider';
 const TABS = [
   {
     value: 'one',
-    label: '每日灵修',
+    label: '每日阅读',
   },
   // {
   //   value: 'two',

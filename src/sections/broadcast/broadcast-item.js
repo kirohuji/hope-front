@@ -31,7 +31,7 @@ const BROAECAST_TYPE_OPTIONS = [
   { value: 'activity', label: '活动通知' },
   { value: 'notification', label: '消息公告' },
   { value: 'familyGathering', label: '家庭聚会' },
-  // { value: 'book', label: '灵修' },
+  // { value: 'book', label: '阅读' },
 ];
 
 export default function BroadcastItem({ broadcast, onView, onEdit, onDelete }) {

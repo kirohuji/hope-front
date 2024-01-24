@@ -97,8 +97,8 @@ const Transition = forwardRef((props, ref) => <Slide direction="up" ref={ref} {.
 
 const defaultBook = {
   _id: 'YctPoepmauJSeAdZP',
-  label: '没选择灵修本! ',
-  description: '<p>当前没有选择灵修本!</p>',
+  label: '没选择阅读本! ',
+  description: '<p>当前没有选择阅读本!</p>',
   cover: 'http://localhost:5005/images/avatars/uW7stSkCa9PJG5Mwv/original/uW7stSkCa9PJG5Mwv.jpg',
   title: '',
   content: '',
@@ -136,7 +136,7 @@ export default function TrainingProcessPage() {
     try {
       await dispatch(getBooksWithCurrentUser());
       await dispatch(getBooksWithCurrentUserBySummarize());
-      // enqueueSnackbar('灵修本同步成功!')
+      // enqueueSnackbar('阅读本同步成功!')
     } catch (error) {
       // setLoadingPost(false);
       // setErrorMsg(error.message);
@@ -198,7 +198,7 @@ export default function TrainingProcessPage() {
   return (
     <>
       <Helmet>
-        <title> 灵修 | Hope Family</title>
+        <title> 阅读 | Hope Family</title>
       </Helmet>
       <TabPanel value={scrollable} index="one" key={0}>
         <Box sx={{ margin: '0 15px', display: 'flex', justifyContent: 'space-between' }}>
@@ -210,7 +210,7 @@ export default function TrainingProcessPage() {
             component={Link}
             to="/training/search"
           >
-            换本灵修
+            换本阅读
           </Label>
         </Box>
         <Box
@@ -404,7 +404,7 @@ export default function TrainingProcessPage() {
               height: '200px',
             }}
           >
-            <DialogTitle id="alert-dialog-slide-title">2023年5月21日 灵修</DialogTitle>
+            <DialogTitle id="alert-dialog-slide-title">2023年5月21日 阅读</DialogTitle>
             <CustomDialogContent>
               <DialogContentText id="alert-dialog-slide-description" style={{ color: 'black' }}>
                 爱是恒久忍耐...
