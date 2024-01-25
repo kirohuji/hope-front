@@ -39,10 +39,15 @@ const navigations = [
 ];
 export default function DashboardFooter() {
   const dashboard = useSelector((state) => state.dashboard);
+
   const chat = useSelector((state) => state.chat);
+
   const dispatch = useDispatch();
+
   const pathname = usePathname();
+
   const { permissions, isAdmin } = useAuthContext();
+
   React.useEffect(() => {
     const index = _.findIndex(navigations, ['to', pathname]);
     if (index !== -1) {
@@ -65,19 +70,22 @@ export default function DashboardFooter() {
     }
     if (_.intersection(permissions, nav.auth).length > 0 || isAdmin) {
       return (
-        <Badge
-          color="error"
-          overlap="circular"
-          badgeContent={chat.conversations.unreadCount}
+        // <Badge
+        //   color="error"
+        //   overlap="circular"
+        //   {...nav}
+        //   badgeContent={chat.conversations.unreadCount}
+        //   key={nav.to}
+        // >
+        <BottomNavigationAction
+          showlabel="true"
+          className={dashboard.bottomNavigationActionValue === index ? 'Mui-selected' : ''}
+          {...nav}
           key={nav.to}
-        >
-          <BottomNavigationAction
-            className={dashboard.bottomNavigationActionValue === index ? 'Mui-selected' : ''}
-            {...nav}
-            component={Link}
-            sx={{ pt: 0, opacity: 1 }}
-          />
-        </Badge>
+          component={Link}
+          sx={{ pt: 0, opacity: 1 }}
+        />
+        // </Badge>
       );
     }
     return null;

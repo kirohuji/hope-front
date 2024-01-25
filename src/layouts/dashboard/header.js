@@ -15,12 +15,15 @@ import Logo from 'src/components/logo';
 import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 //
+import { usePathname } from 'src/routes/hook';
 import { HEADER, NAV } from '../config-layout';
-import { Searchbar, AccountPopover } from '../_common';
+import { Searchbar, AccountPopover, ChatPopover } from '../_common';
 
 // ----------------------------------------------------------------------
 
 export default function Header({ onOpenNav }) {
+  const pathname = usePathname();
+
   const theme = useTheme();
 
   const settings = useSettingsContext();
@@ -44,7 +47,6 @@ export default function Header({ onOpenNav }) {
           <SvgColor src="/assets/icons/navbar/ic_menu_item.svg" />
         </IconButton>
       )}
-
       {false && <Searchbar />}
       <Stack
         flexGrow={1}
@@ -58,6 +60,7 @@ export default function Header({ onOpenNav }) {
         {/* { lgUp && <ScopePopover /> } */}
         {/* <ContactsPopover /> */}
         {/* <SettingsButton /> */}
+        {pathname === '/dashboard/chat' && <ChatPopover />}
         <AccountPopover />
       </Stack>
     </>

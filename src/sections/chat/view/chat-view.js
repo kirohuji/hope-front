@@ -76,11 +76,16 @@ const TABS = [
   //   label: ' 联系人',
   //   count: 0,
   // },
-  {
-    value: 'organizations',
-    label: '组织架构',
-    count: 0,
-  },
+  // {
+  //   value: 'organizations',
+  //   label: '组织架构',
+  //   count: 0,
+  // },
+  // {
+  //   value: 'organizations',
+  //   label: '组织架构',
+  //   count: 0,
+  // },
 ];
 
 let reactiveCollection = null;

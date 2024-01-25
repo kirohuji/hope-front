@@ -10,6 +10,8 @@ import Typography from '@mui/material/Typography';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Checkbox from '@mui/material/Checkbox';
 import { zhCN } from 'date-fns/locale';
 import Iconify from 'src/components/iconify';
 import IconButton from '@mui/material/IconButton';
@@ -35,6 +37,7 @@ export default function ChatNavItem({
   onChildren,
   collapse,
   conversation,
+  multi,
   onCloseMobile,
 }) {
   const { user } = useAuthContext();
@@ -113,7 +116,7 @@ export default function ChatNavItem({
         width: '100%',
         boxSizing: 'border-box',
         backgroundColor: '#fff',
-        height: '100%',
+        // height: '100%',
         py: 1.5,
         px: 2.5,
         ...(selected && {
@@ -121,6 +124,11 @@ export default function ChatNavItem({
         }),
       }}
     >
+      {multi && (
+        <ListItemIcon>
+          <Checkbox edge="start" tabIndex={-1} disableRipple />
+        </ListItemIcon>
+      )}
       <Badge color="error" overlap="circular" badgeContent={conversation.unreadCount}>
         {group && participants ? renderGroup : singleParticipant && renderSingle}
       </Badge>
@@ -186,6 +194,7 @@ ChatNavItem.propTypes = {
   onSwipe: PropTypes.func,
   onChildren: PropTypes.func,
   collapse: PropTypes.bool,
+  multi: PropTypes.bool,
   conversation: PropTypes.object,
   onCloseMobile: PropTypes.func,
   selected: PropTypes.bool,
