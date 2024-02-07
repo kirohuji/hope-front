@@ -154,6 +154,7 @@ export default function JwtLoginView() {
         遇到什么问题,欢迎及时反馈
       </Alert>
       {renderForm}
+      <div style={{ position: 'absolute', bottom: '16px' }} />
     </FormProvider>
   );
 }

@@ -8,43 +8,43 @@ import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import MenuItem from '@mui/material/MenuItem';
 import InputBase from '@mui/material/InputBase';
-import Avatar from '@mui/material/Avatar';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Dialog, { dialogClasses } from '@mui/material/Dialog';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-
+import LoadingButton from '@mui/lab/LoadingButton';
 import { useDispatch, useSelector } from 'src/redux/store';
+// routes
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hook';
 // hooks
+import { useSnackbar } from 'src/components/snackbar';
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useResponsive } from 'src/hooks/use-responsive';
 import { useEventListener } from 'src/hooks/use-event-listener';
-import {
-  getOrganizations,
-  getConversations,
-  resetActiveConversation,
-  getMessages,
-  getConversation,
-  getContacts,
-  deleteConversation,
-  newMessageGet,
-} from 'src/redux/slices/chat';
+import { getOrganizations } from 'src/redux/slices/chat';
 // components
 import { varHover } from 'src/components/animate';
-import Label from 'src/components/label';
 import Scrollbar from 'src/components/scrollbar';
 import Iconify from 'src/components/iconify';
 import SearchNotFound from 'src/components/search-not-found';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import ChatNavItem from 'src/sections/chat/chat-nav-item';
+import ChatHeaderCompose from 'src/sections/chat/chat-header-compose';
 import _ from 'lodash';
-
+import { fileService, messagingService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
 export default function ChatPopover() {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [loading, setLoading] = useState(false);
+
   const { contacts } = useSelector((state) => state.chat);
+
+  const router = useRouter();
+
+  const [checkeds, setCheckeds] = useState([]);
+
+  const [selectedContacts, setSelectedContacts] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -64,11 +64,17 @@ export default function ChatPopover() {
 
   const popover = usePopover();
 
+  const [recipients, setRecipients] = useState([]);
+
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleClose = useCallback(() => {
     search.onFalse();
     setSearchQuery('');
+    setCheckeds([]);
+    setSelectedContacts([]);
+    setCurrentOrganization([]);
+    setLevels([]);
   }, [search]);
 
   const handleKeyDown = (event) => {
@@ -76,6 +82,25 @@ export default function ChatPopover() {
       search.onToggle();
       setSearchQuery('');
     }
+  };
+
+  const handleSelectContact = (id) => {
+    if (checkeds.includes(id)) {
+      setCheckeds((prevSelectedChecks) =>
+        prevSelectedChecks.filter((checkedId) => checkedId !== id)
+      );
+      setSelectedContacts((prevSelectedConatcts) =>
+        prevSelectedConatcts.filter((contact) => contact?._id !== id)
+      );
+    } else {
+      const currentItem = contacts.byId[id];
+      setSelectedContacts((prevSelectedConatcts) =>
+        _.compact([...prevSelectedConatcts].concat(currentItem))
+      );
+      setCheckeds((prevSelectedChecks) => [...prevSelectedChecks].concat(id));
+    }
+    console.log('checkeds', checkeds);
+    console.log('setSelectedContacts', selectedContacts);
   };
 
   useEventListener('keydown', handleKeyDown);
@@ -186,6 +211,8 @@ export default function ChatPopover() {
   const renderOrganizationsMenuItem = (organization, id) => (
     <ChatNavItem
       key={id}
+      onSelect={handleSelectContact}
+      checked={checkeds.includes(organization._id) > 0}
       onChildren={onChildren}
       conversation={organization}
       multi
@@ -209,43 +236,34 @@ export default function ChatPopover() {
       {currentOrganization.map((item, i) => renderOrganizationsMenuItem(item, i))}
     </Scrollbar>
   );
-  const renderItems = () => (
-    <List disablePadding>
-      {contacts.allIds
-        .map((id) => contacts.byId[id])
-        .map((item) => (
-          <ListItemButton
-            key={item._id}
-            disableGutters
-            sx={{
-              width: '100%',
-              boxSizing: 'border-box',
-              backgroundColor: '#fff',
-              height: '100%',
-              py: 1.5,
-              px: 2.5,
-            }}
-          >
-            <Avatar alt={item.username} src={item.photoURL} sx={{ width: 48, height: 48 }} />
-            <ListItemText
-              sx={{ ml: 2 }}
-              primary={`${item.displayName}${item.realName ? `(${item.realName})` : ''}`}
-              primaryTypographyProps={{
-                noWrap: true,
-                variant: 'subtitle2',
-              }}
-              secondary={item.displayText}
-              secondaryTypographyProps={{
-                noWrap: true,
-                component: 'span',
-                variant: 'body2',
-                color: 'text.secondary',
-              }}
-            />
-          </ListItemButton>
-        ))}
-    </List>
-  );
+
+  const handleAddRecipients = useCallback((selected) => {
+    setRecipients(selected);
+  }, []);
+
+  const createConversation = useCallback(async () => {
+    if (!selectedContacts.length) {
+      enqueueSnackbar('未选择聊天对象');
+      return;
+    }
+    setLoading(true);
+    try {
+      let conversationKey = await messagingService.findExistingConversationWithUsers({
+        users: selectedContacts.map((recipient) => recipient._id),
+      });
+      if (!conversationKey || conversationKey === -1) {
+        conversationKey = await messagingService.room({
+          participants: selectedContacts.map((recipient) => recipient._id),
+        })._id;
+      }
+      router.push(`${paths.chat}?id=${conversationKey}`);
+      setLoading(false);
+    } catch (e) {
+      enqueueSnackbar('添加失败,请联系管理员!');
+      setLoading(false);
+    }
+  }, [enqueueSnackbar, router, selectedContacts]);
+
   return (
     <>
       {renderButton}
@@ -260,6 +278,8 @@ export default function ChatPopover() {
         PaperProps={{
           sx: {
             mt: 5,
+            p: 0,
+            width: '100%',
             overflow: 'unset',
           },
         }}
@@ -270,11 +290,17 @@ export default function ChatPopover() {
         }}
       >
         <Box sx={{ p: 3, borderBottom: `solid 1px ${theme.palette.divider}` }}>
+          <ChatHeaderCompose
+            selectedContacts={selectedContacts}
+            onAddRecipients={handleAddRecipients}
+            contacts={contacts.allIds.map((id) => contacts.byId[id])}
+          />
           <InputBase
             fullWidth
             autoFocus
             placeholder="Search..."
             value={searchQuery}
+            sx={{ mt: 1 }}
             onChange={handleSearch}
             startAdornment={
               <InputAdornment position="start">
@@ -289,6 +315,18 @@ export default function ChatPopover() {
         <Scrollbar sx={{ p: 0, pb: 2, height: 500 }}>
           {notFound ? <SearchNotFound query={searchQuery} sx={{ py: 10 }} /> : renderOrganizations}
         </Scrollbar>
+        <Stack>
+          <LoadingButton
+            fullWidth
+            size="large"
+            type="submit"
+            variant="soft"
+            loading={loading}
+            onClick={createConversation}
+          >
+            确定
+          </LoadingButton>
+        </Stack>
       </Dialog>
     </>
   );

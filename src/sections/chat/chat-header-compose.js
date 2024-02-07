@@ -15,7 +15,7 @@ import SearchNotFound from 'src/components/search-not-found';
 
 // ----------------------------------------------------------------------
 
-export default function ChatHeaderCompose({ contacts, onAddRecipients }) {
+export default function ChatHeaderCompose({ contacts, onAddRecipients, selectedContacts }) {
   const [searchRecipients, setSearchRecipients] = useState('');
 
   const handleAddRecipients = useCallback(
@@ -33,10 +33,13 @@ export default function ChatHeaderCompose({ contacts, onAddRecipients }) {
       </Typography>
 
       <Autocomplete
-        sx={{ minWidth: 290 }}
+        sx={{ minWidth: 290, p: 1 }}
         multiple
         limitTags={3}
+        disabled
+        value={selectedContacts}
         popupIcon={null}
+        // disabled
         disableCloseOnSelect
         noOptionsText={<SearchNotFound query={searchRecipients} />}
         onChange={(event, newValue) => handleAddRecipients(newValue)}
@@ -58,7 +61,11 @@ export default function ChatHeaderCompose({ contacts, onAddRecipients }) {
                 position: 'relative',
               }}
             >
-              <Avatar alt={recipient.username} src={recipient.photoURL} sx={{ width: 1, height: 1 }} />
+              <Avatar
+                alt={recipient.username}
+                src={recipient.photoURL}
+                sx={{ width: 1, height: 1 }}
+              />
               <Stack
                 alignItems="center"
                 justifyContent="center"
@@ -85,7 +92,8 @@ export default function ChatHeaderCompose({ contacts, onAddRecipients }) {
               </Stack>
             </Box>
 
-            {recipient.username}
+            {/* {recipient.username} */}
+            {`${recipient?.displayName}(${recipient?.realName})`}
           </li>
         )}
         renderTags={(selected, getTagProps) =>
@@ -93,7 +101,7 @@ export default function ChatHeaderCompose({ contacts, onAddRecipients }) {
             <Chip
               {...getTagProps({ index })}
               key={recipient._id}
-              label={recipient.username}
+              label={`${recipient?.displayName}(${recipient?.realName})`}
               avatar={<Avatar alt={recipient.username} src={recipient.photoURL} />}
               size="small"
               variant="soft"
@@ -106,6 +114,7 @@ export default function ChatHeaderCompose({ contacts, onAddRecipients }) {
 }
 
 ChatHeaderCompose.propTypes = {
+  selectedContacts: PropTypes.array,
   contacts: PropTypes.array,
   onAddRecipients: PropTypes.func,
 };

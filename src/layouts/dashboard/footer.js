@@ -1,25 +1,29 @@
-import * as React from 'react';
-// import { useRouter } from 'next/router';
+import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import Badge from '@mui/material/Badge';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Paper from '@mui/material/Paper';
 import { Link } from 'react-router-dom';
-// redux
 import { useDispatch, useSelector } from 'src/redux/store';
 import { updateBottomNavigationActionValue } from 'src/redux/slices/dashboard';
 import { usePathname } from 'src/routes/hook';
 import _ from 'lodash';
-// auth
 import { useAuthContext } from 'src/auth/hooks';
 import { ICONS } from './config-navigation';
 
 const navigations = [
   {
     label: '聊天',
-    icon: ICONS.chat,
+    icon: ICONS.chat2,
     to: '/dashboard/chat',
     auth: ['Chat'],
+  },
+  {
+    label: '文件',
+    icon: ICONS.file,
+    to: '/dashboard/file-manager',
   },
   {
     label: '活动',
@@ -37,56 +41,50 @@ const navigations = [
     to: '/dashboard/training/dashboard',
   },
 ];
+
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    right: 12,
+    top: 5,
+    border: `2px solid ${theme.palette.background.paper}`,
+    padding: '0 4px',
+  },
+}));
+
+const NavigationItem = ({ nav, unreadCount }) => (
+  <BottomNavigationAction
+    {...nav}
+    component={Link}
+    key={nav.to}
+    icon={
+      <StyledBadge color="error" overlap="circular" badgeContent={unreadCount}>
+        {nav.icon}
+      </StyledBadge>
+    }
+    sx={{ pt: 0, opacity: 1 }}
+  />
+);
+
+NavigationItem.propTypes = {
+  nav: PropTypes.object,
+  unreadCount: PropTypes.number,
+};
+
 export default function DashboardFooter() {
-  const dashboard = useSelector((state) => state.dashboard);
-
-  const chat = useSelector((state) => state.chat);
-
   const dispatch = useDispatch();
-
+  const dashboard = useSelector((state) => state.dashboard);
+  const chat = useSelector((state) => state.chat);
   const pathname = usePathname();
-
   const { permissions, isAdmin } = useAuthContext();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const index = _.findIndex(navigations, ['to', pathname]);
-    if (index !== -1) {
-      dispatch(updateBottomNavigationActionValue(index));
-    } else {
-      dispatch(updateBottomNavigationActionValue(0));
-    }
+    dispatch(updateBottomNavigationActionValue(index !== -1 ? index : 0));
   }, [dispatch, pathname]);
 
   const checkAuth = (nav, index) => {
-    if (!nav.auth) {
-      return (
-        <BottomNavigationAction
-          {...nav}
-          component={Link}
-          key={nav.to}
-          // sx={{ width: 80, height: 50 }}
-        />
-      );
-    }
-    if (_.intersection(permissions, nav.auth).length > 0 || isAdmin) {
-      return (
-        // <Badge
-        //   color="error"
-        //   overlap="circular"
-        //   {...nav}
-        //   badgeContent={chat.conversations.unreadCount}
-        //   key={nav.to}
-        // >
-        <BottomNavigationAction
-          showlabel="true"
-          className={dashboard.bottomNavigationActionValue === index ? 'Mui-selected' : ''}
-          {...nav}
-          key={nav.to}
-          component={Link}
-          sx={{ pt: 0, opacity: 1 }}
-        />
-        // </Badge>
-      );
+    if (!nav.auth || _.intersection(permissions, nav.auth).length > 0 || isAdmin) {
+      return <NavigationItem nav={nav} unreadCount={chat.conversations.unreadCount} />;
     }
     return null;
   };
@@ -102,14 +100,6 @@ export default function DashboardFooter() {
           dispatch(updateBottomNavigationActionValue(newValue));
         }}
       >
-        {/**
-                <BottomNavigationAction label="聊天" icon={ICONS.chat} />
-               <BottomNavigationAction label="联系人" icon={ICONS.mail} />
-              <BottomNavigationAction label="动态" icon={ICONS.booking} onClick={() => router.push(PATH_DASHBOARD.active.root)} />
-         */}
-        {/**         <BottomNavigationAction label="工作台" icon={ICONS.kanban} /> */}
-        {/* <BottomNavigationAction label="聊天" icon={ICONS.chat} component={Link} to="/dashboard/chat"/>
-        <BottomNavigationAction label="文件" icon={ICONS.file} component={Link} to="/dashboard/file-manager"/> */}
         {navigations.map((navigation, index) => checkAuth(navigation, index))}
       </BottomNavigation>
     </Paper>

@@ -76,14 +76,19 @@ const TABS = [
   //   label: ' 联系人',
   //   count: 0,
   // },
+  {
+    value: 'organizations',
+    label: '组织架构',
+    count: 0,
+  },
   // {
   //   value: 'organizations',
   //   label: '组织架构',
   //   count: 0,
   // },
   // {
-  //   value: 'organizations',
-  //   label: '组织架构',
+  //   value: 'contacts',
+  //   label: '我的小组',
   //   count: 0,
   // },
 ];
@@ -259,9 +264,15 @@ export default function ChatView() {
     user,
   ]);
 
-  const participants = conversation
-    ? conversation.participants.filter((participant) => participant._id !== user?._id)
-    : [];
+  let participants = [];
+  if (conversation) {
+    participants =
+      conversation.type !== 'GROUP'
+        ? conversation.participants.filter((participant) => participant._id !== user?._id)
+        : conversation.participants;
+  } else {
+    participants = [];
+  }
 
   const handleAddRecipients = useCallback((selected) => {
     setRecipients(selected);
@@ -493,6 +504,7 @@ export default function ChatView() {
                           }}
                           conversation={{
                             ...conversations.byId[conversationId],
+                            isGroup: conversations.byId[conversationId].type,
                             type: 'conversation',
                           }}
                           selected={conversationId === selectedConversationId}

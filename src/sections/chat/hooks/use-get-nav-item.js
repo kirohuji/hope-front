@@ -3,25 +3,36 @@
 export default function useGetNavItem({ currentUserId, conversation, user }) {
   const { messages, participants } = conversation;
 
-  const participantsInConversation = participants?.filter(
-    (participant) => participant._id !== currentUserId
-  ) || [
-    {
-      ...conversation,
-      username: conversation.name || conversation.username,
-      photoURL: conversation?.avatarUrl?.preview || conversation.photoURL,
-    },
-  ];
-
+  let participantsInConversation = [];
+  if (conversation.isGroup === 'GROUP') {
+    participantsInConversation = participants || [
+      {
+        ...conversation,
+        username: conversation.name || conversation.username,
+        photoURL: conversation?.avatarUrl?.preview || conversation.photoURL,
+      },
+    ];
+  } else {
+    participantsInConversation = participants?.filter(
+      (participant) => participant._id !== currentUserId
+    ) || [
+      {
+        ...conversation,
+        username: conversation.name || conversation.username,
+        photoURL: conversation?.avatarUrl?.preview || conversation.photoURL,
+      },
+    ];
+  }
   const lastMessage = messages ? messages[messages.length - 1] : { body: '' };
 
-  const group = participantsInConversation.length > 2;
+  const group = participantsInConversation.length > 2 || conversation.isGroup === 'GROUP';
 
   const displayName = group
     ? participantsInConversation.map((participant) => participant.realName).join(', ')
     : participantsInConversation[0]?.displayName || participantsInConversation[0]?.username;
   const realName = group
-    ? participantsInConversation.map((participant) => participant.realName).join(', ')
+    ? // ? participantsInConversation.map((participant) => participant.realName).join(', ')
+      '多人聊天'
     : participantsInConversation[0]?.realName;
 
   const hasOnlineInGroup = group

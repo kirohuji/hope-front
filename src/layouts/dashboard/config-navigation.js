@@ -10,8 +10,8 @@ import SvgColor from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------
 
-const icon = (name) => (
-  <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
+const icon = (name, sx) => (
+  <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={sx || { width: 1, height: 1 }} />
   // OR
   // <Iconify icon="fluent:mail-24-filled" />
   // https://icon-sets.iconify.design/solar/
@@ -22,6 +22,7 @@ export const ICONS = {
   job: icon('ic_job'),
   blog: icon('ic_blog'),
   chat: icon('ic_chat'),
+  chat2: icon('ic_chat', { width: '56px', height: '38px' }),
   mail: icon('ic_mail'),
   user: icon('ic_user'),
   file: icon('ic_file'),

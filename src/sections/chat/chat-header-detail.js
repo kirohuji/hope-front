@@ -19,13 +19,12 @@ import { fToNow } from 'src/utils/format-time';
 // components
 import Iconify from 'src/components/iconify';
 import { fileService } from 'src/composables/context-provider';
-import UserVideoComponent from './user-video-component'
+import UserVideoComponent from './user-video-component';
 
 // ----------------------------------------------------------------------
 
 const Transition = forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
-export default function ChatHeaderDetail ({ openMedia, mainStreamManager, participants }) {
-
+export default function ChatHeaderDetail({ openMedia, mainStreamManager, participants }) {
   const dialog = useBoolean();
   const group = participants.length > 2;
 
@@ -78,39 +77,40 @@ export default function ChatHeaderDetail ({ openMedia, mainStreamManager, partic
 
       <Stack flexGrow={1} />
 
-      {
-        false && <div>
+      {false && (
+        <div>
           <IconButton>
             <Iconify icon="solar:phone-bold" />
           </IconButton>
-          <IconButton onClick={() => {
-            dialog.onTrue();
-            openMedia()
-          }}>
+          <IconButton
+            onClick={() => {
+              dialog.onTrue();
+              openMedia();
+            }}
+          >
             <Iconify icon="solar:videocamera-record-bold" />
           </IconButton>
           <IconButton>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </div>
-      }
+      )}
       <Dialog
         fullScreen
         open={dialog.value}
         onClose={dialog.onFalse}
         TransitionComponent={Transition}
       >
-        {
-          mainStreamManager && <UserVideoComponent streamManager={mainStreamManager} />
-        }
-        <IconButton onClick={() => {
-        }} >
+        {mainStreamManager && <UserVideoComponent streamManager={mainStreamManager} />}
+        <IconButton onClick={() => {}}>
           <Iconify icon="solar:videocamera-record-bold" />
         </IconButton>
 
-        <IconButton onClick={() => {
-          dialog.onFalse();
-        }} >
+        <IconButton
+          onClick={() => {
+            dialog.onFalse();
+          }}
+        >
           <Iconify icon="solar:phone-bold" />
         </IconButton>
       </Dialog>
@@ -121,5 +121,5 @@ export default function ChatHeaderDetail ({ openMedia, mainStreamManager, partic
 ChatHeaderDetail.propTypes = {
   participants: PropTypes.array,
   mainStreamManager: PropTypes.any,
-  openMedia: PropTypes.func
+  openMedia: PropTypes.func,
 };

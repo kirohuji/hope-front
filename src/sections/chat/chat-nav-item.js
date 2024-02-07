@@ -34,6 +34,8 @@ export default function ChatNavItem({
   deleteConversation,
   onSwipe,
   selected,
+  checked,
+  onSelect,
   onChildren,
   collapse,
   conversation,
@@ -60,6 +62,8 @@ export default function ChatNavItem({
     currentUserId: user?._id,
   });
 
+  console.log('group', group);
+
   const singleParticipant = participants[0];
 
   const { username, photoURL, status } = singleParticipant;
@@ -69,7 +73,7 @@ export default function ChatNavItem({
       onChildren(conversation);
     } else {
       try {
-        if (user?._id !== conversation._id) {
+        if (user?._id !== conversation._id && !multi) {
           if (!mdUp) {
             // eslint-disable-next-line no-unused-expressions
             onCloseMobile && onCloseMobile();
@@ -87,7 +91,7 @@ export default function ChatNavItem({
         console.error(error);
       }
     }
-  }, [type, onChildren, conversation, mdUp, onCloseMobile, user?._id, router]);
+  }, [type, onChildren, conversation, user?._id, multi, mdUp, onCloseMobile, router]);
 
   const renderGroup = (
     <Badge
@@ -124,9 +128,15 @@ export default function ChatNavItem({
         }),
       }}
     >
-      {multi && (
+      {multi && type !== 'org' && (
         <ListItemIcon>
-          <Checkbox edge="start" tabIndex={-1} disableRipple />
+          <Checkbox
+            edge="start"
+            tabIndex={-1}
+            disableRipple
+            checked={checked}
+            onChange={() => onSelect(conversation._id)}
+          />
         </ListItemIcon>
       )}
       <Badge color="error" overlap="circular" badgeContent={conversation.unreadCount}>
@@ -191,6 +201,8 @@ export default function ChatNavItem({
 }
 
 ChatNavItem.propTypes = {
+  onSelect: PropTypes.func,
+  checked: PropTypes.bool,
   onSwipe: PropTypes.func,
   onChildren: PropTypes.func,
   collapse: PropTypes.bool,
