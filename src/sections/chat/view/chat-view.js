@@ -331,8 +331,9 @@ export default function ChatView() {
     />
   );
 
-  const onRefresh = async () => {
-    setMessageLimit(messageLimit + 20);
+  const onRefresh = async (currentMessageLimit) => {
+    setMessageLimit(currentMessageLimit + 20);
+    console.log('messageLimit', messageLimit);
     await dispatch(getMessages(selectedConversationId, messageLimit));
   };
 

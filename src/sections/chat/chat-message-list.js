@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useState, useEffect, useRef, useCallback } from 'react';
 // @mui
 import Box from '@mui/material/Box';
 // components
@@ -16,6 +17,7 @@ export default function ChatMessageList({
   conversationId,
   participants,
 }) {
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const { messagesEndRef } = useMessagesScroll(messages);
 
   const slides = messages
@@ -23,6 +25,26 @@ export default function ChatMessageList({
     .map((message) => ({ src: message.body }));
 
   const lightbox = useLightBox(slides);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (scrollNode.scrollTop === 0 && !loadingHistory) {
+        const scrollPosition = scrollNode.scrollHeight - scrollNode.scrollTop;
+        setLoadingHistory(true);
+        onRefresh(messages.length).then(() => {
+          setLoadingHistory(false);
+          scrollNode.scrollTop = scrollNode.scrollHeight - scrollPosition;
+        });
+      }
+    };
+
+    const scrollNode = messagesEndRef.current;
+    scrollNode.addEventListener('scroll', handleScroll);
+    return () => {
+      scrollNode.removeEventListener('scroll', handleScroll);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messagesEndRef.current]);
 
   return (
     <>

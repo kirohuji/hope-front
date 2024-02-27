@@ -84,23 +84,22 @@ export default function ChatPopover() {
     }
   };
 
-  const handleSelectContact = (id) => {
-    if (checkeds.includes(id)) {
+  const handleSelectContact = (contact) => {
+    if (checkeds.includes(contact._id)) {
       setCheckeds((prevSelectedChecks) =>
-        prevSelectedChecks.filter((checkedId) => checkedId !== id)
+        prevSelectedChecks.filter((checkedId) => checkedId !== contact._id)
       );
       setSelectedContacts((prevSelectedConatcts) =>
-        prevSelectedConatcts.filter((contact) => contact?._id !== id)
+        prevSelectedConatcts.filter(
+          (prevSelectedConatct) => prevSelectedConatct?._id !== contact._id
+        )
       );
     } else {
-      const currentItem = contacts.byId[id];
       setSelectedContacts((prevSelectedConatcts) =>
-        _.compact([...prevSelectedConatcts].concat(currentItem))
+        _.compact([...prevSelectedConatcts].concat(contact))
       );
-      setCheckeds((prevSelectedChecks) => [...prevSelectedChecks].concat(id));
+      setCheckeds((prevSelectedChecks) => [...prevSelectedChecks].concat(contact._id));
     }
-    console.log('checkeds', checkeds);
-    console.log('setSelectedContacts', selectedContacts);
   };
 
   useEventListener('keydown', handleKeyDown);
@@ -213,7 +212,7 @@ export default function ChatPopover() {
   const renderOrganizationsMenuItem = (organization, id) => (
     <ChatNavItem
       key={id}
-      onSelect={handleSelectContact}
+      onSelect={() => handleSelectContact(organization)}
       checked={checkeds.includes(organization._id) > 0}
       onChildren={onChildren}
       conversation={organization}
@@ -254,9 +253,11 @@ export default function ChatPopover() {
         users: selectedContacts.map((recipient) => recipient._id),
       });
       if (!conversationKey || conversationKey === -1) {
-        conversationKey = await messagingService.room({
+        const newConversation = await messagingService.room({
           participants: selectedContacts.map((recipient) => recipient._id),
-        })._id;
+        });
+        console.log('newConversation', newConversation);
+        conversationKey = newConversation._id;
       }
       router.push(`${paths.chat}?id=${conversationKey}`);
       setLoading(false);

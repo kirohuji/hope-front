@@ -153,14 +153,18 @@ const slice = createSlice({
     },
     // 获取所有数据
     getMessagesSuccess(state, action) {
-      const { conversationId, data } = action.payload;
-      // 根据日期排序
-      const orderData = _.orderBy(data, ['createdAt', 'asc']);
-      if (!state.messages.byId[conversationId]) {
+      const { conversationId, data, messageLimit } = action.payload;
+      if (!state.messages.byId[conversationId] || messageLimit === 0) {
         state.messages.byId[conversationId] = [];
       }
-      state.messages.byId[conversationId] = orderData;
-      state.lastMessage = _.last(orderData);
+      // 合并新数据和现有数据
+      const mergedData = [...state.messages.byId[conversationId], ...data];
+      // 根据日期排序
+      const orderedData = _.unionBy(_.orderBy(mergedData, ['createdAt'], ['asc']), '_id');
+
+      // 更新状态
+      state.messages.byId[conversationId] = orderedData;
+      state.lastMessage = _.last(orderedData);
       state.sendingMessage.byId[conversationId] = [];
     },
 
@@ -285,6 +289,7 @@ export function getMessages(conversationKey, messageLimit) {
         slice.actions.getMessagesSuccess({
           conversationId: conversationKey,
           data,
+          messageLimit,
         })
       );
     } catch (error) {
