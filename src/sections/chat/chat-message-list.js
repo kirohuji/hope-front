@@ -9,7 +9,13 @@ import { useMessagesScroll } from './hooks';
 import ChatMessageItem from './chat-message-item';
 // ----------------------------------------------------------------------
 
-export default function ChatMessageList ({ onRefresh, sendingMessage = {}, messages = [], participants }) {
+export default function ChatMessageList({
+  onRefresh,
+  sendingMessages = [],
+  messages = [],
+  conversationId,
+  participants,
+}) {
   const { messagesEndRef } = useMessagesScroll(messages);
 
   const slides = messages
@@ -24,19 +30,29 @@ export default function ChatMessageList ({ onRefresh, sendingMessage = {}, messa
         <Box sx={{ height: 1 }}>
           {messages.map((message, index) => (
             <ChatMessageItem
+              conversationId={conversationId}
               key={index}
               message={message}
               participants={participants}
               onOpenLightbox={() => lightbox.onOpen(message.body)}
             />
           ))}
-          {
+          {sendingMessages.map((message, index) => (
+            <ChatMessageItem
+              conversationId={conversationId}
+              key={index}
+              message={message}
+              participants={participants}
+              onOpenLightbox={() => lightbox.onOpen(message.body)}
+            />
+          ))}
+          {/* {
             sendingMessage && sendingMessage._id && <ChatMessageItem
               message={sendingMessage}
               participants={participants}
               onOpenLightbox={() => lightbox.onOpen(sendingMessage.body)}
             />
-          }
+          } */}
         </Box>
       </Scrollbar>
 
@@ -51,8 +67,9 @@ export default function ChatMessageList ({ onRefresh, sendingMessage = {}, messa
 }
 
 ChatMessageList.propTypes = {
+  conversationId: PropTypes.string,
   messages: PropTypes.array,
   onRefresh: PropTypes.func,
   participants: PropTypes.array,
-  sendingMessage: PropTypes.object,
+  sendingMessages: PropTypes.array,
 };

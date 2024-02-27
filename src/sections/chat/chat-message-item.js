@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useCallback } from 'react';
 import { formatDistanceToNowStrict } from 'date-fns';
 // @mui
 import Box from '@mui/material/Box';
@@ -14,11 +15,18 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Iconify from 'src/components/iconify';
 //
 import { zhCN } from 'date-fns/locale';
+
+// redux
+import { useDispatch } from 'src/redux/store';
+import { sendMessage } from 'src/redux/slices/chat';
+// hooks
 import { useGetMessage } from './hooks';
 
 // ----------------------------------------------------------------------
 
-export default function ChatMessageItem({ message, participants, onOpenLightbox }) {
+export default function ChatMessageItem({ message, participants, onOpenLightbox, conversationId }) {
+  const dispatch = useDispatch();
+
   const { user } = useAuthContext();
 
   const { me, senderDetails, hasImage } = useGetMessage({
@@ -29,7 +37,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox 
 
   const { username, photoURL } = senderDetails;
 
-  const { body, createdAt, isLoading } = message;
+  const { body, createdAt, isLoading, isFailure } = message;
 
   const renderInfo = (
     <Typography
@@ -49,6 +57,24 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox 
         locale: zhCN,
       })}
     </Typography>
+  );
+
+  const handleSendMessage = useCallback(
+    async (event) => {
+      try {
+        // // eslint-disable-next-line no-debugger
+        // debugger;
+        await dispatch(
+          sendMessage(conversationId, {
+            ...message,
+            message: message.body,
+          })
+        );
+      } catch (e) {
+        console.error();
+      }
+    },
+    [conversationId, dispatch, message]
   );
 
   const renderBody = (
@@ -115,7 +141,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox 
         }),
       }}
     >
-      <IconButton size="small">
+      <IconButton size="small" onClick={() => handleSendMessage()}>
         <Iconify icon="solar:reply-bold" width={16} />
       </IconButton>
       {false && (
@@ -130,7 +156,6 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox 
       )}
     </Stack>
   );
-
   return (
     <Stack
       direction="row"
@@ -139,6 +164,13 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox 
       alignItems="center"
     >
       {isLoading && <CircularProgress size={20} sx={{ mr: 0.5 }} />}
+
+      {isFailure && (
+        <IconButton sx={{ mt: 3, mr: -0.5 }} size="medium" color="error">
+          <Iconify icon="material-symbols:error-outline" width={16} />
+        </IconButton>
+      )}
+
       {!me && <Avatar alt={username} src={photoURL} sx={{ width: 32, height: 32, mr: 2 }} />}
 
       <Stack alignItems={me ? 'flex-end' : 'flex-start'}>
@@ -149,11 +181,19 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox 
           alignItems="center"
           sx={{
             position: 'relative',
-            '&:hover': {
-              '& .message-actions': {
-                opacity: 1,
-              },
-            },
+            ...(!isFailure
+              ? {
+                  '&:hover': {
+                    '& .message-actions': {
+                      opacity: 1,
+                    },
+                  },
+                }
+              : {
+                  '& .message-actions': {
+                    opacity: 1,
+                  },
+                }),
           }}
         >
           {renderBody}
@@ -165,6 +205,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox 
 }
 
 ChatMessageItem.propTypes = {
+  conversationId: PropTypes.string,
   message: PropTypes.object,
   onOpenLightbox: PropTypes.func,
   participants: PropTypes.array,

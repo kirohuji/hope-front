@@ -51,43 +51,54 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
-const NavigationItem = ({ nav, unreadCount }) => (
-  <BottomNavigationAction
-    {...nav}
-    component={Link}
-    key={nav.to}
-    icon={
-      <StyledBadge color="error" overlap="circular" badgeContent={unreadCount}>
-        {nav.icon}
-      </StyledBadge>
-    }
-    sx={{ pt: 0, opacity: 1 }}
-  />
-);
-
-NavigationItem.propTypes = {
-  nav: PropTypes.object,
-  unreadCount: PropTypes.number,
-};
-
 export default function DashboardFooter() {
-  const dispatch = useDispatch();
   const dashboard = useSelector((state) => state.dashboard);
+
   const chat = useSelector((state) => state.chat);
+
+  const dispatch = useDispatch();
+
   const pathname = usePathname();
+
   const { permissions, isAdmin } = useAuthContext();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const index = _.findIndex(navigations, ['to', pathname]);
-    dispatch(updateBottomNavigationActionValue(index !== -1 ? index : 0));
+    if (index !== -1) {
+      dispatch(updateBottomNavigationActionValue(index));
+    } else {
+      dispatch(updateBottomNavigationActionValue(0));
+    }
   }, [dispatch, pathname]);
 
   const checkAuth = (nav, index) => {
-    if (!nav.auth || _.intersection(permissions, nav.auth).length > 0 || isAdmin) {
-      return <NavigationItem nav={nav} unreadCount={chat.conversations.unreadCount} />;
+    if (!nav.auth) {
+      return (
+        <BottomNavigationAction {...nav} component={Link} key={nav.to} sx={{ pt: 0, opacity: 1 }} />
+      );
+    }
+    if (_.intersection(permissions, nav.auth).length > 0 || isAdmin) {
+      return (
+        <BottomNavigationAction
+          {...nav}
+          key={nav.to}
+          component={Link}
+          icon={
+            <StyledBadge
+              color="error"
+              overlap="circular"
+              badgeContent={chat.conversations.unreadCount}
+            >
+              {nav.icon}
+            </StyledBadge>
+          }
+          sx={{ pt: 0, opacity: 1 }}
+        />
+      );
     }
     return null;
   };
+
   return (
     <Paper
       sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100, background: 'none' }}
@@ -100,6 +111,14 @@ export default function DashboardFooter() {
           dispatch(updateBottomNavigationActionValue(newValue));
         }}
       >
+        {/**
+                <BottomNavigationAction label="聊天" icon={ICONS.chat} />
+               <BottomNavigationAction label="联系人" icon={ICONS.mail} />
+              <BottomNavigationAction label="动态" icon={ICONS.booking} onClick={() => router.push(PATH_DASHBOARD.active.root)} />
+         */}
+        {/**         <BottomNavigationAction label="工作台" icon={ICONS.kanban} /> */}
+        {/* <BottomNavigationAction label="聊天" icon={ICONS.chat} component={Link} to="/dashboard/chat"/>
+        <BottomNavigationAction label="文件" icon={ICONS.file} component={Link} to="/dashboard/file-manager"/> */}
         {navigations.map((navigation, index) => checkAuth(navigation, index))}
       </BottomNavigation>
     </Paper>

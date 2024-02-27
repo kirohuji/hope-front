@@ -15,7 +15,7 @@ import { usePathname } from 'src/routes/hook';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { getConversations } from 'src/redux/slices/chat';
 import { getScopes } from 'src/redux/slices/scope';
-import { ddpclient } from 'src/composables/context-provider';
+// import { ddpclient, conversations } from 'src/composables/context-provider';
 import { useAuthContext } from 'src/auth/hooks';
 import _ from 'lodash';
 import Main from './main';
@@ -26,8 +26,8 @@ import NavHorizontal from './nav-horizontal';
 import DashboardFooter from './footer';
 // ----------------------------------------------------------------------
 
-let conversations2Publish = null;
-let conversations2Collection = null;
+const conversations2Publish = null;
+const conversations2Collection = null;
 export default function DashboardLayout({ children }) {
   const { user } = useAuthContext();
   const dispatch = useDispatch();
@@ -69,26 +69,32 @@ export default function DashboardLayout({ children }) {
     );
   }, 2000);
 
-  useEffect(() => {
-    try {
-      if (user._id) {
-        conversations2Publish = ddpclient.subscribe('socialize.conversations2', user?._id);
-        conversations2Publish.ready();
-        conversations2Collection = ddpclient.collection('socialize:conversations').reactive();
-        conversations2Collection.onChange(async (target) => {
-          updateConversationsByDebounce(target);
-        });
-      }
-    } catch (e) {
-      console.log(e);
-    }
-    return () => {
-      if (conversations2Publish) {
-        conversations2Publish.stop();
-        conversations2Collection.stop();
-      }
-    };
-  }, [dispatch, updateConversationsByDebounce, user]);
+  // useEffect(() => {
+  //   try {
+  //     if (user._id && !conversations.conversations2Publish) {
+  //       console.log('user._id', user._id);
+  //       conversations.conversations2Publish = ddpclient.subscribe('socialize.conversations');
+  //       conversations.conversations2Publish.ready();
+  //       conversations.conversations2Collection = ddpclient
+  //         .collection('socialize:conversations')
+  //         .reactive();
+  //       conversations.conversations2Collection.onChange(async (target) => {
+  //         console.log('updateConversationsByDebounce', target);
+  //         updateConversationsByDebounce(target);
+  //       });
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  //   return () => {
+  //     console.log('conversations2Publish');
+  //     console.log('conversations2Publish');
+  //     // if (conversations2Publish) {
+  //     //   conversations2Publish.stop();
+  //     //   conversations2Collection.stop();
+  //     // }
+  //   };
+  // }, [dispatch, updateConversationsByDebounce, user]);
 
   if (isHorizontal) {
     return (

@@ -2,6 +2,7 @@ import keyBy from 'lodash/keyBy';
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
 // utils
+import uuidv4 from 'src/utils/uuidv4';
 import { friendService, roleService, messagingService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
@@ -26,7 +27,7 @@ const initialState = {
   participants: [],
   recipients: [],
   lastMessage: {},
-  sendingMessage: {},
+  sendingMessage: { byId: {} },
 };
 
 const slice = createSlice({
@@ -46,12 +47,12 @@ const slice = createSlice({
 
     // HAS ERROR
     hasError(state, action) {
-      state.sendingMessage = {};
+      state.sendingMessage = { byId: {} };
       state.isLoading = false;
       state.error = action.payload;
     },
     hasErrorMessage(state, action) {
-      state.sendingMessage = {};
+      state.sendingMessage = { byId: {} };
       state.isLoading = false;
       state.error = action.payload;
       throw new Error(state.error);
@@ -60,7 +61,6 @@ const slice = createSlice({
     // GET CONTACT SSUCCESS
     getContactsSuccess(state, action) {
       const contacts = action.payload;
-
       state.contactsByAll = contacts;
       state.contacts.byId = objFromArray(contacts);
       state.contacts.allIds = Object.keys(state.contacts.byId);
@@ -97,11 +97,25 @@ const slice = createSlice({
       }
     },
 
+    getConversationByConversationKeySuccess(state, action) {
+      const conversationKey = action.payload;
+      state.activeConversationId = conversationKey;
+    },
+
     // ON SEND MESSAGE
     onSendMessage(state, action) {
       const conversation = action.payload;
-      const { messageId, message, contentType, attachments, createdAt, senderId, isLoading } =
-        conversation;
+      const {
+        conversationId,
+        messageId,
+        message,
+        contentType,
+        attachments,
+        createdAt,
+        sendingMessageId,
+        senderId,
+        isLoading,
+      } = conversation;
       const newMessage = {
         _id: messageId,
         body: message,
@@ -110,14 +124,31 @@ const slice = createSlice({
         attachments,
         createdAt,
         senderId,
+        sendingMessageId,
       };
-      state.sendingMessage = newMessage;
+      if (!state.sendingMessage.byId[conversationId]) {
+        state.sendingMessage.byId[conversationId] = [];
+      }
+      state.sendingMessage.byId[conversationId].push(newMessage);
       // state.conversations.byId[conversationId].messages.push(newMessage);
     },
 
+    onSendMessageFailure(state, action) {
+      const { conversationId, messageId } = action.payload;
+      state.sendingMessage.byId[conversationId] = state.sendingMessage.byId[conversationId].map(
+        (item) => {
+          if (item._id === messageId) {
+            item.isFailure = true;
+            item.isLoading = false;
+          }
+          return item;
+        }
+      );
+    },
     // 获取所有数据
     getMessagesSuccess(state, action) {
       const { conversationId, data } = action.payload;
+      // 根据日期排序
       const orderData = _.orderBy(data, ['createdAt', 'asc']);
       if (!state.conversations.byId[conversationId]?.messages) {
         state.conversations.byId[conversationId].messages = [];
@@ -125,14 +156,14 @@ const slice = createSlice({
       state.conversations.byId[conversationId].messages = orderData;
       // state.conversations.byId[conversationId].messages.unshift(...orderData);
       state.lastMessage = _.last(orderData);
-      state.sendingMessage = {};
+      state.sendingMessage.byId[conversationId] = [];
     },
 
     // 获取最新数据
     getNewMessagesSuccess(state, action) {
       const { conversationId, data } = action.payload;
       const orderData = _.orderBy(data, ['createdAt', 'asc']);
-      state.sendingMessage = {};
+      // state.sendingMessage.byId[conversationId] = [];
       if (!state.conversations.byId[conversationId]?.messages) {
         state.conversations.byId[conversationId].messages = [];
       }
@@ -146,6 +177,12 @@ const slice = createSlice({
       state.lastMessage = _.last(newMessages);
       // state.conversations.byId[conversationId].messages = _.dropRight(newMessages);
       state.conversations.byId[conversationId].messages = newMessages;
+      state.sendingMessage.byId[conversationId] = _.differenceBy(
+        state.sendingMessage.byId[conversationId],
+        newMessages,
+        'sendingMessageId'
+      );
+      console.log(state.sendingMessage.byId[conversationId]);
     },
 
     markConversationAsReadSuccess(state, action) {
@@ -187,35 +224,51 @@ export default slice.reducer;
 // Actions
 export const { addRecipients, onSendMessage, resetActiveConversation } = slice.actions;
 
+// 发送消息
 export function sendMessage(conversationKey, body) {
   return async (dispatch) => {
     dispatch(slice.actions.startSending());
+    const uuid = uuidv4();
     try {
-      // debugger
+      // 先存在本地
       dispatch(
         slice.actions.onSendMessage({
           conversationId: conversationKey,
-          messageId: '-1',
+          messageId: uuid,
           message: body.message,
           contentType: body.contentType,
           attachments: body.attachments,
           senderId: body.senderId,
-          isLoading: true,
+          sendingMessageId: body.sendingMessageId || uuid,
+          isLoading: true, // 表示正在加载
           createdAt: body.createdAt,
         })
       );
+      // 发送消息到后端
       await messagingService.sendMessage({
         _id: conversationKey,
         body: body.message,
         contentType: body.contentType,
+        sendingMessageId: body.sendingMessageId || uuid,
       });
+      // dispatch(
+      //   slice.actions.onSendMessageSuccess({ conversationId: conversationKey, messageId: uuid })
+      // );
       dispatch(slice.actions.stopSending());
     } catch (error) {
+      console.log('收到报错信息');
+      dispatch(
+        slice.actions.onSendMessageFailure({
+          conversationId: conversationKey,
+          messageId: body.sendingMessageId || uuid,
+        })
+      );
       dispatch(slice.actions.hasErrorMessage(error));
     }
   };
 }
 
+// 获取消息
 export function getMessages(conversationKey, messageLimit) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
@@ -245,6 +298,7 @@ export function getMessages(conversationKey, messageLimit) {
   };
 }
 
+// 获取最新消息
 export function newMessageGet(conversationId) {
   return async (dispatch, getState) => {
     try {
@@ -286,8 +340,7 @@ export function newMessageGet(conversationId) {
   };
 }
 
-// ----------------------------------------------------------------------
-
+// 获取联系人
 export function getContacts() {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
@@ -305,6 +358,7 @@ export function getContacts() {
   };
 }
 
+// 获取组织架构
 export function getOrganizations(scope) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
@@ -329,9 +383,9 @@ export function getOrganizations(scope) {
   };
 }
 
-// ----------------------------------------------------------------------
-
+// 获取聊天会话
 export function getConversations(conversationsIds) {
+  console.log('getConversations', conversationsIds);
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
@@ -355,8 +409,7 @@ export function getConversations(conversationsIds) {
   };
 }
 
-// ----------------------------------------------------------------------
-
+// 获取单个聊天会话
 export function getConversation(conversationKey) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
@@ -373,7 +426,23 @@ export function getConversation(conversationKey) {
     }
   };
 }
+export function getConversationByConversationKey(conversationKey) {
+  return async (dispatch) => {
+    try {
+      // const data = await messagingService.getConversationById({ _id: conversationKey });
+      dispatch(slice.actions.getConversationByConversationKeySuccess(conversationKey));
+    } catch (error) {
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  };
+}
 
+// 删除聊天会话
 export function deleteConversation(conversationKey) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
@@ -391,8 +460,6 @@ export function deleteConversation(conversationKey) {
     }
   };
 }
-
-// ----------------------------------------------------------------------
 
 export function markConversationAsRead(conversationId) {
   return async (dispatch) => {
@@ -413,8 +480,7 @@ export function markConversationAsRead(conversationId) {
   };
 }
 
-// ----------------------------------------------------------------------
-
+// 获取参与者
 export function getParticipants(conversationKey) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
@@ -432,6 +498,7 @@ export function getParticipants(conversationKey) {
   };
 }
 
+// 合并会话
 export function mergeConversations(newData) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());

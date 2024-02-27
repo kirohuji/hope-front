@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 // @mui
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -31,8 +32,7 @@ import FileManagerFilters from '../file-manager-filters';
 import FileManagerGridView from '../file-manager-grid-view';
 import FileManagerFiltersResult from '../file-manager-filters-result';
 import FileManagerNewFolderDialog from '../file-manager-new-folder-dialog';
-
-
+import FileStorageOverview from '../file-storage-overview';
 
 // ----------------------------------------------------------------------
 
@@ -44,8 +44,10 @@ const defaultFilters = {
 };
 
 // ----------------------------------------------------------------------
+const GB = 1000000000 * 24;
+export default function FileManagerView() {
+  const upMd = useResponsive('up', 'md');
 
-export default function FileManagerView () {
   // const upMd = useResponsive('up', 'md');
 
   const dispatch = useDispatch();
@@ -69,10 +71,10 @@ export default function FileManagerView () {
   const [view, setView] = useState('grid');
 
   const onRefresh = useCallback(async () => {
-    dispatch(getFiles())
-  }, [dispatch])
+    dispatch(getFiles());
+  }, [dispatch]);
   useEffect(() => {
-    onRefresh()
+    onRefresh();
   }, [onRefresh]);
 
   const [filters, setFilters] = useState(defaultFilters);
@@ -116,26 +118,27 @@ export default function FileManagerView () {
     [table]
   );
 
-  const handleDeleteItem = useCallback(async (id) => {
-    try {
-      await fileManagerService.deleteCurrentUser({
-        _id: id
-      })
-      enqueueSnackbar('删除成功')
-    } catch (e) {
-      enqueueSnackbar(e.response.data.message)
-    }
-    onRefresh()
-  },
+  const handleDeleteItem = useCallback(
+    async (id) => {
+      try {
+        await fileManagerService.deleteCurrentUser({
+          _id: id,
+        });
+        enqueueSnackbar('删除成功');
+      } catch (e) {
+        enqueueSnackbar(e.response.data.message);
+      }
+      onRefresh();
+    },
     [onRefresh, enqueueSnackbar]
   );
 
   const handleDeleteItems = useCallback(async () => {
-    await table.selected.map(async row => {
+    await table.selected.map(async (row) => {
       await fileManagerService.deleteCurrentUser({
-        _id: row
-      })
-    })
+        _id: row,
+      });
+    });
     onRefresh();
   }, [onRefresh, table]);
 
@@ -160,8 +163,7 @@ export default function FileManagerView () {
         dateError={dateError}
         typeOptions={FILE_TYPE_OPTIONS}
       />
-      {
-        false &&
+      {false && (
         <ToggleButtonGroup size="small" value={view} exclusive onChange={handleChangeView}>
           <ToggleButton value="list">
             <Iconify icon="solar:list-bold" />
@@ -170,7 +172,7 @@ export default function FileManagerView () {
             <Iconify icon="mingcute:dot-grid-fill" />
           </ToggleButton>
         </ToggleButtonGroup>
-      }
+      )}
     </Stack>
   );
 
@@ -183,6 +185,41 @@ export default function FileManagerView () {
       onFilters={handleFilters}
       //
       results={dataFiltered.length}
+    />
+  );
+
+  const renderStorageOverview = (
+    <FileStorageOverview
+      total={GB}
+      chart={{
+        series: 76,
+      }}
+      data={[
+        {
+          name: 'Images',
+          usedStorage: GB / 2,
+          filesCount: 223,
+          icon: <Box component="img" src="/assets/icons/files/ic_img.svg" />,
+        },
+        {
+          name: 'Media',
+          usedStorage: GB / 5,
+          filesCount: 223,
+          icon: <Box component="img" src="/assets/icons/files/ic_video.svg" />,
+        },
+        {
+          name: 'Documents',
+          usedStorage: GB / 5,
+          filesCount: 223,
+          icon: <Box component="img" src="/assets/icons/files/ic_document.svg" />,
+        },
+        {
+          name: 'Other',
+          usedStorage: GB / 10,
+          filesCount: 223,
+          icon: <Box component="img" src="/assets/icons/files/ic_file.svg" />,
+        },
+      ]}
     />
   );
 
@@ -199,7 +236,11 @@ export default function FileManagerView () {
             上传
           </Button>
         </Stack>
-
+        {!upMd && (
+          <Stack sx={{ my: { xs: 3, md: 5 } }} spacing={2.5}>
+            {renderStorageOverview}
+          </Stack>
+        )}
         <Stack
           spacing={2.5}
           sx={{
@@ -244,10 +285,13 @@ export default function FileManagerView () {
         )}
       </Container>
 
-      <FileManagerNewFolderDialog open={upload.value} onClose={() => {
-        upload.onFalse();
-        onRefresh();
-      }} />
+      <FileManagerNewFolderDialog
+        open={upload.value}
+        onClose={() => {
+          upload.onFalse();
+          onRefresh();
+        }}
+      />
 
       <ConfirmDialog
         open={confirm.value}
@@ -277,7 +321,7 @@ export default function FileManagerView () {
 
 // ----------------------------------------------------------------------
 
-function applyFilter ({ inputData, comparator, filters, dateError }) {
+function applyFilter({ inputData, comparator, filters, dateError }) {
   const { name, type, startDate, endDate } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);

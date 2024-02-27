@@ -26,12 +26,12 @@ import {
   getConversations,
   resetActiveConversation,
   getMessages,
-  getConversation,
+  getConversationByConversationKey,
   getContacts,
   deleteConversation,
   newMessageGet,
 } from 'src/redux/slices/chat';
-import { ddpclient } from 'src/composables/context-provider';
+// import { ddpclient } from 'src/composables/context-provider';
 import _ from 'lodash';
 import { useSnackbar } from 'src/components/snackbar';
 import ChatNav from '../chat-nav';
@@ -93,8 +93,10 @@ const TABS = [
   // },
 ];
 
-let reactiveCollection = null;
-let getMessage = null;
+const reactiveCollection = null;
+const getMessage = null;
+const conversations2Publish = null;
+const conversations2Collection = null;
 
 export default function ChatView() {
   const { enqueueSnackbar } = useSnackbar();
@@ -102,6 +104,7 @@ export default function ChatView() {
   const dispatch = useDispatch();
 
   const [currentTab, setCurrentTab] = useState('conversations');
+
   const [loading, setLoading] = useState(true);
 
   const { conversations, sendingMessage, contacts } = useSelector((state) => state.chat);
@@ -153,7 +156,6 @@ export default function ChatView() {
         ])
       );
       setLevels(levels);
-      console.log('currentOrganization', currentOrganization);
     }
   };
 
@@ -188,34 +190,78 @@ export default function ChatView() {
     setLevels(levels2);
   };
 
-  // 聊天的详情
+  // 会话获取详情
   const getDetails = useCallback(async () => {
     setConversationsLoading(true);
     // await dispatch(getConversations());
-    await dispatch(getConversation(selectedConversationId));
+    // 根据会话列表获取当前会话的数据
+    await dispatch(getConversationByConversationKey(selectedConversationId));
+    // 获取聊天数据,默认从0开始
     await dispatch(getMessages(selectedConversationId, 0));
     setConversationsLoading(false);
   }, [dispatch, selectedConversationId]);
 
+  const updateConversationsByDebounce = _.debounce((target) => {
+    dispatch(
+      getConversations({
+        ids: target.map((item) => item._id),
+      })
+    );
+  }, 2000);
+
+  // useEffect(() => {
+  //   try {
+  //     console.log('user._id', user._id);
+  //     if (user._id && selectedConversationId) {
+  //       conversations2Publish = ddpclient.subscribe('socialize.conversations2', user._id);
+  //       conversations2Publish.ready();
+  //       conversations2Collection = ddpclient.collection('socialize:conversations').reactive();
+  //       conversations2Collection.onChange(async (target) => {
+  //         updateConversationsByDebounce(target);
+  //         console.log('updateConversationsByDebounce', target);
+  //       });
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  //   return () => {
+  //     console.log('conversations2Publish2');
+  //     if (conversations2Publish) {
+  //       conversations2Publish.stop();
+  //       conversations2Collection.stop();
+  //     }
+  //   };
+  // }, [dispatch, selectedConversationId, updateConversationsByDebounce, user]);
+
   useEffect(() => {
+    // 有会话 Id
     if (selectedConversationId) {
       getDetails();
-      if (ddpclient.connected && user) {
-        getMessage = ddpclient.subscribe(
-          'socialize.messagesFor2',
-          selectedConversationId,
-          user._id,
-          new Date()
-        );
-        getMessage.ready();
-        reactiveCollection = ddpclient.collection('socialize:messages').reactive();
-        reactiveCollection.onChange(() => {
-          dispatch(newMessageGet(selectedConversationId));
-        });
-      }
+      // if (ddpclient.connected && user) {
+      //   getMessage = ddpclient.subscribe(
+      //     'socialize.messagesFor2',
+      //     selectedConversationId,
+      //     user._id,
+      //     new Date()
+      //   );
+      //   console.log('useEffect');
+      //   getMessage.ready();
+      //   reactiveCollection = ddpclient.collection('socialize:messages').reactive();
+      //   reactiveCollection.onChange(
+      //     (...rest) => {
+      //       console.log('rest', rest);
+      //       dispatch(newMessageGet(selectedConversationId));
+      //     },
+      //     {
+      //       added: true,
+      //     }
+      //   );
+      // }
     } else {
+      // 重置当前的会话 Id
       dispatch(resetActiveConversation());
     }
+
     return () => {
       if (reactiveCollection) {
         reactiveCollection.stop();
@@ -224,14 +270,18 @@ export default function ChatView() {
     };
   }, [dispatch, active._id, getDetails, selectedConversationId, user]);
 
+  // 刷新 Organization
   const onRefreshWithOrganization = useCallback(async () => {
-    setLoading(true);
-    const organizationData = await dispatch(getOrganizations(active._id));
-    setCurrentFirstOrganization(organizationData);
-    setCurrentOrganization(organizationData);
-    setLoading(false);
-  }, [active._id, dispatch, setLoading]);
+    if (active?._id) {
+      setLoading(true);
+      const organizationData = await dispatch(getOrganizations(active._id));
+      setCurrentFirstOrganization(organizationData);
+      setCurrentOrganization(organizationData);
+      setLoading(false);
+    }
+  }, [active?._id, dispatch, setLoading]);
 
+  // 刷新 Conversations
   const onRefreshWithConversations = useCallback(async () => {
     setLoading(true);
     await dispatch(getConversations());
@@ -240,7 +290,6 @@ export default function ChatView() {
 
   useEffect(() => {
     if (!selectedConversationId) {
-      // eslint-disable-next-line default-case
       switch (currentTab) {
         case 'organizations':
           onRefreshWithOrganization();
@@ -250,6 +299,8 @@ export default function ChatView() {
           break;
         case 'contacts':
           dispatch(getContacts());
+          break;
+        default:
           break;
       }
     }
@@ -265,6 +316,7 @@ export default function ChatView() {
   ]);
 
   let participants = [];
+
   if (conversation) {
     participants =
       conversation.type !== 'GROUP'
@@ -325,8 +377,9 @@ export default function ChatView() {
       }}
     >
       <ChatMessageList
+        conversationId={selectedConversationId}
         messages={conversation?.messages}
-        sendingMessage={sendingMessage}
+        sendingMessages={(sendingMessage.byId && sendingMessage.byId[selectedConversationId]) || []}
         participants={participants}
         onRefresh={onRefresh}
       />
@@ -352,12 +405,14 @@ export default function ChatView() {
       )
     </Tabs>
   );
+
   const styles = {
     typography: 'body2',
     alignItems: 'center',
     color: 'text.primary',
     display: 'inline-flex',
   };
+
   const renderOrganizationsMenuItem = (organization, id) => (
     <ChatNavItem
       key={id}
@@ -366,6 +421,7 @@ export default function ChatView() {
       selected={organization._id === selectedConversationId}
     />
   );
+
   const renderOrganizations = (
     <Scrollbar sx={{ height: '100%', ml: 1, mr: 1 }}>
       {levels && levels.length > 0 && (

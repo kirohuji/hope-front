@@ -42,52 +42,45 @@ import SnackbarProvider from 'src/components/snackbar/snackbar-provider';
 import { SettingsProvider, SettingsDrawer } from 'src/components/settings';
 // auth
 import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
+import { MeteorProvider } from 'src/meteor/context';
+
+const connectUrl = 'ws://localhost:3000/websocket';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/amplify';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/firebase';
 // ----------------------------------------------------------------------
 export default function App() {
-  // const charAt = `
-
-  // ░░░    ░░░
-  // ▒▒▒▒  ▒▒▒▒
-  // ▒▒ ▒▒▒▒ ▒▒
-  // ▓▓  ▓▓  ▓▓
-  // ██      ██
-
-  // `;
-
-  // console.info(`%c${charAt}`, 'color: #5BE49B');
-
   useScrollToTop();
   return (
-    <AuthProvider>
-      <ReduxProvider>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <SettingsProvider
-            defaultSettings={{
-              themeMode: 'light', // 'light' | 'dark'
-              themeDirection: 'ltr', //  'rtl' | 'ltr'
-              themeContrast: 'default', // 'default' | 'bold'
-              themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
-              themeColorPresets: 'default', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
-              themeStretch: false,
-            }}
-          >
-            <ThemeProvider>
-              <MotionLazy>
-                <SnackbarProvider>
-                  <SettingsDrawer />
-                  <ProgressBar />
-                  <AuthConsumer>
-                    <Router />
-                  </AuthConsumer>
-                </SnackbarProvider>
-              </MotionLazy>
-            </ThemeProvider>
-          </SettingsProvider>
-        </LocalizationProvider>
-      </ReduxProvider>
-    </AuthProvider>
+    <MeteorProvider endpoint={connectUrl}>
+      <AuthProvider>
+        <ReduxProvider>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <SettingsProvider
+              defaultSettings={{
+                themeMode: 'light', // 'light' | 'dark'
+                themeDirection: 'ltr', //  'rtl' | 'ltr'
+                themeContrast: 'default', // 'default' | 'bold'
+                themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
+                themeColorPresets: 'default', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
+                themeStretch: false,
+              }}
+            >
+              <ThemeProvider>
+                <MotionLazy>
+                  <SnackbarProvider>
+                    <SettingsDrawer />
+                    <ProgressBar />
+                    <AuthConsumer>
+                      <Router />
+                    </AuthConsumer>
+                  </SnackbarProvider>
+                </MotionLazy>
+              </ThemeProvider>
+            </SettingsProvider>
+          </LocalizationProvider>
+        </ReduxProvider>
+      </AuthProvider>
+    </MeteorProvider>
   );
 }

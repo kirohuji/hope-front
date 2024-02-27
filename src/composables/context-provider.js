@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import SimpleDDP from 'simpleddp';
+// import SimpleDDP from 'simpleddp';
 import api, { fileService as fileApi } from '../utils/request';
 import AuthService from '../modules/auth';
 import UserService from '../modules/users';
@@ -41,14 +41,19 @@ export const dictionaryOptionService = new DictionaryOptionService({
 export const articleService = new ArticleService({ api, model: 'articles' });
 export const broadcastService = new BroadcastService({ api, model: 'broadcasts' });
 export const notificationService = new NotificationService({ api, model: 'notifications' });
-const { simpleDDPLogin } = require('simpleddp-plugin-login');
+// const { simpleDDPLogin } = require('simpleddp-plugin-login');
 
-export const ddpclient = new SimpleDDP(
-  {
-    endpoint: 'wss://www.lourd.top/websocket',
-    SocketConstructor: WebSocket,
-    reconnectInterval: 5000,
-    clearDataOnReconnection: false,
-  },
-  [simpleDDPLogin]
-);
+// export const ddpclient = new SimpleDDP(
+//   {
+//     endpoint: 'ws://localhost:3000/websocket',
+//     SocketConstructor: WebSocket,
+//     reconnectInterval: 5000,
+//     clearDataOnReconnection: false,
+//   },
+//   [simpleDDPLogin]
+// );
+
+// export const conversations = {
+//   conversations2Publish: null,
+//   conversations2Collection: null,
+// };

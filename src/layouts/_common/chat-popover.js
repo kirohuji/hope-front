@@ -110,10 +110,12 @@ export default function ChatPopover() {
   }, []);
 
   const onRefreshWithOrganization = useCallback(async () => {
-    const organizationData = await dispatch(getOrganizations(active._id));
-    setCurrentFirstOrganization(organizationData);
-    setCurrentOrganization(organizationData);
-  }, [active._id, dispatch]);
+    if (active?._id) {
+      const organizationData = await dispatch(getOrganizations(active?._id));
+      setCurrentFirstOrganization(organizationData);
+      setCurrentOrganization(organizationData);
+    }
+  }, [active?._id, dispatch]);
 
   const notFound = searchQuery && !data.length;
 
