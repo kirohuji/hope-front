@@ -25,6 +25,14 @@ export default class MessagingService {
     return this.api.post(`${this.model}/conversations/${target._id}/addParticipants`, target);
   }
 
+  removeParticipants(target) {
+    return this.api.post(`${this.model}/conversations/${target._id}/removeParticipants`, target);
+  }
+
+  removeParticipant(target) {
+    return this.api.post(`${this.model}/conversations/${target._id}/removeParticipant`, target);
+  }
+
   getLastMessageBy(target) {
     return this.api.get(`${this.model}/conversations/${target._id}/lastMessage/${target.lastId}`);
   }

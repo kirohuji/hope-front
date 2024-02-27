@@ -69,7 +69,7 @@ export default function DashboardFooter() {
     } else {
       dispatch(updateBottomNavigationActionValue(0));
     }
-  }, [dispatch, pathname]);
+  }, [dispatch, pathname, chat.conversations.unreadCount]);
 
   const checkAuth = (nav, index) => {
     if (!nav.auth) {

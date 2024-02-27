@@ -87,8 +87,9 @@ const slice = createSlice({
     // GET CONVERSATION
     getConversationSuccess(state, action) {
       const conversation = action.payload;
-
       if (conversation) {
+        const index = _.findIndex(state.conversationsByAll, ['_id', conversation._id]);
+        state.conversationsByAll[index] = conversation;
         state.conversations.byId[conversation._id] = conversation;
         state.activeConversationId = conversation._id;
         if (!state.conversations.allIds.includes(conversation._id)) {
@@ -97,6 +98,10 @@ const slice = createSlice({
       } else {
         state.activeConversationId = null;
       }
+      state.conversations.unreadCount = state.conversationsByAll.reduce(
+        (previous, current) => previous + current.unreadCount,
+        0
+      );
     },
 
     getConversationByConversationKeySuccess(state, action) {
