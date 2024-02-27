@@ -52,9 +52,9 @@ const connectUrl = 'ws://localhost:3000/websocket';
 export default function App() {
   useScrollToTop();
   return (
-    <MeteorProvider endpoint={connectUrl}>
-      <AuthProvider>
-        <ReduxProvider>
+    <ReduxProvider>
+      <MeteorProvider endpoint={connectUrl}>
+        <AuthProvider>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <SettingsProvider
               defaultSettings={{
@@ -79,8 +79,8 @@ export default function App() {
               </ThemeProvider>
             </SettingsProvider>
           </LocalizationProvider>
-        </ReduxProvider>
-      </AuthProvider>
-    </MeteorProvider>
+        </AuthProvider>
+      </MeteorProvider>
+    </ReduxProvider>
   );
 }

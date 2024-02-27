@@ -116,26 +116,30 @@ export default function ChatMessageInput({
   const handleSendMessage = useCallback(
     async (event) => {
       try {
-        console.log('event', event.shiftKey);
+        console.log('event', message);
         // if (event.shiftKey && event.key === 'Enter') {
         if (event.key === 'Enter') {
-          setMessage('');
-          if (message) {
+          // setMessage('');
+          if (message && message !== '\n') {
             if (selectedConversationId) {
               setType('text');
               try {
                 await dispatch(sendMessage(selectedConversationId, messageData));
+                setMessage('');
               } catch (e) {
                 enqueueSnackbar(e.message);
               }
               // sendMessageToOpenVidu(message)
             } else {
+              setMessage('');
               const conversationKey = await createConversation(conversationData);
               router.push(`${paths.chat}?id=${conversationKey}`);
               onAddRecipients([]);
             }
+          } else {
+            setMessage('');
           }
-          setMessage('');
+          // setMessage('');
         }
       } catch (error) {
         console.error(error);

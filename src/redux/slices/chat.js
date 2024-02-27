@@ -22,6 +22,8 @@ const initialState = {
   organizations: [],
   conversations: { byId: {}, allIds: [], unreadCount: 0 },
   conversationsByAll: [],
+  messages: { byId: {}, allIds: [], unreadCount: 0 },
+  messagesByAll: [],
   contactsByAll: [],
   activeConversationId: null,
   participants: [],
@@ -130,7 +132,6 @@ const slice = createSlice({
         state.sendingMessage.byId[conversationId] = [];
       }
       state.sendingMessage.byId[conversationId].push(newMessage);
-      // state.conversations.byId[conversationId].messages.push(newMessage);
     },
 
     onSendMessageFailure(state, action) {
@@ -150,11 +151,10 @@ const slice = createSlice({
       const { conversationId, data } = action.payload;
       // 根据日期排序
       const orderData = _.orderBy(data, ['createdAt', 'asc']);
-      if (!state.conversations.byId[conversationId]?.messages) {
-        state.conversations.byId[conversationId].messages = [];
+      if (!state.messages.byId[conversationId]) {
+        state.messages.byId[conversationId] = [];
       }
-      state.conversations.byId[conversationId].messages = orderData;
-      // state.conversations.byId[conversationId].messages.unshift(...orderData);
+      state.messages.byId[conversationId] = orderData;
       state.lastMessage = _.last(orderData);
       state.sendingMessage.byId[conversationId] = [];
     },
@@ -164,25 +164,20 @@ const slice = createSlice({
       const { conversationId, data } = action.payload;
       const orderData = _.orderBy(data, ['createdAt', 'asc']);
       // state.sendingMessage.byId[conversationId] = [];
-      if (!state.conversations.byId[conversationId]?.messages) {
-        state.conversations.byId[conversationId].messages = [];
+      if (!state.messages.byId[conversationId]) {
+        state.messages.byId[conversationId] = [];
       }
       const newMessages = _.uniqBy(
-        [
-          ...state.conversations.byId[conversationId].messages.filter((item) => item._id !== '-1'),
-          ...orderData,
-        ],
+        [...state.messages.byId[conversationId].filter((item) => item._id !== '-1'), ...orderData],
         '_id'
       );
       state.lastMessage = _.last(newMessages);
-      // state.conversations.byId[conversationId].messages = _.dropRight(newMessages);
-      state.conversations.byId[conversationId].messages = newMessages;
+      state.messages.byId[conversationId] = newMessages;
       state.sendingMessage.byId[conversationId] = _.differenceBy(
         state.sendingMessage.byId[conversationId],
         newMessages,
         'sendingMessageId'
       );
-      console.log(state.sendingMessage.byId[conversationId]);
     },
 
     markConversationAsReadSuccess(state, action) {
@@ -384,20 +379,23 @@ export function getOrganizations(scope) {
 }
 
 // 获取聊天会话
-export function getConversations(conversationsIds) {
-  console.log('getConversations', conversationsIds);
+export function getConversations(conversationsId) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const data = await messagingService.usersAndConversations(conversationsIds);
-      dispatch(
-        slice.actions.getConversationsSuccess(
-          data.map((conversation) => ({
-            ...conversation,
-            messages: _.compact(conversation.messages),
-          }))
-        )
-      );
+      const data = await messagingService.usersAndConversations(conversationsId);
+      if (conversationsId) {
+        dispatch(slice.actions.getConversationSuccess(data[0]));
+      } else {
+        dispatch(
+          slice.actions.getConversationsSuccess(
+            data.map((conversation) => ({
+              ...conversation,
+              messages: _.compact(conversation.messages),
+            }))
+          )
+        );
+      }
     } catch (error) {
       dispatch(
         slice.actions.hasError({

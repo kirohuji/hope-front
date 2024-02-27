@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
-import { useMemo, useEffect, useReducer, useCallback } from 'react';
+import { useContext, useState, useMemo, useEffect, useReducer, useCallback } from 'react';
 import SimpleDDP from 'simpleddp';
 import { simpleDDPLogin } from 'simpleddp-plugin-login';
+import _ from 'lodash';
+import { useDispatch } from 'src/redux/store';
+import { getConversations } from 'src/redux/slices/chat';
 import { MeteorContext } from './meteor-context';
 
 export const bindConnect = async (server, dispatch) => {
@@ -51,6 +54,97 @@ export const bindConnect = async (server, dispatch) => {
   });
   await server.connect();
 };
+
+const subMap = {};
+
+const getSub = (server, subName, args) => {
+  let sub = subMap[subName];
+  if (sub) {
+    return sub;
+  }
+
+  sub = server.subscribe(subName, ...args);
+  subMap[subName] = sub;
+  return sub;
+};
+
+export const useSubscription = (subName, args = []) => {
+  const [ready, setReady] = useState(false);
+  const { server } = useContext(MeteorContext);
+
+  useEffect(() => {
+    if (!server) {
+      return () => {};
+    }
+
+    const sub = getSub(server, subName, args);
+
+    const fn = async () => {
+      const isOn = await sub.isOn();
+      if (!isOn) {
+        await sub.restart(args);
+      }
+      await sub.ready();
+      setReady(true);
+    };
+
+    fn();
+    return () => sub.stop();
+  }, [args, server, subName]);
+
+  return ready;
+};
+
+export const useCollection = (name, filter = noFilter) => {
+  const [data, setData] = useState([]);
+  const { server } = useContext(MeteorContext);
+
+  useEffect(() => {
+    if (!server) {
+      return () => {};
+    }
+
+    const reactiveCursor = server.collection(name).filter(filter).reactive();
+    reactiveCursor.onChange((newData) => setData(_.cloneDeep(newData)));
+
+    setData(_.cloneDeep(reactiveCursor.data()));
+
+    return () => reactiveCursor.stop();
+  }, [server, name, filter]);
+
+  return data;
+};
+
+export const useCollectionOne = (name, filter = noFilter) => {
+  const [data, setData] = useState(null);
+  const { server } = useContext(MeteorContext);
+
+  useEffect(() => {
+    if (!server) {
+      return () => {};
+    }
+
+    const reactiveList = server.collection(name).filter(filter).reactive();
+    const reactiveCursor = reactiveList.one();
+
+    reactiveCursor.onChange((newData) => {
+      if (reactiveList.count().result > 0) {
+        setData(_.cloneDeep(newData));
+      }
+    });
+
+    if (reactiveList.count().result > 0) {
+      setData(_.cloneDeep(reactiveCursor.data()));
+    }
+
+    return () => reactiveCursor.stop();
+  }, [server, name, filter]);
+
+  return data;
+};
+
+const noFilter = () => true;
+
 const initialState = {
   server: null,
   isInitialized: true,
@@ -81,8 +175,31 @@ export const createServer = (endpoint) => {
   return new SimpleDDP(opts, [simpleDDPLogin]);
 };
 
+let conversationsPublish = null;
+let conversationsCollection = null;
 export function MeteorProvider({ endpoint, children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const reducerDispatch = useDispatch();
+  const updateConversationsByDebounce = _.debounce((target) => {
+    reducerDispatch(
+      getConversations({
+        ids: target.map((item) => item.id),
+      })
+    );
+  }, 2000);
+
+  const subConversations = useCallback(async () => {
+    const { server } = state;
+    conversationsPublish = server.subscribe('newMessagesConversations', new Date());
+    conversationsPublish.ready();
+    conversationsCollection = server.collection('socialize:conversations');
+    conversationsCollection.onChange((target) => {
+      if (target.changed && target.changed.next) {
+        updateConversationsByDebounce([target.changed.next]);
+      }
+    });
+  }, [state, updateConversationsByDebounce]);
+
   const useLogin = useCallback(
     async (opt) => {
       const { server } = state;
@@ -154,11 +271,13 @@ export function MeteorProvider({ endpoint, children }) {
   const memoizedValue = useMemo(
     () => ({
       server: state.server,
+      isConnected: state.isConnected,
       useLogin,
       useLogout,
+      subConversations,
       useMethod,
     }),
-    [state.server, useLogin, useLogout, useMethod]
+    [state.isConnected, state.server, subConversations, useLogin, useLogout, useMethod]
   );
 
   return <MeteorContext.Provider value={memoizedValue}>{children}</MeteorContext.Provider>;

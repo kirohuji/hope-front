@@ -48,7 +48,7 @@ export default function FileStorageOverview({ data, total, chart, ...other }) {
             offsetY: -40,
           },
           total: {
-            label: `Used of ${fData(total)} / 50GB`,
+            label: `已经使用 ${fData(total)} / 150MB`,
             color: theme.palette.text.disabled,
             fontSize: theme.typography.body2.fontSize,
             fontWeight: theme.typography.body2.fontWeight,
@@ -72,7 +72,7 @@ export default function FileStorageOverview({ data, total, chart, ...other }) {
     <Card {...other}>
       <Chart type="radialBar" series={[series]} options={chartOptions} height={360} />
 
-      <Stack spacing={3} sx={{ px: 3, pb: 5 }}>
+      {/* <Stack spacing={3} sx={{ px: 3, pb: 5 }}>
         {data.map((category) => (
           <Stack key={category.name} spacing={2} direction="row" alignItems="center">
             <Box sx={{ width: 40, height: 40 }}>{category.icon}</Box>
@@ -91,7 +91,7 @@ export default function FileStorageOverview({ data, total, chart, ...other }) {
             <Box sx={{ typography: 'subtitle2' }}> {fData(category.usedStorage)} </Box>
           </Stack>
         ))}
-      </Stack>
+      </Stack> */}
     </Card>
   );
 }

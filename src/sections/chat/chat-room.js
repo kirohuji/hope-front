@@ -22,7 +22,7 @@ import ChatRoomAttachments from './chat-room-attachments';
 
 const NAV_WIDTH = 240;
 
-export default function ChatRoom({ participants, conversation }) {
+export default function ChatRoom({ participants, conversation, messages }) {
   const theme = useTheme();
 
   const lgUp = useResponsive('up', 'lg');
@@ -54,12 +54,12 @@ export default function ChatRoom({ participants, conversation }) {
 
   const group = participants.length > 1;
 
-  const attachments = uniq(flatten(conversation.messages.map((messages) => messages.attachments)));
+  const attachments = uniq(flatten(messages.map((message) => message.attachments)));
 
   const renderContent = (
     <>
       {group ? (
-        <ChatRoomGroup participants={participants} />
+        <ChatRoomGroup participants={participants} conversation={conversation} />
       ) : (
         <ChatRoomSingle participant={participants[0]} />
       )}
@@ -106,7 +106,7 @@ export default function ChatRoom({ participants, conversation }) {
 
   return (
     <Box sx={{ position: 'relative' }}>
-      {participants && participants.length > 0 &&  renderToggleBtn}
+      {participants && participants.length > 0 && renderToggleBtn}
 
       {lgUp ? (
         <Stack
@@ -146,5 +146,6 @@ export default function ChatRoom({ participants, conversation }) {
 
 ChatRoom.propTypes = {
   conversation: PropTypes.object,
+  messages: PropTypes.array,
   participants: PropTypes.array,
 };

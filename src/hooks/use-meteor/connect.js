@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createServer } from './server';
-// import { getBindUser } from './user';
+import { getBindUser } from './user';
 import useStore from './state';
 
 export const bindConnect = async (server, setConnection) => {
@@ -14,20 +14,19 @@ export const useConnect = (endpoint) => {
   const [server, setServer] = useState(null);
   const setConnected = useStore((state) => state.setConnected);
 
-  // const bindUser = getBindUser();
+  const bindUser = getBindUser();
 
   useEffect(() => {
     const currentCurrent = createServer(endpoint);
 
     const connect = async () => {
       await bindConnect(currentCurrent, setConnected);
-      // await bindUser(currentCurrent);
+      await bindUser(currentCurrent);
     };
 
     setServer(currentCurrent);
     connect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [endpoint]);
+  }, [bindUser, endpoint, setConnected]);
 
   return server;
 };

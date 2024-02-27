@@ -71,7 +71,9 @@ export function AuthProvider({ children }) {
     useLogin: loginWithMeteor,
     useLogout: logoutWithMeteor,
     useMethod: callWithMeteor,
+    subConversations,
   } = useMeteorContext();
+  const meteor = useMeteorContext();
 
   // const getNotifications = useCallback(async (user) => {
   //   const notifications = await ddpclient.subscribe('notifications', user._id);
@@ -183,6 +185,7 @@ export function AuthProvider({ children }) {
         },
       });
     }
+    subConversations();
     if (Capacitor.isNativePlatform()) {
       console.log('isNativePlatform');
     }
@@ -195,11 +198,14 @@ export function AuthProvider({ children }) {
       console.log('Web!');
       import('../../../web.css');
     }
-  }, [callWithMeteor]);
+  }, [callWithMeteor, subConversations]);
 
   useEffect(() => {
-    initialize();
-  }, [initialize]);
+    if (meteor.isConnected && !state.isInitialized) {
+      console.log('初始化');
+      initialize();
+    }
+  }, [initialize, meteor.isConnected, state.isInitialized]);
 
   // LOGIN
   const login = useCallback(
@@ -224,7 +230,7 @@ export function AuthProvider({ children }) {
         permissions,
       });
       // getNotifications(user);
-
+      subConversations();
       dispatch({
         type: 'LOGIN',
         payload: {
@@ -237,7 +243,7 @@ export function AuthProvider({ children }) {
         },
       });
     },
-    [loginWithMeteor]
+    [loginWithMeteor, subConversations]
   );
 
   // REGISTER

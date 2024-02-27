@@ -13,7 +13,6 @@ import AppBar from '@mui/material/AppBar';
 //
 import { usePathname } from 'src/routes/hook';
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getConversations } from 'src/redux/slices/chat';
 import { getScopes } from 'src/redux/slices/scope';
 // import { ddpclient, conversations } from 'src/composables/context-provider';
 import { useAuthContext } from 'src/auth/hooks';
@@ -26,8 +25,6 @@ import NavHorizontal from './nav-horizontal';
 import DashboardFooter from './footer';
 // ----------------------------------------------------------------------
 
-const conversations2Publish = null;
-const conversations2Collection = null;
 export default function DashboardLayout({ children }) {
   const { user } = useAuthContext();
   const dispatch = useDispatch();
@@ -60,41 +57,6 @@ export default function DashboardLayout({ children }) {
   useEffect(() => {
     getAllEvents();
   }, [getAllEvents]);
-
-  const updateConversationsByDebounce = _.debounce((target) => {
-    dispatch(
-      getConversations({
-        ids: target.map((item) => item._id),
-      })
-    );
-  }, 2000);
-
-  // useEffect(() => {
-  //   try {
-  //     if (user._id && !conversations.conversations2Publish) {
-  //       console.log('user._id', user._id);
-  //       conversations.conversations2Publish = ddpclient.subscribe('socialize.conversations');
-  //       conversations.conversations2Publish.ready();
-  //       conversations.conversations2Collection = ddpclient
-  //         .collection('socialize:conversations')
-  //         .reactive();
-  //       conversations.conversations2Collection.onChange(async (target) => {
-  //         console.log('updateConversationsByDebounce', target);
-  //         updateConversationsByDebounce(target);
-  //       });
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  //   return () => {
-  //     console.log('conversations2Publish');
-  //     console.log('conversations2Publish');
-  //     // if (conversations2Publish) {
-  //     //   conversations2Publish.stop();
-  //     //   conversations2Collection.stop();
-  //     // }
-  //   };
-  // }, [dispatch, updateConversationsByDebounce, user]);
 
   if (isHorizontal) {
     return (

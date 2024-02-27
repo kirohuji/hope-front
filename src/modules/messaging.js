@@ -11,14 +11,18 @@ export default class MessagingService {
 
   usersAndConversations(target) {
     if (target) {
-      return this.api.get(`${this.model}/users/conversations`, target);
+      return this.api.post(`${this.model}/users/conversations`, target);
       // return this.api.post(`${this.model}/users/conversations`, target);
     }
-    return this.api.get(`${this.model}/users/conversations`, target);
+    return this.api.get(`${this.model}/users/conversations`);
   }
 
   getConversationById(target) {
     return this.api.get(`${this.model}/conversations/${target._id}`);
+  }
+
+  addParticipants(target) {
+    return this.api.post(`${this.model}/conversations/${target._id}/addParticipants`, target);
   }
 
   getLastMessageBy(target) {

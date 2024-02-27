@@ -17,6 +17,7 @@ import { useSearchParams } from 'src/routes/hook';
 // hooks
 import { useAuthContext } from 'src/auth/hooks';
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useMeteorContext } from 'src/meteor/hooks';
 // components
 import { useSettingsContext } from 'src/components/settings';
 //
@@ -31,7 +32,6 @@ import {
   deleteConversation,
   newMessageGet,
 } from 'src/redux/slices/chat';
-// import { ddpclient } from 'src/composables/context-provider';
 import _ from 'lodash';
 import { useSnackbar } from 'src/components/snackbar';
 import ChatNav from '../chat-nav';
@@ -93,12 +93,13 @@ const TABS = [
   // },
 ];
 
-const reactiveCollection = null;
-const getMessage = null;
+let reactiveCollection = null;
+let getMessage = null;
 const conversations2Publish = null;
 const conversations2Collection = null;
 
 export default function ChatView() {
+  const { server: ddpclient } = useMeteorContext();
   const { enqueueSnackbar } = useSnackbar();
 
   const dispatch = useDispatch();
@@ -107,7 +108,7 @@ export default function ChatView() {
 
   const [loading, setLoading] = useState(true);
 
-  const { conversations, sendingMessage, contacts } = useSelector((state) => state.chat);
+  const { conversations, messages, sendingMessage, contacts } = useSelector((state) => state.chat);
 
   const conversation = useSelector((state) => conversationSelector(state));
 
@@ -201,62 +202,29 @@ export default function ChatView() {
     setConversationsLoading(false);
   }, [dispatch, selectedConversationId]);
 
-  const updateConversationsByDebounce = _.debounce((target) => {
-    dispatch(
-      getConversations({
-        ids: target.map((item) => item._id),
-      })
-    );
-  }, 2000);
-
-  // useEffect(() => {
-  //   try {
-  //     console.log('user._id', user._id);
-  //     if (user._id && selectedConversationId) {
-  //       conversations2Publish = ddpclient.subscribe('socialize.conversations2', user._id);
-  //       conversations2Publish.ready();
-  //       conversations2Collection = ddpclient.collection('socialize:conversations').reactive();
-  //       conversations2Collection.onChange(async (target) => {
-  //         updateConversationsByDebounce(target);
-  //         console.log('updateConversationsByDebounce', target);
-  //       });
-  //     }
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  //   return () => {
-  //     console.log('conversations2Publish2');
-  //     if (conversations2Publish) {
-  //       conversations2Publish.stop();
-  //       conversations2Collection.stop();
-  //     }
-  //   };
-  // }, [dispatch, selectedConversationId, updateConversationsByDebounce, user]);
-
   useEffect(() => {
     // 有会话 Id
     if (selectedConversationId) {
       getDetails();
-      // if (ddpclient.connected && user) {
-      //   getMessage = ddpclient.subscribe(
-      //     'socialize.messagesFor2',
-      //     selectedConversationId,
-      //     user._id,
-      //     new Date()
-      //   );
-      //   console.log('useEffect');
-      //   getMessage.ready();
-      //   reactiveCollection = ddpclient.collection('socialize:messages').reactive();
-      //   reactiveCollection.onChange(
-      //     (...rest) => {
-      //       console.log('rest', rest);
-      //       dispatch(newMessageGet(selectedConversationId));
-      //     },
-      //     {
-      //       added: true,
-      //     }
-      //   );
-      // }
+      if (ddpclient?.connected && user) {
+        getMessage = ddpclient.subscribe(
+          'socialize.messagesFor2',
+          selectedConversationId,
+          user._id,
+          new Date()
+        );
+        getMessage.ready();
+        reactiveCollection = ddpclient.collection('socialize:messages').reactive();
+        reactiveCollection.onChange(
+          () => {
+            console.log('更新了');
+            dispatch(newMessageGet(selectedConversationId));
+          },
+          {
+            added: true,
+          }
+        );
+      }
     } else {
       // 重置当前的会话 Id
       dispatch(resetActiveConversation());
@@ -268,7 +236,7 @@ export default function ChatView() {
         getMessage.stop();
       }
     };
-  }, [dispatch, active._id, getDetails, selectedConversationId, user]);
+  }, [dispatch, active._id, getDetails, selectedConversationId, user, ddpclient]);
 
   // 刷新 Organization
   const onRefreshWithOrganization = useCallback(async () => {
@@ -378,7 +346,7 @@ export default function ChatView() {
     >
       <ChatMessageList
         conversationId={selectedConversationId}
-        messages={conversation?.messages}
+        messages={messages.byId[selectedConversationId]}
         sendingMessages={(sendingMessage.byId && sendingMessage.byId[selectedConversationId]) || []}
         participants={participants}
         onRefresh={onRefresh}
@@ -497,7 +465,13 @@ export default function ChatView() {
               >
                 {renderMessages}
 
-                {details && <ChatRoom conversation={conversation} participants={participants} />}
+                {details && (
+                  <ChatRoom
+                    conversation={conversation}
+                    messages={messages.byId[selectedConversationId]}
+                    participants={participants}
+                  />
+                )}
               </Stack>
             </Stack>
           </Stack>
