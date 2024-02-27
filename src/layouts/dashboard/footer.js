@@ -24,6 +24,7 @@ const navigations = [
     label: '文件',
     icon: ICONS.file,
     to: '/dashboard/file-manager',
+    auth: ['FileManager'],
   },
   {
     label: '活动',
@@ -78,22 +79,27 @@ export default function DashboardFooter() {
       );
     }
     if (_.intersection(permissions, nav.auth).length > 0 || isAdmin) {
+      if (nav.auth.includes('Chat')) {
+        return (
+          <BottomNavigationAction
+            {...nav}
+            key={nav.to}
+            component={Link}
+            icon={
+              <StyledBadge
+                color="error"
+                overlap="circular"
+                badgeContent={chat.conversations.unreadCount}
+              >
+                {nav.icon}
+              </StyledBadge>
+            }
+            sx={{ pt: 0, opacity: 1 }}
+          />
+        );
+      }
       return (
-        <BottomNavigationAction
-          {...nav}
-          key={nav.to}
-          component={Link}
-          icon={
-            <StyledBadge
-              color="error"
-              overlap="circular"
-              badgeContent={chat.conversations.unreadCount}
-            >
-              {nav.icon}
-            </StyledBadge>
-          }
-          sx={{ pt: 0, opacity: 1 }}
-        />
+        <BottomNavigationAction {...nav} component={Link} key={nav.to} sx={{ pt: 0, opacity: 1 }} />
       );
     }
     return null;
