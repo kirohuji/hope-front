@@ -18,11 +18,13 @@ const slice = createSlice({
   initialState,
   reducers: {
     next(state) {
-      if (state.index + 1 > state.list.length) {
-        state.index = -1;
+      if (state.index >= state.list.length - 1) {
+        state.index = 0;
+        state.current = state.list[state.index];
+      } else {
+        state.index += 1;
+        state.current = state.list[state.index];
       }
-      state.index += 1;
-      state.current = state.list[state.index];
     },
     clean(state) {
       state.current = null;
@@ -114,7 +116,6 @@ export function clean() {
 
 export function getList(file) {
   return async (dispatch) => {
-    console.log('133');
     dispatch(slice.actions.startLoading());
     try {
       const response = await fileManagerService.getWithCurrentUser({

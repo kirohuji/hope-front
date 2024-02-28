@@ -53,7 +53,7 @@ export default function MusicPlayer() {
   const [image, setImage] = useState('');
   const [duration, setDuration] = useState(0);
   const [isStop, setIsStop] = useState(false);
-  const { list, current } = useSelector((state) => state.audio);
+  const { list, current, index } = useSelector((state) => state.audio);
 
   const handleClickListItem = useCallback((event) => {
     setOpenList(event.currentTarget);
@@ -62,33 +62,38 @@ export default function MusicPlayer() {
   const play = useCallback(async (audio) => {
     try {
       const getTag = await fetchFileAsBuffer(audio.url).then(parse);
+      console.log('getTag', getTag);
       setTag(getTag);
       setImage(URL.createObjectURL(new Blob([getTag?.image?.data]), { type: getTag?.image?.type }));
     } catch (e) {
       console.log(e);
     }
   }, []);
+
   useEffect(() => {
     if (current) {
-      dispatch(clean());
+      const payerElement = player;
+      if (payerElement.current) {
+        payerElement.current.audioEl.current.pause(); // Pause the audio
+      }
     }
     return () => {
       const payerElement = player;
       if (payerElement.current) {
-        dispatch(clean());
         payerElement.current.audioEl.current.pause(); // Pause the audio
       }
+      dispatch(clean());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, play]);
 
   const onSelect = (item) => {
     dispatch(select(item));
+    play(current);
     setOpenList(null);
   };
   const onPlay = () => {
     if (player.current.audioEl.current.paused) {
-      play();
       player.current.audioEl.current.play();
     }
   };
@@ -107,6 +112,7 @@ export default function MusicPlayer() {
           onPlay={() => {
             setDuration(player.current.audioEl.current.duration);
             player.current.audioEl.current.play();
+            play(current);
             isPlay.onTrue();
           }}
           onListen={(value) => {
@@ -141,7 +147,7 @@ export default function MusicPlayer() {
           >
             <Stack sx={{ width: '100%' }}>
               <Stack sx={{ display: 'flex', flexDirection: 'row', p: 0, alignItems: 'center' }}>
-                <Typography component="div">{tag.title}</Typography>
+                <Typography component="div">{tag.title || current.label}</Typography>
                 <Typography component="div" sx={{ ml: 0.5, mr: 0.5 }}>
                   -
                 </Typography>
