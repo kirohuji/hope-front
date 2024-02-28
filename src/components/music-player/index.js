@@ -20,15 +20,6 @@ import { next, select, clean } from 'src/redux/slices/audio';
 
 import { fetchFileAsBuffer } from 'id3-parser/lib/util';
 
-// You have a File instance in browser
-// convertFileToBuffer(file).then(parse).then(tag => {
-//     console.log(tag);
-// });
-// // Or a remote mp3 file url
-// fetchFileAsBuffer(url).then(parse).then(tag => {
-//     console.log(tag);
-// });
-
 function formatDuration(value) {
   const minute = Math.floor(value / 60);
   const secondLeft = Math.floor(value - minute * 60);
@@ -53,7 +44,7 @@ export default function MusicPlayer() {
   const [image, setImage] = useState('');
   const [duration, setDuration] = useState(0);
   const [isStop, setIsStop] = useState(false);
-  const { list, current, index } = useSelector((state) => state.audio);
+  const { list, current } = useSelector((state) => state.audio);
 
   const handleClickListItem = useCallback((event) => {
     setOpenList(event.currentTarget);
@@ -62,7 +53,6 @@ export default function MusicPlayer() {
   const play = useCallback(async (audio) => {
     try {
       const getTag = await fetchFileAsBuffer(audio.url).then(parse);
-      console.log('getTag', getTag);
       setTag(getTag);
       setImage(URL.createObjectURL(new Blob([getTag?.image?.data]), { type: getTag?.image?.type }));
     } catch (e) {
@@ -89,7 +79,6 @@ export default function MusicPlayer() {
 
   const onSelect = (item) => {
     dispatch(select(item));
-    play(current);
     setOpenList(null);
   };
   const onPlay = () => {
@@ -131,31 +120,47 @@ export default function MusicPlayer() {
         <Card sx={{ display: 'flex', p: 0, borderRadius: 0 }}>
           <CardMedia
             component="img"
-            sx={{ width: 60, height: 55, pl: 0.5, pr: 0.5 }}
+            sx={{ width: 80, height: 80, pl: 0.5, pr: 0.5 }}
             image={image}
             alt=""
           />
           <Box
             sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              padding: '0 8px',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              width: '100%',
+              // padding: '0 8px',
+              width: 'calc(100% - 80px)',
             }}
           >
-            <Stack sx={{ width: '100%' }}>
-              <Stack sx={{ display: 'flex', flexDirection: 'row', p: 0, alignItems: 'center' }}>
-                <Typography component="div">{tag.title || current.label}</Typography>
-                <Typography component="div" sx={{ ml: 0.5, mr: 0.5 }}>
-                  -
+            <Stack>
+              <Stack sx={{ p: 1, pb: 0, pl: 0 }}>
+                <Typography
+                  component="div"
+                  sx={{
+                    fontSize: '14px',
+                    whiteSpace: 'nowrap' /* 防止文本换行 */,
+                    overflow: 'hidden' /* 隐藏溢出的文本 */,
+                    textOverflow: 'ellipsis' /* 显示省略号 */,
+                  }}
+                >
+                  {tag.title}
                 </Typography>
-                <Typography color="text.secondary" component="div">
+                <Typography
+                  color="text.secondary"
+                  component="div"
+                  sx={{
+                    fontSize: '12px',
+                    whiteSpace: 'nowrap' /* 防止文本换行 */,
+                    overflow: 'hidden' /* 隐藏溢出的文本 */,
+                    textOverflow: 'ellipsis' /* 显示省略号 */,
+                  }}
+                >
                   {tag.artist}
                 </Typography>
               </Stack>
-              <Stack>
+            </Stack>
+            <Stack
+              sx={{ display: 'flex', flexDirection: 'row', p: 0, pl: 1, alignItems: 'center' }}
+            >
+              <Stack sx={{ width: '100%' }}>
                 <Slider
                   aria-label="time-indicator"
                   size="small"
@@ -172,7 +177,8 @@ export default function MusicPlayer() {
                   }}
                   sx={{
                     color: theme.palette.mode === 'dark' ? '#fff' : 'rgba(0,0,0,0.87)',
-                    height: 4,
+                    height: 3,
+                    padding: '14px 0 !important',
                     '& .MuiSlider-thumb': {
                       width: 8,
                       height: 8,
@@ -209,10 +215,6 @@ export default function MusicPlayer() {
                   <TinyText>-{formatDuration(duration - position)}</TinyText>
                 </Box>
               </Stack>
-            </Stack>
-            <Stack
-              sx={{ display: 'flex', flexDirection: 'row', p: 0, pl: 1, alignItems: 'center' }}
-            >
               {!isPlay.value ? (
                 <IconButton onClick={onPlay}>
                   <Iconify icon="bi:play-fill" />
@@ -254,7 +256,7 @@ export default function MusicPlayer() {
           slotProps={{
             paper: {
               sx: {
-                width: '30ch',
+                width: '35ch',
                 maxHeight: 48 * 4.5,
               },
             },
@@ -266,7 +268,16 @@ export default function MusicPlayer() {
               selected={item._id === current._id}
               onClick={() => onSelect(item)}
             >
-              {item.label}
+              <Typography
+                component="span"
+                sx={{
+                  whiteSpace: 'nowrap' /* 防止文本换行 */,
+                  overflow: 'hidden' /* 隐藏溢出的文本 */,
+                  textOverflow: 'ellipsis' /* 显示省略号 */,
+                }}
+              >
+                {item.label}
+              </Typography>
             </MenuItem>
           ))}
         </Menu>

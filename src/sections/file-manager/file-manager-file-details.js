@@ -29,7 +29,7 @@ import FileManagerInvitedItem from './file-manager-invited-item';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerFileDetails ({
+export default function FileManagerFileDetails({
   item,
   open,
   favorited,
@@ -46,7 +46,7 @@ export default function FileManagerFileDetails ({
 
   const hasShared = shared && !!shared.length;
 
-  const fileUser = shared && _.find(shared, ["_id", user._id]);
+  const fileUser = shared && _.find(shared, ['_id', user?._id]);
 
   const toggleTags = useBoolean(true);
 
@@ -162,8 +162,8 @@ export default function FileManagerFileDetails ({
     <>
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2.5 }}>
         <Typography variant="subtitle2"> 文件共享 </Typography>
-        {
-          fileUser && fileUser.isMain && <IconButton
+        {fileUser && fileUser.isMain && (
+          <IconButton
             size="small"
             color="primary"
             onClick={share.onTrue}
@@ -179,7 +179,7 @@ export default function FileManagerFileDetails ({
           >
             <Iconify icon="mingcute:add-line" />
           </IconButton>
-        }
+        )}
       </Stack>
 
       {hasShared && (
@@ -209,15 +209,15 @@ export default function FileManagerFileDetails ({
         <Scrollbar sx={{ height: 1 }}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2.5 }}>
             <Typography variant="h6"> 信息 </Typography>
-            {
-              false && <Checkbox
+            {false && (
+              <Checkbox
                 color="warning"
                 icon={<Iconify icon="eva:star-outline" />}
                 checkedIcon={<Iconify icon="eva:star-fill" />}
                 checked={favorited}
                 onChange={onFavorite}
               />
-            }
+            )}
           </Stack>
 
           <Stack
@@ -249,19 +249,20 @@ export default function FileManagerFileDetails ({
           {renderShared}
         </Scrollbar>
 
-        {fileUser && fileUser.isMain && <Box sx={{ p: 2.5 }}>
-          <Button
-            fullWidth
-            variant="soft"
-            color="error"
-            size="large"
-            startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-            onClick={onDelete}
-          >
-            删除
-          </Button>
-        </Box>
-        }
+        {fileUser && fileUser.isMain && (
+          <Box sx={{ p: 2.5 }}>
+            <Button
+              fullWidth
+              variant="soft"
+              color="error"
+              size="large"
+              startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+              onClick={onDelete}
+            >
+              删除
+            </Button>
+          </Box>
+        )}
       </Drawer>
 
       <FileManagerShareDialog
