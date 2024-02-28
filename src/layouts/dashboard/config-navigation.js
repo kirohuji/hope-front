@@ -274,11 +274,12 @@ export function useNavData() {
           },
 
           // FILE MANAGER
-          // {
-          //   title: t('file_manager'),
-          //   path: paths.dashboard.fileManager,
-          //   icon: ICONS.folder,
-          // },
+          {
+            title: t('file_manager'),
+            path: paths.dashboard.fileManager,
+            icon: ICONS.folder,
+            auth: ['FileManager'],
+          },
 
           // MAIL
           // {

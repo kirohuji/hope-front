@@ -236,7 +236,7 @@ export default function ChatView() {
         getMessage.stop();
       }
     };
-  }, [dispatch, active._id, getDetails, selectedConversationId, user, ddpclient]);
+  }, [dispatch, active?._id, getDetails, selectedConversationId, user, ddpclient]);
 
   // 刷新 Organization
   const onRefreshWithOrganization = useCallback(async () => {

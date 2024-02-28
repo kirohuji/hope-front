@@ -16,12 +16,13 @@ import Iconify from 'src/components/iconify';
 export default function ChatRoomSingle({ participant }) {
   const collapse = useBoolean(true);
 
-  const { username, photoURL, role, address, phoneNumber, email } = participant;
+  const { displayName, realName, username, photoURL, role, address, phoneNumber, email } =
+    participant;
 
   const renderInfo = (
     <Stack alignItems="center" sx={{ py: 5 }}>
       <Avatar alt={username} src={photoURL} sx={{ width: 96, height: 96, mb: 2 }} />
-      <Typography variant="subtitle1">{username}</Typography>
+      <Typography variant="subtitle1">{`${displayName}(${realName})`}</Typography>
       <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
         {role}
       </Typography>

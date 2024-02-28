@@ -20,7 +20,11 @@ import { sendMessage } from 'src/redux/slices/chat';
 // components
 import Iconify from 'src/components/iconify';
 import moment from 'moment';
-import { fileService, messagingService } from 'src/composables/context-provider';
+import {
+  fileManagerService,
+  fileService,
+  messagingService,
+} from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
@@ -164,6 +168,13 @@ export default function ChatMessageInput({
       const formData = new FormData();
       formData.append('file', file);
       const { link } = await fileService.upload(formData);
+      await fileManagerService.createCurrentUser({
+        url: link,
+        label: file.name,
+        size: file.size,
+        type: `${file.name.split('.').pop()}`,
+        lastModified: new Date(file.lastModified),
+      });
       await dispatch(
         sendMessage(selectedConversationId, {
           ...messageData,

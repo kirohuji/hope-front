@@ -140,10 +140,11 @@ export default function ChatRoomGroup({ conversation, participants }) {
         participant: selectedItem,
       });
       enqueueSnackbar('删除成功');
+      confirm.onFalse();
     } catch (e) {
       enqueueSnackbar('删除失败');
     }
-  }, [conversation._id, enqueueSnackbar, selectedItem]);
+  }, [confirm, conversation._id, enqueueSnackbar, selectedItem]);
 
   return (
     <>

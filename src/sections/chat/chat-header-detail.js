@@ -56,7 +56,7 @@ export default function ChatHeaderDetail({ openMedia, mainStreamManager, partici
       </Badge>
 
       <ListItemText
-        primary={singleParticipant.username}
+        primary={`${singleParticipant.displayName}(${singleParticipant.realName})`}
         secondary={
           singleParticipant.status === 'offline'
             ? fToNow(singleParticipant.lastActivity)

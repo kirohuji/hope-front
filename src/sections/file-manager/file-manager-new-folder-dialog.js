@@ -15,7 +15,7 @@ import { Upload } from 'src/components/upload';
 import { fileManagerService, fileService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
-export default function FileManagerNewFolderDialog ({
+export default function FileManagerNewFolderDialog({
   title = '上传文件',
   open,
   onClose,
@@ -27,7 +27,6 @@ export default function FileManagerNewFolderDialog ({
   onChangeFolderName,
   ...other
 }) {
-
   const { enqueueSnackbar } = useSnackbar();
 
   const [files, setFiles] = useState([]);
@@ -52,25 +51,28 @@ export default function FileManagerNewFolderDialog ({
   );
 
   const handleUpload = async () => {
-    try{
+    try {
+      // if (files.length === 0) {
+      //   return;
+      // }
       await Promise.all(
         files.map(async (file) => {
           const formData = new FormData();
           formData.append('file', file);
-          const { link } = await fileService.upload(formData)
+          const { link } = await fileService.upload(formData);
           await fileManagerService.createCurrentUser({
             url: link,
             label: file.name,
             size: file.size,
             type: `${file.name.split('.').pop()}`,
-            lastModified: new Date(file.lastModified)
-          })
+            lastModified: new Date(file.lastModified),
+          });
         })
-      )
+      );
       onClose();
-      enqueueSnackbar('上传成功')
-    }catch(e){
-      enqueueSnackbar(e.response.data.message)
+      enqueueSnackbar('上传成功');
+    } catch (e) {
+      enqueueSnackbar(e.response.data.message);
     }
   };
 
@@ -106,6 +108,7 @@ export default function FileManagerNewFolderDialog ({
           variant="contained"
           startIcon={<Iconify icon="eva:cloud-upload-fill" />}
           onClick={handleUpload}
+          disabled={files.length === 0}
         >
           上传
         </Button>

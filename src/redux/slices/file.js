@@ -5,6 +5,7 @@ import { fileManagerService } from 'src/composables/context-provider';
 
 const initialState = {
   data: [],
+  overview: {},
   error: null,
 };
 
@@ -17,8 +18,10 @@ const slice = createSlice({
       state.isLoading = true;
     },
     getDataSuccess(state, action) {
+      const { files, overview } = action.payload;
       state.isLoading = false;
-      state.data = action.payload;
+      state.data = files;
+      state.overview = overview;
     },
     // HAS ERROR
     hasError(state, action) {

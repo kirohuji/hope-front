@@ -44,7 +44,7 @@ const defaultFilters = {
 };
 
 // ----------------------------------------------------------------------
-const GB = 1000000000 * 24;
+// const GB = 1000000000 * 24;
 export default function FileManagerView() {
   const upMd = useResponsive('up', 'md');
 
@@ -54,7 +54,7 @@ export default function FileManagerView() {
 
   const { active } = useSelector((state) => state.scope);
 
-  const { data } = useSelector((state) => state.file);
+  const { data, overview } = useSelector((state) => state.file);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -187,39 +187,43 @@ export default function FileManagerView() {
       results={dataFiltered.length}
     />
   );
-
+  function calculatePercentage(part, total) {
+    return ((part / total) * 100).toFixed(2);
+  }
+  const TOTALLIMIT = 150000000;
   const renderStorageOverview = (
     <FileStorageOverview
-      total={GB}
+      total={overview.used || 0}
       chart={{
-        series: 76,
+        series: calculatePercentage(overview.used, TOTALLIMIT),
       }}
-      data={[
-        {
-          name: 'Images',
-          usedStorage: GB / 2,
-          filesCount: 223,
-          icon: <Box component="img" src="/assets/icons/files/ic_img.svg" />,
-        },
-        {
-          name: 'Media',
-          usedStorage: GB / 5,
-          filesCount: 223,
-          icon: <Box component="img" src="/assets/icons/files/ic_video.svg" />,
-        },
-        {
-          name: 'Documents',
-          usedStorage: GB / 5,
-          filesCount: 223,
-          icon: <Box component="img" src="/assets/icons/files/ic_document.svg" />,
-        },
-        {
-          name: 'Other',
-          usedStorage: GB / 10,
-          filesCount: 223,
-          icon: <Box component="img" src="/assets/icons/files/ic_file.svg" />,
-        },
-      ]}
+      data={[]}
+      //   data={[
+      //     {
+      //       name: 'Images',
+      //       usedStorage: (overview.used || 0) / 2,
+      //       filesCount: 223,
+      //       icon: <Box component="img" src="/assets/icons/files/ic_img.svg" />,
+      //     },
+      //     {
+      //       name: 'Media',
+      //       usedStorage: (overview.used || 0) / 5,
+      //       filesCount: 223,
+      //       icon: <Box component="img" src="/assets/icons/files/ic_video.svg" />,
+      //     },
+      //     {
+      //       name: 'Documents',
+      //       usedStorage: (overview.used || 0) / 5,
+      //       filesCount: 223,
+      //       icon: <Box component="img" src="/assets/icons/files/ic_document.svg" />,
+      //     },
+      //     {
+      //       name: 'Other',
+      //       usedStorage: (overview.used || 0) / 10,
+      //       filesCount: 223,
+      //       icon: <Box component="img" src="/assets/icons/files/ic_file.svg" />,
+      //     },
+      //   ]}
     />
   );
 
