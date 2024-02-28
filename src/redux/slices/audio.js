@@ -24,6 +24,10 @@ const slice = createSlice({
       state.index += 1;
       state.current = state.list[state.index];
     },
+    clean(state) {
+      state.current = null;
+      state.index = -1;
+    },
     // setList (state, action) {
     //     state.list = action.payload;
     // },
@@ -81,6 +85,21 @@ export function select(item) {
   return async (dispatch) => {
     try {
       dispatch(slice.actions.play(item));
+    } catch (error) {
+      console.error(error);
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  };
+}
+export function clean() {
+  return async (dispatch) => {
+    try {
+      dispatch(slice.actions.clean());
     } catch (error) {
       console.error(error);
       dispatch(

@@ -1,10 +1,9 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import * as React from 'react';
 import { useRef, useCallback, useState, useEffect } from 'react';
 import { useScroll } from 'framer-motion';
 import { useOffSetTop } from 'src/hooks/use-off-set-top';
 import { grey } from '@mui/material/colors';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Card from '@mui/material/Card';
@@ -15,7 +14,6 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Iconify from 'src/components/iconify';
 import IconButton from '@mui/material/IconButton';
-import Slider from '@mui/material/Slider';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { getBooksWithCurrentUserBySummarize, select } from 'src/redux/slices/trainning';
@@ -27,12 +25,6 @@ import { HEADER } from 'src/config-global';
 import { ArticleDetailsView } from 'src/sections/article/view';
 import Header from './header';
 
-function formatDuration(value) {
-  const minute = Math.floor(value / 60);
-  const secondLeft = Math.floor(value - minute * 60);
-  return `${minute}:${secondLeft < 10 ? `0${secondLeft}` : secondLeft}`;
-}
-
 const TinyText = styled(Typography)({
   fontSize: '0.75rem',
   opacity: 0.38,
@@ -40,29 +32,12 @@ const TinyText = styled(Typography)({
   letterSpacing: 0.2,
 });
 
-const drawerBleeding = 56;
-
-const Root = styled('div')(({ theme }) => ({
-  height: '100%',
-  backgroundColor: theme.palette.mode === 'light' ? grey[100] : theme.palette.background.default,
-}));
-
 const StyledBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'light' ? '#fff' : grey[800],
 }));
 
-const Puller = styled(Box)(({ theme }) => ({
-  width: 30,
-  height: 6,
-  backgroundColor: theme.palette.mode === 'light' ? grey[300] : grey[900],
-  borderRadius: 3,
-  position: 'absolute',
-  top: 8,
-  left: 'calc(50% - 15px)',
-}));
-
 export default function BookPlayer() {
-  const loading = useBoolean(false);
+  const selectLoading = useBoolean(false);
   const [isOpenList, setOpenList] = useState(null);
   const dispatch = useDispatch();
   const isPlay = useBoolean(false);
@@ -85,11 +60,11 @@ export default function BookPlayer() {
   const selectItem = useCallback(
     async (current) => {
       setOpenList(null);
-      loading.onTrue();
+      selectLoading.onTrue();
       await dispatch(select(current));
-      loading.onFalse();
+      selectLoading.onFalse();
     },
-    [dispatch, loading]
+    [dispatch, selectLoading]
   );
 
   return (
@@ -97,13 +72,12 @@ export default function BookPlayer() {
     article && (
       <>
         <Card sx={{ display: 'flex', p: 0, borderRadius: 0, position: 'relative' }}>
-          {loading.value && (
+          {selectLoading.value && (
             <Box
               sx={{
                 position: 'absolute',
                 zIndex: 10,
                 backgroundColor: '#ffffffc4',
-                // paddingTop: '92px',
                 width: '100%',
                 height: '100%',
                 top: '0',
@@ -194,7 +168,6 @@ export default function BookPlayer() {
                   key={item._id}
                   onClick={() => selectItem(item)}
                   selected={item._id === selectedArticle._id}
-                  // selected={item._id === current._id}
                 >
                   {moment(item.date).format('YYYY/MM/DD')} - {item.title}
                 </MenuItem>
@@ -207,7 +180,6 @@ export default function BookPlayer() {
           open={open}
           onClose={toggleDrawer(false)}
           onOpen={toggleDrawer(true)}
-          // swipeAreaWidth={drawerBleeding}
           disableSwipeToOpen={false}
           ModalProps={{
             keepMounted: true,
@@ -234,7 +206,7 @@ export default function BookPlayer() {
               }}
             >
               <Scrollbar ref={containerRef} sx={{ height: '100%' }}>
-                {!loading.value && (
+                {!selectLoading.value && (
                   <ArticleDetailsView
                     articleId={article._id}
                     onClose={() => {

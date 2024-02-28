@@ -19,7 +19,7 @@ import FileManagerNewFolderDialog from './file-manager-new-folder-dialog';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerGridView ({
+export default function FileManagerGridView({
   table,
   data,
   onRefresh,
@@ -56,8 +56,8 @@ export default function FileManagerGridView ({
   return (
     <>
       <Box ref={containerRef}>
-        {
-          false && <>
+        {false && (
+          <>
             <FileManagerPanel
               title="文件夹"
               subTitle={`${data.filter((item) => item.type === 'folder').length} 文件夹`}
@@ -94,7 +94,7 @@ export default function FileManagerGridView ({
 
             <Divider sx={{ my: 5, borderStyle: 'dashed' }} />
           </>
-        }
+        )}
 
         <FileManagerPanel
           title="文件"
@@ -114,6 +114,9 @@ export default function FileManagerGridView ({
               lg: 'repeat(4, 1fr)',
             }}
             gap={3}
+            sx={{
+              marginBottom: '56px',
+            }}
           >
             {dataFiltered
               .filter((i) => i.type !== 'folder')
@@ -179,10 +182,13 @@ export default function FileManagerGridView ({
         }}
       />
 
-      <FileManagerNewFolderDialog open={upload.value} onClose={() => {
-        onRefresh();
-        upload.onFalse()
-      }} />
+      <FileManagerNewFolderDialog
+        open={upload.value}
+        onClose={() => {
+          onRefresh();
+          upload.onFalse();
+        }}
+      />
 
       <FileManagerNewFolderDialog
         open={newFolder.value}

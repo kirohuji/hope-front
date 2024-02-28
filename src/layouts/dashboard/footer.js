@@ -112,6 +112,7 @@ export default function DashboardFooter() {
       className="bottom-navigation"
     >
       <BottomNavigation
+        id="bottom-navigation"
         value={dashboard.bottomNavigationActionValue}
         onChange={(event, newValue) => {
           dispatch(updateBottomNavigationActionValue(newValue));

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 // @mui
 import Box from '@mui/material/Box';
 // hooks
@@ -9,13 +9,10 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { useSettingsContext } from 'src/components/settings';
 import MusicPlayer from 'src/components/music-player';
 import BookPlayer from 'src/sections/training/book-player';
-import AppBar from '@mui/material/AppBar';
 //
 import { usePathname } from 'src/routes/hook';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { getScopes } from 'src/redux/slices/scope';
-// import { ddpclient, conversations } from 'src/composables/context-provider';
-import { useAuthContext } from 'src/auth/hooks';
 import _ from 'lodash';
 import Main from './main';
 import Header from './header';
@@ -26,7 +23,9 @@ import DashboardFooter from './footer';
 // ----------------------------------------------------------------------
 
 export default function DashboardLayout({ children }) {
-  const { user } = useAuthContext();
+  const bookPlayerRef = useRef(null);
+  const musicPlayerRef = useRef(null);
+
   const dispatch = useDispatch();
   const scope = useSelector((state) => state.scope);
 
@@ -56,7 +55,24 @@ export default function DashboardLayout({ children }) {
 
   useEffect(() => {
     getAllEvents();
-  }, [getAllEvents]);
+    if (!lgUp && pathname === '/dashboard/training/dashboard') {
+      const bookPlayerElement = bookPlayerRef.current;
+      if (bookPlayerElement) {
+        const navigationElement = document.getElementById('bottom-navigation');
+        if (navigationElement) {
+          bookPlayerElement.style.bottom = `${navigationElement.clientHeight}px`;
+        }
+      }
+    } else if (!lgUp && pathname === '/dashboard/file-manager') {
+      const musicPlayerElement = musicPlayerRef.current;
+      if (musicPlayerRef) {
+        const navigationElement = document.getElementById('bottom-navigation');
+        if (navigationElement) {
+          musicPlayerElement.style.bottom = `${navigationElement.clientHeight}px`;
+        }
+      }
+    }
+  }, [getAllEvents, lgUp, pathname]);
 
   if (isHorizontal) {
     return (
@@ -106,14 +122,25 @@ export default function DashboardLayout({ children }) {
 
         <Main className="main">{children}</Main>
         {!lgUp && <DashboardFooter />}
-        {!lgUp && pathname === '/dashboard/training/dashboard' && (
+        {!lgUp && pathname === '/dashboard/file-manager' && (
           <Box
+            ref={musicPlayerRef}
             position="fixed"
             color="primary"
-            sx={{ top: 'auto', bottom: 55, background: 'none', width: '100%' }}
+            sx={{ top: 'auto', background: 'none', width: '100%' }}
             className="book-player"
           >
-            {/* <MusicPlayer /> */}
+            <MusicPlayer />
+          </Box>
+        )}
+        {!lgUp && pathname === '/dashboard/training/dashboard' && (
+          <Box
+            ref={bookPlayerRef}
+            position="fixed"
+            color="primary"
+            sx={{ top: 'auto', background: 'none', width: '100%' }}
+            className="book-player"
+          >
             <BookPlayer />
           </Box>
         )}
