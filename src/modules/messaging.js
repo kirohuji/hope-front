@@ -45,6 +45,10 @@ export default class MessagingService {
     return this.api.post(`${this.model}/conversations/${target._id}/messages`, target);
   }
 
+  getConversationMessagesAttachmentsById(target) {
+    return this.api.post(`${this.model}/conversations/${target._id}/messages/attachments`, target);
+  }
+
   sendMessage(target) {
     return this.api.post(`${this.model}/conversations/${target._id}/sendMessage`, target);
   }

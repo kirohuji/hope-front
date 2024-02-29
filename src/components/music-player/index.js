@@ -94,6 +94,7 @@ export default function MusicPlayer() {
   };
   const onPlay = () => {
     if (player.current.audioEl.current.paused) {
+      isPlay.onTrue();
       player.current.audioEl.current.play();
     }
   };

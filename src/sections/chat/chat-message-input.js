@@ -183,6 +183,14 @@ export default function ChatMessageInput({
           ...messageData,
           body: link,
           message: link,
+          attachments: [
+            {
+              name: file.name,
+              preview: link,
+              type: 'image',
+              createdAt: new Date(),
+            },
+          ],
           contentType: 'image',
         })
       );
@@ -207,6 +215,14 @@ export default function ChatMessageInput({
           body: link,
           message: link,
           contentType: `${file.name.split('.').pop()}`,
+          attachments: [
+            {
+              name: file.name,
+              preview: link,
+              type: `${file.name.split('.').pop()}`,
+              createdAt: new Date(),
+            },
+          ],
         })
       );
     }

@@ -75,7 +75,9 @@ export default function ChatRoomAttachments({ attachments }) {
             <FileThumbnail
               imageView
               file={attachment.preview}
-              onDownload={() => console.info('DOWNLOAD')}
+              onDownload={() => {
+                window.open(attachment.preview, 'blank');
+              }}
               sx={{ width: 28, height: 28 }}
             />
           </Stack>

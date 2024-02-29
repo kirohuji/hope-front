@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import uniq from 'lodash/uniq';
 import flatten from 'lodash/flatten';
-import { useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -13,16 +13,18 @@ import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import Iconify from 'src/components/iconify';
 //
+import { messagingService } from 'src/composables/context-provider';
 import { useCollapseNav } from './hooks';
 import ChatRoomGroup from './chat-room-group';
 import ChatRoomSingle from './chat-room-single';
 import ChatRoomAttachments from './chat-room-attachments';
-
 // ----------------------------------------------------------------------
 
 const NAV_WIDTH = 240;
 
 export default function ChatRoom({ participants, conversation, messages }) {
+  const [attachments, setAttachments] = useState([]);
+
   const theme = useTheme();
 
   const lgUp = useResponsive('up', 'lg');
@@ -37,11 +39,25 @@ export default function ChatRoom({ participants, conversation, messages }) {
     onCloseMobile,
   } = useCollapseNav();
 
+  const fetchAttachments = useCallback(async () => {
+    const response = await messagingService.getConversationMessagesAttachmentsById({
+      _id: conversation._id,
+    });
+    setAttachments(uniq(flatten(response)));
+  }, [conversation._id]);
+
   useEffect(() => {
     if (!lgUp) {
       onCloseDesktop();
     }
-  }, [onCloseDesktop, lgUp]);
+    fetchAttachments();
+  }, [onCloseDesktop, lgUp, fetchAttachments]);
+
+  useEffect(() => {
+    if (openMobile) {
+      fetchAttachments();
+    }
+  }, [openMobile, fetchAttachments]);
 
   const handleToggleNav = useCallback(() => {
     if (lgUp) {
@@ -54,7 +70,7 @@ export default function ChatRoom({ participants, conversation, messages }) {
 
   const group = participants.length > 1;
 
-  const attachments = uniq(flatten(messages.map((message) => message.attachments)));
+  // const attachments = uniq(flatten(messages.map((message) => message.attachments)));
 
   const renderContent = (
     <>

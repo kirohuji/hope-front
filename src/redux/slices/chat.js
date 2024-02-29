@@ -253,6 +253,7 @@ export function sendMessage(conversationKey, body) {
         _id: conversationKey,
         body: body.message,
         contentType: body.contentType,
+        attachments: body.attachments,
         sendingMessageId: body.sendingMessageId || uuid,
       });
       // dispatch(
@@ -435,10 +436,15 @@ export function getConversation(conversationKey) {
   };
 }
 export function getConversationByConversationKey(conversationKey) {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     try {
-      // const data = await messagingService.getConversationById({ _id: conversationKey });
-      dispatch(slice.actions.getConversationByConversationKeySuccess(conversationKey));
+      const { conversations } = getState().chat;
+      if (conversations.byId[conversationKey]) {
+        dispatch(slice.actions.getConversationByConversationKeySuccess(conversationKey));
+      } else {
+        const data = await messagingService.getConversationById({ _id: conversationKey });
+        dispatch(slice.actions.getConversationSuccess(data));
+      }
     } catch (error) {
       dispatch(
         slice.actions.hasError({
