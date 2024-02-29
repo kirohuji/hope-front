@@ -145,7 +145,7 @@ export default function FileManagerFilters({
 
           <Stack spacing={1.5} direction="row" alignItems="center" justifyContent="flex-end">
             <Button variant="outlined" color="inherit" onClick={handleResetType}>
-              清楚
+              清除
             </Button>
 
             <Button variant="contained" onClick={popover.onClose}>

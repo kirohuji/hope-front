@@ -17,7 +17,6 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import parse from 'id3-parser';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { next, select, clean } from 'src/redux/slices/audio';
-
 import { fetchFileAsBuffer } from 'id3-parser/lib/util';
 
 function formatDuration(value) {

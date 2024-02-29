@@ -13,6 +13,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import CircularProgress from '@mui/material/CircularProgress';
 // components
 import Iconify from 'src/components/iconify';
+import FileThumbnail from 'src/components/file-thumbnail';
 //
 import { zhCN } from 'date-fns/locale';
 
@@ -37,7 +38,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
 
   const { username, photoURL, displayName, realName } = senderDetails;
 
-  const { body, createdAt, isLoading, isFailure } = message;
+  const { body, contentType, createdAt, isLoading, isFailure } = message;
 
   const renderInfo = (
     <Typography
@@ -77,6 +78,30 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
     [conversationId, dispatch, message]
   );
 
+  const renderBodyContent = ({ bodyContent, type }) => {
+    switch (type) {
+      case 'text':
+        // eslint-disable-next-line react/no-danger
+        return (
+          <div
+            style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
+            dangerouslySetInnerHTML={{ __html: bodyContent }}
+          />
+        );
+      case 'mp3':
+        return (
+          <Stack spacing={1} direction="row" alignItems="center">
+            <FileThumbnail file="audio" />
+          </Stack>
+        );
+      default:
+        return (
+          <Stack spacing={1} direction="row" alignItems="center">
+            <FileThumbnail file={type} />
+          </Stack>
+        );
+    }
+  };
   const renderBody = (
     <Stack
       sx={{
@@ -112,11 +137,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
           }}
         />
       ) : (
-        // eslint-disable-next-line react/no-danger
-        <div
-          style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
-          dangerouslySetInnerHTML={{ __html: body }}
-        />
+        renderBodyContent({ bodyContent: body, type: contentType })
       )}
     </Stack>
   );

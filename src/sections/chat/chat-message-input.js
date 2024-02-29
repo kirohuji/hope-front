@@ -46,6 +46,8 @@ export default function ChatMessageInput({
 
   const fileRef = useRef(null);
 
+  const imageRef = useRef(null);
+
   const [message, setMessage] = useState('');
 
   const [type, setType] = useState('text');
@@ -98,6 +100,12 @@ export default function ChatMessageInput({
     }
   }, []);
 
+  const handleImage = useCallback(() => {
+    if (imageRef.current) {
+      imageRef.current.click();
+    }
+  }, []);
+
   const handleChangeMessage = useCallback((event) => {
     if (event.key !== 'Enter' && !event.shiftKey) {
       setMessage(event.target.value);
@@ -108,7 +116,6 @@ export default function ChatMessageInput({
     let conversationKey = await messagingService.findExistingConversationWithUsers({
       users: recipients.map((recipient) => recipient._id),
     });
-    console.log('conversationKey', conversationKey);
     if (!conversationKey) {
       conversationKey = await messagingService.room({
         participants: recipients.map((recipient) => recipient._id),
@@ -121,9 +128,7 @@ export default function ChatMessageInput({
     async (event) => {
       try {
         console.log('event', message);
-        // if (event.shiftKey && event.key === 'Enter') {
         if (event.key === 'Enter') {
-          // setMessage('');
           if (message && message !== '\n') {
             if (selectedConversationId) {
               setType('text');
@@ -133,7 +138,6 @@ export default function ChatMessageInput({
               } catch (e) {
                 enqueueSnackbar(e.message);
               }
-              // sendMessageToOpenVidu(message)
             } else {
               setMessage('');
               const conversationKey = await createConversation(conversationData);
@@ -143,7 +147,6 @@ export default function ChatMessageInput({
           } else {
             setMessage('');
           }
-          // setMessage('');
         }
       } catch (error) {
         console.error(error);
@@ -163,6 +166,29 @@ export default function ChatMessageInput({
   );
 
   const uploadImage = async () => {
+    if (imageRef.current) {
+      const file = imageRef.current.files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+      const { link } = await fileService.upload(formData);
+      await fileManagerService.createCurrentUser({
+        url: link,
+        label: file.name,
+        size: file.size,
+        type: `${file.name.split('.').pop()}`,
+        lastModified: new Date(file.lastModified),
+      });
+      await dispatch(
+        sendMessage(selectedConversationId, {
+          ...messageData,
+          body: link,
+          message: link,
+          contentType: 'image',
+        })
+      );
+    }
+  };
+  const uploadFile = async () => {
     if (fileRef.current) {
       const file = fileRef.current.files[0];
       const formData = new FormData();
@@ -180,7 +206,7 @@ export default function ChatMessageInput({
           ...messageData,
           body: link,
           message: link,
-          contentType: 'image',
+          contentType: `${file.name.split('.').pop()}`,
         })
       );
     }
@@ -206,14 +232,12 @@ export default function ChatMessageInput({
         }
         endAdornment={
           <Stack direction="row" sx={{ flexShrink: 0 }}>
-            <IconButton onClick={handleAttach}>
+            <IconButton onClick={handleImage}>
               <Iconify icon="solar:gallery-add-bold" />
             </IconButton>
-            {false && (
-              <IconButton onClick={handleAttach}>
-                <Iconify icon="eva:attach-2-fill" />
-              </IconButton>
-            )}
+            <IconButton onClick={handleAttach}>
+              <Iconify icon="eva:attach-2-fill" />
+            </IconButton>
             {false && (
               <IconButton>
                 <Iconify icon="solar:microphone-bold" />
@@ -229,7 +253,14 @@ export default function ChatMessageInput({
         }}
       />
 
-      <input onChange={uploadImage} type="file" ref={fileRef} style={{ display: 'none' }} />
+      <input
+        onChange={uploadImage}
+        type="file"
+        ref={imageRef}
+        style={{ display: 'none' }}
+        accept="image/*"
+      />
+      <input onChange={uploadFile} type="file" ref={fileRef} style={{ display: 'none' }} />
     </>
   );
 }
