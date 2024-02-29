@@ -30,17 +30,17 @@ import NotificationItem from './notification-item';
 const TABS = [
   {
     value: 'all',
-    label: 'All',
+    label: '全部',
     count: 0,
   },
   {
     value: 'unread',
-    label: 'Unread',
+    label: '未读',
     count: 0,
   },
   {
     value: 'archived',
-    label: 'Archived',
+    label: '已读',
     count: 0,
   },
 ];
@@ -58,7 +58,7 @@ export default function NotificationsPopover() {
     setCurrentTab(newValue);
   }, []);
 
-  const { state } = useAuthContext()
+  const { state } = useAuthContext();
 
   const totalUnRead = state.notifications.filter((item) => item.isUnRead === true).length;
 

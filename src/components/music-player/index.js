@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import * as React from 'react';
 import { createRef, useCallback, useState, useEffect } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -44,20 +45,31 @@ export default function MusicPlayer() {
   const [duration, setDuration] = useState(0);
   const [isStop, setIsStop] = useState(false);
   const { list, current } = useSelector((state) => state.audio);
+  const selectLoading = useBoolean(true);
 
   const handleClickListItem = useCallback((event) => {
     setOpenList(event.currentTarget);
   }, []);
 
-  const play = useCallback(async (audio) => {
-    try {
-      const getTag = await fetchFileAsBuffer(audio.url).then(parse);
-      setTag(getTag);
-      setImage(URL.createObjectURL(new Blob([getTag?.image?.data]), { type: getTag?.image?.type }));
-    } catch (e) {
-      console.log(e);
-    }
-  }, []);
+  const handlePlay = useCallback(
+    async (audio) => {
+      try {
+        selectLoading.onTrue();
+        const getTag = await fetchFileAsBuffer(audio.url).then(parse);
+        setTag(getTag);
+        setImage(
+          URL.createObjectURL(new Blob([getTag?.image?.data]), { type: getTag?.image?.type })
+        );
+        selectLoading.onFalse();
+        isPlay.onTrue();
+        // player.current.audioEl.current.play();
+        // setDuration(player.current.audioEl.current.duration);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [isPlay, selectLoading]
+  );
 
   useEffect(() => {
     if (current) {
@@ -74,7 +86,7 @@ export default function MusicPlayer() {
       dispatch(clean());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, play]);
+  }, [dispatch]);
 
   const onSelect = (item) => {
     dispatch(select(item));
@@ -98,15 +110,15 @@ export default function MusicPlayer() {
         <AudioPlayer
           autoPlay
           onPlay={() => {
-            setDuration(player.current.audioEl.current.duration);
-            player.current.audioEl.current.play();
-            play(current);
-            isPlay.onTrue();
+            handlePlay(current);
           }}
           onListen={(value) => {
             if (!isStop) {
               setPosition(value);
             }
+          }}
+          onPause={() => {
+            isPlay.onFalse();
           }}
           listenInterval={1000}
           onEnded={() => {
@@ -117,6 +129,23 @@ export default function MusicPlayer() {
           src={current.url}
         />
         <Card sx={{ display: 'flex', p: 0, borderRadius: 0 }}>
+          {selectLoading.value && (
+            <Box
+              sx={{
+                position: 'absolute',
+                zIndex: 10,
+                backgroundColor: '#ffffffc4',
+                width: '100%',
+                height: '100%',
+                top: '0',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <CircularProgress size={20} />
+            </Box>
+          )}
           <CardMedia
             component="img"
             sx={{ width: 80, height: 80, pl: 0.5, pr: 0.5 }}
