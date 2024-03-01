@@ -50,7 +50,7 @@ export default function ChatRoomAttachments({ attachments }) {
   );
 
   const renderContent = (
-    <Scrollbar sx={{ px: 2, py: 2.5 }}>
+    <Scrollbar sx={{ px: 2, py: 2.5, height: '100%' }}>
       {attachments.map((attachment, index) => (
         <Stack
           key={attachment.name + index}
