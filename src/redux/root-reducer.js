@@ -15,7 +15,7 @@ import roleReducer from './slices/role';
 import fileReducer from './slices/file';
 import broadcastReducer from './slices/broadcast';
 import bookReducer from './slices/book';
-// import notificationReducer from './slices/notification';
+import notificationReducer from './slices/notification';
 // ----------------------------------------------------------------------
 
 const trainningPersistConfig = {
@@ -90,7 +90,7 @@ export const rootReducer = combineReducers({
   chat: persistReducer(chatPersistConfig, chatReducer),
   audio: audioReducer,
   trainning: persistReducer(trainningPersistConfig, trainningReducer),
-  // notification: notificationReducer,
+  notification: notificationReducer,
   dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
   // book: persistReducer(bookPersistConfig, bookReducer),
   book: bookReducer,

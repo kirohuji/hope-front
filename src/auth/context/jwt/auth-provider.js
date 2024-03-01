@@ -72,6 +72,7 @@ export function AuthProvider({ children }) {
     useLogout: logoutWithMeteor,
     useMethod: callWithMeteor,
     subConversations,
+    subNotifications,
   } = useMeteorContext();
   const meteor = useMeteorContext();
 
@@ -185,7 +186,9 @@ export function AuthProvider({ children }) {
         },
       });
     }
+
     subConversations();
+    subNotifications();
     if (Capacitor.isNativePlatform()) {
       console.log('isNativePlatform');
     }
@@ -198,7 +201,7 @@ export function AuthProvider({ children }) {
       console.log('Web!');
       import('../../../web.css');
     }
-  }, [callWithMeteor, subConversations]);
+  }, [callWithMeteor, subConversations, subNotifications]);
 
   useEffect(() => {
     if (meteor.isConnected && !state.isInitialized) {
@@ -229,7 +232,7 @@ export function AuthProvider({ children }) {
         roles,
         permissions,
       });
-      // getNotifications(user);
+      subNotifications();
       subConversations();
       dispatch({
         type: 'LOGIN',
@@ -243,7 +246,7 @@ export function AuthProvider({ children }) {
         },
       });
     },
-    [loginWithMeteor, subConversations]
+    [loginWithMeteor, subNotifications, subConversations]
   );
 
   // REGISTER

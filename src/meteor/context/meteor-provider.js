@@ -5,6 +5,7 @@ import { simpleDDPLogin } from 'simpleddp-plugin-login';
 import _ from 'lodash';
 import { useDispatch } from 'src/redux/store';
 import { getConversations } from 'src/redux/slices/chat';
+import { getNotification } from 'src/redux/slices/notification';
 import { MeteorContext } from './meteor-context';
 
 export const bindConnect = async (server, dispatch) => {
@@ -200,6 +201,19 @@ export function MeteorProvider({ endpoint, children }) {
     });
   }, [state, updateConversationsByDebounce]);
 
+  const subNotifications = useCallback(async () => {
+    const { server } = state;
+    const notifications = await server.subscribe('notifications');
+    notifications.ready();
+    const reactiveCollection = server.collection('notifications').reactive();
+    reactiveCollection.onChange((target) => {
+      if (Array.isArray(target)) {
+        reducerDispatch(getNotification(target));
+      } else if (target.changed && target.changed.next) {
+        reducerDispatch(getNotification([target.changed.next]));
+      }
+    });
+  }, [reducerDispatch, state]);
   const useLogin = useCallback(
     async (opt) => {
       const { server } = state;
@@ -275,9 +289,18 @@ export function MeteorProvider({ endpoint, children }) {
       useLogin,
       useLogout,
       subConversations,
+      subNotifications,
       useMethod,
     }),
-    [state.isConnected, state.server, subConversations, useLogin, useLogout, useMethod]
+    [
+      state.isConnected,
+      state.server,
+      subNotifications,
+      subConversations,
+      useLogin,
+      useLogout,
+      useMethod,
+    ]
   );
 
   return <MeteorContext.Provider value={memoizedValue}>{children}</MeteorContext.Provider>;

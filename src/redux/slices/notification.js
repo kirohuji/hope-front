@@ -1,36 +1,39 @@
 import { createSlice } from '@reduxjs/toolkit';
-
+import moment from 'moment';
 // utils
-import { fileManagerService } from 'src/composables/context-provider';
+// import { fileManagerService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
 const initialState = {
-  data: []
+  data: [],
 };
 
 const slice = createSlice({
-  name: 'file',
+  name: 'notification',
   initialState,
   reducers: {
-    getSuccess (state, action) {
-      state.data = action.payload;;
+    getSuccess(state, action) {
+      state.data = action.payload;
     },
-  }
-})
+  },
+});
 
 // Reducer
 export default slice.reducer;
 
-export function getFiles () {
+export function getNotification(data) {
   return async (dispatch) => {
     try {
-
-      const data = await fileManagerService.getWithCurrentUser()
-
-      dispatch(slice.actions.getSuccess(data));
-
+      dispatch(
+        slice.actions.getSuccess(
+          data.map((item) => ({
+            ...item,
+            createdAt: moment(item.createdAt).format('YYYY/MM/DD'),
+          }))
+        )
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 }

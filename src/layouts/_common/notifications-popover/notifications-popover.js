@@ -13,6 +13,8 @@ import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+// redux
+import { useDispatch, useSelector } from 'src/redux/store';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -22,7 +24,6 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { varHover } from 'src/components/animate';
 //
-import { useAuthContext } from 'src/auth/hooks';
 import NotificationItem from './notification-item';
 
 // ----------------------------------------------------------------------
@@ -48,6 +49,8 @@ const TABS = [
 // ----------------------------------------------------------------------
 
 export default function NotificationsPopover() {
+  const dispatch = useDispatch();
+
   const drawer = useBoolean();
 
   const smUp = useResponsive('up', 'sm');
@@ -58,9 +61,9 @@ export default function NotificationsPopover() {
     setCurrentTab(newValue);
   }, []);
 
-  const { state } = useAuthContext();
+  const { data } = useSelector((state) => state.notification);
 
-  const totalUnRead = state.notifications.filter((item) => item.isUnRead === true).length;
+  const totalUnRead = data.filter((item) => item.isUnRead === true).length;
 
   const handleMarkAllAsRead = () => {
     // setNotifications(
@@ -78,7 +81,7 @@ export default function NotificationsPopover() {
       </Typography>
 
       {!!totalUnRead && (
-        <Tooltip title="Mark all as read">
+        <Tooltip title="全都标记为已读">
           <IconButton color="primary" onClick={handleMarkAllAsRead}>
             <Iconify icon="eva:done-all-fill" />
           </IconButton>
@@ -126,7 +129,7 @@ export default function NotificationsPopover() {
   const renderList = (
     <Scrollbar>
       <List disablePadding>
-        {state.notifications.map((notification) => (
+        {data.map((notification) => (
           <NotificationItem key={notification.id} notification={notification} />
         ))}
       </List>
@@ -178,12 +181,13 @@ export default function NotificationsPopover() {
         <Divider />
 
         {renderList}
-
-        <Box sx={{ p: 1 }}>
-          <Button fullWidth size="large">
-            View All
-          </Button>
-        </Box>
+        {!!data.length && (
+          <Box sx={{ p: 1 }}>
+            <Button fullWidth size="large">
+              查看全部
+            </Button>
+          </Box>
+        )}
       </Drawer>
     </>
   );

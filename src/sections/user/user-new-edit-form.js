@@ -121,8 +121,9 @@ export default function UserNewEditForm({ currentUser }) {
       enqueueSnackbar(currentUser ? '更新成功!' : '创建成功!');
       router.push(paths.dashboard.user.list);
       console.info('DATA', data);
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      enqueueSnackbar(e?.response?.data?.message);
+      console.error(e);
     }
   });
 
@@ -140,6 +141,7 @@ export default function UserNewEditForm({ currentUser }) {
           enqueueSnackbar('头像上传成功!');
         }
       } catch (e) {
+        enqueueSnackbar(e?.response?.data?.message);
         loading.onFalse();
       }
     },

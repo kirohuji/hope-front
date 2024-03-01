@@ -206,6 +206,7 @@ export default function ChatMessageInput({
       loading.onFalse();
       enqueueSnackbar('图片上传成功');
     } catch (e) {
+      enqueueSnackbar(e?.response?.data?.message);
       loading.onFalse();
     }
   };
@@ -244,6 +245,7 @@ export default function ChatMessageInput({
         loading.onFalse();
       }
     } catch (e) {
+      enqueueSnackbar(e?.response?.data?.message);
       loading.onFalse();
     }
   };
