@@ -99,6 +99,16 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
         return (
           <Stack spacing={1} direction="row" alignItems="center">
             <FileThumbnail file={type} />
+            <Typography
+              sx={{
+                whiteSpace: 'nowrap' /* 防止文本换行 */,
+                overflow: 'hidden' /* 隐藏溢出的文本 */,
+                textOverflow: 'ellipsis' /* 显示省略号 */,
+              }}
+              variant="body2"
+            >
+              {attachments[0].name}
+            </Typography>
           </Stack>
         );
     }
