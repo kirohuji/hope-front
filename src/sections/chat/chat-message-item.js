@@ -92,7 +92,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
         return (
           <Stack spacing={1} direction="row" alignItems="center">
             <FileThumbnail file="audio" />
-            <Typography variant="body2">{attachments[0].name}</Typography>
+            <Typography variant="body2">{attachments[0]?.name}</Typography>
           </Stack>
         );
       default:
@@ -107,7 +107,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
               }}
               variant="body2"
             >
-              {attachments[0].name}
+              {attachments[0]?.name}
             </Typography>
           </Stack>
         );
@@ -173,9 +173,11 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
         }),
       }}
     >
-      <IconButton size="small" onClick={() => handleSendMessage()}>
-        <Iconify icon="solar:reply-bold" width={16} />
-      </IconButton>
+      {me && (
+        <IconButton size="small" onClick={() => handleSendMessage()}>
+          <Iconify icon="solar:reply-bold" width={16} />
+        </IconButton>
+      )}
       {false && (
         <IconButton size="small">
           <Iconify icon="eva:smiling-face-fill" width={16} />

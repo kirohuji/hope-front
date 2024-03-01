@@ -71,3 +71,6 @@
 .MuiBottomNavigationAction-label {
   opacity: 1 !important;
 }
+.MuiInputBase-root.message-input {
+  width: 100%;
+}

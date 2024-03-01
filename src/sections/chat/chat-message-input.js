@@ -3,14 +3,18 @@ import { sub } from 'date-fns';
 import { useRef, useState, useCallback, useMemo } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'src/components/snackbar';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // hooks
 import { useAuthContext } from 'src/auth/hooks';
+import { useBoolean } from 'src/hooks/use-boolean';
 // utils
 import uuidv4 from 'src/utils/uuidv4';
 
@@ -36,6 +40,8 @@ export default function ChatMessageInput({
   disabled,
   selectedConversationId,
 }) {
+  const loading = useBoolean(false);
+
   const router = useRouter();
 
   const dispatch = useDispatch();
@@ -166,109 +172,146 @@ export default function ChatMessageInput({
   );
 
   const uploadImage = async () => {
-    if (imageRef.current) {
-      const file = imageRef.current.files[0];
-      const formData = new FormData();
-      formData.append('file', file);
-      const { link } = await fileService.upload(formData);
-      await fileManagerService.createCurrentUser({
-        url: link,
-        label: file.name,
-        size: file.size,
-        type: `${file.name.split('.').pop()}`,
-        lastModified: new Date(file.lastModified),
-      });
-      await dispatch(
-        sendMessage(selectedConversationId, {
-          ...messageData,
-          body: link,
-          message: link,
-          attachments: [
-            {
-              name: file.name,
-              preview: link,
-              type: 'image',
-              createdAt: new Date(),
-            },
-          ],
-          contentType: 'image',
-        })
-      );
+    try {
+      if (imageRef.current) {
+        loading.onTrue();
+        const file = imageRef.current.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        const { link } = await fileService.upload(formData);
+        await fileManagerService.createCurrentUser({
+          url: link,
+          label: file.name,
+          size: file.size,
+          type: `${file.name.split('.').pop()}`,
+          lastModified: new Date(file.lastModified),
+        });
+        await dispatch(
+          sendMessage(selectedConversationId, {
+            ...messageData,
+            body: link,
+            message: link,
+            attachments: [
+              {
+                name: file.name,
+                preview: link,
+                type: 'image',
+                createdAt: new Date(),
+              },
+            ],
+            contentType: 'image',
+          })
+        );
+      }
+      loading.onFalse();
+      enqueueSnackbar('图片上传成功');
+    } catch (e) {
+      loading.onFalse();
     }
   };
   const uploadFile = async () => {
-    if (fileRef.current) {
-      const file = fileRef.current.files[0];
-      const formData = new FormData();
-      formData.append('file', file);
-      const { link } = await fileService.upload(formData);
-      await fileManagerService.createCurrentUser({
-        url: link,
-        label: file.name,
-        size: file.size,
-        type: `${file.name.split('.').pop()}`,
-        lastModified: new Date(file.lastModified),
-      });
-      await dispatch(
-        sendMessage(selectedConversationId, {
-          ...messageData,
-          body: link,
-          message: link,
-          contentType: `${file.name.split('.').pop()}`,
-          attachments: [
-            {
-              name: file.name,
-              preview: link,
-              type: `${file.name.split('.').pop()}`,
-              createdAt: new Date(),
-            },
-          ],
-        })
-      );
+    try {
+      loading.onTrue();
+      if (fileRef.current) {
+        const file = fileRef.current.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        const { link } = await fileService.upload(formData);
+        await fileManagerService.createCurrentUser({
+          url: link,
+          label: file.name,
+          size: file.size,
+          type: `${file.name.split('.').pop()}`,
+          lastModified: new Date(file.lastModified),
+        });
+        await dispatch(
+          sendMessage(selectedConversationId, {
+            ...messageData,
+            body: link,
+            message: link,
+            contentType: `${file.name.split('.').pop()}`,
+            attachments: [
+              {
+                name: file.name,
+                preview: link,
+                type: `${file.name.split('.').pop()}`,
+                createdAt: new Date(),
+              },
+            ],
+          })
+        );
+        enqueueSnackbar('文件上传成功');
+        loading.onFalse();
+      }
+    } catch (e) {
+      loading.onFalse();
     }
   };
   return (
     <>
-      <InputBase
-        type="search"
-        inputProps={{ enterKeyHint: 'send' }}
-        value={message}
-        onKeyUp={handleSendMessage}
-        onChange={handleChangeMessage}
-        placeholder="请输入内容"
-        disabled={disabled}
-        maxRows={3}
-        multiline
-        startAdornment={
-          false && (
-            <IconButton>
-              <Iconify icon="eva:smiling-face-fill" />
-            </IconButton>
-          )
-        }
-        endAdornment={
-          <Stack direction="row" sx={{ flexShrink: 0 }}>
-            <IconButton onClick={handleImage}>
-              <Iconify icon="solar:gallery-add-bold" />
-            </IconButton>
-            <IconButton onClick={handleAttach}>
-              <Iconify icon="eva:attach-2-fill" />
-            </IconButton>
-            {false && (
+      <Box sx={{ width: '100%' }}>
+        {loading.value && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              zIndex: 10,
+              backgroundColor: '#ffffffc4',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Box>
+              <CircularProgress />
+              <Typography variant="body2">正在上传...</Typography>
+            </Box>
+          </Box>
+        )}
+        <InputBase
+          type="search"
+          className="message-input"
+          inputProps={{ enterKeyHint: 'send' }}
+          value={message}
+          onKeyUp={handleSendMessage}
+          onChange={handleChangeMessage}
+          placeholder="请输入内容"
+          disabled={disabled || loading.value}
+          maxRows={3}
+          multiline
+          startAdornment={
+            false && (
               <IconButton>
-                <Iconify icon="solar:microphone-bold" />
+                <Iconify icon="eva:smiling-face-fill" />
               </IconButton>
-            )}
-          </Stack>
-        }
-        sx={{
-          px: 1,
-          margin: '4px 0',
-          flexShrink: 0,
-          borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
-        }}
-      />
-
+            )
+          }
+          endAdornment={
+            <Stack direction="row" sx={{ flexShrink: 0 }}>
+              <IconButton onClick={handleImage}>
+                <Iconify icon="solar:gallery-add-bold" />
+              </IconButton>
+              <IconButton onClick={handleAttach}>
+                <Iconify icon="eva:attach-2-fill" />
+              </IconButton>
+              {false && (
+                <IconButton>
+                  <Iconify icon="solar:microphone-bold" />
+                </IconButton>
+              )}
+            </Stack>
+          }
+          sx={{
+            px: 1,
+            margin: '4px 0',
+            flexShrink: 0,
+            borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
+          }}
+        />
+      </Box>
       <input
         onChange={uploadImage}
         type="file"
