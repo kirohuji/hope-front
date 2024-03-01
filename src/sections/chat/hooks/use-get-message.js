@@ -17,7 +17,7 @@ export default function useGetMessage({ message, participants, currentUserId }) 
 
   const me = senderDetails.type === 'me';
 
-  const hasImage = message.contentType === 'image';
+  const hasImage = message.contentType === 'image' || message.contentType === 'jpg';
 
   return {
     hasImage,

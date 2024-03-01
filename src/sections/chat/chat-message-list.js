@@ -21,7 +21,7 @@ export default function ChatMessageList({
   const { messagesEndRef } = useMessagesScroll(messages);
 
   const slides = messages
-    .filter((message) => message.contentType === 'image')
+    .filter((message) => message.contentType === 'image' || message.contentType === 'jpg')
     .map((message) => ({ src: message.body }));
 
   const lightbox = useLightBox(slides);

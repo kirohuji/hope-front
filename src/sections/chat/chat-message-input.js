@@ -276,7 +276,13 @@ export default function ChatMessageInput({
         style={{ display: 'none' }}
         accept="image/*"
       />
-      <input onChange={uploadFile} type="file" ref={fileRef} style={{ display: 'none' }} />
+      <input
+        onChange={uploadFile}
+        type="file"
+        ref={fileRef}
+        style={{ display: 'none' }}
+        accept=".xls,.xlsx,.pdf,.doc,.docx,.ppt,.pptx,.mp4,.mov,.avi,.mkv"
+      />
     </>
   );
 }

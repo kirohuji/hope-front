@@ -38,7 +38,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
 
   const { username, photoURL, displayName, realName } = senderDetails;
 
-  const { body, contentType, createdAt, isLoading, isFailure } = message;
+  const { body, attachments, contentType, createdAt, isLoading, isFailure } = message;
 
   const renderInfo = (
     <Typography
@@ -92,6 +92,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
         return (
           <Stack spacing={1} direction="row" alignItems="center">
             <FileThumbnail file="audio" />
+            <Typography variant="body2">{attachments[0].name}</Typography>
           </Stack>
         );
       default:
