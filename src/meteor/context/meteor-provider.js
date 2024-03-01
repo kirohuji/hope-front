@@ -5,7 +5,12 @@ import { simpleDDPLogin } from 'simpleddp-plugin-login';
 import _ from 'lodash';
 import { useDispatch } from 'src/redux/store';
 import { getConversations } from 'src/redux/slices/chat';
-import { getNotification } from 'src/redux/slices/notification';
+import {
+  newNotificationGet,
+  newNotificationRemove,
+  getOverview,
+} from 'src/redux/slices/notification';
+import moment from 'moment';
 import { MeteorContext } from './meteor-context';
 
 export const bindConnect = async (server, dispatch) => {
@@ -178,6 +183,8 @@ export const createServer = (endpoint) => {
 
 let conversationsPublish = null;
 let conversationsCollection = null;
+let notificationsPublish = null;
+let notificationsCollection = null;
 export function MeteorProvider({ endpoint, children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const reducerDispatch = useDispatch();
@@ -203,16 +210,32 @@ export function MeteorProvider({ endpoint, children }) {
 
   const subNotifications = useCallback(async () => {
     const { server } = state;
-    const notifications = await server.subscribe('notifications');
-    notifications.ready();
-    const reactiveCollection = server.collection('notifications').reactive();
-    reactiveCollection.onChange((target) => {
-      if (Array.isArray(target)) {
-        reducerDispatch(getNotification(target));
-      } else if (target.changed && target.changed.next) {
-        reducerDispatch(getNotification([target.changed.next]));
+    notificationsPublish = await server.subscribe('userUnreadNotifications');
+    notificationsPublish.ready();
+    notificationsCollection = server.collection('notifications');
+    reducerDispatch(getOverview());
+    notificationsCollection.onChange((target) => {
+      console.log(target);
+      if (target.added) {
+        reducerDispatch(getOverview());
+        reducerDispatch(
+          newNotificationGet({
+            ...target.added,
+            _id: target.added.id,
+            createdAt: moment(target.added.createdAt).format('YYYY/MM//DD'),
+            isUnRead: true,
+          })
+        );
+      } else if (target.removed) {
+        reducerDispatch(getOverview());
+        reducerDispatch(
+          newNotificationRemove({
+            _id: target.removed.id,
+          })
+        );
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reducerDispatch, state]);
   const useLogin = useCallback(
     async (opt) => {

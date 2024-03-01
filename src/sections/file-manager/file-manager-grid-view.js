@@ -164,7 +164,7 @@ export default function FileManagerGridView({
                   startIcon={<Iconify icon="solar:share-bold" />}
                   onClick={share.onTrue}
                 >
-                  Share
+                  分享
                 </Button>
               </>
             }

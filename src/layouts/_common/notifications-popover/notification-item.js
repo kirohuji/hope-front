@@ -12,8 +12,9 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { fToNow } from 'src/utils/format-time';
 // components
 import Label from 'src/components/label';
+import { useSnackbar } from 'src/components/snackbar';
 import FileThumbnail from 'src/components/file-thumbnail';
-import { fileManagerService } from 'src/composables/context-provider';
+import { notificationService, fileManagerService } from 'src/composables/context-provider';
 
 // redux
 import { useDispatch } from 'src/redux/store';
@@ -32,20 +33,33 @@ function category(notification) {
   return value;
 }
 export default function NotificationItem({ notification }) {
+  const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
 
   const onShareFile = async () => {
-    await fileManagerService.accpetShareFile(notification);
-    dispatch(getFiles());
+    try {
+      await fileManagerService.accpetShareFile(notification);
+      enqueueSnackbar('接受成功');
+      dispatch(getFiles());
+    } catch (e) {
+      enqueueSnackbar('接受失败!');
+      console.log(e);
+    }
   };
   const onDenyShareFile = async () => {
-    await fileManagerService.denyShareFile(notification);
-    dispatch(getFiles());
+    try {
+      await fileManagerService.denyShareFile(notification);
+      enqueueSnackbar('拒绝成功');
+      dispatch(getFiles());
+    } catch (e) {
+      enqueueSnackbar('拒绝失败');
+      console.log(e);
+    }
   };
   const renderAvatar = (
     <ListItemAvatar>
-      {notification.avatarUrl ? (
-        <Avatar src={notification.avatarUrl} sx={{ bgcolor: 'background.neutral' }} />
+      {notification.photoURL ? (
+        <Avatar src={notification.photoURL} sx={{ bgcolor: 'background.neutral' }} />
       ) : (
         <Stack
           alignItems="center"
@@ -63,7 +77,8 @@ export default function NotificationItem({ notification }) {
               (notification.type === 'order' && 'ic_order') ||
               (notification.type === 'chat' && 'ic_chat') ||
               (notification.type === 'mail' && 'ic_mail') ||
-              (notification.type === 'delivery' && 'ic_delivery')
+              (notification.type === 'delivery' && 'ic_delivery') ||
+              (notification.type === 'share' && 'ic_mail')
             }.svg`}
             sx={{ width: 24, height: 24 }}
           />
@@ -233,9 +248,18 @@ export default function NotificationItem({ notification }) {
     </Stack>
   );
 
+  const handleRead = async () => {
+    try {
+      await notificationService.checkRead(notification);
+      dispatch(getFiles());
+    } catch (e) {
+      console.log(e);
+    }
+  };
   return (
     <ListItemButton
       disableRipple
+      onClick={() => handleRead(notification)}
       sx={{
         p: 2.5,
         alignItems: 'flex-start',

@@ -7,7 +7,6 @@ import { userService, versionService } from 'src/composables/context-provider';
 import { Capacitor } from '@capacitor/core';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { App } from '@capacitor/app';
-// import { useLogin, useMethod, useLogout } from 'src/meteor/hooks';
 import { useMeteorContext } from 'src/meteor/hooks';
 import { AuthContext } from './auth-context';
 import { setSession, setInfo } from './utils';
@@ -17,7 +16,6 @@ const initialState = {
   isAuthenticated: false,
   user: null,
   loading: true,
-  notifications: [],
 };
 
 const reducer = (state, action) => {
@@ -27,7 +25,6 @@ const reducer = (state, action) => {
       isAuthenticated: action.payload.isAuthenticated,
       loading: false,
       user: action.payload.user,
-      notifications: [],
     };
   }
   if (action.type === 'LOGIN') {
@@ -76,30 +73,6 @@ export function AuthProvider({ children }) {
   } = useMeteorContext();
   const meteor = useMeteorContext();
 
-  // const getNotifications = useCallback(async (user) => {
-  //   const notifications = await ddpclient.subscribe('notifications', user._id);
-
-  //   await notifications.ready();
-
-  //   const reactiveCollection = ddpclient.collection('notifications').reactive();
-
-  //   dispatch({
-  //     type: 'NOTIFICATION',
-  //     payload: {
-  //       notifications: reactiveCollection.data(),
-  //     },
-  //   });
-
-  //   reactiveCollection.onChange((newData) => {
-  //     dispatch({
-  //       type: 'NOTIFICATION',
-  //       payload: {
-  //         notifications: newData,
-  //       },
-  //     });
-  //   });
-  // }, []);
-
   const refresh = useCallback(async () => {
     const { user, profile, roles, permissions } = await userService.info();
     setInfo({
@@ -127,7 +100,6 @@ export function AuthProvider({ children }) {
       const accessToken = localStorage.getItem(STORAGE_KEY);
 
       if (accessToken) {
-        // ddpclient.connect();
         await callWithMeteor('login', {
           resume: accessToken,
         });
@@ -137,7 +109,6 @@ export function AuthProvider({ children }) {
 
         if (localInfo) {
           const { user, profile, roles, permissions } = JSON.parse(localInfo);
-          // getNotifications(user);
           dispatch({
             type: 'INITIAL',
             payload: {
@@ -153,7 +124,6 @@ export function AuthProvider({ children }) {
         } else {
           // 获取用户信息
           const { user, profile, roles, permissions } = await userService.info();
-          // getNotifications(user);
           dispatch({
             type: 'INITIAL',
             payload: {
@@ -337,12 +307,10 @@ App.addListener('appStateChange', async (state) => {
   if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
     const current = await CapacitorUpdater.current();
     if (state.isActive) {
-      console.log('安装包下载状态');
       console.log('当前正在使用的安装包', current);
       const datas = await versionService.getAll();
       const config = _.maxBy(datas, 'value');
       if (current.bundle.version !== config.value) {
-        console.log('从后台拿到的安装包URL', config);
         console.log('从后台拿到的安装包URL开始下载', config);
         data = await CapacitorUpdater.download({
           version: config.value,

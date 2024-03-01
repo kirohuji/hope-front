@@ -22,7 +22,7 @@ import FileManagerSearchResults from './file-manager-search-results';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerShareDialog ({
+export default function FileManagerShareDialog({
   shared,
   inviteEmail,
   onInviteEmail,
@@ -71,37 +71,40 @@ export default function FileManagerShareDialog ({
     />
   );
 
-  const handleSearchContacts = useCallback(
-    async (inputValue) => {
+  const handleSearchContacts = useCallback(async (inputValue) => {
+    setSearchContacts((prevState) => ({
+      ...prevState,
+      query: inputValue,
+    }));
+
+    if (inputValue) {
+      const response = await userService.pagination(
+        {
+          username: inputValue,
+        },
+        {}
+      );
+
       setSearchContacts((prevState) => ({
         ...prevState,
-        query: inputValue,
+        results: response.data,
       }));
-
-      if (inputValue) {
-        const response = await userService.pagination(
-          {
-            username: inputValue
-          },
-          {}
-        )
-
-        setSearchContacts((prevState) => ({
-          ...prevState,
-          results: response.data,
-        }));
-      }
-    },
-    []
-  );
+    }
+  }, []);
 
   return (
-    <Dialog fullWidth maxWidth="xs" open={open} onClose={()=>{
-      setSendSearchContacts({
-        results: []
-      })
-      onClose()
-    }} {...other}>
+    <Dialog
+      fullWidth
+      maxWidth="xs"
+      open={open}
+      onClose={() => {
+        setSendSearchContacts({
+          results: [],
+        });
+        onClose();
+      }}
+      {...other}
+    >
       <DialogTitle> 邀请 </DialogTitle>
 
       <DialogContent sx={{ overflow: 'unset' }}>
@@ -111,8 +114,8 @@ export default function FileManagerShareDialog ({
             value={searchContacts.query}
             placeholder="用户名"
             onChange={(event) => {
-              onChangeInvite(event)
-              handleSearchContacts(event.target.value)
+              onChangeInvite(event);
+              handleSearchContacts(event.target.value);
             }}
             InputProps={{
               startAdornment: (
@@ -139,18 +142,17 @@ export default function FileManagerShareDialog ({
             sx={{ mb: 2 }}
           />
         )}
-        {
-          searchContacts.query && renderListResults
-        }
-        {
-          !searchContacts.query &&
+        {searchContacts.query && renderListResults}
+        {!searchContacts.query && (
           <>
             <Divider sx={{ mb: 1 }} />
             <Stack direction="row" justifyContent="space-between">
-              <Typography variant="h6" sx={{ mb: 1 }}>待邀请列表</Typography>
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                待邀请列表
+              </Typography>
               <Button
-                onClick={()=>{
-                  onInviteEmails(sendSearchContacts)
+                onClick={() => {
+                  onInviteEmails(sendSearchContacts);
                 }}
                 color="inherit"
                 variant="contained"
@@ -170,18 +172,21 @@ export default function FileManagerShareDialog ({
               </Scrollbar>
             )}
             <Divider sx={{ mb: 1 }} />
-            <Typography variant="h6" sx={{ mb: 1 }}>已邀请列表</Typography>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              已邀请列表
+            </Typography>
             {hasShared && (
               <Scrollbar sx={{ maxHeight: 60 * 6 }}>
                 <List disablePadding>
-                  {shared && shared.map((person) => (
-                    <FileManagerInvitedItem key={person._id} person={person} />
-                  ))}
+                  {shared &&
+                    shared.map((person) => (
+                      <FileManagerInvitedItem key={person._id} person={person} />
+                    ))}
                 </List>
               </Scrollbar>
             )}
           </>
-        }
+        )}
       </DialogContent>
 
       <DialogActions sx={{ justifyContent: 'space-between' }}>
@@ -192,12 +197,16 @@ export default function FileManagerShareDialog ({
         )}
 
         {onClose && (
-          <Button variant="outlined" color="inherit" onClick={()=>{
-            setSendSearchContacts({
-              results: []
-            })
-            onClose()
-          }}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={() => {
+              setSendSearchContacts({
+                results: [],
+              });
+              onClose();
+            }}
+          >
             关闭
           </Button>
         )}

@@ -14,7 +14,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerInvitedItem ({ person, isMain }) {
+export default function FileManagerInvitedItem({ person, isMain }) {
   const [permission, setPermission] = useState(person.permission);
 
   const popover = usePopover();
@@ -34,7 +34,7 @@ export default function FileManagerInvitedItem ({ person, isMain }) {
         <Avatar alt={person.username} src={person.photoURL} sx={{ mr: 2 }} />
 
         <ListItemText
-          primary={person.username}
+          primary={`${person.displayName}(${person.realName})`}
           secondary={
             <Tooltip title={person.email}>
               <span>{person.email}</span>
@@ -44,8 +44,8 @@ export default function FileManagerInvitedItem ({ person, isMain }) {
           secondaryTypographyProps={{ noWrap: true, component: 'span' }}
           sx={{ flexGrow: 1, pr: 1 }}
         />
-        {
-          isMain && <Button
+        {isMain && (
+          <Button
             size="small"
             color="inherit"
             endIcon={
@@ -65,7 +65,7 @@ export default function FileManagerInvitedItem ({ person, isMain }) {
           >
             Can {permission}
           </Button>
-        }
+        )}
       </ListItem>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 160 }}>

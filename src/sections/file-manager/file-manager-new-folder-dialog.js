@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState, useCallback } from 'react';
 // @mui
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -8,6 +10,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Dialog from '@mui/material/Dialog';
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
@@ -28,6 +32,8 @@ export default function FileManagerNewFolderDialog({
   ...other
 }) {
   const { enqueueSnackbar } = useSnackbar();
+
+  const loading = useBoolean(false);
 
   const [files, setFiles] = useState([]);
 
@@ -55,6 +61,7 @@ export default function FileManagerNewFolderDialog({
       // if (files.length === 0) {
       //   return;
       // }
+      loading.onTrue();
       await Promise.all(
         files.map(async (file) => {
           const formData = new FormData();
@@ -74,6 +81,7 @@ export default function FileManagerNewFolderDialog({
     } catch (e) {
       enqueueSnackbar(e.response.data.message);
     }
+    loading.onFalse();
   };
 
   const handleRemoveFile = (inputFile) => {
@@ -87,6 +95,26 @@ export default function FileManagerNewFolderDialog({
 
   return (
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose} {...other}>
+      {loading.value && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: 10,
+            backgroundColor: '#ffffffc4',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Box>
+            <CircularProgress />
+          </Box>
+        </Box>
+      )}
       <DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}> {title} </DialogTitle>
 
       <DialogContent dividers sx={{ pt: 1, pb: 0, border: 'none' }}>

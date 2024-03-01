@@ -37,13 +37,11 @@ import FileManagerFileDetails from './file-manager-file-details';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerFileItem ({ file, selected, onSelect, onDelete, sx, ...other }) {
-
+export default function FileManagerFileItem({ file, selected, onSelect, onDelete, sx, ...other }) {
   const { enqueueSnackbar } = useSnackbar();
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { copy } = useCopyToClipboard();
-
 
   const [inviteEmail, setInviteEmail] = useState('');
 
@@ -66,32 +64,37 @@ export default function FileManagerFileItem ({ file, selected, onSelect, onDelet
   }, []);
 
   const handleInvite = useCallback(async () => {
-    loading.onTrue()
-    await fileManagerService.inviteEmailWithCurrent({
-      inviteEmail,
-      fileId: file._id,
-    })
-    enqueueSnackbar('发送成功!');
-    loading.onFalse()
+    try {
+      loading.onTrue();
+      await fileManagerService.inviteEmailWithCurrent({
+        inviteEmail,
+        fileId: file._id,
+      });
+      enqueueSnackbar('发送成功!');
+    } catch (e) {
+      enqueueSnackbar('发送失败!');
+    }
+    loading.onFalse();
     share.onFalse();
   }, [share, loading, inviteEmail, file._id, enqueueSnackbar]);
 
-  const handleInviteEmails = useCallback(async (inviteEmails) => {
-    loading.onTrue()
-    try{
-      await fileManagerService.inviteEmailsWithCurrent({
-        inviteEmails: inviteEmails.results,
-        fileId: file._id,
-      })
-      enqueueSnackbar('发送成功!');
-    } catch(e){
-      enqueueSnackbar(e.response.data.message);
-    }
-    loading.onFalse()
-    share.onFalse();
-  }, [share, loading, file._id, enqueueSnackbar]);
-
-
+  const handleInviteEmails = useCallback(
+    async (inviteEmails) => {
+      loading.onTrue();
+      try {
+        await fileManagerService.inviteEmailsWithCurrent({
+          inviteEmails: inviteEmails.results,
+          fileId: file._id,
+        });
+        enqueueSnackbar('发送成功!');
+      } catch (e) {
+        enqueueSnackbar(e.response.data.message);
+      }
+      loading.onFalse();
+      share.onFalse();
+    },
+    [share, loading, file._id, enqueueSnackbar]
+  );
 
   const handleCopy = useCallback(() => {
     enqueueSnackbar('拷贝成功!');
@@ -114,16 +117,15 @@ export default function FileManagerFileItem ({ file, selected, onSelect, onDelet
 
   const renderAction = (
     <Stack direction="row" alignItems="center" sx={{ top: 8, right: 8, position: 'absolute' }}>
-      {
-        false && <Checkbox
+      {false && (
+        <Checkbox
           color="warning"
           icon={<Iconify icon="eva:star-outline" />}
           checkedIcon={<Iconify icon="eva:star-fill" />}
           checked={favorite.value}
           onChange={favorite.onToggle}
         />
-
-      }
+      )}
       <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
         <Iconify icon="eva:more-vertical-fill" />
       </IconButton>
@@ -212,15 +214,12 @@ export default function FileManagerFileItem ({ file, selected, onSelect, onDelet
         }}
         {...other}
       >
-        {
-          false && <Box onMouseEnter={checkbox.onTrue} onMouseLeave={checkbox.onFalse}>
+        {false && (
+          <Box onMouseEnter={checkbox.onTrue} onMouseLeave={checkbox.onFalse}>
             {renderIcon}
           </Box>
-
-        }
-        <Box onClick={details.onTrue}>
-          {renderIcon}
-        </Box>
+        )}
+        <Box onClick={details.onTrue}>{renderIcon}</Box>
         {renderText}
 
         {renderAvatar}
@@ -247,24 +246,23 @@ export default function FileManagerFileItem ({ file, selected, onSelect, onDelet
         <MenuItem
           onClick={() => {
             popover.onClose();
-            window.open(file.url, "blank")
+            window.open(file.url, 'blank');
           }}
         >
           <Iconify icon="eva:link-2-fill" />
           下载
         </MenuItem>
-        {
-          file && file.type === 'mp3' && <MenuItem
+        {file && file.type === 'mp3' && (
+          <MenuItem
             onClick={() => {
-              dispatch(getList(file))
+              dispatch(getList(file));
               popover.onClose();
             }}
           >
             <Iconify icon="eva:link-2-fill" />
             播放
           </MenuItem>
-
-        }
+        )}
         <MenuItem
           onClick={() => {
             popover.onClose();
