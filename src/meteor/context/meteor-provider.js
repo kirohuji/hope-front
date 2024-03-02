@@ -222,7 +222,7 @@ export function MeteorProvider({ endpoint, children }) {
           newNotificationGet({
             ...target.added,
             _id: target.added.id,
-            createdAt: moment(target.added.createdAt).format('YYYY/MM//DD'),
+            createdAt: new Date(target.added.createdAt).toISOString(),
             isUnRead: true,
           })
         );
