@@ -72,21 +72,19 @@ export default function NotificationsPopover() {
 
   const handleMarkAllAsRead = () => {};
 
-  const onRefresh = useCallback(
-    async (currentNotifictionLimit) => {
-      await dispatch(
-        getNotifications(
-          {
-            isUnRead: currentTab === 'unread',
-            isRemove: false,
-          },
-          notificationLimit
-        )
-      );
-      setLoading(false);
-    },
-    [currentTab, dispatch, notificationLimit]
-  );
+  const onRefresh = useCallback(async () => {
+    setNotificationLimit(notificationLimit + 20);
+    await dispatch(
+      getNotifications(
+        {
+          isUnRead: currentTab === 'unread',
+          isRemove: false,
+        },
+        notificationLimit
+      )
+    );
+    setLoading(false);
+  }, [currentTab, dispatch, notificationLimit]);
 
   const handleChangeTab = useCallback(
     async (event, newValue) => {
@@ -201,7 +199,6 @@ export default function NotificationsPopover() {
           scrollNode.scrollTop + scrollNode.clientHeight >= scrollNode.scrollHeight &&
           !loadingHistory
         ) {
-          console.log('触发');
           setLoadingHistory(true);
           onRefresh(notifications.length).then(() => {
             setLoadingHistory(false);
@@ -242,7 +239,7 @@ export default function NotificationsPopover() {
           );
         }}
       >
-        <Badge badgeContent={overview.all} color="error">
+        <Badge badgeContent={overview.unread} color="error">
           <Iconify icon="solar:bell-bing-bold-duotone" width={24} />
         </Badge>
       </IconButton>

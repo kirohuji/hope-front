@@ -17,7 +17,7 @@ export default function ChatMessageList({
   conversationId,
   participants,
 }) {
-  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [isFetching, setIsFetching] = useState(false); // 是否正在加载更多消息
   const { messagesEndRef } = useMessagesScroll(messages);
 
   const slides = messages
@@ -26,25 +26,27 @@ export default function ChatMessageList({
 
   const lightbox = useLightBox(slides);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (scrollNode.scrollTop === 0 && !loadingHistory) {
-        const scrollPosition = scrollNode.scrollHeight - scrollNode.scrollTop;
-        setLoadingHistory(true);
-        onRefresh(messages.length).then(() => {
-          setLoadingHistory(false);
-          scrollNode.scrollTop = scrollNode.scrollHeight - scrollPosition;
-        });
+  const handleScroll = useCallback(async () => {
+    if (messagesEndRef.current.scrollTop === 0 && !isFetching) {
+      console.log('滚到顶部了');
+      const scrollPosition = messagesEndRef.current.scrollHeight - messagesEndRef.current.scrollTop;
+      if (!isFetching) {
+        setIsFetching(true);
+        console.log('请求数据');
+        await onRefresh(messages.length); // 获取更多消息
+        setIsFetching(false); // 加载完成后重置状态
+        messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight - scrollPosition;
       }
-    };
+    }
+  }, [messagesEndRef, isFetching, onRefresh, messages.length]);
 
+  useEffect(() => {
     const scrollNode = messagesEndRef.current;
     scrollNode.addEventListener('scroll', handleScroll);
     return () => {
       scrollNode.removeEventListener('scroll', handleScroll);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messagesEndRef.current]);
+  }, [handleScroll, messagesEndRef]);
 
   return (
     <>

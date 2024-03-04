@@ -29,10 +29,26 @@ const slice = createSlice({
     getNotificationSuccess(state, action) {
       const data = action.payload;
       state.data.unshift(data);
+      if (!state.data.overview) {
+        state.data.overview = {
+          all: 0,
+          unread: 0,
+        };
+      }
+      state.data.overview.all += 1;
+      state.data.overview.unread += 1;
     },
     removeNotificationSuccess(state, action) {
       const data = action.payload;
       state.data = state.data.filter((item) => item._id !== data._id);
+      if (!state.data.overview) {
+        state.data.overview = {
+          all: 1,
+          unread: 1,
+        };
+      }
+      state.data.overview.all -= 1;
+      state.data.overview.unread -= 1;
     },
     getOverviewSuccess(state, action) {
       if (action.payload && Array.isArray(action.payload)) {
@@ -78,7 +94,6 @@ export function newNotificationGet(data) {
     try {
       dispatch(slice.actions.getNotificationSuccess(data));
     } catch (error) {
-      console.log(error);
       dispatch(
         slice.actions.hasError({
           code: error.code,

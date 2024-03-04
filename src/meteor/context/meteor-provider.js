@@ -10,7 +10,6 @@ import {
   newNotificationRemove,
   getOverview,
 } from 'src/redux/slices/notification';
-import moment from 'moment';
 import { MeteorContext } from './meteor-context';
 
 export const bindConnect = async (server, dispatch) => {
@@ -112,9 +111,7 @@ export const useCollection = (name, filter = noFilter) => {
 
     const reactiveCursor = server.collection(name).filter(filter).reactive();
     reactiveCursor.onChange((newData) => setData(_.cloneDeep(newData)));
-
     setData(_.cloneDeep(reactiveCursor.data()));
-
     return () => reactiveCursor.stop();
   }, [server, name, filter]);
 
@@ -132,7 +129,6 @@ export const useCollectionOne = (name, filter = noFilter) => {
 
     const reactiveList = server.collection(name).filter(filter).reactive();
     const reactiveCursor = reactiveList.one();
-
     reactiveCursor.onChange((newData) => {
       if (reactiveList.count().result > 0) {
         setData(_.cloneDeep(newData));
@@ -177,7 +173,6 @@ export const createServer = (endpoint) => {
     reconnectInterval: 5000,
     clearDataOnReconnection: false,
   };
-
   return new SimpleDDP(opts, [simpleDDPLogin]);
 };
 
@@ -217,7 +212,6 @@ export function MeteorProvider({ endpoint, children }) {
     notificationsCollection.onChange((target) => {
       console.log(target);
       if (target.added) {
-        reducerDispatch(getOverview());
         reducerDispatch(
           newNotificationGet({
             ...target.added,
@@ -227,7 +221,6 @@ export function MeteorProvider({ endpoint, children }) {
           })
         );
       } else if (target.removed) {
-        reducerDispatch(getOverview());
         reducerDispatch(
           newNotificationRemove({
             _id: target.removed.id,
@@ -235,7 +228,6 @@ export function MeteorProvider({ endpoint, children }) {
         );
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reducerDispatch, state]);
   const useLogin = useCallback(
     async (opt) => {
@@ -255,7 +247,6 @@ export function MeteorProvider({ endpoint, children }) {
           });
         }
       }
-
       return () => {
         console.warn('server not ready yet');
       };
@@ -265,11 +256,9 @@ export function MeteorProvider({ endpoint, children }) {
 
   const useLogout = useCallback(() => {
     const { server } = state;
-
     if (server) {
       return server.logout();
     }
-
     return () => {
       console.warn('server not ready yet');
     };
@@ -278,11 +267,9 @@ export function MeteorProvider({ endpoint, children }) {
   const useMethod = useCallback(
     (name, ...args) => {
       const { server } = state;
-
       if (server) {
         return server.call(name, ...args);
       }
-
       return () => {
         console.warn('server not ready yet');
       };

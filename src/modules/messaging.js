@@ -21,6 +21,10 @@ export default class MessagingService {
     return this.api.get(`${this.model}/conversations/${target._id}`);
   }
 
+  participantsAsUsers(target) {
+    return this.api.get(`${this.model}/conversations/${target._id}/participants`);
+  }
+
   addParticipants(target) {
     return this.api.post(`${this.model}/conversations/${target._id}/addParticipants`, target);
   }

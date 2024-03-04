@@ -20,11 +20,14 @@ import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import { messagingService } from 'src/composables/context-provider';
+import { useAuthContext } from 'src/auth/hooks';
 import ChatRoomParticipantDialog from './chat-room-participant-dialog';
 import ChatOrganizationDialog from './chat-organization-dialog';
 // ----------------------------------------------------------------------
 
 export default function ChatRoomGroup({ conversation, participants }) {
+  const { user } = useAuthContext();
+
   const { enqueueSnackbar } = useSnackbar();
 
   const confirm = useBoolean();
@@ -65,26 +68,28 @@ export default function ChatRoomGroup({ conversation, participants }) {
     >
       <Box component="span" sx={{ flexGrow: 1 }}>
         参与列表 ({totalParticipants})
-        <IconButton
-          size="small"
-          color="primary"
-          onClick={(e) => {
-            e.stopPropagation();
-            dialog.onTrue();
-          }}
-          sx={{
-            ml: 1,
-            width: 18,
-            height: 18,
-            bgcolor: 'primary.main',
-            color: 'primary.contrastText',
-            '&:hover': {
-              bgcolor: 'primary.dark',
-            },
-          }}
-        >
-          <Iconify icon="mingcute:add-line" />
-        </IconButton>
+        {conversation.createdBy === user._id && (
+          <IconButton
+            size="small"
+            color="primary"
+            onClick={(e) => {
+              e.stopPropagation();
+              dialog.onTrue();
+            }}
+            sx={{
+              ml: 1,
+              width: 18,
+              height: 18,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              '&:hover': {
+                bgcolor: 'primary.dark',
+              },
+            }}
+          >
+            <Iconify icon="mingcute:add-line" />
+          </IconButton>
+        )}
       </Box>
       <Iconify
         width={16}
@@ -118,16 +123,18 @@ export default function ChatRoomGroup({ conversation, participants }) {
               typography: 'caption',
             }}
           />
-          <IconButton
-            color={popover.open ? 'inherit' : 'default'}
-            onClick={(e) => {
-              setSelectedItem(participant);
-              e.stopPropagation();
-              popover.onOpen(e);
-            }}
-          >
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+          {conversation.createdBy === user._id && (
+            <IconButton
+              color={popover.open ? 'inherit' : 'default'}
+              onClick={(e) => {
+                setSelectedItem(participant);
+                e.stopPropagation();
+                popover.onOpen(e);
+              }}
+            >
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          )}
         </ListItemButton>
       ))}
     </Scrollbar>
@@ -158,6 +165,7 @@ export default function ChatRoomGroup({ conversation, participants }) {
         <ChatRoomParticipantDialog
           participant={selected}
           open={!!selected}
+          user={user}
           onClose={handleCloseWithParticipantDialog}
         />
       )}
