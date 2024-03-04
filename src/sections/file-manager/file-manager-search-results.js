@@ -8,17 +8,14 @@ import SearchNotFound from 'src/components/search-not-found';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerSearchResults ({ query, results, onClickResult }) {
+export default function FileManagerSearchResults({ query, results, onClickResult }) {
   const totalResults = results.length;
 
   const notFound = !totalResults && !!query;
 
   return (
     <>
-      <Typography
-        paragraph
-        variant="h6"
-      >
+      <Typography paragraph variant="h6">
         联系人 ({totalResults})
       </Typography>
 
@@ -45,7 +42,7 @@ export default function FileManagerSearchResults ({ query, results, onClickResul
               }}
             >
               <Avatar alt={result.username} src={result.photoURL} sx={{ mr: 2 }} />
-              {result.username}
+              {`${result.displayName}(${result.realName})`}
             </ListItemButton>
           ))}
         </>

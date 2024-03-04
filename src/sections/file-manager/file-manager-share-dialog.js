@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
 // @mui
 import List from '@mui/material/List';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
@@ -12,14 +14,18 @@ import DialogContent from '@mui/material/DialogContent';
 import InputAdornment from '@mui/material/InputAdornment';
 import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
+
+// hooks
+import { useBoolean } from 'src/hooks/use-boolean';
+import { useDebounce } from 'src/hooks/use-debounce';
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 //
 import { userService } from 'src/composables/context-provider';
+import _ from 'lodash';
 import FileManagerInvitedItem from './file-manager-invited-item';
 import FileManagerSearchResults from './file-manager-search-results';
-
 // ----------------------------------------------------------------------
 
 export default function FileManagerShareDialog({
@@ -34,13 +40,15 @@ export default function FileManagerShareDialog({
   onClose,
   ...other
 }) {
+  const [loading, setLoading] = useState(true);
   const hasShared = true;
   // const hasShared = shared && !!shared.length;
 
-  const [searchContacts, setSearchContacts] = useState({
-    query: '',
-    results: [],
-  });
+  const [searchText, setSearchText] = useState('');
+
+  const debouncedSearchText = useDebounce(searchText);
+
+  const [searchContacts, setSearchContacts] = useState([]);
 
   const [sendSearchContacts, setSendSearchContacts] = useState({
     query: '',
@@ -48,10 +56,8 @@ export default function FileManagerShareDialog({
   });
 
   const handleClickAwaySearch = useCallback(() => {
-    setSearchContacts({
-      query: '',
-      results: [],
-    });
+    setSearchText('');
+    setSearchContacts([]);
   }, []);
   const handleClickResult = useCallback(
     (result) => {
@@ -63,35 +69,49 @@ export default function FileManagerShareDialog({
     [handleClickAwaySearch, sendSearchContacts]
   );
 
-  const renderListResults = (
+  const renderListResults = loading ? (
+    <Box
+      sx={{
+        zIndex: 10,
+        backgroundColor: '#ffffffc4',
+        paddingTop: '92px',
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <CircularProgress />
+    </Box>
+  ) : (
     <FileManagerSearchResults
-      query={searchContacts.query}
-      results={searchContacts.results}
+      query={searchText}
+      results={searchContacts}
       onClickResult={handleClickResult}
     />
   );
 
-  const handleSearchContacts = useCallback(async (inputValue) => {
-    setSearchContacts((prevState) => ({
-      ...prevState,
-      query: inputValue,
-    }));
-
-    if (inputValue) {
+  const handleFetchSearchContacts = useCallback(
+    async (inputValue) => {
+      setLoading(true);
       const response = await userService.pagination(
         {
           username: inputValue,
         },
         {}
       );
+      setSearchContacts(_.differenceBy(response.data, shared, '_id'));
+      setLoading(false);
+    },
+    [shared]
+  );
 
-      setSearchContacts((prevState) => ({
-        ...prevState,
-        results: response.data,
-      }));
+  useEffect(() => {
+    if (open) {
+      handleFetchSearchContacts(debouncedSearchText);
     }
-  }, []);
-
+  }, [debouncedSearchText, handleFetchSearchContacts, open]);
   return (
     <Dialog
       fullWidth
@@ -111,11 +131,11 @@ export default function FileManagerShareDialog({
         {onChangeInvite && (
           <TextField
             fullWidth
-            value={searchContacts.query}
+            value={searchText}
             placeholder="用户名"
             onChange={(event) => {
               onChangeInvite(event);
-              handleSearchContacts(event.target.value);
+              setSearchText(event.target.value);
             }}
             InputProps={{
               startAdornment: (
@@ -142,12 +162,12 @@ export default function FileManagerShareDialog({
             sx={{ mb: 2 }}
           />
         )}
-        {searchContacts.query && renderListResults}
-        {!searchContacts.query && (
+        {searchText && renderListResults}
+        {!searchText && (
           <>
             <Divider sx={{ mb: 1 }} />
             <Stack direction="row" justifyContent="space-between">
-              <Typography variant="h6" sx={{ mb: 1 }}>
+              <Typography variant="h6" sx={{ pt: 1 }}>
                 待邀请列表
               </Typography>
               <Button
@@ -157,7 +177,7 @@ export default function FileManagerShareDialog({
                 color="inherit"
                 variant="contained"
                 disabled={!inviteEmail}
-                sx={{ mr: -0.75 }}
+                sx={{ mr: -0.75, mb: 1 }}
               >
                 发送邀请
               </Button>

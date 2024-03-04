@@ -210,23 +210,28 @@ export function MeteorProvider({ endpoint, children }) {
     notificationsCollection = server.collection('notifications');
     reducerDispatch(getOverview());
     notificationsCollection.onChange((target) => {
-      console.log(target);
-      if (target.added) {
-        reducerDispatch(
-          newNotificationGet({
-            ...target.added,
-            _id: target.added.id,
-            createdAt: new Date(target.added.createdAt).toISOString(),
-            isUnRead: true,
-          })
-        );
-      } else if (target.removed) {
-        reducerDispatch(
-          newNotificationRemove({
-            _id: target.removed.id,
-          })
-        );
-      }
+      console.log('target.added', target.added);
+      reducerDispatch(getOverview());
+      // if (target.added) {
+      //   // reducerDispatch(
+      //   //   newNotificationGet({
+      //   //     ...target.added,
+      //   //     _id: target.added.id,
+      //   //     createdAt: new Date(target.added.createdAt).toISOString(),
+      //   //     isUnRead: true,
+      //   //   })
+      //   // );
+      //   reducerDispatch(getOverview());
+      // } else if (target.removed) {
+      //   reducerDispatch(getOverview());
+      //   // reducerDispatch(
+      //   //   newNotificationRemove({
+      //   //     _id: target.removed.id,
+      //   //   })
+      //   // );
+      // } else if (target.changed) {
+      //   reducerDispatch(getOverview());
+      // }
     });
   }, [reducerDispatch, state]);
   const useLogin = useCallback(

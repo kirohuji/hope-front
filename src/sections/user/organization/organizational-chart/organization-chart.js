@@ -21,7 +21,6 @@ import { SimpleNode, StandardNode, GroupNode } from './node';
 
 OrganizationalChart.propTypes = {
   sx: PropTypes.object,
-  maxRole: PropTypes.object,
   variant: PropTypes.string,
   type: PropTypes.any,
   data: PropTypes.shape({
@@ -36,7 +35,6 @@ const userContext = createContext({ item: {}, setOpenForm: null, setItem: null, 
 
 export default function OrganizationalChart({
   permissions,
-  maxRole,
   type,
   data,
   variant = 'simple',
@@ -192,7 +190,6 @@ export default function OrganizationalChart({
             {openPermission && (
               <PermissionPanel
                 permissions={permissions}
-                maxRole={maxRole}
                 current={item}
                 onClose={handleClosePermissionModal}
               />

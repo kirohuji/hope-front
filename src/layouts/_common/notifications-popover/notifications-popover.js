@@ -15,7 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getNotifications } from 'src/redux/slices/notification';
+import { getNotifications, getOverview } from 'src/redux/slices/notification';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -73,7 +73,6 @@ export default function NotificationsPopover() {
   const handleMarkAllAsRead = () => {};
 
   const onRefresh = useCallback(async () => {
-    setNotificationLimit(notificationLimit + 20);
     await dispatch(
       getNotifications(
         {
@@ -186,7 +185,16 @@ export default function NotificationsPopover() {
       <List disablePadding>
         {notifications.map(
           (notification) =>
-            notification && <NotificationItem key={notification._id} notification={notification} />
+            notification && (
+              <NotificationItem
+                key={notification._id}
+                notification={notification}
+                onRefresh={() => {
+                  onRefresh();
+                  dispatch(getOverview());
+                }}
+              />
+            )
         )}
       </List>
     </Scrollbar>
@@ -200,6 +208,7 @@ export default function NotificationsPopover() {
           !loadingHistory
         ) {
           setLoadingHistory(true);
+          setNotificationLimit(notificationLimit + 20);
           onRefresh(notifications.length).then(() => {
             setLoadingHistory(false);
           });
@@ -215,7 +224,7 @@ export default function NotificationsPopover() {
     return () => {};
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [notifications]);
+  }, [notifications, onRefresh, setNotificationLimit]);
 
   return (
     <>
@@ -228,6 +237,7 @@ export default function NotificationsPopover() {
         onClick={() => {
           setNotificationLimit(0);
           drawer.onTrue();
+          dispatch(getOverview());
           dispatch(
             getNotifications(
               {

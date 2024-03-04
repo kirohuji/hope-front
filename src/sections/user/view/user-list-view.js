@@ -22,6 +22,7 @@ import { RouterLink } from 'src/routes/components';
 import { _roles } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useDebounce } from 'src/hooks/use-debounce';
 // components
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -42,8 +43,6 @@ import {
 } from 'src/components/table';
 // service
 import { fileService, userService } from 'src/composables/context-provider';
-// hooks
-import { useDebounce } from 'src/hooks/use-debounce';
 //
 import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';

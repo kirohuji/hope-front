@@ -3,11 +3,6 @@ import { useState, useCallback, useEffect } from 'react';
 import { Stack, Container } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
-// components
-import { cloneDeep } from 'lodash';
-import OrganizationalChart from 'src/sections/user/organization/organizational-chart';
-import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 // routes
 import { paths } from 'src/routes/paths';
 // redux
@@ -15,16 +10,17 @@ import { useDispatch, useSelector } from 'src/redux/store';
 import { getOrganizations, getPermissions } from 'src/redux/slices/role';
 // hooks
 import { useDebounce } from 'src/hooks/use-debounce';
-
-// import { roleService } from 'src/composables/context-provider';
+// components
+import { cloneDeep } from 'lodash';
+import OrganizationalChart from 'src/sections/user/organization/organizational-chart';
+import { useSettingsContext } from 'src/components/settings';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import OraginChangeViewButton from '../organization/organ-change-view-button';
 
 export default function UserOrganizationView() {
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const [maxRole, setMaxRole] = useState({});
 
   const { active } = useSelector((state) => state.scope);
 
@@ -75,12 +71,6 @@ export default function UserOrganizationView() {
         heading="组织/角色架构"
         links={[{ name: '组织/角色架构', href: paths.dashboard.user.organization }]}
       />
-      {/* <Backdrop
-        sx={{ background: '#fff', color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop> */}
       <Stack
         spacing={2.5}
         direction={{ xs: 'column', md: 'row' }}
@@ -107,7 +97,6 @@ export default function UserOrganizationView() {
       )}
       {!!organizations.length && !isLoading && (
         <OrganizationalChart
-          maxRole={maxRole}
           type={view}
           permissions={permissions}
           data={cloneDeep(organizations[0])}

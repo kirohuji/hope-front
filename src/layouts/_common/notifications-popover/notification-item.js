@@ -32,7 +32,7 @@ function category(notification) {
   }
   return value;
 }
-export default function NotificationItem({ notification }) {
+export default function NotificationItem({ notification, onRefresh }) {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
 
@@ -40,6 +40,7 @@ export default function NotificationItem({ notification }) {
     try {
       await fileManagerService.accpetShareFile(notification);
       enqueueSnackbar('接受成功');
+      onRefresh();
       dispatch(getFiles());
     } catch (e) {
       enqueueSnackbar('接受失败!');
@@ -50,6 +51,7 @@ export default function NotificationItem({ notification }) {
     try {
       await fileManagerService.denyShareFile(notification);
       enqueueSnackbar('拒绝成功');
+      onRefresh();
       dispatch(getFiles());
     } catch (e) {
       enqueueSnackbar('拒绝失败');
@@ -250,8 +252,10 @@ export default function NotificationItem({ notification }) {
 
   const handleRead = async () => {
     try {
-      await notificationService.checkRead(notification);
-      dispatch(getFiles());
+      if (notification.isUnRead && notification.type !== 'share') {
+        await notificationService.checkRead(notification);
+        onRefresh();
+      }
     } catch (e) {
       console.log(e);
     }
@@ -285,6 +289,7 @@ export default function NotificationItem({ notification }) {
 
 NotificationItem.propTypes = {
   notification: PropTypes.object,
+  onRefresh: PropTypes.func,
 };
 
 // ----------------------------------------------------------------------

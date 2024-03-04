@@ -103,7 +103,7 @@ export function newNotificationGet(data) {
     }
   };
 }
-// 获取最新消息
+// 删除消息
 export function newNotificationRemove(data) {
   return async (dispatch) => {
     try {

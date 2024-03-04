@@ -10,11 +10,9 @@ import { Stack } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import TreeView from '@mui/lab/TreeView';
 import { alpha, styled } from '@mui/material/styles';
-import Iconify from 'src/components/iconify';
 import { roleService } from 'src/composables/context-provider';
 import { useSnackbar } from 'src/components/snackbar';
 import _ from 'lodash';
-// redux
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
 
@@ -89,16 +87,8 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
 }));
 
 function StyledTreeItem(props) {
-  const {
-    selectedNodes,
-    selectedNodesNotChild,
-    label,
-    node,
-    maxRole,
-    isRoot,
-    handleNodeSelect,
-    ...other
-  } = props;
+  const { selectedNodes, selectedNodesNotChild, label, node, isRoot, handleNodeSelect, ...other } =
+    props;
   const isSelectedNodes = selectedNodes && selectedNodes.indexOf(node._id) !== -1;
   const isSelectedNodesNotChild =
     selectedNodesNotChild && selectedNodesNotChild.indexOf(node._id) !== -1;
@@ -120,7 +110,6 @@ function StyledTreeItem(props) {
               checked={isSelectedNodes || isSelectedNodesNotChild}
               tabIndex={-1}
               indeterminate={isIndeterminate}
-              // disabled={maxRole._id !== node._id}
               color={
                 // eslint-disable-next-line no-nested-ternary
                 isSelectedNodes ? 'primary' : isSelectedNodesNotChild ? 'warning' : 'primary'
@@ -143,7 +132,6 @@ StyledTreeItem.propTypes = {
   selectedNodesNotChild: PropTypes.array,
   label: PropTypes.string,
   node: PropTypes.object,
-  maxRole: PropTypes.object,
   isRoot: PropTypes.bool,
   handleNodeSelect: PropTypes.func,
 };
@@ -156,12 +144,11 @@ export function List({ data }) {
   const hasChild = data.children && !!data.children && data.children.length;
   return (
     <userContext.Consumer>
-      {({ maxRole, selectedNodes, selectedNodesNotChild, handleNodeSelect }) => (
+      {({ selectedNodes, selectedNodesNotChild, handleNodeSelect }) => (
         <StyledTreeItem
           nodeId={data._id}
           label={data.label}
           node={data}
-          maxRole={maxRole}
           selectedNodesNotChild={selectedNodesNotChild}
           handleNodeSelect={handleNodeSelect}
           selectedNodes={selectedNodes}
@@ -188,12 +175,11 @@ export function SubList({ data }) {
 
 PermissionPanel.propTypes = {
   current: PropTypes.object,
-  maxRole: PropTypes.object,
   onClose: PropTypes.func,
   permissions: PropTypes.array,
 };
 
-export default function PermissionPanel({ permissions, maxRole, current, onClose }) {
+export default function PermissionPanel({ permissions, current, onClose }) {
   const dispatch = useDispatch();
   const { active } = useSelector((state) => state.scope);
   // const { permissions } = useSelector((state) => state.role);
@@ -273,7 +259,6 @@ export default function PermissionPanel({ permissions, maxRole, current, onClose
   };
   const providerValue = useMemo(
     () => ({
-      maxRole,
       selectedNodes,
       selectedNodesNotChild,
       handleNodeSelect,
@@ -283,7 +268,6 @@ export default function PermissionPanel({ permissions, maxRole, current, onClose
       setOpenDeleteConfirm,
     }),
     [
-      maxRole,
       selectedNodes,
       selectedNodesNotChild,
       handleNodeSelect,
