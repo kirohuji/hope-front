@@ -100,7 +100,7 @@ export default function UserOrganizationView() {
           type={view}
           permissions={permissions}
           data={cloneDeep(organizations[0])}
-          variant="group"
+          variant="standard"
           lineHeight="64px"
           onFlash={onRefresh}
         />

@@ -3,19 +3,20 @@ import { Tree, TreeNode } from 'react-organizational-chart';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Button, DialogTitle, Dialog, DialogContent } from '@mui/material';
+import Collapse from '@mui/material/Collapse';
 import Grid from '@mui/material/Unstable_Grid2';
 // utils
 import { useState, createContext, useMemo } from 'react';
 import flattenArray from 'src/utils/flatten-array';
 // compoennts
+import _ from 'lodash';
 import ConfirmDialog from 'src/components/confirm-dialog';
 import { roleService } from 'src/composables/context-provider';
 import { useSnackbar } from 'src/components/snackbar';
-import _ from 'lodash';
 import OrganDetailsDrawer from '../organ-details-drawer';
 import OrganNewEditForm from '../organ-new-edit-form';
 import PermissionPanel from '../../permission/permission-panel';
-import { SimpleNode, StandardNode, GroupNode } from './node';
+import { GroupNode, StandardNode } from './node';
 
 // ----------------------------------------------------------------------
 
@@ -47,9 +48,12 @@ export default function OrganizationalChart({
   const [openPermission, setOpenPermission] = useState(false);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [openForm, setOpenForm] = useState(false);
+  // 当前项
   const [item, setItem] = useState({});
+  // 父项
   const [parent, setParent] = useState({});
   const { enqueueSnackbar } = useSnackbar();
+
   const providerValue = useMemo(
     () => ({
       setOpenForm,
@@ -61,6 +65,21 @@ export default function OrganizationalChart({
     }),
     [setOpenForm, setItem, setParent, setOpenManager, setOpenDeleteConfirm, setOpenPermission]
   );
+
+  const handleClosePermissionModal = () => {
+    setOpenPermission(false);
+  };
+  const handleCloseManagerModal = () => {
+    setOpenManager(false);
+  };
+  const handleOpenModal = () => {
+    setOpenForm(true);
+  };
+  const handleCloseDeleteConfirm = () => {
+    setOpenDeleteConfirm(false);
+  };
+
+  // 关闭时执行 新增 or 修改
   const handleCloseModal = (getData) => {
     if (getData && getData.data) {
       if (getData.type === 'new') {
@@ -73,34 +92,25 @@ export default function OrganizationalChart({
       } else if (parent.children) {
         for (let i = 0; i < parent.children.length; i += 1) {
           if (parent.children[i]._id === getData.data._id) {
-            parent.children[i] = getData.data;
+            console.log('getData', getData);
+            parent.children[i] = {
+              ...parent.children[i],
+              ...getData.data,
+            };
             break;
           }
         }
       }
     }
-    console.log('data', data);
     setOpenForm(false);
   };
-  const handleClosePermissionModal = () => {
-    setOpenPermission(false);
-  };
-  const handleCloseManagerModal = () => {
-    setOpenManager(false);
-  };
-  const handleOpenModal = () => {
-    setOpenForm(true);
-  };
-  const handleCloseDeleteConfirm = () => {
-    console.log('打开');
-    setOpenDeleteConfirm(false);
-  };
+
+  // 删除
   const handleDelete = async () => {
     await roleService.delete({
       _id: item._id,
     });
     enqueueSnackbar('删除成功');
-    // onFlash()
     if (parent && parent.children) {
       for (let i = 0; i < parent.children.length; i += 1) {
         if (parent.children[i] && parent.children[i]._id === item._id) {
@@ -115,22 +125,31 @@ export default function OrganizationalChart({
     handleCloseDeleteConfirm();
     setOpenManager(false);
   };
+
+  // 修改负责人
   const handleChangeLeader = async (person) => {
+    console.log('person', person);
     for (let i = 0; i < parent.children.length; i += 1) {
       if (parent?.children[i] && parent.children[i]._id === item._id) {
         parent.children[i].leader = {
           _id: person._id,
           username: person.username,
+          displayName: person.displayName,
+          realName: person.realName,
+          photoURL: person.avatarUrl,
         };
         break;
       }
     }
   };
+
+  // 新增
   const onCreate = () => {
     setItem({});
     setParent(data);
     handleOpenModal();
   };
+
   return (
     <userContext.Provider value={providerValue}>
       <Tree
@@ -138,7 +157,7 @@ export default function OrganizationalChart({
         nodePadding="4px"
         lineBorderRadius="24px"
         lineColor={theme.palette.divider}
-        label={variant === 'group' && <GroupNode sx={sx} node={data} onCreate={onCreate} />}
+        label={variant === 'standard' && <StandardNode sx={sx} node={data} onCreate={onCreate} />}
         {...other}
       >
         {data.children &&
@@ -229,7 +248,12 @@ List.propTypes = {
 };
 
 export function List({ data, parentNode, depth, variant, sx }) {
+  const [isOpen, setIsOpen] = useState(false);
   const hasChild = data.children && !!data.children && _.compact(data.children).length > 0;
+  const handleToggle = () => {
+    console.log('isOpen', isOpen);
+    setIsOpen(!isOpen);
+  };
   return (
     <userContext.Consumer>
       {({
@@ -241,16 +265,25 @@ export function List({ data, parentNode, depth, variant, sx }) {
         setOpenPermission,
       }) => (
         <TreeNode
+          children={
+            hasChild && isOpen ? (
+              <SubList data={data} depth={depth} variant={variant} sx={sx} />
+            ) : null
+          }
           label={
-            variant === 'group' && (
-              <GroupNode
+            variant === 'standard' && (
+              <StandardNode
                 sx={sx}
+                hasChild={hasChild}
                 node={data}
                 depth={depth}
                 onEdit={() => {
                   setItem(data);
                   setParent(parentNode);
                   setOpenForm(true);
+                }}
+                onToggle={() => {
+                  handleToggle();
                 }}
                 onClick={() => {
                   setItem(data);
@@ -286,9 +319,7 @@ export function List({ data, parentNode, depth, variant, sx }) {
               />
             )
           }
-        >
-          {hasChild && <SubList data={data} depth={depth} variant={variant} sx={sx} />}
-        </TreeNode>
+        />
       )}
     </userContext.Consumer>
   );
