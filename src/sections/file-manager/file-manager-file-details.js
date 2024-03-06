@@ -37,6 +37,7 @@ export default function FileManagerFileDetails({
   onFavorite,
   onCopyLink,
   onClose,
+  onDeleteInvited,
   onDelete,
   ...other
 }) {
@@ -158,6 +159,8 @@ export default function FileManagerFileDetails({
     </Stack>
   );
 
+  console.log('fileUser', fileUser);
+  console.log('user', user);
   const renderShared = (
     <>
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2.5 }}>
@@ -185,7 +188,13 @@ export default function FileManagerFileDetails({
       {hasShared && (
         <Box sx={{ pl: 2.5, pr: 1 }}>
           {shared.map((person) => (
-            <FileManagerInvitedItem key={person._id} person={person} isMain={fileUser?.isMain} />
+            <FileManagerInvitedItem
+              onDeleteInvited={() => onDeleteInvited(person)}
+              key={person._id}
+              person={person}
+              isOwn={person._id === fileUser._id}
+              isMain={fileUser?.isMain}
+            />
           ))}
         </Box>
       )}
@@ -286,6 +295,7 @@ FileManagerFileDetails.propTypes = {
   onClose: PropTypes.func,
   onCopyLink: PropTypes.func,
   onDelete: PropTypes.func,
+  onDeleteInvited: PropTypes.func,
   onFavorite: PropTypes.func,
   open: PropTypes.bool,
 };

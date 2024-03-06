@@ -18,9 +18,24 @@ const slice = createSlice({
       state.isLoading = true;
     },
     getDataSuccess(state, action) {
-      const { files, overview } = action.payload;
+      const { profiles, groupByFile, files, overview } = action.payload;
       state.isLoading = false;
-      state.data = files;
+      state.data = files.map((file) => {
+        if (groupByFile[file._id]) {
+          const shared = groupByFile[file._id];
+          file.shared = shared.map((item) => {
+            if (item.isMain) {
+              file.main = profiles[item.user_id];
+            }
+            return {
+              ...item,
+              ...profiles[item.user_id],
+            };
+          });
+          return file;
+        }
+        return file;
+      });
       state.overview = overview;
     },
     // HAS ERROR

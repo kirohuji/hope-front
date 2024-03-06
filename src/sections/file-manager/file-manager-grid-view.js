@@ -7,6 +7,7 @@ import Divider from '@mui/material/Divider';
 import Collapse from '@mui/material/Collapse';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useAuthContext } from 'src/auth/hooks';
 // components
 import Iconify from 'src/components/iconify';
 //
@@ -25,10 +26,11 @@ export default function FileManagerGridView({
   onRefresh,
   dataFiltered,
   onDeleteItem,
+  onDeleteInvitedItem,
   onOpenConfirm,
 }) {
   const { selected, onSelectRow: onSelectItem, onSelectAllRows: onSelectAllItems } = table;
-
+  const { user } = useAuthContext();
   const containerRef = useRef(null);
 
   const [folderName, setFolderName] = useState('');
@@ -123,10 +125,13 @@ export default function FileManagerGridView({
               .map((file) => (
                 <FileManagerFileItem
                   key={file._id}
+                  isMain={user?._id === file.main?._id}
                   file={file}
+                  user={user}
                   selected={selected.includes(file._id)}
                   onSelect={() => onSelectItem(file._id)}
                   onDelete={() => onDeleteItem(file._id)}
+                  onDeleteInvited={(item) => onDeleteInvitedItem(item)}
                   sx={{ maxWidth: 'auto' }}
                 />
               ))}
@@ -210,6 +215,7 @@ FileManagerGridView.propTypes = {
   data: PropTypes.array,
   dataFiltered: PropTypes.array,
   onDeleteItem: PropTypes.func,
+  onDeleteInvitedItem: PropTypes.func,
   onRefresh: PropTypes.func,
   onOpenConfirm: PropTypes.func,
   table: PropTypes.object,

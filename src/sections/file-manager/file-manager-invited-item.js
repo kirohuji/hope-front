@@ -14,7 +14,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerInvitedItem({ person, isMain }) {
+export default function FileManagerInvitedItem({ isOwn, person, isMain, onDeleteInvited }) {
   const [permission, setPermission] = useState(person.permission);
 
   const popover = usePopover();
@@ -44,7 +44,7 @@ export default function FileManagerInvitedItem({ person, isMain }) {
           secondaryTypographyProps={{ noWrap: true, component: 'span' }}
           sx={{ flexGrow: 1, pr: 1 }}
         />
-        {isMain && (
+        {isMain && !isOwn && (
           <Button
             size="small"
             color="inherit"
@@ -63,14 +63,14 @@ export default function FileManagerInvitedItem({ person, isMain }) {
               }),
             }}
           >
-            Can {permission}
+            {/* Can {permission} */}
           </Button>
         )}
       </ListItem>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 160 }}>
         <>
-          <MenuItem
+          {/* <MenuItem
             selected={permission === 'view'}
             onClick={() => {
               popover.onClose();
@@ -92,16 +92,17 @@ export default function FileManagerInvitedItem({ person, isMain }) {
             Can edit
           </MenuItem>
 
-          <Divider sx={{ borderStyle: 'dashed' }} />
+          <Divider sx={{ borderStyle: 'dashed' }} /> */}
 
           <MenuItem
             onClick={() => {
+              onDeleteInvited(person);
               popover.onClose();
             }}
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Remove
+            删除
           </MenuItem>
         </>
       </CustomPopover>
@@ -111,5 +112,7 @@ export default function FileManagerInvitedItem({ person, isMain }) {
 
 FileManagerInvitedItem.propTypes = {
   person: PropTypes.object,
+  isOwn: PropTypes.bool,
+  onDeleteInvited: PropTypes.func,
   isMain: PropTypes.bool,
 };

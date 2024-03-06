@@ -17,7 +17,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useCopyToClipboard } from 'src/hooks/use-copy-to-clipboard';
 // utils
 import { fDateTime } from 'src/utils/format-time';
-import { useDispatch, useSelector } from 'src/redux/store';
+import { useDispatch } from 'src/redux/store';
 import { getList } from 'src/redux/slices/audio';
 import { fData } from 'src/utils/format-number';
 
@@ -37,10 +37,21 @@ import FileManagerFileDetails from './file-manager-file-details';
 
 // ----------------------------------------------------------------------
 
-export default function FileManagerFileItem({ file, selected, onSelect, onDelete, sx, ...other }) {
+export default function FileManagerFileItem({
+  isMain,
+  file,
+  selected,
+  onSelect,
+  onDelete,
+  onDeleteInvited,
+  sx,
+  user,
+  ...other
+}) {
   const { enqueueSnackbar } = useSnackbar();
 
   const dispatch = useDispatch();
+
   const { copy } = useCopyToClipboard();
 
   const [inviteEmail, setInviteEmail] = useState('');
@@ -275,16 +286,33 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          删除
-        </MenuItem>
+        {!isMain ? (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+              onDeleteInvited({
+                user_id: user._id,
+                file_id: file._id,
+              });
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            退出分享
+          </MenuItem>
+        ) : (
+          <MenuItem
+            onClick={() => {
+              confirm.onTrue();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            删除
+          </MenuItem>
+        )}
       </CustomPopover>
 
       <FileManagerFileDetails
@@ -293,6 +321,12 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
         onFavorite={favorite.onToggle}
         onCopyLink={handleCopy}
         open={details.value}
+        onDeleteInvited={(item) =>
+          onDeleteInvited({
+            user_id: item._id,
+            file_id: file._id,
+          })
+        }
         onClose={details.onFalse}
         onDelete={() => {
           details.onFalse();
@@ -338,7 +372,10 @@ export default function FileManagerFileItem({ file, selected, onSelect, onDelete
 FileManagerFileItem.propTypes = {
   file: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   onDelete: PropTypes.func,
+  onDeleteInvited: PropTypes.func,
   onSelect: PropTypes.func,
   selected: PropTypes.bool,
+  isMain: PropTypes.bool,
+  user: PropTypes.object,
   sx: PropTypes.object,
 };

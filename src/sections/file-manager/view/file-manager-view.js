@@ -48,8 +48,6 @@ const defaultFilters = {
 export default function FileManagerView() {
   const upMd = useResponsive('up', 'md');
 
-  // const upMd = useResponsive('up', 'md');
-
   const dispatch = useDispatch();
 
   const { active } = useSelector((state) => state.scope);
@@ -124,6 +122,19 @@ export default function FileManagerView() {
         await fileManagerService.deleteCurrentUser({
           _id: id,
         });
+        enqueueSnackbar('删除成功');
+      } catch (e) {
+        enqueueSnackbar(e.response.data.message);
+      }
+      onRefresh();
+    },
+    [onRefresh, enqueueSnackbar]
+  );
+
+  const handleDeleteInvitedItem = useCallback(
+    async (item) => {
+      try {
+        await fileManagerService.deleteInviteItem(item);
         enqueueSnackbar('删除成功');
       } catch (e) {
         enqueueSnackbar(e.response.data.message);
@@ -282,6 +293,7 @@ export default function FileManagerView() {
                 data={data}
                 dataFiltered={dataFiltered}
                 onDeleteItem={handleDeleteItem}
+                onDeleteInvitedItem={handleDeleteInvitedItem}
                 onOpenConfirm={confirm.onTrue}
               />
             )}
