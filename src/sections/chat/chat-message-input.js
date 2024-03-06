@@ -179,13 +179,13 @@ export default function ChatMessageInput({
         const formData = new FormData();
         formData.append('file', file);
         const { link } = await fileService.upload(formData);
-        await fileManagerService.createCurrentUser({
-          url: link,
-          label: file.name,
-          size: file.size,
-          type: `${file.name.split('.').pop()}`,
-          lastModified: new Date(file.lastModified),
-        });
+        // await fileManagerService.createCurrentUser({
+        //   url: link,
+        //   label: file.name,
+        //   size: file.size,
+        //   type: `${file.name.split('.').pop()}`,
+        //   lastModified: new Date(file.lastModified),
+        // });
         await dispatch(
           sendMessage(selectedConversationId, {
             ...messageData,
@@ -218,13 +218,13 @@ export default function ChatMessageInput({
         const formData = new FormData();
         formData.append('file', file);
         const { link } = await fileService.upload(formData);
-        await fileManagerService.createCurrentUser({
-          url: link,
-          label: file.name,
-          size: file.size,
-          type: `${file.name.split('.').pop()}`,
-          lastModified: new Date(file.lastModified),
-        });
+        // await fileManagerService.createCurrentUser({
+        //   url: link,
+        //   label: file.name,
+        //   size: file.size,
+        //   type: `${file.name.split('.').pop()}`,
+        //   lastModified: new Date(file.lastModified),
+        // });
         await dispatch(
           sendMessage(selectedConversationId, {
             ...messageData,

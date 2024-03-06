@@ -135,7 +135,7 @@ export default function FileManagerView() {
     async (item) => {
       try {
         await fileManagerService.deleteInviteItem(item);
-        enqueueSnackbar('删除成功');
+        enqueueSnackbar('退出成功');
       } catch (e) {
         enqueueSnackbar(e.response.data.message);
       }
