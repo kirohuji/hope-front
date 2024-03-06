@@ -123,7 +123,7 @@ export default function ChatRoomGroup({ conversation, participants }) {
               typography: 'caption',
             }}
           />
-          {conversation.createdBy === user._id && (
+          {conversation.createdBy === user._id && participant._id !== user._id && (
             <IconButton
               color={popover.open ? 'inherit' : 'default'}
               onClick={(e) => {

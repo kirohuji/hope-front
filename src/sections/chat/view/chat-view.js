@@ -274,7 +274,7 @@ export default function ChatView() {
     }
     return () => {};
   }, [
-    active._id,
+    active?._id,
     currentTab,
     dispatch,
     onRefreshWithConversations,

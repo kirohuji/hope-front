@@ -11,6 +11,7 @@ const initialState = {
   error: null,
   data: [],
   article: null,
+  total: 0,
   activeStep: 0,
 };
 

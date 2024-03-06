@@ -246,7 +246,7 @@ export default function ArticleDetailsView({ onClose, articleId }) {
               <Divider sx={{ mt: 1, mb: 1 }} />
               <ArticleQuestionForm
                 item={q}
-                comment={articleUser.answers[i]}
+                comment={articleUser.answers && articleUser.answers[i]}
                 onChangeComment={(e) => {
                   answers[i] = e.target.value;
                   setAnswers(answers);
