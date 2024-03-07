@@ -159,13 +159,11 @@ export default function FileManagerFileDetails({
     </Stack>
   );
 
-  console.log('fileUser', fileUser);
-  console.log('user', user);
   const renderShared = (
     <>
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2.5 }}>
         <Typography variant="subtitle2"> 文件共享 </Typography>
-        {fileUser && fileUser.isMain && (
+        {fileUser && fileUser?.isMain && (
           <IconButton
             size="small"
             color="primary"
@@ -192,7 +190,7 @@ export default function FileManagerFileDetails({
               onDeleteInvited={() => onDeleteInvited(person)}
               key={person._id}
               person={person}
-              isOwn={person._id === fileUser._id}
+              isOwn={person._id === fileUser?._id}
               isMain={fileUser?.isMain}
             />
           ))}
@@ -258,7 +256,7 @@ export default function FileManagerFileDetails({
           {renderShared}
         </Scrollbar>
 
-        {fileUser && fileUser.isMain && (
+        {fileUser && fileUser?.isMain && (
           <Box sx={{ p: 2.5 }}>
             <Button
               fullWidth

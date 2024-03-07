@@ -326,7 +326,7 @@ export default function ChatMessageInput({
         type="file"
         ref={fileRef}
         style={{ display: 'none' }}
-        accept=".xls,.xlsx,.pdf,.doc,.docx,.ppt,.pptx,.mp4,.mov,.avi,.mkv"
+        accept=".xls,.xlsx,.pdf,.doc,.docx,.ppt,.pptx,.mp4,.mov,.avi,.mkv,.mp3"
       />
     </>
   );
