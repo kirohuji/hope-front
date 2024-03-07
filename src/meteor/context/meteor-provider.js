@@ -57,6 +57,9 @@ export const bindConnect = async (server, dispatch) => {
       },
     });
   });
+  server.on('error', (m) => {
+    console.log('报错');
+  });
   await server.connect();
 };
 
@@ -164,16 +167,6 @@ const reducer = (state, action) => {
     default:
       return state;
   }
-};
-
-export const createServer = (endpoint) => {
-  const opts = {
-    endpoint,
-    SocketConstructor: WebSocket,
-    reconnectInterval: 5000,
-    clearDataOnReconnection: false,
-  };
-  return new SimpleDDP(opts, [simpleDDPLogin]);
 };
 
 let conversationsPublish = null;
@@ -288,6 +281,7 @@ export function MeteorProvider({ endpoint, children }) {
       SocketConstructor: WebSocket,
       reconnectInterval: 5000,
       clearDataOnReconnection: false,
+      maxTimeout: 15000,
     };
     const server = new SimpleDDP(opts, [simpleDDPLogin]);
     await bindConnect(server, dispatch);
