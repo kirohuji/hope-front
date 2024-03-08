@@ -39,4 +39,8 @@ export default class FilesManagerService extends Service {
   getFileInfo(target) {
     return this.api.get(`${this.model}/mp3/${target}`);
   }
+
+  check(target) {
+    return this.api.post(`${this.model}/check`, target);
+  }
 }

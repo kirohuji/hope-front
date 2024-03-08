@@ -12,57 +12,7 @@ import {
 } from 'src/redux/slices/notification';
 import { MeteorContext } from './meteor-context';
 
-export const bindConnect = async (server, dispatch) => {
-  server.on('connected', () => {
-    dispatch({
-      type: 'INITIAL',
-      payload: {
-        server,
-        isInitialized: true,
-        isConnected: true,
-      },
-    });
-  });
-  server.on('disconnected', () => {
-    dispatch({
-      type: 'INITIAL',
-      payload: {
-        server,
-        isInitialized: true,
-        isConnected: false,
-      },
-    });
-  });
-  server.on('logout', (m) => {
-    dispatch({
-      type: 'SETLOGGINGIN',
-      payload: {
-        isLoggingIn: false,
-      },
-    });
-  });
-  server.on('login', (m) => {
-    dispatch({
-      type: 'SETLOGGINGIN',
-      payload: {
-        isLoggingIn: true,
-      },
-    });
-  });
-  server.on('loginResume', (m) => {
-    dispatch({
-      type: 'SETLOGGINGIN',
-      payload: {
-        isLoggingIn: true,
-      },
-    });
-  });
-  server.on('error', (m) => {
-    console.log('报错');
-  });
-  await server.connect();
-};
-
+const CONNECTION_ISSUE_TIMEOUT = 25000;
 const subMap = {};
 
 const getSub = (server, subName, args) => {
@@ -156,6 +106,71 @@ const initialState = {
   isConnected: false,
   isLoggingIn: false,
 };
+export const bindConnect = async (server, dispatch) => {
+  let reconnectInterval = null;
+  server.on('connected', () => {
+    reconnectInterval = setInterval(() => {
+      server.call('checkConnect').catch(() => {
+        clearInterval(reconnectInterval);
+        alert('网络错误,请重新退出打开!');
+      });
+    }, CONNECTION_ISSUE_TIMEOUT);
+    dispatch({
+      type: 'INITIAL',
+      payload: {
+        server,
+        isInitialized: true,
+        isConnected: true,
+      },
+    });
+  });
+  server.on('disconnected', () => {
+    clearInterval(reconnectInterval);
+    dispatch({
+      type: 'INITIAL',
+      payload: {
+        server,
+        isInitialized: true,
+        isConnected: false,
+      },
+    });
+  });
+  server.on('logout', (m) => {
+    dispatch({
+      type: 'SETLOGGINGIN',
+      payload: {
+        isLoggingIn: false,
+      },
+    });
+  });
+  server.on('login', (m) => {
+    dispatch({
+      type: 'SETLOGGINGIN',
+      payload: {
+        isLoggingIn: true,
+      },
+    });
+  });
+  server.on('loginResume', (m) => {
+    dispatch({
+      type: 'SETLOGGINGIN',
+      payload: {
+        isLoggingIn: true,
+      },
+    });
+  });
+  server.on('error', (m) => {
+    clearInterval(reconnectInterval);
+    console.log('报错');
+  });
+  server.on('pong', (m) => {
+    console.log('pong');
+  });
+  server.on('ping', (m) => {
+    console.log('ping');
+  });
+  await server.connect();
+};
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -230,7 +245,6 @@ export function MeteorProvider({ endpoint, children }) {
   const useLogin = useCallback(
     async (opt) => {
       const { server } = state;
-      console.log(server);
       if (server) {
         try {
           const response = await server.login(opt);

@@ -66,9 +66,10 @@ export default function FileManagerNewFolderDialog({
         files.map(async (file) => {
           const formData = new FormData();
           formData.append('file', file);
-          const { link } = await fileService.upload(formData);
+          const { link, uuid } = await fileService.upload(formData);
           await fileManagerService.createCurrentUser({
             url: link,
+            uuid,
             label: file.name,
             size: file.size,
             type: `${file.name.split('.').pop()}`,
