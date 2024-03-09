@@ -178,7 +178,7 @@ export default function ChatMessageInput({
         const file = imageRef.current.files[0];
         const formData = new FormData();
         formData.append('file', file);
-        const { link } = await fileService.upload(formData);
+        const { link } = await fileService.uploadToMessage(formData);
         // await fileManagerService.createCurrentUser({
         //   url: link,
         //   label: file.name,
@@ -217,7 +217,7 @@ export default function ChatMessageInput({
         const file = fileRef.current.files[0];
         const formData = new FormData();
         formData.append('file', file);
-        const { link } = await fileService.upload(formData);
+        const { link } = await fileService.uploadToMessage(formData);
         // await fileManagerService.createCurrentUser({
         //   url: link,
         //   label: file.name,

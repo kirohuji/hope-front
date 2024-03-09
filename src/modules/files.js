@@ -17,6 +17,14 @@ export default class FileService {
     return this.api.post(`${this.model}/storage/avatar`, target);
   }
 
+  uploadToMessage(target) {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      return this.api.post(`${this.model}/storage/messages/upload?authToken=${token}`, target);
+    }
+    return this.api.post(`${this.model}/storage/messages/upload`, target);
+  }
+
   upload(target) {
     const token = localStorage.getItem('accessToken');
     if (token) {
