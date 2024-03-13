@@ -12,17 +12,9 @@ export default class FileService {
   avatar(target) {
     const token = localStorage.getItem('accessToken');
     if (token) {
-      return this.api.post(`${this.model}/storage/avatar?authToken=${token}`, target);
+      return this.api.post(`${this.model}/storage/avatars/upload?authToken=${token}`, target);
     }
-    return this.api.post(`${this.model}/storage/avatar`, target);
-  }
-
-  uploadToMessage(target) {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      return this.api.post(`${this.model}/storage/messages/upload?authToken=${token}`, target);
-    }
-    return this.api.post(`${this.model}/storage/messages/upload`, target);
+    return this.api.post(`${this.model}/storage/avatars/upload`, target);
   }
 
   upload(target) {
@@ -31,6 +23,22 @@ export default class FileService {
       return this.api.post(`${this.model}/storage/upload?authToken=${token}`, target);
     }
     return this.api.post(`${this.model}/storage/upload`, target);
+  }
+
+  uploadToBook(target) {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      return this.api.post(`${this.model}/storage/books/upload?authToken=${token}`, target);
+    }
+    return this.api.post(`${this.model}/storage/books/upload`, target);
+  }
+
+  uploadToMessage(target) {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      return this.api.post(`${this.model}/storage/messages/upload?authToken=${token}`, target);
+    }
+    return this.api.post(`${this.model}/storage/messages/upload`, target);
   }
 
   excel(target) {

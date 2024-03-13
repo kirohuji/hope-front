@@ -258,7 +258,7 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
       const file = acceptedFiles[0];
       const formData = new FormData();
       formData.append('file', file);
-      const { link } = await fileService.upload(formData);
+      const { link } = await fileService.uploadToBook(formData);
       if (file) {
         setValue('coverUrl', link, { shouldValidate: true });
       }
