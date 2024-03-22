@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { sub } from 'date-fns';
 import { useRef, useState, useCallback, useMemo } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
@@ -23,12 +22,8 @@ import { useDispatch } from 'src/redux/store';
 import { sendMessage } from 'src/redux/slices/chat';
 // components
 import Iconify from 'src/components/iconify';
-import moment from 'moment';
-import {
-  fileManagerService,
-  fileService,
-  messagingService,
-} from 'src/composables/context-provider';
+import { fileService, messagingService } from 'src/composables/context-provider';
+import ChatClipboardDialog from './chat-clipboard-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -41,6 +36,10 @@ export default function ChatMessageInput({
   selectedConversationId,
 }) {
   const loading = useBoolean(false);
+
+  const clipboardOpen = useBoolean(false);
+
+  const [clipboard, setClipboard] = useState({});
 
   const router = useRouter();
 
@@ -113,8 +112,8 @@ export default function ChatMessageInput({
   }, []);
 
   const handleChangeMessage = useCallback((event) => {
-    if (event.key !== 'Enter' && !event.shiftKey) {
-      setMessage(event.target.value);
+    if (event.key !== 'Enter' || !event.shiftKey) {
+      setMessage(event.target.value.replace(/\n/g, ''));
     }
   }, []);
 
@@ -133,7 +132,6 @@ export default function ChatMessageInput({
   const handleSendMessage = useCallback(
     async (event) => {
       try {
-        console.log('event', message);
         if (event.key === 'Enter') {
           if (message && message !== '\n') {
             if (selectedConversationId) {
@@ -169,6 +167,35 @@ export default function ChatMessageInput({
       selectedConversationId,
       enqueueSnackbar,
     ]
+  );
+  const handlePaste = useCallback(
+    (event) => {
+      const { items } = event.clipboardData || event.originalEvent.clipboardData;
+      if (items) {
+        for (let i = 0; i < items.length; i += 1) {
+          if (items[i].kind === 'file') {
+            event.preventDefault();
+            const blob = items[i].getAsFile();
+            const url = URL.createObjectURL(new Blob([blob], { type: blob.type }));
+            setClipboard({
+              type: blob.type,
+              size: blob.size,
+              url,
+              lastModified: blob.lastModified,
+              label: blob.name,
+              name: blob.name,
+            });
+            const file = new File([blob], blob.name);
+            const fileList = new DataTransfer();
+            fileList.items.add(file);
+            fileRef.current.files = fileList.files;
+            clipboardOpen.onTrue();
+            return;
+          }
+        }
+      }
+    },
+    [clipboardOpen]
   );
 
   const uploadImage = async () => {
@@ -242,6 +269,7 @@ export default function ChatMessageInput({
           })
         );
         enqueueSnackbar('文件上传成功');
+        clipboardOpen.onFalse();
         loading.onFalse();
       }
     } catch (e) {
@@ -249,6 +277,7 @@ export default function ChatMessageInput({
       loading.onFalse();
     }
   };
+
   return (
     <>
       <Box sx={{ width: '100%' }}>
@@ -279,6 +308,7 @@ export default function ChatMessageInput({
           inputProps={{ enterKeyHint: 'send' }}
           value={message}
           onKeyUp={handleSendMessage}
+          onPaste={handlePaste}
           onChange={handleChangeMessage}
           placeholder="请输入内容"
           disabled={disabled || loading.value}
@@ -327,6 +357,12 @@ export default function ChatMessageInput({
         ref={fileRef}
         style={{ display: 'none' }}
         accept=".xls,.xlsx,.pdf,.doc,.docx,.ppt,.pptx,.mp4,.mov,.avi,.mkv,.mp3"
+      />
+      <ChatClipboardDialog
+        open={clipboardOpen.value}
+        onClose={clipboardOpen.onFalse}
+        data={clipboard}
+        onUpload={uploadFile}
       />
     </>
   );

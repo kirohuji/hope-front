@@ -5,12 +5,12 @@ const FORMAT_PDF = ['pdf'];
 const FORMAT_TEXT = ['txt'];
 const FORMAT_PHOTOSHOP = ['psd'];
 const FORMAT_WORD = ['doc', 'docx'];
-const FORMAT_EXCEL = ['xls', 'xlsx'];
+const FORMAT_EXCEL = ['xls', 'xlsx', 'sheet'];
 const FORMAT_ZIP = ['zip', 'rar', 'iso'];
 const FORMAT_ILLUSTRATOR = ['ai', 'esp'];
 const FORMAT_POWERPOINT = ['ppt', 'pptx'];
 const FORMAT_AUDIO = ['wav', 'aif', 'mp3', 'aac'];
-const FORMAT_IMG = ['jpg', 'jpeg', 'gif', 'bmp', 'png', 'svg'];
+const FORMAT_IMG = ['jpg', 'jpeg', 'gif', 'bmp', 'png', 'svg', 'image'];
 const FORMAT_VIDEO = ['m4v', 'avi', 'mpg', 'mp4', 'webm'];
 
 const iconUrl = (icon) => `/assets/icons/files/${icon}.svg`;
@@ -65,7 +65,6 @@ export function fileFormat(fileUrl) {
 
 export function fileThumb(fileUrl) {
   let thumb;
-
   switch (fileFormat(fileUrl)) {
     case 'folder':
       thumb = iconUrl('ic_folder');

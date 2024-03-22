@@ -36,7 +36,7 @@ export default function ChatRoomAttachments({ attachments }) {
       }}
     >
       <Box component="span" sx={{ flexGrow: 1 }}>
-        附件 ({totalAttachments})
+        附件 ({totalAttachments}) (最多保存3天)
       </Box>
       <Iconify
         width={16}
