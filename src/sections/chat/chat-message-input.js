@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useRef, useState, useCallback, useMemo } from 'react';
+import { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
@@ -50,6 +50,8 @@ export default function ChatMessageInput({
   const { user } = useAuthContext();
 
   const fileRef = useRef(null);
+
+  const clipboardRef = useRef(null);
 
   const imageRef = useRef(null);
 
@@ -170,11 +172,11 @@ export default function ChatMessageInput({
   );
   const handlePaste = useCallback(
     (event) => {
+      console.log(event);
       const { items } = event.clipboardData || event.originalEvent.clipboardData;
       if (items) {
         for (let i = 0; i < items.length; i += 1) {
           if (items[i].kind === 'file') {
-            event.preventDefault();
             const blob = items[i].getAsFile();
             const url = URL.createObjectURL(new Blob([blob], { type: blob.type }));
             setClipboard({
@@ -197,7 +199,6 @@ export default function ChatMessageInput({
     },
     [clipboardOpen]
   );
-
   const uploadImage = async () => {
     try {
       if (imageRef.current) {
@@ -277,6 +278,26 @@ export default function ChatMessageInput({
       loading.onFalse();
     }
   };
+  // useEffect(() => {
+  //   document.addEventListener('paste', handlePaste);
+  //   return () => {
+  //     document.removeEventListener('paste', handlePaste);
+  //   };
+  // }, [handlePaste]);
+
+  const triggerPasteEvent = () => {
+    try {
+      const pasteEvent = new Event('paste', {
+        bubbles: true,
+        cancelable: true,
+      });
+
+      // 手动触发 onPaste 事件
+      clipboardRef.current.dispatchEvent(pasteEvent);
+    } catch (error) {
+      console.error('Error triggering paste event:', error);
+    }
+  };
 
   return (
     <>
@@ -323,6 +344,9 @@ export default function ChatMessageInput({
           }
           endAdornment={
             <Stack direction="row" sx={{ flexShrink: 0 }}>
+              <IconButton onClick={triggerPasteEvent}>
+                <Iconify icon="streamline:copy-paste" />
+              </IconButton>
               <IconButton onClick={handleImage}>
                 <Iconify icon="solar:gallery-add-bold" />
               </IconButton>
@@ -357,6 +381,13 @@ export default function ChatMessageInput({
         ref={fileRef}
         style={{ display: 'none' }}
         accept=".xls,.xlsx,.pdf,.doc,.docx,.ppt,.pptx,.mp4,.mov,.avi,.mkv,.mp3"
+      />
+      <input
+        ref={clipboardRef}
+        type="file"
+        style={{ display: 'none' }}
+        contentEditable="true"
+        onPaste={handlePaste}
       />
       <ChatClipboardDialog
         open={clipboardOpen.value}
