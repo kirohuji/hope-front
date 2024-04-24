@@ -9,7 +9,6 @@
   "main": "electron.js",
   "scripts": {
     "electron": "NODE_ENV=development electron .",
-    "package": "electron-packager . MyApp --platform=darwin --arch=x64 --out=dist --overwrite",
     "electron:build": "NODE_ENV=production electron-builder build --config electron-builder.json",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
@@ -168,6 +167,7 @@
     "@types/react": "^18.2.12",
     "electron": "^29.2.0",
     "electron-builder": "^24.13.3",
+    "electron-updater": "^6.1.8",
     "eslint": "^8.43.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.8.0",
