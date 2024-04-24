@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const webpack = require("webpack");
+const path = require("path");
 
 module.exports = function override (config) {
   const fallback = config.resolve.fallback || {};
@@ -35,5 +36,11 @@ module.exports = function override (config) {
       fullySpecified: false,
     },
   });
+  config.output = {
+    path: path.resolve(__dirname, 'build'),  
+    filename: 'js/[name].[hash].js', 
+    publicPath: "./" 
+  };
+
   return config;
 };

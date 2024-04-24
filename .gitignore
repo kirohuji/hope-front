@@ -35,3 +35,4 @@ yarn-error.log*
 ios
 android
 build.zip
+release

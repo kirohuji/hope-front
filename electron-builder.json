@@ -1,0 +1,33 @@
+{
+  "appId": "lourd.next.hope",
+  "productName": "hope-front",
+  "asar": false,
+  "extends": null,
+  "directories": {
+    "output": "release"
+  },
+  "files": ["build/**/*", "electron.js"],
+  "mac": {
+    "artifactName": "${productName}_${version}.${ext}",
+    "target": ["dmg"],
+    "hardenedRuntime": true,
+    "identity": "yd zheng (7JB945M6KZ)",
+    "provisioningProfile": "test.provisionprofile",
+    "icon": "resources/icon-only.png"
+  },
+  "win": {
+    "target": ["nsis"],
+    "artifactName": "${productName}_${version}.${ext}",
+    "icon": "resources/icon-only.png"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false,
+    "artifactName": "${productName}_${version}.${ext}"
+  },
+  "releaseInfo": {
+    "releaseNotes": "版本更新的具体内容"
+  }
+}
