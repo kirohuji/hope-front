@@ -1,9 +1,10 @@
 {
-  "name": "@minimal-kit/cra-js",
-  "author": "Minimals",
-  "version": "5.1.0",
+  "name": "hope-front",
+  "author": "lourd",
+  "version": "1.0.0",
   "description": "Cra & JavaScript",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
@@ -75,7 +76,9 @@
     "browserify-fs": "^1.0.0",
     "browserify-zlib": "^0.2.0",
     "clipboard-js": "^0.3.6",
+    "clsx": "^1.2.1",
     "crypto-browserify": "^3.12.0",
+    "csstype": "^3.1.2",
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.9",
     "ddp": "^0.12.1",
@@ -115,6 +118,7 @@
     "react-lazy-load-image-component": "^1.6.0",
     "react-map-gl": "^7.0.25",
     "react-markdown": "^8.0.7",
+    "react-minimap": "^0.7.4",
     "react-organizational-chart": "^2.2.1",
     "react-quill": "^2.0.0",
     "react-redux": "^8.1.0",
@@ -155,8 +159,6 @@
     "@capacitor/assets": "^3.0.4",
     "@capacitor/cli": "^5.5.1",
     "@types/react": "^18.2.12",
-    "clsx": "^1.2.1",
-    "csstype": "^3.1.2",
     "eslint": "^8.43.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.8.0",
@@ -171,7 +173,6 @@
     "eslint-plugin-unused-imports": "^2.0.0",
     "prettier": "^2.8.8",
     "react-app-rewired": "^2.2.1",
-    "react-minimap": "^0.7.4",
     "typescript": "^4.9.5"
   },
   "overrides": {
