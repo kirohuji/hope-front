@@ -207,7 +207,7 @@ function MaintenanceIllustration({ ...other }) {
         </linearGradient>
       </defs>
 
-      <image href="/assets/illustrations/characters/character_5.png" height="300" x="245" y="30" />
+      <image href="assets/illustrations/characters/character_5.png" height="300" x="245" y="30" />
     </Box>
   );
 }

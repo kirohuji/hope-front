@@ -75,7 +75,7 @@ export default function NotificationItem({ notification, onRefresh }) {
         >
           <Box
             component="img"
-            src={`/assets/icons/notification/${
+            src={`assets/icons/notification/${
               (notification.type === 'order' && 'ic_order') ||
               (notification.type === 'chat' && 'ic_chat') ||
               (notification.type === 'mail' && 'ic_mail') ||

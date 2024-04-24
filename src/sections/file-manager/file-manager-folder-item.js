@@ -108,7 +108,7 @@ export default function FileManagerFolderItem({
         sx={{ p: 0.75 }}
       />
     ) : (
-      <Box component="img" src="/assets/icons/files/ic_folder.svg" sx={{ width: 36, height: 36 }} />
+      <Box component="img" src="assets/icons/files/ic_folder.svg" sx={{ width: 36, height: 36 }} />
     );
 
   const renderText = (

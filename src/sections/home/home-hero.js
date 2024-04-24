@@ -28,7 +28,7 @@ import { MotionContainer, varFade } from 'src/components/animate';
 const StyledRoot = styled('div')(({ theme }) => ({
   ...bgGradient({
     color: alpha(theme.palette.background.default, theme.palette.mode === 'light' ? 0.9 : 0.94),
-    imgUrl: '/assets/background/overlay_3.jpg',
+    imgUrl: 'assets/background/overlay_3.jpg',
   }),
   width: '100%',
   height: '100vh',
@@ -274,7 +274,7 @@ export default function HomeHero() {
             <m.div key={platform} variants={varFade().in}>
               <Box
                 component="img"
-                src={`/assets/icons/platforms/ic_${platform}.svg`}
+                src={`assets/icons/platforms/ic_${platform}.svg`}
                 sx={{ width: 24, height: 24 }}
               />
             </m.div>
@@ -310,8 +310,8 @@ export default function HomeHero() {
           alt={isLight ? 'light_1' : 'dark_1'}
           src={
             isLight
-              ? `/assets/images/home/hero/light_1.webp`
-              : `/assets/images/home/hero/dark_1.webp`
+              ? `assets/images/home/hero/light_1.webp`
+              : `assets/images/home/hero/dark_1.webp`
           }
           sx={{ position: 'absolute', mt: -5 }}
         />
@@ -322,8 +322,8 @@ export default function HomeHero() {
           alt={isLight ? 'light_1' : 'dark_1'}
           src={
             isLight
-              ? `/assets/images/home/hero/light_1.webp`
-              : `/assets/images/home/hero/dark_1.webp`
+              ? `assets/images/home/hero/light_1.webp`
+              : `assets/images/home/hero/dark_1.webp`
           }
           sx={{ position: 'absolute' }}
         />
@@ -341,8 +341,8 @@ export default function HomeHero() {
           alt={isLight ? 'light_2' : 'dark_2'}
           src={
             isLight
-              ? `/assets/images/home/hero/light_2.webp`
-              : `/assets/images/home/hero/dark_2.webp`
+              ? `assets/images/home/hero/light_2.webp`
+              : `assets/images/home/hero/dark_2.webp`
           }
           sx={{ position: 'absolute', mt: -5 }}
         />
@@ -353,8 +353,8 @@ export default function HomeHero() {
           alt={isLight ? 'light_2' : 'dark_2'}
           src={
             isLight
-              ? `/assets/images/home/hero/light_2.webp`
-              : `/assets/images/home/hero/dark_2.webp`
+              ? `assets/images/home/hero/light_2.webp`
+              : `assets/images/home/hero/dark_2.webp`
           }
           sx={{ position: 'absolute' }}
         />

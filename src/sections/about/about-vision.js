@@ -18,7 +18,7 @@ export default function AboutVision() {
 
   const renderImg = (
     <Image
-      src="/assets/images/about/vision.jpg"
+      src="assets/images/about/vision.jpg"
       alt="about-vision"
       overlay={alpha(theme.palette.grey[900], 0.48)}
     />
@@ -45,7 +45,7 @@ export default function AboutVision() {
           key={logo}
           variants={varFade().in}
           alt={logo}
-          src={`/assets/icons/brands/ic_brand_${logo}.svg`}
+          src={`assets/icons/brands/ic_brand_${logo}.svg`}
           sx={{
             m: { xs: 1.5, md: 2.5 },
             height: { xs: 20, md: 32 },

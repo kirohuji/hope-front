@@ -90,25 +90,25 @@ export default function OverviewFileView() {
           name: 'Images',
           usedStorage: GB / 2,
           filesCount: 223,
-          icon: <Box component="img" src="/assets/icons/files/ic_img.svg" />,
+          icon: <Box component="img" src="assets/icons/files/ic_img.svg" />,
         },
         {
           name: 'Media',
           usedStorage: GB / 5,
           filesCount: 223,
-          icon: <Box component="img" src="/assets/icons/files/ic_video.svg" />,
+          icon: <Box component="img" src="assets/icons/files/ic_video.svg" />,
         },
         {
           name: 'Documents',
           usedStorage: GB / 5,
           filesCount: 223,
-          icon: <Box component="img" src="/assets/icons/files/ic_document.svg" />,
+          icon: <Box component="img" src="assets/icons/files/ic_document.svg" />,
         },
         {
           name: 'Other',
           usedStorage: GB / 10,
           filesCount: 223,
-          icon: <Box component="img" src="/assets/icons/files/ic_file.svg" />,
+          icon: <Box component="img" src="assets/icons/files/ic_file.svg" />,
         },
       ]}
     />
@@ -125,7 +125,7 @@ export default function OverviewFileView() {
               title="Dropbox"
               value={GB / 10}
               total={GB}
-              icon="/assets/icons/app/ic_dropbox.svg"
+              icon="assets/icons/app/ic_dropbox.svg"
             />
           </Grid>
 
@@ -134,7 +134,7 @@ export default function OverviewFileView() {
               title="Drive"
               value={GB / 5}
               total={GB}
-              icon="/assets/icons/app/ic_drive.svg"
+              icon="assets/icons/app/ic_drive.svg"
             />
           </Grid>
 
@@ -143,7 +143,7 @@ export default function OverviewFileView() {
               title="OneDrive"
               value={GB / 2}
               total={GB}
-              icon="/assets/icons/app/ic_onedrive.svg"
+              icon="assets/icons/app/ic_onedrive.svg"
             />
           </Grid>
 

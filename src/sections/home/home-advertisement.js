@@ -85,7 +85,7 @@ export default function HomeAdvertisement() {
         }}
         transition={{ duration: 4, repeat: Infinity }}
         alt="rocket"
-        src="/assets/images/home/rocket.webp"
+        src="assets/images/home/rocket.webp"
         sx={{ maxWidth: 460 }}
       />
     </Stack>

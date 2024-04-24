@@ -126,7 +126,7 @@ export default function MailView() {
     <EmptyContent
       title={`Nothing in ${selectedLabelId}`}
       description="This folder is empty"
-      imgUrl="/assets/icons/empty/ic_folder_empty.svg"
+      imgUrl="assets/icons/empty/ic_folder_empty.svg"
       sx={{
         borderRadius: 1.5,
         maxWidth: { md: 320 },
@@ -167,7 +167,7 @@ export default function MailView() {
     <>
       {mailsEmpty ? (
         <EmptyContent
-          imgUrl="/assets/icons/empty/ic_email_disabled.svg"
+          imgUrl="assets/icons/empty/ic_email_disabled.svg"
           sx={{
             borderRadius: 1.5,
             bgcolor: 'background.default',

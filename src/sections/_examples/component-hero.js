@@ -30,7 +30,7 @@ const StyledBg = styled('div')(({ theme }) => ({
   transform: 'scaleX(-1)',
   ...bgGradient({
     color: alpha(theme.palette.background.default, 0.9),
-    imgUrl: '/assets/background/overlay_4.jpg',
+    imgUrl: 'assets/background/overlay_4.jpg',
   }),
 }));
 
@@ -68,7 +68,7 @@ export default function ComponentHero() {
             <Box
               component="img"
               alt="illustrations characters"
-              src="/assets/illustrations/characters/character_7.png"
+              src="assets/illustrations/characters/character_7.png"
               sx={{ maxWidth: 320 }}
             />
           </m.div>

@@ -102,7 +102,7 @@ export default function AboutTestimonials() {
       sx={{
         ...bgGradient({
           color: alpha(theme.palette.grey[900], 0.9),
-          imgUrl: '/assets/images/about/testimonials.jpg',
+          imgUrl: 'assets/images/about/testimonials.jpg',
         }),
         overflow: 'hidden',
         height: { md: 840 },

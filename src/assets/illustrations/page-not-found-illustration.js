@@ -29,7 +29,7 @@ function PageNotFoundIllustration({ ...other }) {
     >
       <BackgroundShape />
 
-      <image href="/assets/illustrations/characters/character_6.png" height="300" x="205" y="30" />
+      <image href="assets/illustrations/characters/character_6.png" height="300" x="205" y="30" />
 
       <path
         fill="#FFAB00"

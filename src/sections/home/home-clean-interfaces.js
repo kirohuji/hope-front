@@ -63,7 +63,7 @@ export default function HomeCleanInterfaces() {
           <Image
             disabledEffect
             alt={`clean-${index + 1}`}
-            src={`/assets/images/home/clean/page_${index + 1}.webp`}
+            src={`assets/images/home/clean/page_${index + 1}.webp`}
           />
         </Box>
       ))}

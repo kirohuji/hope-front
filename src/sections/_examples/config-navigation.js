@@ -8,7 +8,7 @@ const getHref = (category, name) => `/components/${category}/${paramCase(name)}`
 export const foundationNav = ['Colors', 'Typography', 'Shadows', 'Grid', 'Icons'].map((name) => ({
   name,
   href: getHref('foundation', name),
-  icon: `/assets/icons/components/ic_${snakeCase(name)}.svg`,
+  icon: `assets/icons/components/ic_${snakeCase(name)}.svg`,
 }));
 
 export const muiNav = [
@@ -44,7 +44,7 @@ export const muiNav = [
 ].map((name) => ({
   name,
   href: getHref('mui', name),
-  icon: `/assets/icons/components/ic_${snakeCase(name)}.svg`,
+  icon: `assets/icons/components/ic_${snakeCase(name)}.svg`,
 }));
 
 export const extraNav = [
@@ -71,5 +71,5 @@ export const extraNav = [
 ].map((name) => ({
   name,
   href: getHref('extra', name),
-  icon: `/assets/icons/components/ic_extra_${snakeCase(name)}.svg`,
+  icon: `assets/icons/components/ic_extra_${snakeCase(name)}.svg`,
 }));

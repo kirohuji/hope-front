@@ -13,7 +13,7 @@ const FORMAT_AUDIO = ['wav', 'aif', 'mp3', 'aac'];
 const FORMAT_IMG = ['jpg', 'jpeg', 'gif', 'bmp', 'png', 'svg', 'image'];
 const FORMAT_VIDEO = ['m4v', 'avi', 'mpg', 'mp4', 'webm'];
 
-const iconUrl = (icon) => `/assets/icons/files/${icon}.svg`;
+const iconUrl = (icon) => `assets/icons/files/${icon}.svg`;
 
 // ----------------------------------------------------------------------
 

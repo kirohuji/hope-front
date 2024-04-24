@@ -21,7 +21,7 @@ export default function AboutHero() {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundImage:
-          'url(/assets/background/overlay_1.svg), url(/assets/images/about/hero.jpg)',
+          'url(assets/background/overlay_1.svg), url(assets/images/about/hero.jpg)',
       }}
     >
       <Container component={MotionContainer}>

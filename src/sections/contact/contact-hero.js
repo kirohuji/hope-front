@@ -46,7 +46,7 @@ export default function ContactHero() {
       sx={{
         ...bgGradient({
           color: alpha(theme.palette.grey[900], 0.8),
-          imgUrl: '/assets/images/contact/hero.jpg',
+          imgUrl: 'assets/images/contact/hero.jpg',
         }),
         height: { md: 560 },
         py: { xs: 10, md: 0 },

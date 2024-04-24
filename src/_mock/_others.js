@@ -159,9 +159,9 @@ export const _homePlans = [...Array(3)].map((_, index) => ({
     'Commercial applications',
   ],
   icons: [
-    '/assets/icons/platforms/ic_figma.svg',
-    '/assets/icons/platforms/ic_js.svg',
-    '/assets/icons/platforms/ic_ts.svg',
+    'assets/icons/platforms/ic_figma.svg',
+    'assets/icons/platforms/ic_js.svg',
+    'assets/icons/platforms/ic_ts.svg',
   ],
 }));
 

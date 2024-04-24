@@ -38,7 +38,7 @@ export default function MailDetails({ mail, renderLabel }) {
       <EmptyContent
         title="No Conversation Selected"
         description="Select a conversation to read"
-        imgUrl="/assets/icons/empty/ic_email_selected.svg"
+        imgUrl="assets/icons/empty/ic_email_selected.svg"
         sx={{
           borderRadius: 1.5,
           bgcolor: 'background.default',

@@ -71,23 +71,23 @@ export default function IconsView() {
 
           <ComponentBlock title="Local Icons">
             <Tooltip title="SvgColor">
-              <SvgColor src="/assets/icons/navbar/ic_dashboard.svg" />
+              <SvgColor src="assets/icons/navbar/ic_dashboard.svg" />
             </Tooltip>
 
-            <SvgColor src="/assets/icons/navbar/ic_dashboard.svg" sx={{ color: 'action.active' }} />
+            <SvgColor src="assets/icons/navbar/ic_dashboard.svg" sx={{ color: 'action.active' }} />
             <SvgColor
-              src="/assets/icons/navbar/ic_dashboard.svg"
+              src="assets/icons/navbar/ic_dashboard.svg"
               sx={{ color: 'action.disabled' }}
             />
-            <SvgColor src="/assets/icons/navbar/ic_dashboard.svg" sx={{ color: 'primary.main' }} />
+            <SvgColor src="assets/icons/navbar/ic_dashboard.svg" sx={{ color: 'primary.main' }} />
             <SvgColor
-              src="/assets/icons/navbar/ic_dashboard.svg"
+              src="assets/icons/navbar/ic_dashboard.svg"
               sx={{ color: 'secondary.main' }}
             />
-            <SvgColor src="/assets/icons/navbar/ic_dashboard.svg" sx={{ color: 'info.main' }} />
-            <SvgColor src="/assets/icons/navbar/ic_dashboard.svg" sx={{ color: 'success.main' }} />
-            <SvgColor src="/assets/icons/navbar/ic_dashboard.svg" sx={{ color: 'warning.main' }} />
-            <SvgColor src="/assets/icons/navbar/ic_dashboard.svg" sx={{ color: 'error.main' }} />
+            <SvgColor src="assets/icons/navbar/ic_dashboard.svg" sx={{ color: 'info.main' }} />
+            <SvgColor src="assets/icons/navbar/ic_dashboard.svg" sx={{ color: 'success.main' }} />
+            <SvgColor src="assets/icons/navbar/ic_dashboard.svg" sx={{ color: 'warning.main' }} />
+            <SvgColor src="assets/icons/navbar/ic_dashboard.svg" sx={{ color: 'error.main' }} />
           </ComponentBlock>
         </Stack>
       </Container>

@@ -10,11 +10,11 @@ export const _appRelated = ['Chrome', 'Drive', 'Dropbox', 'Evernote', 'Github'].
     const price = [2, 4].includes(index) ? _mock.number.price(index) : 0;
 
     const shortcut =
-      (name === 'Chrome' && '/assets/icons/app/ic_chrome.svg') ||
-      (name === 'Drive' && '/assets/icons/app/ic_drive.svg') ||
-      (name === 'Dropbox' && '/assets/icons/app/ic_dropbox.svg') ||
-      (name === 'Evernote' && '/assets/icons/app/ic_evernote.svg') ||
-      '/assets/icons/app/ic_github.svg';
+      (name === 'Chrome' && 'assets/icons/app/ic_chrome.svg') ||
+      (name === 'Drive' && 'assets/icons/app/ic_drive.svg') ||
+      (name === 'Dropbox' && 'assets/icons/app/ic_dropbox.svg') ||
+      (name === 'Evernote' && 'assets/icons/app/ic_evernote.svg') ||
+      'assets/icons/app/ic_github.svg';
 
     return {
       id: _mock.id(index),

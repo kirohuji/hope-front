@@ -44,7 +44,7 @@ export default function Header({ onOpenNav }) {
 
       {!lgUp && false && (
         <IconButton onClick={onOpenNav}>
-          <SvgColor src="/assets/icons/navbar/ic_menu_item.svg" />
+          <SvgColor src="assets/icons/navbar/ic_menu_item.svg" />
         </IconButton>
       )}
       {false && <Searchbar />}

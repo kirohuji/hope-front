@@ -29,7 +29,7 @@ function ComingSoonIllustration({ ...other }) {
     >
       <BackgroundShape />
 
-      <image href="/assets/illustrations/characters/character_1.png" height="300" x="320" y="30" />
+      <image href="assets/illustrations/characters/character_1.png" height="300" x="320" y="30" />
 
       <path
         fill="url(#paint0_linear_1_79)"

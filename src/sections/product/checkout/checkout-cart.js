@@ -59,7 +59,7 @@ export default function CheckoutCart({
             <EmptyContent
               title="Cart is Empty!"
               description="Look like you have no items in your shopping cart."
-              imgUrl="/assets/icons/empty/ic_cart.svg"
+              imgUrl="assets/icons/empty/ic_cart.svg"
               sx={{ pt: 5, pb: 10 }}
             />
           )}

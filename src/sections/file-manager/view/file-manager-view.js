@@ -214,25 +214,25 @@ export default function FileManagerView() {
       //       name: 'Images',
       //       usedStorage: (overview.used || 0) / 2,
       //       filesCount: 223,
-      //       icon: <Box component="img" src="/assets/icons/files/ic_img.svg" />,
+      //       icon: <Box component="img" src="assets/icons/files/ic_img.svg" />,
       //     },
       //     {
       //       name: 'Media',
       //       usedStorage: (overview.used || 0) / 5,
       //       filesCount: 223,
-      //       icon: <Box component="img" src="/assets/icons/files/ic_video.svg" />,
+      //       icon: <Box component="img" src="assets/icons/files/ic_video.svg" />,
       //     },
       //     {
       //       name: 'Documents',
       //       usedStorage: (overview.used || 0) / 5,
       //       filesCount: 223,
-      //       icon: <Box component="img" src="/assets/icons/files/ic_document.svg" />,
+      //       icon: <Box component="img" src="assets/icons/files/ic_document.svg" />,
       //     },
       //     {
       //       name: 'Other',
       //       usedStorage: (overview.used || 0) / 10,
       //       filesCount: 223,
-      //       icon: <Box component="img" src="/assets/icons/files/ic_file.svg" />,
+      //       icon: <Box component="img" src="assets/icons/files/ic_file.svg" />,
       //     },
       //   ]}
     />

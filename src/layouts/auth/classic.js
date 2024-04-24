@@ -25,25 +25,25 @@ const METHODS = [
   //   id: 'jwt',
   //   label: 'Jwt',
   //   path: paths.auth.jwt.login,
-  //   icon: '/assets/icons/auth/ic_jwt.svg',
+  //   icon: 'assets/icons/auth/ic_jwt.svg',
   // },
   // {
   //   id: 'firebase',
   //   label: 'Firebase',
   //   path: paths.auth.firebase.login,
-  //   icon: '/assets/icons/auth/ic_firebase.svg',
+  //   icon: 'assets/icons/auth/ic_firebase.svg',
   // },
   // {
   //   id: 'amplify',
   //   label: 'Amplify',
   //   path: paths.auth.amplify.login,
-  //   icon: '/assets/icons/auth/ic_amplify.svg',
+  //   icon: 'assets/icons/auth/ic_amplify.svg',
   // },
   // {
   //   id: 'auth0',
   //   label: 'Auth0',
   //   path: paths.auth.auth0.login,
-  //   icon: '/assets/icons/auth/ic_auth0.svg',
+  //   icon: 'assets/icons/auth/ic_auth0.svg',
   // },
 ];
 
@@ -90,7 +90,7 @@ export default function AuthClassicLayout({ children, image, title }) {
             theme.palette.background.default,
             theme.palette.mode === 'light' ? 0.88 : 0.94
           ),
-          imgUrl: '/assets/background/overlay_2.jpg',
+          imgUrl: 'assets/background/overlay_2.jpg',
         }),
       }}
     >
@@ -101,7 +101,7 @@ export default function AuthClassicLayout({ children, image, title }) {
       <Box
         component="img"
         alt="auth"
-        src={image || '/assets/illustrations/illustration_dashboard.png'}
+        src={image || 'assets/illustrations/illustration_dashboard.png'}
         sx={{ maxWidth: 720 }}
       />
 

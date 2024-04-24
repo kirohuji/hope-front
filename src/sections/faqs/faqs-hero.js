@@ -24,7 +24,7 @@ export default function FaqsHero() {
       sx={{
         ...bgGradient({
           color: alpha(theme.palette.grey[900], 0.8),
-          imgUrl: '/assets/images/faqs/hero.jpg',
+          imgUrl: 'assets/images/faqs/hero.jpg',
         }),
         height: { md: 560 },
         py: { xs: 10, md: 0 },

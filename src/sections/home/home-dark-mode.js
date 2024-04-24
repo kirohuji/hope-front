@@ -51,7 +51,7 @@ export default function HomeDarkMode() {
     <m.div variants={varFade().inUp}>
       <Image
         alt="darkmode"
-        src="/assets/images/home/darkmode.webp"
+        src="assets/images/home/darkmode.webp"
         sx={{
           borderRadius: 2,
           my: { xs: 5, md: 10 },

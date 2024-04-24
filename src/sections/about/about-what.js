@@ -53,7 +53,7 @@ export default function AboutWhat() {
               <m.div variants={varFade().inUp}>
                 <Image
                   alt="our office 2"
-                  src="/assets/images/about/what_2.png"
+                  src="assets/images/about/what_2.png"
                   ratio="1/1"
                   sx={{ borderRadius: 3, boxShadow: shadow }}
                 />
@@ -64,7 +64,7 @@ export default function AboutWhat() {
               <m.div variants={varFade().inUp}>
                 <Image
                   alt="our office 1"
-                  src="/assets/images/about/what_1.png"
+                  src="assets/images/about/what_1.png"
                   ratio="3/4"
                   sx={{ borderRadius: 3, boxShadow: shadow }}
                 />
