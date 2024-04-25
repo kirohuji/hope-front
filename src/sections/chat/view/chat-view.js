@@ -216,9 +216,11 @@ export default function ChatView() {
         getMessage.ready();
         reactiveCollection = ddpclient.collection('socialize:messages').reactive();
         reactiveCollection.onChange(
-          () => {
-            console.log('更新了');
-            dispatch(newMessageGet(selectedConversationId));
+          (target) => {
+            if (target.added) {
+              console.log('更新了');
+              dispatch(newMessageGet(selectedConversationId));
+            }
           },
           {
             added: true,

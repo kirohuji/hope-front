@@ -188,6 +188,8 @@ let conversationsPublish = null;
 let conversationsCollection = null;
 let notificationsPublish = null;
 let notificationsCollection = null;
+let messagesPublish = null;
+let messagesCollection = null;
 export function MeteorProvider({ endpoint, children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const reducerDispatch = useDispatch();
@@ -241,6 +243,17 @@ export function MeteorProvider({ endpoint, children }) {
       //   reducerDispatch(getOverview());
       // }
     });
+    messagesPublish = await server.subscribe('socialize.unreadConversations');
+    messagesPublish.ready();
+    messagesCollection = server.collection('socialize:messages');
+    messagesCollection.onChange((target) => {
+      if (target.added) {
+        console.log('有未读消息')
+        console.log('messages', target.added);
+      }
+    });
+    // messagesPublish = await server.subscribe('unreadConversations');
+    // messagesPublish.ready();
   }, [reducerDispatch, state]);
   const useLogin = useCallback(
     async (opt) => {
