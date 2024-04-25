@@ -15,6 +15,7 @@
     "provisioningProfile": "test.provisionprofile",
     "icon": "resources/icon-only.png"
   },
+  "electronVersion": "29.2.0", 
   "win": {
     "target": ["nsis"],
     "artifactName": "${productName}_${version}.${ext}",

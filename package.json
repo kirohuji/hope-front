@@ -9,7 +9,7 @@
   "main": "electron.js",
   "scripts": {
     "electron": "NODE_ENV=development electron .",
-    "electron:build": "NODE_ENV=production electron-builder build --config electron-builder.json",
+    "electron:build": "GH_TOKEN=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 NODE_ENV=production electron-builder build --config electron-builder.json --publish=always",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",

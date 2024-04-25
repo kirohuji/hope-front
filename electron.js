@@ -4,7 +4,20 @@ const { autoUpdater } = require('electron-updater');
 const { join } = require('path');
 // const { format } = require('url');
 
-autoUpdater.setFeedURL("xxxx")
+// autoUpdater.setFeedURL("xxxx")
+autoUpdater.setFeedURL({
+  provider: 'github',
+  owner: 'kirohuji',
+  repo: 'hope-front',
+  token: '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',
+  // 根据你的发布策略设置分支
+  // 此处的分支名需与 GitHub 上对应的发布分支名一致
+  // 如果是正式发布，可以使用 master 分支
+  // 如果是测试发布，可以使用 beta 或其他自定义分支
+  // 如果你有多个发布分支，也可以在更新时根据需要选择
+  // 参考文档：https://www.electron.build/auto-update#update-channel
+  // channel: 'beta',
+});
 autoUpdater.autoDownload = false
 
 const isDevelopment = process.env.NODE_ENV === 'development';
