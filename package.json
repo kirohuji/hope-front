@@ -10,6 +10,8 @@
   "scripts": {
     "electron": "NODE_ENV=development electron .",
     "electron:build": "GH_TOKEN=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 NODE_ENV=production electron-builder build --config electron-builder.json --publish=always",
+    "electron:win": "NODE_ENV=production electron-builder build --config electron-builder.json -w",
+    "electron:mac": "NODE_ENV=production electron-builder build --config electron-builder.json",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
@@ -155,7 +157,8 @@
     "ws": "^8.14.2",
     "yet-another-react-lightbox": "^3.11.1",
     "yup": "^1.2.0",
-    "zustand": "^4.5.1"
+    "zustand": "^4.5.1",
+    "electron-updater": "^6.1.8"
   },
   "devDependencies": {
     "@babel/core": "^7.22.5",
@@ -167,7 +170,6 @@
     "@types/react": "^18.2.12",
     "electron": "^29.2.0",
     "electron-builder": "^24.13.3",
-    "electron-updater": "^6.1.8",
     "eslint": "^8.43.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.8.0",
