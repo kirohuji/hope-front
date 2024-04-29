@@ -6,8 +6,8 @@ import _ from 'lodash';
 import { useDispatch } from 'src/redux/store';
 import { getConversations } from 'src/redux/slices/chat';
 import {
-  newNotificationGet,
-  newNotificationRemove,
+  // newNotificationGet,
+  // newNotificationRemove,
   getOverview,
 } from 'src/redux/slices/notification';
 import { MeteorContext } from './meteor-context';

@@ -266,7 +266,7 @@ export function useNavData() {
             ],
             icon: ICONS.broadcast,
             children: [
-              { title: t('list'), path: paths.dashboard.broadcast.root, auth: ['Broadcast'] },
+              { title: t('list'), path: paths.dashboard.broadcast.root, auth: ['BroadcastList'] },
               // { title: t('details'), path: paths.dashboard.broadcast.demo.details },
               // { title: t('create'), path: paths.dashboard.broadcast.new },
               // { title: t('edit'), path: paths.dashboard.broadcast.demo.edit },

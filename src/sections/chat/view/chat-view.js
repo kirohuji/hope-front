@@ -10,7 +10,7 @@ import Tab from '@mui/material/Tab';
 import Link from '@mui/material/Link';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
-import LinearProgress from '@mui/material/LinearProgress';
+// import LinearProgress from '@mui/material/LinearProgress';
 import Scrollbar from 'src/components/scrollbar';
 // routes
 import { useSearchParams } from 'src/routes/hook';
@@ -95,8 +95,8 @@ const TABS = [
 
 let reactiveCollection = null;
 let getMessage = null;
-const conversations2Publish = null;
-const conversations2Collection = null;
+// const conversations2Publish = null;
+// const conversations2Collection = null;
 
 export default function ChatView() {
   const { server: ddpclient } = useMeteorContext();
