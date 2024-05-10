@@ -7,11 +7,8 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Link from '@mui/material/Link';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
-// import LinearProgress from '@mui/material/LinearProgress';
-import Scrollbar from 'src/components/scrollbar';
 // routes
 import { useSearchParams } from 'src/routes/hook';
 // hooks
@@ -23,7 +20,6 @@ import { useSettingsContext } from 'src/components/settings';
 //
 import { useDispatch, useSelector } from 'src/redux/store';
 import {
-  getOrganizations,
   getConversations,
   resetActiveConversation,
   getMessages,
@@ -34,6 +30,7 @@ import {
 } from 'src/redux/slices/chat';
 import _ from 'lodash';
 import { useSnackbar } from 'src/components/snackbar';
+import ChatOrganization from 'src/sections/chat/chat-organization';
 import ChatNav from '../chat-nav';
 import ChatRoom from '../chat-room';
 import ChatMessageList from '../chat-message-list';
@@ -112,15 +109,9 @@ export default function ChatView() {
 
   const conversation = useSelector((state) => conversationSelector(state));
 
-  const [currentFirstOrganization, setCurrentFirstOrganization] = useState([]);
-
   const { active } = useSelector((state) => state.scope);
 
   const isDesktop = useResponsive('up', 'md');
-
-  const [currentOrganization, setCurrentOrganization] = useState([]);
-
-  const [levels, setLevels] = useState([]);
 
   const { user } = useAuthContext();
 
@@ -135,61 +126,6 @@ export default function ChatView() {
   const [recipients, setRecipients] = useState([]);
 
   const [conversationsLoading, setConversationsLoading] = useState(true);
-
-  const onChildren = (organization) => {
-    if (organization.children || organization.users) {
-      const level = {
-        name: organization.label,
-        to: organization._id,
-      };
-      levels.push(level);
-      setCurrentOrganization(
-        _.compact([
-          ...(organization.children || []),
-          ...(organization.users || []).map((item) => ({
-            name: item.username,
-            photoURL: item.photoURL,
-            _id: item._id,
-            email: item.email,
-            displayName: item.displayName,
-            realName: item.realName,
-          })),
-        ])
-      );
-      setLevels(levels);
-    }
-  };
-
-  const onGoTo = async (level) => {
-    let index = 0;
-    const length = _.findIndex(levels, ['to', level.to]);
-    let isChildren = false;
-    let currentOrganizations = currentFirstOrganization;
-    const levels2 = [];
-    while (index < length) {
-      isChildren = true;
-      const currentLevel = levels[index];
-      currentOrganizations = _.find(currentOrganizations, ['_id', currentLevel.to]);
-      index += 1;
-      levels2.push(currentLevel);
-    }
-    if (isChildren) {
-      await setCurrentOrganization([
-        ...currentOrganizations.children,
-        ...currentOrganizations.users.map((item) => ({
-          _id: item._id,
-          name: item.username,
-          photoURL: item.photoURL,
-          email: item.email,
-          displayName: item.displayName,
-          realName: item.realName,
-        })),
-      ]);
-    } else {
-      await setCurrentOrganization(currentOrganizations);
-    }
-    setLevels(levels2);
-  };
 
   // 会话获取详情
   const getDetails = useCallback(async () => {
@@ -244,12 +180,10 @@ export default function ChatView() {
   const onRefreshWithOrganization = useCallback(async () => {
     if (active?._id) {
       setLoading(true);
-      const organizationData = await dispatch(getOrganizations(active._id));
-      setCurrentFirstOrganization(organizationData);
-      setCurrentOrganization(organizationData);
+      // onRefreshWithOrganization();
       setLoading(false);
     }
-  }, [active?._id, dispatch, setLoading]);
+  }, [active?._id, setLoading]);
 
   // 刷新 Conversations
   const onRefreshWithConversations = useCallback(async () => {
@@ -377,40 +311,6 @@ export default function ChatView() {
     </Tabs>
   );
 
-  const styles = {
-    typography: 'body2',
-    alignItems: 'center',
-    color: 'text.primary',
-    display: 'inline-flex',
-  };
-
-  const renderOrganizationsMenuItem = (organization, id) => (
-    <ChatNavItem
-      key={id}
-      onChildren={onChildren}
-      conversation={organization}
-      selected={organization._id === selectedConversationId}
-    />
-  );
-
-  const renderOrganizations = (
-    <Scrollbar sx={{ height: '100%', ml: 1, mr: 1 }}>
-      {levels && levels.length > 0 && (
-        <Stack direction="row" alignItems="center" justifyContent="flex-start" sx={{ m: 1 }}>
-          {levels.map((level, index) => (
-            <Box key={index} sx={{ display: 'flex' }}>
-              <Link onClick={() => onGoTo(level)} sx={styles}>
-                {`${level.name}`}{' '}
-              </Link>
-              <div style={{ margin: '0 4px' }}> /</div>
-            </Box>
-          ))}
-        </Stack>
-      )}
-      {currentOrganization.map((item, i) => renderOrganizationsMenuItem(item, i))}
-    </Scrollbar>
-  );
-
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {isDesktop && (
@@ -509,7 +409,7 @@ export default function ChatView() {
                     <CircularProgress />
                   </Box>
                 ) : (
-                  renderOrganizations
+                  <ChatOrganization />
                 ))}
               {currentTab === 'contacts' &&
                 contacts.allIds

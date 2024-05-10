@@ -4,7 +4,7 @@ import { paths } from 'src/routes/paths';
 // locales
 import { useLocales } from 'src/locales';
 // components
-// import Label from 'src/components/label';
+import Label from 'src/components/label';
 // import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 
@@ -282,12 +282,19 @@ export function useNavData() {
           },
 
           // MAIL
-          // {
-          //   title: t('mail'),
-          //   path: paths.dashboard.mail,
-          //   icon: ICONS.mail,
-          //   info: <Label color="error">+32</Label>,
-          // },
+          {
+            title: t('mail'),
+            path: paths.dashboard.mail,
+            icon: ICONS.mail,
+            auth: [
+              'Broadcast',
+              'BroadcastList',
+              'BroadcastListAdd',
+              'BroadcastListEdit',
+              'BroadcastListDelete',
+            ],
+            info: <Label color="error">+32</Label>,
+          },
 
           // CHAT
           // {

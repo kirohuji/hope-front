@@ -63,7 +63,7 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
   const renderOrganizationsMenuItem = (organization, id) => (
     <ChatNavItem
       key={id}
-      onSelect={() => handleSelectContact(organization)}
+      onSelect={() => handleSelectContact && handleSelectContact(organization)}
       checked={checkeds.includes(organization._id) > 0}
       onChildren={onChildren}
       conversation={organization}
