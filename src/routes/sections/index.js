@@ -12,6 +12,7 @@ import { authDemoRoutes } from './auth-demo';
 import { dashboardRoutes } from './dashboard';
 import { componentsRoutes } from './components';
 
+const AiPage = lazy(() => import('src/pages/dashboard/openai'));
 const ChatPage = lazy(() => import('src/pages/dashboard/chat'));
 const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'))
 
@@ -72,6 +73,7 @@ export default function Router () {
       element: <ReturnLayout />,
       children: [
         { path: 'chat', element: <ChatPage /> },
+        { path: 'openai', element: <AiPage /> },
         {
           path: 'training', element: <TrainingPage />
         },

@@ -3,6 +3,8 @@ import { useRef, useState, useCallback, useMemo, useEffect } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
+import Editor from 'src/components/editor';
+import Button from '@mui/material/Button';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -21,6 +23,7 @@ import uuidv4 from 'src/utils/uuidv4';
 // redux
 import { useDispatch } from 'src/redux/store';
 import { sendMessage } from 'src/redux/slices/chat';
+import { openai } from 'src/redux/slices/openai';
 // components
 import Iconify from 'src/components/iconify';
 import { fileService, messagingService } from 'src/composables/context-provider';
@@ -36,7 +39,6 @@ export default function ChatMessageInput({
   disabled,
   selectedConversationId,
 }) {
-
   const { server: ddpclient } = useMeteorContext();
   const loading = useBoolean(false);
 
@@ -137,48 +139,40 @@ export default function ChatMessageInput({
   const handleSendMessage = useCallback(
     async (event) => {
       try {
-        if (event.key === 'Enter') {
-          if (message && message !== '\n') {
-            ddpclient.call('getChatGPTResponseStream', message, (error, result) => {
-              if (error) {
-                console.error('Error:', error);
-              } else {
-                console.log('收到');
-                const responseStream = result.content; // 获取响应流
-                responseStream.on('data', (chunk) => {
-                  // 处理每个数据块
-                  console.log('Chunk of data received:', chunk);
-                });
-
-                responseStream.on('end', () => {
-                  // 响应流结束
-                  console.log('Response stream ended.');
-                });
-              }
-            });
-            if (selectedConversationId) {
-              setType('text');
-              try {
-                await dispatch(sendMessage(selectedConversationId, messageData));
-                setMessage('');
-              } catch (e) {
-                enqueueSnackbar(e.message);
-              }
-            } else {
+        if (message && message !== '\n') {
+          if (selectedConversationId) {
+            setType('text');
+            try {
+              await dispatch(sendMessage(selectedConversationId, messageData));
+              dispatch(openai(selectedConversationId, message));
               setMessage('');
-              const conversationKey = await createConversation(conversationData);
-              router.push(`${paths.chat}?id=${conversationKey}`);
-              onAddRecipients([]);
+            } catch (e) {
+              enqueueSnackbar(e.message);
             }
           } else {
             setMessage('');
+            const conversationKey = await createConversation(conversationData);
+            router.push(`${paths.chat}?id=${conversationKey}`);
+            onAddRecipients([]);
           }
+        } else {
+          setMessage('');
         }
       } catch (error) {
         console.error(error);
       }
     },
-    [message, ddpclient, selectedConversationId, dispatch, messageData, enqueueSnackbar, createConversation, conversationData, router, onAddRecipients]
+    [
+      message,
+      selectedConversationId,
+      dispatch,
+      messageData,
+      enqueueSnackbar,
+      createConversation,
+      conversationData,
+      router,
+      onAddRecipients,
+    ]
   );
   const handlePaste = useCallback(
     (event) => {
@@ -288,26 +282,6 @@ export default function ChatMessageInput({
       loading.onFalse();
     }
   };
-  // useEffect(() => {
-  //   document.addEventListener('paste', handlePaste);
-  //   return () => {
-  //     document.removeEventListener('paste', handlePaste);
-  //   };
-  // }, [handlePaste]);
-
-  const triggerPasteEvent = () => {
-    try {
-      const pasteEvent = new Event('paste', {
-        bubbles: true,
-        cancelable: true,
-      });
-
-      // 手动触发 onPaste 事件
-      clipboardRef.current.dispatchEvent(pasteEvent);
-    } catch (error) {
-      console.error('Error triggering paste event:', error);
-    }
-  };
 
   return (
     <>
@@ -333,7 +307,48 @@ export default function ChatMessageInput({
             </Box>
           </Box>
         )}
-        <InputBase
+        <Stack spacing={2} flexGrow={1} sx={{ p: 2 }}>
+          <Editor
+            simple
+            value={message}
+            onChange={setMessage}
+            placeholder="输入消息"
+            sx={{
+              '& .ql-editor': {},
+              ...(true && {
+                height: 1,
+                '& .quill': {
+                  height: 1,
+                },
+                '& .ql-editor': {
+                  maxHeight: 'unset',
+                },
+              }),
+            }}
+          />
+
+          <Stack direction="row" alignItems="center">
+            <Stack direction="row" alignItems="center" flexGrow={1}>
+              <IconButton>
+                <Iconify icon="solar:gallery-add-bold" />
+              </IconButton>
+
+              <IconButton>
+                <Iconify icon="eva:attach-2-fill" />
+              </IconButton>
+            </Stack>
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSendMessage}
+              endIcon={<Iconify icon="iconamoon:send-fill" />}
+            >
+              发送
+            </Button>
+          </Stack>
+        </Stack>
+        {/* <InputBase
           type="search"
           className="message-input"
           inputProps={{ enterKeyHint: 'send' }}
@@ -376,7 +391,7 @@ export default function ChatMessageInput({
             flexShrink: 0,
             borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
           }}
-        />
+        /> */}
       </Box>
       <input
         onChange={uploadImage}

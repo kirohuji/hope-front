@@ -75,6 +75,7 @@ export const paths = {
     },
   },
   chat: '/chat',
+  openai: '/openai',
   training: {
     root: `/training`,
     dashboard: `${ROOTS.DASHBOARD}/training/dashboard`,
@@ -102,6 +103,7 @@ export const paths = {
   dashboard: {
     root: ROOTS.DASHBOARD,
     mail: `${ROOTS.DASHBOARD}/mail`,
+    openai: `${ROOTS.DASHBOARD}/openai`,
     chat: `${ROOTS.DASHBOARD}/chat`,
     blank: `${ROOTS.DASHBOARD}/blank`,
     kanban: `${ROOTS.DASHBOARD}/kanban`,

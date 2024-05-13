@@ -29,7 +29,7 @@ export default function useGetNavItem({ currentUserId, conversation, user }) {
 
   const displayName = group
     ? participantsInConversation.map((participant) => participant.realName).join(', ')
-    : participantsInConversation[0]?.displayName || participantsInConversation[0]?.username || conversation.label;
+    : conversation.label || participantsInConversation[0]?.displayName || participantsInConversation[0]?.username;
   const realName = group
     ? // ? participantsInConversation.map((participant) => participant.realName).join(', ')
       '多人聊天'

@@ -90,6 +90,7 @@ const FileManagerPage = lazy(() => import('src/pages/dashboard/file-manager'));
 // APP
 const ChatPage = lazy(() => import('src/pages/dashboard/chat'));
 const MailPage = lazy(() => import('src/pages/dashboard/mail'));
+const AiPage = lazy(() => import('src/pages/dashboard/openai'));
 const CalendarPage = lazy(() => import('src/pages/dashboard/calendar'));
 const KanbanPage = lazy(() => import('src/pages/dashboard/kanban'));
 // TEST RENDER PAGE BY ROLE
@@ -264,6 +265,7 @@ export const dashboardRoutes = [
       },
       { path: 'file-manager', element: <FileManagerPage /> },
       { path: 'mail', element: <MailPage /> },
+      { path: 'openai', element: <AiPage /> },
       { path: 'chat', element: <ChatPage /> },
       { path: 'calendar', element: <CalendarPage /> },
       { path: 'kanban', element: <KanbanPage /> },

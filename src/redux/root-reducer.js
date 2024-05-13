@@ -15,6 +15,7 @@ import roleReducer from './slices/role';
 import fileReducer from './slices/file';
 import broadcastReducer from './slices/broadcast';
 import bookReducer from './slices/book';
+import openaiReducer from './slices/openai';
 import notificationReducer from './slices/notification';
 // ----------------------------------------------------------------------
 
@@ -94,6 +95,7 @@ export const rootReducer = combineReducers({
   dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
   // book: persistReducer(bookPersistConfig, bookReducer),
   book: bookReducer,
+  openai: openaiReducer,
   role: persistReducer(rolePersistConfig, roleReducer),
   checkout: persistReducer(checkoutPersistConfig, checkoutReducer),
   scope: persistReducer(scopePersistConfig, scopeReducer),

@@ -1,7 +1,7 @@
-import { Service } from './base'
+import { Service } from './base';
 
 export default class RoleService extends Service {
-  addRolesToParent (target) {
+  addRolesToParent(target) {
     return this.api.request({
       url: `${this.model}/addRolesToParent`,
       method: 'POST',
@@ -9,7 +9,7 @@ export default class RoleService extends Service {
     });
   }
 
-  updateRolesToParent (target) {
+  updateRolesToParent(target) {
     return this.api.request({
       url: `${this.model}/updateRolesToParent`,
       method: 'POST',
@@ -17,7 +17,7 @@ export default class RoleService extends Service {
     });
   }
 
-  getRole (target) {
+  getRole(target) {
     return this.api.request({
       url: `${this.model}/get`,
       method: 'POST',
@@ -25,7 +25,7 @@ export default class RoleService extends Service {
     });
   }
 
-  getRoleWith (target) {
+  getRoleWith(target) {
     return this.api.request({
       url: `${this.model}/getWithUser`,
       method: 'POST',
@@ -33,7 +33,7 @@ export default class RoleService extends Service {
     });
   }
 
-  getUsersInRole (target) {
+  getUsersInRole(target) {
     return this.api.request({
       url: `${this.model}/getUsersInRole`,
       method: 'POST',
@@ -41,7 +41,7 @@ export default class RoleService extends Service {
     });
   }
 
-  getUsersInRoleOnly (target) {
+  getUsersInRoleOnly(target) {
     return this.api.request({
       url: `${this.model}/getUsersInRoleOnly`,
       method: 'POST',
@@ -49,7 +49,7 @@ export default class RoleService extends Service {
     });
   }
 
-  removeUsersFromRoles (target) {
+  removeUsersFromRoles(target) {
     return this.api.request({
       url: `${this.model}/removeUsersFromRoles`,
       method: 'POST',
@@ -57,7 +57,7 @@ export default class RoleService extends Service {
     });
   }
 
-  removeUsersFromRolesAndInheritedRole (target) {
+  removeUsersFromRolesAndInheritedRole(target) {
     return this.api.request({
       url: `${this.model}/removeUsersFromRolesAndInheritedRole`,
       method: 'POST',
@@ -65,7 +65,7 @@ export default class RoleService extends Service {
     });
   }
 
-  getUsersInNotRole (target) {
+  getUsersInNotRole(target) {
     return this.api.request({
       url: `${this.model}/getUsersInNotRole`,
       method: 'POST',
@@ -73,7 +73,7 @@ export default class RoleService extends Service {
     });
   }
 
-  getUsersInNotRoleOnly (target) {
+  getUsersInNotRoleOnly(target) {
     return this.api.request({
       url: `${this.model}/getUsersInNotRoleOnly`,
       method: 'POST',
@@ -81,7 +81,7 @@ export default class RoleService extends Service {
     });
   }
 
-  addUsersToRoles (target) {
+  addUsersToRoles(target) {
     return this.api.request({
       url: `${this.model}/addUsersToRoles`,
       method: 'POST',
@@ -89,15 +89,15 @@ export default class RoleService extends Service {
     });
   }
 
-  addUsersToRolesAndRoleParents (target) {
+  addUsersToRolesAndRoleParents(target) {
     return this.api.request({
       url: `${this.model}/addUsersToRolesAndRoleParents`,
       method: 'POST',
       data: target,
     });
   }
-  
-  addCurrentUserToRolesAndRoleParents (target) {
+
+  addCurrentUserToRolesAndRoleParents(target) {
     return this.api.request({
       url: `${this.model}/addCurrentUserToRolesAndRoleParents`,
       method: 'POST',
@@ -105,7 +105,7 @@ export default class RoleService extends Service {
     });
   }
 
-  paginationForRulesRoles (selector, options) {
+  paginationForRulesRoles(selector, options) {
     return this.api.request(
       {
         url: `${this.model}/rules_roles/pagination`,
@@ -121,7 +121,7 @@ export default class RoleService extends Service {
     );
   }
 
-  addRules (target) {
+  addRules(target) {
     return this.api.request({
       url: `${this.model}/addRules`,
       method: 'POST',
@@ -129,7 +129,7 @@ export default class RoleService extends Service {
     });
   }
 
-  removeRules (target) {
+  removeRules(target) {
     return this.api.request({
       url: `${this.model}/removeRules`,
       method: 'POST',
@@ -137,7 +137,7 @@ export default class RoleService extends Service {
     });
   }
 
-  getInheritedRoleNamesOnly (target) {
+  getInheritedRoleNamesOnly(target) {
     return this.api.request({
       url: `${this.model}/getInheritedRoleNamesOnly`,
       method: 'POST',
@@ -145,7 +145,7 @@ export default class RoleService extends Service {
     });
   }
 
-  getChildrenRoleNames (target) {
+  getChildrenRoleNames(target) {
     return this.api.request({
       url: `${this.model}/getChildrenRoleNames`,
       method: 'POST',
@@ -153,7 +153,7 @@ export default class RoleService extends Service {
     });
   }
 
-  getChildrenRoleNamesWithUser (target) {
+  getChildrenRoleNamesWithUser(target) {
     return this.api.request({
       url: `${this.model}/getChildrenRoleNamesWithUser`,
       method: 'POST',
@@ -161,7 +161,7 @@ export default class RoleService extends Service {
     });
   }
 
-  getInheritedRoleNames (target) {
+  getInheritedRoleNames(target) {
     return this.api.request({
       url: `${this.model}/getInheritedRoleNames`,
       method: 'POST',
@@ -169,7 +169,7 @@ export default class RoleService extends Service {
     });
   }
 
-  permissions (target) {
+  permissions(target) {
     return this.api.request({
       url: `${this.model}/permissions`,
       method: 'get',
@@ -177,15 +177,15 @@ export default class RoleService extends Service {
     });
   }
 
-  getRoleWithUser (target ) {
+  getRoleWithUser(target) {
     return this.api.request({
       url: `${this.model}/getRoleWithUser`,
       method: 'post',
       data: target,
     });
   }
-  
-  getMaxRole (target ) {
+
+  getMaxRole(target) {
     return this.api.request({
       url: `${this.model}/getMaxRole`,
       method: 'post',
@@ -193,22 +193,19 @@ export default class RoleService extends Service {
     });
   }
 
-  changeLeader (target ) {
+  changeLeader(target) {
     return this.api.request({
       url: `${this.model}/changeLeader`,
       method: 'post',
       data: target,
     });
   }
-  
 
-  getRolesTreeByCurrentUser (target ) {
+  getRolesTreeByCurrentUser(target) {
     return this.api.request({
       url: `${this.model}/getRolesTreeByCurrentUser`,
       method: 'post',
       data: target,
     });
   }
-  
-
 }

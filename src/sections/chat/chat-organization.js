@@ -10,9 +10,10 @@ import { useDispatch, useSelector } from 'src/redux/store';
 import ChatNavItem from 'src/sections/chat/chat-nav-item';
 import Scrollbar from 'src/components/scrollbar';
 
-import { getOrganizations } from 'src/redux/slices/chat';
+import { getOrganizations, getOrganizationsOnlyChildren } from 'src/redux/slices/chat';
 import _ from 'lodash';
 
+const ISCHILDRENONLY = true;
 export default function ChatOrganization({ handleSelectContact, checkeds = [], isMulti }) {
   const dispatch = useDispatch();
 
@@ -29,36 +30,49 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
   const onRefreshWithOrganization = useCallback(async () => {
     if (active?._id) {
       setLoading(true);
-      const organizationData = await dispatch(getOrganizations(active?._id));
+      const organizationData = await dispatch(
+        getOrganizationsOnlyChildren(active?._id, active?._id)
+      );
       setCurrentFirstOrganization(organizationData);
       setCurrentOrganization(organizationData);
       setLoading(false);
     }
   }, [active?._id, dispatch]);
 
-  const onChildren = (organization) => {
-    if (organization.children || organization.users) {
-      const level = {
-        name: organization.label,
-        to: organization._id,
-      };
-      levels.push(level);
-      setCurrentOrganization(
-        _.compact([
-          ...(organization.children || []),
-          ...(organization.users || []).map((item) => ({
-            name: item.username,
-            photoURL: item.photoURL,
-            _id: item._id,
-            email: item.email,
-            displayName: item.displayName,
-            realName: item.realName,
-          })),
-        ])
+  const onChildren = async (organization) => {
+    let selectedOrganization = null;
+    if (!ISCHILDRENONLY && (organization.children && organization.children.length > 0) || organization.users) {
+      selectedOrganization = organization;
+    } else if (active?._id) {
+      setLoading(true);
+      const organizationData = await dispatch(
+        getOrganizationsOnlyChildren(active?._id, organization._id)
       );
-      setLevels(levels);
-      console.log('currentOrganization', currentOrganization);
+      selectedOrganization = {
+        ...organization,
+        ...organizationData,
+      };
+      setLoading(false);
     }
+    const level = {
+      name: selectedOrganization.label,
+      to: selectedOrganization._id,
+    };
+    levels.push(level);
+    setCurrentOrganization(
+      _.compact([
+        ...(selectedOrganization.children || []),
+        ...(selectedOrganization.users || []).map((item) => ({
+          name: item.username,
+          photoURL: item.photoURL,
+          _id: item._id,
+          email: item.email,
+          displayName: item.displayName,
+          realName: item.realName,
+        })),
+      ])
+    );
+    setLevels(levels);
   };
   const renderOrganizationsMenuItem = (organization, id) => (
     <ChatNavItem
@@ -79,6 +93,7 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
     display: 'inline-flex',
   };
 
+  // 调用后端接口,需要进行重构
   const onGoTo = async (level) => {
     let index = 0;
     const length = _.findIndex(levels, ['to', level.to]);
@@ -92,22 +107,28 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
       index += 1;
       levels2.push(currentLevel);
     }
-    if (isChildren) {
-      await setCurrentOrganization([
-        ...currentOrganizations.children,
-        ...currentOrganizations.users.map((item) => ({
-          _id: item._id,
-          name: item.username,
-          photoURL: item.photoURL,
-          email: item.email,
-          displayName: item.displayName,
-          realName: item.realName,
-        })),
-      ]);
-    } else {
-      await setCurrentOrganization(currentOrganizations);
-    }
     setLevels(levels2);
+    // if (isChildren) {
+    //   if(currentOrganizations?.users){
+    //     await setCurrentOrganization([
+    //       ...currentOrganizations.children,
+    //       ...currentOrganizations.users.map((item) => ({
+    //         _id: item._id,
+    //         name: item.username,
+    //         photoURL: item.photoURL,
+    //         email: item.email,
+    //         displayName: item.displayName,
+    //         realName: item.realName,
+    //       })),
+    //     ]);
+    //   } else {
+    //     await setCurrentOrganization([
+    //       ...currentOrganizations.children
+    //     ]);
+    //   }
+    // } else {
+    //   await setCurrentOrganization(currentOrganizations);
+    // }
   };
 
   const renderOrganizations = (

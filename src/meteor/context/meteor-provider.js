@@ -107,14 +107,14 @@ const initialState = {
   isLoggingIn: false,
 };
 export const bindConnect = async (server, dispatch) => {
-  let reconnectInterval = null;
+  const reconnectInterval = null;
   server.on('connected', () => {
-    reconnectInterval = setInterval(() => {
-      server.call('checkConnect').catch(() => {
-        clearInterval(reconnectInterval);
-        alert('网络错误,请重新退出打开!');
-      });
-    }, CONNECTION_ISSUE_TIMEOUT);
+    // reconnectInterval = setInterval(() => {
+    //   server.call('checkConnect').catch(() => {
+    //     clearInterval(reconnectInterval);
+    //     alert('网络错误,请重新退出打开!');
+    //   });
+    // }, CONNECTION_ISSUE_TIMEOUT);
     dispatch({
       type: 'INITIAL',
       payload: {
@@ -125,7 +125,7 @@ export const bindConnect = async (server, dispatch) => {
     });
   });
   server.on('disconnected', () => {
-    clearInterval(reconnectInterval);
+    // clearInterval(reconnectInterval);
     dispatch({
       type: 'INITIAL',
       payload: {
@@ -160,7 +160,7 @@ export const bindConnect = async (server, dispatch) => {
     });
   });
   server.on('error', (m) => {
-    clearInterval(reconnectInterval);
+    // clearInterval(reconnectInterval);
     console.log('报错');
   });
   server.on('pong', (m) => {

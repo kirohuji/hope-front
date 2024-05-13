@@ -44,7 +44,7 @@ import { SettingsProvider, SettingsDrawer } from 'src/components/settings';
 import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 import { MeteorProvider } from 'src/meteor/context';
 
-const connectUrl = 'wss://www.lourd.top/websocket';
+const connectUrl = 'ws://localhost:3030/websocket';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/amplify';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/firebase';
