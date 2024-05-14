@@ -80,7 +80,7 @@ export function openai(selectedConversationId, message) {
           'Content-Type': 'application/json',
         },
       };
-      fetchEventSource('http://localhost:3030/openai', {
+      fetchEventSource(process.env.NODE_ENV === 'development' ? 'http://localhost:3030/openai/' : 'https://www.lourd.top/openai', {
         openWhenHidden: true,
         ...requestOptions,
         signal,
