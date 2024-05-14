@@ -37,7 +37,9 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
     currentUserId: user._id,
   });
   const { generate } = useSelector((state) => state.openai);
-  const isGenerate = message._id === generate.currentMessageId;
+  const isGenerate =
+    message._id === generate.currentMessageId ||
+    (generate.byId[conversationId] && generate.byId[conversationId][message._id]);
 
   const { username, photoURL, displayName, realName } = senderDetails;
 
@@ -202,7 +204,8 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
       direction="row"
       justifyContent={me ? 'flex-end' : 'unset'}
       sx={{ mb: 5 }}
-      alignItems="center"
+      alignItems="baseline"
+      position="relative"
     >
       {isLoading && <CircularProgress size={20} sx={{ mr: 0.5 }} />}
 
@@ -212,33 +215,38 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
         </IconButton>
       )}
 
-      {!me && <Avatar alt={username} src={photoURL} sx={{ width: 32, height: 32, mr: 2 }} />}
-
-      <Stack alignItems={me ? 'flex-end' : 'flex-start'}>
-        {!isLoading && renderInfo}
+      <Stack alignItems={me ? 'flex-end' : 'flex-start'} flexDirection="row">
+        {!me && <Avatar alt={username} src={photoURL} sx={{ width: 32, height: 32, mr: 2 }} />}
 
         <Stack
-          direction="row"
-          alignItems="center"
-          sx={{
-            position: 'relative',
-            ...(!isFailure
-              ? {
-                  '&:hover': {
+          alignItems={me ? 'flex-end' : 'flex-start'}
+          // sx={{ position: 'absolute', marginLeft: '42px' }}
+        >
+          {!isLoading && renderInfo}
+
+          <Stack
+            direction="row"
+            alignItems="center"
+            sx={{
+              position: 'relative',
+              ...(!isFailure
+                ? {
+                    '&:hover': {
+                      '& .message-actions': {
+                        opacity: 1,
+                      },
+                    },
+                  }
+                : {
                     '& .message-actions': {
                       opacity: 1,
                     },
-                  },
-                }
-              : {
-                  '& .message-actions': {
-                    opacity: 1,
-                  },
-                }),
-          }}
-        >
-          {renderBody}
-          {renderActions}
+                  }),
+            }}
+          >
+            {renderBody}
+            {renderActions}
+          </Stack>
         </Stack>
       </Stack>
     </Stack>

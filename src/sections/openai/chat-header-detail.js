@@ -1,7 +1,4 @@
 import PropTypes from 'prop-types';
-import { forwardRef, useState } from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { OpenVidu } from 'openvidu-browser';
 // @mui
 import Stack from '@mui/material/Stack';
 import Badge from '@mui/material/Badge';
@@ -9,8 +6,6 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
-import Dialog from '@mui/material/Dialog';
-import Slide from '@mui/material/Slide';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -18,12 +13,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { fToNow } from 'src/utils/format-time';
 // components
 import Iconify from 'src/components/iconify';
-import { fileService } from 'src/composables/context-provider';
-import UserVideoComponent from './user-video-component';
 
 // ----------------------------------------------------------------------
-
-const Transition = forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 export default function ChatHeaderDetail({ openMedia, mainStreamManager, participants }) {
   const dialog = useBoolean();
   const group = participants.length > 2;
@@ -95,25 +86,6 @@ export default function ChatHeaderDetail({ openMedia, mainStreamManager, partici
           </IconButton>
         </div>
       )}
-      <Dialog
-        fullScreen
-        open={dialog.value}
-        onClose={dialog.onFalse}
-        TransitionComponent={Transition}
-      >
-        {mainStreamManager && <UserVideoComponent streamManager={mainStreamManager} />}
-        <IconButton onClick={() => {}}>
-          <Iconify icon="solar:videocamera-record-bold" />
-        </IconButton>
-
-        <IconButton
-          onClick={() => {
-            dialog.onFalse();
-          }}
-        >
-          <Iconify icon="solar:phone-bold" />
-        </IconButton>
-      </Dialog>
     </>
   );
 }

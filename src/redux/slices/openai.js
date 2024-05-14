@@ -44,7 +44,7 @@ const slice = createSlice({
         state.generate.byId[conversationId] = {};
       }
       if (isSet) {
-        state.generate.byId[conversationId] = {};
+        // state.generate.byId[conversationId] = {};
         state.generate.currentMessageId = messageId;
         state.generate.byId[conversationId][state.generate.currentMessageId] = '';
       } else {
@@ -60,7 +60,12 @@ export default slice.reducer;
 // 合并会话
 export function openai(selectedConversationId, message) {
   return async (dispatch) => {
+    console.log('启动')
     dispatch(slice.actions.startLoading());
+
+    const controller = new AbortController();
+    const { signal } = controller;
+
     try {
       const text = '';
       const requestData = {
@@ -76,7 +81,9 @@ export function openai(selectedConversationId, message) {
         },
       };
       fetchEventSource('http://localhost:3030/openai', {
+        openWhenHidden: true,
         ...requestOptions,
+        signal,
         // signal: ctrl.signal,
         async onmessage(msg) {
           if (msg.data !== '[DONE]') {
@@ -103,9 +110,17 @@ export function openai(selectedConversationId, message) {
         onclose() {
           console.log(text);
         },
-      }).catch((e) => {
-        console.log(e);
-      });
+        onerror(err) {
+          console.error('EventSource failed:', err);
+          controller.abort(); // Abort the request to prevent retries
+          dispatch(
+            slice.actions.hasError({
+              code: err.code,
+              message: err.message,
+            })
+          );
+        },
+      })
     } catch (error) {
       dispatch(
         slice.actions.hasError({
