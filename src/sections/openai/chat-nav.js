@@ -352,11 +352,12 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
   );
 
   const createConversation = useCallback(async () => {
-    const conversationKey = await messagingService.room({
+    const conversation = await messagingService.room({
       participants: ['a5u9kNTzKAdghpr55'],
+      isSession: true,
     });
-    router.push(`${paths.chat}?id=${conversationKey}`);
-    return conversationKey;
+    router.push(`${paths.openai}?id=${conversation._id}`);
+    return conversation._id;
   }, [router]);
   return (
     <>
