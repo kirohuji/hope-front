@@ -64,11 +64,6 @@ const TABS = [
   },
 ];
 
-let reactiveCollection = null;
-let getMessage = null;
-// const conversations2Publish = null;
-// const conversations2Collection = null;
-
 export default function ChatView() {
   const { server: ddpclient } = useMeteorContext();
   const { enqueueSnackbar } = useSnackbar();
@@ -101,59 +96,12 @@ export default function ChatView() {
 
   const [conversationsLoading, setConversationsLoading] = useState(true);
 
-  // 会话获取详情
   const getDetails = useCallback(async () => {
     setConversationsLoading(true);
-    // await dispatch(getConversations());
-    // 根据会话列表获取当前会话的数据
     await dispatch(getConversationByConversationKey(selectedConversationId));
-    // 获取聊天数据,默认从0开始
     await dispatch(getMessages(selectedConversationId, 0));
     setConversationsLoading(false);
   }, [dispatch, selectedConversationId]);
-
-  useEffect(() => {
-    // 有会话 Id
-    if (selectedConversationId) {
-      getDetails();
-      if (ddpclient?.connected && user) {
-        getMessage = ddpclient.subscribe(
-          'socialize.messagesFor2',
-          selectedConversationId,
-          user._id,
-          new Date()
-        );
-        getMessage.ready();
-        reactiveCollection = ddpclient.collection('socialize:messages');
-        reactiveCollection.onChange(
-          (target) => {
-            if (target.added) {
-              console.log(target)
-              dispatch(newMessageGet(selectedConversationId));
-            }
-          });
-      }
-    } else {
-      // 重置当前的会话 Id
-      dispatch(resetActiveConversation());
-    }
-
-    return () => {
-      if (reactiveCollection && reactiveCollection.stop) {
-        reactiveCollection.stop();
-        getMessage.stop();
-      }
-    };
-  }, [dispatch, active?._id, getDetails, selectedConversationId, user, ddpclient]);
-
-  // 刷新 Organization
-  const onRefreshWithOrganization = useCallback(async () => {
-    if (active?._id) {
-      setLoading(true);
-      // onRefreshWithOrganization();
-      setLoading(false);
-    }
-  }, [active?._id, setLoading]);
 
   // 刷新 Conversations
   const onRefreshWithConversations = useCallback(async () => {
@@ -163,6 +111,7 @@ export default function ChatView() {
   }, [dispatch]);
 
   useEffect(() => {
+    let sub = null;
     if (!selectedConversationId) {
       switch (currentTab) {
         case 'conversations':
@@ -171,16 +120,41 @@ export default function ChatView() {
         default:
           break;
       }
+      dispatch(resetActiveConversation());
+    } else {
+      if (user._id) {
+        sub = ddpclient.subscribe(
+          'socialize.messagesFor2',
+          selectedConversationId,
+          user._id,
+          new Date()
+        );
+        sub.ready().then(() => {
+          ddpclient.onChangeFuncs = ddpclient.onChangeFuncs.filter(
+            (item) => item.collection !== 'socialize:messages'
+          );
+          const collection = ddpclient.collection('socialize:messages');
+          collection.onChange((target) => {
+            if (target.added) {
+              console.log('收到了消息,开始更新', selectedConversationId);
+              dispatch(newMessageGet(selectedConversationId));
+            }
+          });
+        });
+      }
+      getDetails();
     }
-    return () => {};
+    return () => {
+      sub.stop();
+    };
   }, [
-    active?._id,
     currentTab,
+    ddpclient,
     dispatch,
+    getDetails,
     onRefreshWithConversations,
-    onRefreshWithOrganization,
     selectedConversationId,
-    user,
+    user._id,
   ]);
 
   let participants = [];
@@ -218,7 +192,6 @@ export default function ChatView() {
 
   const onRefresh = async (currentMessageLimit) => {
     setMessageLimit(currentMessageLimit + 20);
-    console.log('messageLimit', messageLimit);
     await dispatch(getMessages(selectedConversationId, messageLimit));
   };
 
@@ -268,7 +241,7 @@ export default function ChatView() {
             mb: { xs: 3, md: 5 },
           }}
         >
-          Chatgpt
+          Chatgpt(AI 聊天)
         </Typography>
       )}
       {isDesktop && (

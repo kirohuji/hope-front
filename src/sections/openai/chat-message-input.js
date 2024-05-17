@@ -414,12 +414,12 @@ export default function ChatMessageInput({
         contentEditable="true"
         onPaste={handlePaste}
       />
-      <ChatClipboardDialog
+      {/* <ChatClipboardDialog
         open={clipboardOpen.value}
         onClose={clipboardOpen.onFalse}
         data={clipboard}
         onUpload={uploadFile}
-      />
+      /> */}
     </>
   );
 }

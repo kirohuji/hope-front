@@ -1,104 +1,11 @@
 import PropTypes from 'prop-types';
-import { useContext, useState, useMemo, useEffect, useReducer, useCallback } from 'react';
+import { useMemo, useEffect, useReducer, useCallback } from 'react';
 import SimpleDDP from 'simpleddp';
 import { simpleDDPLogin } from 'simpleddp-plugin-login';
 import _ from 'lodash';
 import { useDispatch } from 'src/redux/store';
 import { getConversations } from 'src/redux/slices/chat';
-import {
-  // newNotificationGet,
-  // newNotificationRemove,
-  getOverview,
-} from 'src/redux/slices/notification';
 import { MeteorContext } from './meteor-context';
-
-const CONNECTION_ISSUE_TIMEOUT = 25000;
-const subMap = {};
-
-const getSub = (server, subName, args) => {
-  let sub = subMap[subName];
-  if (sub) {
-    return sub;
-  }
-
-  sub = server.subscribe(subName, ...args);
-  subMap[subName] = sub;
-  return sub;
-};
-
-export const useSubscription = (subName, args = []) => {
-  const [ready, setReady] = useState(false);
-  const { server } = useContext(MeteorContext);
-
-  useEffect(() => {
-    if (!server) {
-      return () => {};
-    }
-
-    const sub = getSub(server, subName, args);
-
-    const fn = async () => {
-      const isOn = await sub.isOn();
-      if (!isOn) {
-        await sub.restart(args);
-      }
-      await sub.ready();
-      setReady(true);
-    };
-
-    fn();
-    return () => sub.stop();
-  }, [args, server, subName]);
-
-  return ready;
-};
-
-export const useCollection = (name, filter = noFilter) => {
-  const [data, setData] = useState([]);
-  const { server } = useContext(MeteorContext);
-
-  useEffect(() => {
-    if (!server) {
-      return () => {};
-    }
-
-    const reactiveCursor = server.collection(name).filter(filter).reactive();
-    reactiveCursor.onChange((newData) => setData(_.cloneDeep(newData)));
-    setData(_.cloneDeep(reactiveCursor.data()));
-    return () => reactiveCursor.stop();
-  }, [server, name, filter]);
-
-  return data;
-};
-
-export const useCollectionOne = (name, filter = noFilter) => {
-  const [data, setData] = useState(null);
-  const { server } = useContext(MeteorContext);
-
-  useEffect(() => {
-    if (!server) {
-      return () => {};
-    }
-
-    const reactiveList = server.collection(name).filter(filter).reactive();
-    const reactiveCursor = reactiveList.one();
-    reactiveCursor.onChange((newData) => {
-      if (reactiveList.count().result > 0) {
-        setData(_.cloneDeep(newData));
-      }
-    });
-
-    if (reactiveList.count().result > 0) {
-      setData(_.cloneDeep(reactiveCursor.data()));
-    }
-
-    return () => reactiveCursor.stop();
-  }, [server, name, filter]);
-
-  return data;
-};
-
-const noFilter = () => true;
 
 const initialState = {
   server: null,
@@ -107,14 +14,7 @@ const initialState = {
   isLoggingIn: false,
 };
 export const bindConnect = async (server, dispatch) => {
-  const reconnectInterval = null;
   server.on('connected', () => {
-    // reconnectInterval = setInterval(() => {
-    //   server.call('checkConnect').catch(() => {
-    //     clearInterval(reconnectInterval);
-    //     alert('网络错误,请重新退出打开!');
-    //   });
-    // }, CONNECTION_ISSUE_TIMEOUT);
     dispatch({
       type: 'INITIAL',
       payload: {
@@ -125,7 +25,6 @@ export const bindConnect = async (server, dispatch) => {
     });
   });
   server.on('disconnected', () => {
-    // clearInterval(reconnectInterval);
     dispatch({
       type: 'INITIAL',
       payload: {
@@ -160,14 +59,7 @@ export const bindConnect = async (server, dispatch) => {
     });
   });
   server.on('error', (m) => {
-    // clearInterval(reconnectInterval);
-    console.log('报错');
-  });
-  server.on('pong', (m) => {
-    console.log('pong');
-  });
-  server.on('ping', (m) => {
-    console.log('ping');
+    console.log('报错',m);
   });
   await server.connect();
 };
@@ -186,10 +78,7 @@ const reducer = (state, action) => {
 
 let conversationsPublish = null;
 let conversationsCollection = null;
-let notificationsPublish = null;
-let notificationsCollection = null;
 let messagesPublish = null;
-let messagesCollection = null;
 export function MeteorProvider({ endpoint, children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const reducerDispatch = useDispatch();
@@ -215,46 +104,46 @@ export function MeteorProvider({ endpoint, children }) {
 
   const subNotifications = useCallback(async () => {
     const { server } = state;
-    notificationsPublish = await server.subscribe('userUnreadNotifications');
-    notificationsPublish.ready();
-    notificationsCollection = server.collection('notifications');
-    reducerDispatch(getOverview());
-    notificationsCollection.onChange((target) => {
-      console.log('target.added', target.added);
-      reducerDispatch(getOverview());
-      // if (target.added) {
-      //   // reducerDispatch(
-      //   //   newNotificationGet({
-      //   //     ...target.added,
-      //   //     _id: target.added.id,
-      //   //     createdAt: new Date(target.added.createdAt).toISOString(),
-      //   //     isUnRead: true,
-      //   //   })
-      //   // );
-      //   reducerDispatch(getOverview());
-      // } else if (target.removed) {
-      //   reducerDispatch(getOverview());
-      //   // reducerDispatch(
-      //   //   newNotificationRemove({
-      //   //     _id: target.removed.id,
-      //   //   })
-      //   // );
-      // } else if (target.changed) {
-      //   reducerDispatch(getOverview());
-      // }
-    });
+    // notificationsPublish = await server.subscribe('userUnreadNotifications');
+    // notificationsPublish.ready();
+    // notificationsCollection = server.collection('notifications');
+    // reducerDispatch(getOverview());
+    // notificationsCollection.onChange((target) => {
+    //   console.log('target.added', target.added);
+    //   reducerDispatch(getOverview());
+    //   // if (target.added) {
+    //   //   // reducerDispatch(
+    //   //   //   newNotificationGet({
+    //   //   //     ...target.added,
+    //   //   //     _id: target.added.id,
+    //   //   //     createdAt: new Date(target.added.createdAt).toISOString(),
+    //   //   //     isUnRead: true,
+    //   //   //   })
+    //   //   // );
+    //   //   reducerDispatch(getOverview());
+    //   // } else if (target.removed) {
+    //   //   reducerDispatch(getOverview());
+    //   //   // reducerDispatch(
+    //   //   //   newNotificationRemove({
+    //   //   //     _id: target.removed.id,
+    //   //   //   })
+    //   //   // );
+    //   // } else if (target.changed) {
+    //   //   reducerDispatch(getOverview());
+    //   // }
+    // });
     messagesPublish = await server.subscribe('socialize.unreadConversations');
     messagesPublish.ready();
-    messagesCollection = server.collection('socialize:messages');
-    messagesCollection.onChange((target) => {
-      if (target.added) {
-        console.log('有未读消息')
-        console.log('messages', target.added);
-      }
-    });
+    // messagesCollection = server.collection('socialize:messages');
+    // messagesCollection.onChange((target) => {
+    //   if (target.added) {
+    //     console.log('有未读消息')
+    //     console.log('messages', target.added);
+    //   }
+    // });
     // messagesPublish = await server.subscribe('unreadConversations');
     // messagesPublish.ready();
-  }, [reducerDispatch, state]);
+  }, [state]);
   const useLogin = useCallback(
     async (opt) => {
       const { server } = state;
