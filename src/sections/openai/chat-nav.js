@@ -61,71 +61,6 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
 
   const [currentTab, setCurrentTab] = useState('conversations');
 
-  const { organizations } = useSelector((state) => state.chat);
-
-  const [currentOrganization, setCurrentOrganization] = useState([]);
-
-  const [levels, setLevels] = useState([]);
-
-  const handleChangeTab = useCallback((event, newValue) => {
-    setCurrentTab(newValue);
-  }, []);
-
-  const onChildren = (organization) => {
-    if (organization.children) {
-      const level = {
-        name: organization.label,
-        to: organization._id,
-      };
-      levels.push(level);
-      setCurrentOrganization([
-        ...organization.children,
-        ...organization.users.map((item) => ({
-          name: item.account.username,
-          photoURL: item.profile.photoURL,
-          _id: item.profile._id,
-        })),
-      ]);
-      setLevels(levels);
-    }
-  };
-  const onGoTo = async (level) => {
-    let index = 0;
-    const length = _.findIndex(levels, ['to', level.to]);
-    let isChildren = false;
-    let currentOrganizations = organizations;
-    const levels2 = [];
-    while (index < length) {
-      isChildren = true;
-      const currentLevel = levels[index];
-      currentOrganizations = _.find(currentOrganizations, ['_id', currentLevel.to]);
-      index += 1;
-      levels2.push(currentLevel);
-    }
-    if (isChildren) {
-      await setCurrentOrganization([
-        ...currentOrganizations.children,
-        ...currentOrganizations.users.map((item) => ({
-          _id: item.account._id,
-          name: item.account.username,
-          photoURL: item.profile.photoURL,
-        })),
-      ]);
-    } else {
-      await setCurrentOrganization(currentOrganizations);
-    }
-    setLevels(levels2);
-  };
-
-  const renderTabs = (
-    <Tabs value={currentTab} onChange={handleChangeTab}>
-      {TABS.map((tab) => (
-        <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
-      ))}
-      )
-    </Tabs>
-  );
-
   const {
     collapseDesktop,
     onCloseDesktop,
@@ -194,92 +129,23 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
     (result) => {
       handleClickAwaySearch();
 
-      router.push(`${paths.chat}?id=${result.id}`);
+      router.push(`${paths.dashboard.openai}?id=${result.id}`);
     },
     [handleClickAwaySearch, router]
   );
 
-  const renderToggleBtn = (
-    <IconButton
-      onClick={onOpenMobile}
-      sx={{
-        left: 0,
-        top: 84,
-        zIndex: 9,
-        width: 32,
-        height: 32,
-        position: 'absolute',
-        borderRadius: `0 12px 12px 0`,
-        bgcolor: theme.palette.primary.main,
-        boxShadow: theme.customShadows.primary,
-        color: theme.palette.primary.contrastText,
-        '&:hover': {
-          bgcolor: theme.palette.primary.darker,
-        },
-      }}
-    >
-      <Iconify width={16} icon="solar:users-group-rounded-bold" />
-    </IconButton>
-  );
 
-  const renderSkeleton = (
-    <>
-      {[...Array(12)].map((chatNavItem, index) => (
-        <ChatNavItemSkeleton key={index} />
-      ))}
-    </>
-  );
-  const styles = {
-    typography: 'body2',
-    alignItems: 'center',
-    color: 'text.primary',
-    display: 'inline-flex',
-  };
-  const renderOrganizationsMenuItem = (organization, id) => (
-    <ChatNavItem
-      key={id}
-      collapse={collapseDesktop}
-      onChildren={onChildren}
-      conversation={organization}
-      selected={organization._id === selectedConversationId}
-      onCloseMobile={onCloseMobile}
-    />
-  );
-  const renderOrganizations = (
-    <Scrollbar sx={{ height: 320, ml: 1, mr: 1 }}>
-      {levels && levels.length > 0 && (
-        <Stack direction="row" alignItems="center" justifyContent="flex-start" sx={{ m: 1 }}>
-          {levels.map((level, index) => (
-            <Box key={index} sx={{ display: 'flex' }}>
-              <Link onClick={() => onGoTo(level)} sx={styles}>
-                {`${level.name}`}{' '}
-              </Link>
-              <div style={{ margin: '0 4px' }}> /</div>
-            </Box>
-          ))}
-        </Stack>
-      )}
-      {currentOrganization && currentOrganization.length > 0
-        ? currentOrganization.map((item, i) => renderOrganizationsMenuItem(item, i))
-        : organizations.map((item, i) => renderOrganizationsMenuItem(item, i))}
-    </Scrollbar>
-  );
   const renderList = (
     <>
-      {/* <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ pl: 2.5, pr: 1 }}
-      >
-        {renderTabs}
-      </Stack> */}
       <Divider />
       {currentTab === 'conversations' &&
         conversations.allIds.map((conversationId) => (
           <ChatNavItem
             key={conversationId}
-            deleteConversation={() => dispatch(deleteConversation(conversationId))}
+            deleteConversation={async (callback) => {
+              await dispatch(deleteConversation(conversationId))
+              callback();
+            }}
             collapse={collapseDesktop}
             conversation={conversations.byId[conversationId]}
             selected={conversationId === selectedConversationId}
@@ -356,7 +222,7 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
       participants: ['a5u9kNTzKAdghpr55'],
       isSession: true,
     });
-    router.push(`${paths.openai}?id=${conversation._id}`);
+    router.push(`${paths.dashboard.openai}?id=${conversation._id}`);
     return conversation._id;
   }, [router]);
   return (

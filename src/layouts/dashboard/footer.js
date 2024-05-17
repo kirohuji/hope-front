@@ -85,15 +85,15 @@ export default function DashboardFooter() {
             {...nav}
             key={nav.to}
             component={Link}
-            icon={
-              <StyledBadge
-                color="error"
-                overlap="circular"
-                badgeContent={chat.conversations.unreadCount}
-              >
-                {nav.icon}
-              </StyledBadge>
-            }
+            // icon={
+            //   <StyledBadge
+            //     color="error"
+            //     overlap="circular"
+            //     badgeContent={chat.conversations.unreadCount}
+            //   >
+            //     {nav.icon}
+            //   </StyledBadge>
+            // }
             sx={{ pt: 0, opacity: 1 }}
           />
         );

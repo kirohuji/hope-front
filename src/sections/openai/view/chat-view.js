@@ -136,7 +136,6 @@ export default function ChatView() {
           const collection = ddpclient.collection('socialize:messages');
           collection.onChange((target) => {
             if (target.added) {
-              console.log('收到了消息,开始更新', selectedConversationId);
               dispatch(newMessageGet(selectedConversationId));
             }
           });
@@ -145,7 +144,9 @@ export default function ChatView() {
       getDetails();
     }
     return () => {
-      sub.stop();
+      if(sub){
+        sub.stop();
+      }
     };
   }, [
     currentTab,
