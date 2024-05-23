@@ -311,11 +311,11 @@ export function useNavData() {
           // },
 
           // CHAT
-          // {
-          //   title: t('chat'),
-          //   path: paths.dashboard.chat,
-          //   icon: ICONS.chat,
-          // },
+          {
+            title: t('chat'),
+            path: paths.dashboard.chat,
+            icon: ICONS.chat,
+          },
 
           // CALENDAR
           {

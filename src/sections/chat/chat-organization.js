@@ -27,8 +27,9 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
 
   const [currentFirstOrganization, setCurrentFirstOrganization] = useState([]);
 
+  const [isFirst, setIsFirst] = useState(true);
   const onRefreshWithOrganization = useCallback(async () => {
-    if (active?._id) {
+    if (active?._id && isFirst) {
       setLoading(true);
       const organizationData = await dispatch(
         getOrganizationsOnlyChildren(active?._id, active?._id)
@@ -36,8 +37,9 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
       setCurrentFirstOrganization(organizationData);
       setCurrentOrganization(organizationData);
       setLoading(false);
+      setIsFirst(false)
     }
-  }, [active?._id, dispatch]);
+  }, [active?._id, dispatch,isFirst]);
 
   const onChildren = async (organization) => {
     let selectedOrganization = null;
@@ -100,35 +102,46 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
     let isChildren = false;
     let currentOrganizations = currentFirstOrganization;
     const levels2 = [];
-    while (index < length) {
+    while (index <= length) {
       isChildren = true;
       const currentLevel = levels[index];
-      currentOrganizations = _.find(currentOrganizations, ['_id', currentLevel.to]);
       index += 1;
+      currentOrganizations = _.find(currentOrganizations, ['_id', currentLevel.to]);
       levels2.push(currentLevel);
     }
     setLevels(levels2);
-    // if (isChildren) {
-    //   if(currentOrganizations?.users){
-    //     await setCurrentOrganization([
-    //       ...currentOrganizations.children,
-    //       ...currentOrganizations.users.map((item) => ({
-    //         _id: item._id,
-    //         name: item.username,
-    //         photoURL: item.photoURL,
-    //         email: item.email,
-    //         displayName: item.displayName,
-    //         realName: item.realName,
-    //       })),
-    //     ]);
-    //   } else {
-    //     await setCurrentOrganization([
-    //       ...currentOrganizations.children
-    //     ]);
-    //   }
-    // } else {
-    //   await setCurrentOrganization(currentOrganizations);
-    // }
+    if (isChildren) {
+      let selectedOrganization = null;
+      const organizationData = await dispatch(
+        getOrganizationsOnlyChildren(active?._id, level.to)
+      );
+      selectedOrganization = {
+        ...currentOrganizations,
+        ...organizationData,
+      };
+      console.log(active._id)
+      if(level.to === active._id){
+        setCurrentOrganization(
+          _.compact(organizationData)
+        );
+      } else {
+        setCurrentOrganization(
+          _.compact([
+            ...(selectedOrganization.children || []),
+            ...(selectedOrganization.users || []).map((item) => ({
+              name: item.username,
+              photoURL: item.photoURL,
+              _id: item._id,
+              email: item.email,
+              displayName: item.displayName,
+              realName: item.realName,
+            })),
+          ])
+        );
+      }
+    } else {
+      await setCurrentOrganization(currentOrganizations);
+    }
   };
 
   const renderOrganizations = (
@@ -150,10 +163,16 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
   );
 
   useEffect(() => {
+    if(levels.length ===0){
+      levels.push({
+        name: '希望之家',
+        to: active?._id,
+      })
+    }
     if (loading) {
       onRefreshWithOrganization();
     }
-  }, [loading, onRefreshWithOrganization]);
+  }, [active?._id, levels, loading, onRefreshWithOrganization]);
 
   return renderOrganizations;
 }

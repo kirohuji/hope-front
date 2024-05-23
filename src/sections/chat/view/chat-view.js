@@ -138,9 +138,40 @@ export default function ChatView() {
     setConversationsLoading(false);
   }, [dispatch, selectedConversationId]);
 
+  // 刷新 Organization
+  const onRefreshWithOrganization = useCallback(async () => {
+    if (active?._id) {
+      setLoading(true);
+      // onRefreshWithOrganization();
+      setLoading(false);
+    }
+  }, [active?._id, setLoading]);
+
+  // 刷新 Conversations
+  const onRefreshWithConversations = useCallback(async () => {
+    setLoading(true);
+    await dispatch(getConversations());
+    setLoading(false);
+  }, [dispatch]);
+
   useEffect(() => {
-    // 有会话 Id
-    if (selectedConversationId) {
+    if (!selectedConversationId) {
+      dispatch(resetActiveConversation());
+      switch (currentTab) {
+        case 'organizations':
+          onRefreshWithOrganization();
+          break;
+        case 'conversations':
+          onRefreshWithConversations();
+          break;
+        case 'contacts':
+          dispatch(getContacts());
+          break;
+        default:
+          break;
+      }
+    } else {
+      console.log('获取数据')
       getDetails();
       if (ddpclient?.connected && user) {
         getMessage = ddpclient.subscribe(
@@ -163,9 +194,6 @@ export default function ChatView() {
           }
         );
       }
-    } else {
-      // 重置当前的会话 Id
-      dispatch(resetActiveConversation());
     }
 
     return () => {
@@ -174,50 +202,7 @@ export default function ChatView() {
         getMessage.stop();
       }
     };
-  }, [dispatch, active?._id, getDetails, selectedConversationId, user, ddpclient]);
-
-  // 刷新 Organization
-  const onRefreshWithOrganization = useCallback(async () => {
-    if (active?._id) {
-      setLoading(true);
-      // onRefreshWithOrganization();
-      setLoading(false);
-    }
-  }, [active?._id, setLoading]);
-
-  // 刷新 Conversations
-  const onRefreshWithConversations = useCallback(async () => {
-    setLoading(true);
-    await dispatch(getConversations());
-    setLoading(false);
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (!selectedConversationId) {
-      switch (currentTab) {
-        case 'organizations':
-          onRefreshWithOrganization();
-          break;
-        case 'conversations':
-          onRefreshWithConversations();
-          break;
-        case 'contacts':
-          dispatch(getContacts());
-          break;
-        default:
-          break;
-      }
-    }
-    return () => {};
-  }, [
-    active?._id,
-    currentTab,
-    dispatch,
-    onRefreshWithConversations,
-    onRefreshWithOrganization,
-    selectedConversationId,
-    user,
-  ]);
+  }, [active._id, currentTab, ddpclient, dispatch, getDetails, onRefreshWithConversations, onRefreshWithOrganization, selectedConversationId, user]);
 
   let participants = [];
 
@@ -323,7 +308,7 @@ export default function ChatView() {
           聊天
         </Typography>
       )}
-      {isDesktop &&
+      {(isDesktop || selectedConversationId) && 
         // (conversationsLoading ? (
         //   <Box
         //     sx={{
@@ -346,7 +331,7 @@ export default function ChatView() {
             className="bottom-chat"
             sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
           >
-            {renderNav}
+            {isDesktop && renderNav}
 
             <Stack
               sx={{

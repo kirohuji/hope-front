@@ -80,9 +80,9 @@ export default function ChatNavItem({
             const newConversation = await messagingService.room({
               participants: [user?._id, conversation._id],
             });
-            router.push(`${paths.chat}?id=${newConversation._id}`);
+            router.push(`${paths.dashboard.chat}?id=${newConversation._id}`);
           } else {
-            router.push(`${paths.chat}?id=${conversation._id}`);
+            router.push(`${paths.dashboard.chat}?id=${conversation._id}`);
           }
         }
       } catch (error) {

@@ -141,6 +141,16 @@ export default function ChatNavItem({
           <Iconify icon="solar:trash-bin-trash-bold" />
           删除
         </MenuItem>
+        <MenuItem
+          onClick={() => {
+            popover.onClose();
+            confirm.onTrue();
+          }}
+          sx={{ color: 'error.main' }}
+        >
+          <Iconify icon="solar:trash-bin-trash-bold" />
+          修改名称
+        </MenuItem>
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
