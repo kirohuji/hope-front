@@ -1,6 +1,7 @@
 {
   "app": "应用",
   "job": "工作",
+  "openai": "chatgpt",
   "version": "版本管理",
   "scope": "作用域",
   "organization": "组织架构",

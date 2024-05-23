@@ -74,7 +74,7 @@ const StyledMarkdown = styled('div')(({ theme }) => {
 
     // Code Block
     '& pre, & pre > code': {
-      fontSize: 16,
+      fontSize: 14,
       overflowX: 'auto',
       whiteSpace: 'pre',
       padding: theme.spacing(2),
@@ -84,6 +84,7 @@ const StyledMarkdown = styled('div')(({ theme }) => {
     },
     '& code': {
       fontSize: 14,
+      lineHeight: 2.0,
       borderRadius: 4,
       whiteSpace: 'pre',
       padding: theme.spacing(0.2, 0.5),

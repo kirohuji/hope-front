@@ -1,6 +1,7 @@
 {
   "app": "app",
   "job": "job",
+  "openai": "chatgpt",
   "scope": "scope",
   "organization": "organization",
   "permission": "permission",

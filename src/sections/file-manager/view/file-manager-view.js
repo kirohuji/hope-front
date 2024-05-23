@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 // @mui
-import Box from '@mui/material/Box';
+// import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -50,7 +50,7 @@ export default function FileManagerView() {
 
   const dispatch = useDispatch();
 
-  const { active } = useSelector((state) => state.scope);
+  // const { active } = useSelector((state) => state.scope);
 
   const { data, overview } = useSelector((state) => state.file);
 
@@ -89,10 +89,10 @@ export default function FileManagerView() {
     dateError,
   });
 
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
+  // const dataInPage = dataFiltered.slice(
+  //   table.page * table.rowsPerPage,
+  //   table.page * table.rowsPerPage + table.rowsPerPage
+  // );
 
   const canReset =
     !!filters.name || !!filters.type.length || (!!filters.startDate && !!filters.endDate);

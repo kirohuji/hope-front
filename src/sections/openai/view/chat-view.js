@@ -1,14 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 // @mui
 import Card from '@mui/material/Card';
-import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Divider from '@mui/material/Divider';
-import Box from '@mui/material/Box';
 // routes
 import { useSearchParams } from 'src/routes/hook';
 // hooks
@@ -20,23 +18,19 @@ import { useSettingsContext } from 'src/components/settings';
 //
 import { useDispatch, useSelector } from 'src/redux/store';
 import {
-  getConversations,
+  getSessions,
   resetActiveConversation,
   getMessages,
   getConversationByConversationKey,
-  getContacts,
   deleteConversation,
   newMessageGet,
 } from 'src/redux/slices/chat';
 import _ from 'lodash';
 import { useSnackbar } from 'src/components/snackbar';
-import ChatOrganization from 'src/sections/chat/chat-organization';
 import ChatNav from '../chat-nav';
 import ChatRoom from '../chat-room';
 import ChatMessageList from '../chat-message-list';
 import ChatMessageInput from '../chat-message-input';
-import ChatHeaderDetail from '../chat-header-detail';
-import ChatHeaderCompose from '../chat-header-compose';
 import ChatNavItem from '../chat-nav-item';
 
 const conversationSelector = (state) => {
@@ -65,35 +59,10 @@ function calcHeight(isDesktop, selectedConversationId) {
 const TABS = [
   {
     value: 'conversations',
-    label: '聊天会话',
+    label: '历史记录',
     count: 0,
   },
-  // {
-  //   value: 'contacts',
-  //   label: ' 联系人',
-  //   count: 0,
-  // },
-  {
-    value: 'organizations',
-    label: '组织架构',
-    count: 0,
-  },
-  // {
-  //   value: 'organizations',
-  //   label: '组织架构',
-  //   count: 0,
-  // },
-  // {
-  //   value: 'contacts',
-  //   label: '我的小组',
-  //   count: 0,
-  // },
 ];
-
-let reactiveCollection = null;
-let getMessage = null;
-// const conversations2Publish = null;
-// const conversations2Collection = null;
 
 export default function ChatView() {
   const { server: ddpclient } = useMeteorContext();
@@ -127,121 +96,91 @@ export default function ChatView() {
 
   const [conversationsLoading, setConversationsLoading] = useState(true);
 
-  // 会话获取详情
   const getDetails = useCallback(async () => {
     setConversationsLoading(true);
-    // await dispatch(getConversations());
-    // 根据会话列表获取当前会话的数据
     await dispatch(getConversationByConversationKey(selectedConversationId));
-    // 获取聊天数据,默认从0开始
     await dispatch(getMessages(selectedConversationId, 0));
     setConversationsLoading(false);
   }, [dispatch, selectedConversationId]);
 
-  // 刷新 Organization
-  const onRefreshWithOrganization = useCallback(async () => {
-    if (active?._id) {
-      setLoading(true);
-      // onRefreshWithOrganization();
-      setLoading(false);
-    }
-  }, [active?._id, setLoading]);
-
   // 刷新 Conversations
   const onRefreshWithConversations = useCallback(async () => {
     setLoading(true);
-    await dispatch(getConversations());
+    await dispatch(getSessions());
     setLoading(false);
   }, [dispatch]);
 
   useEffect(() => {
+    let sub = null;
     if (!selectedConversationId) {
-      dispatch(resetActiveConversation());
       switch (currentTab) {
-        case 'organizations':
-          onRefreshWithOrganization();
-          break;
         case 'conversations':
           onRefreshWithConversations();
-          break;
-        case 'contacts':
-          dispatch(getContacts());
           break;
         default:
           break;
       }
+      dispatch(resetActiveConversation());
     } else {
-      console.log('获取数据')
-      getDetails();
-      if (ddpclient?.connected && user) {
-        getMessage = ddpclient.subscribe(
+      if (user._id) {
+        sub = ddpclient.subscribe(
           'socialize.messagesFor2',
           selectedConversationId,
           user._id,
           new Date()
         );
-        getMessage.ready();
-        reactiveCollection = ddpclient.collection('socialize:messages').reactive();
-        reactiveCollection.onChange(
-          (target) => {
+        sub.ready().then(() => {
+          ddpclient.onChangeFuncs = ddpclient.onChangeFuncs.filter(
+            (item) => item.collection !== 'socialize:messages'
+          );
+          const collection = ddpclient.collection('socialize:messages');
+          collection.onChange((target) => {
             if (target.added) {
-              console.log('更新了');
               dispatch(newMessageGet(selectedConversationId));
             }
-          },
-          {
-            added: true,
-          }
-        );
+          });
+        });
       }
+      getDetails();
     }
-
     return () => {
-      if (reactiveCollection) {
-        reactiveCollection.stop();
-        getMessage.stop();
+      if(sub){
+        sub.stop();
       }
     };
-  }, [active._id, currentTab, ddpclient, dispatch, getDetails, onRefreshWithConversations, onRefreshWithOrganization, selectedConversationId, user]);
+  }, [
+    currentTab,
+    ddpclient,
+    dispatch,
+    getDetails,
+    onRefreshWithConversations,
+    selectedConversationId,
+    user._id,
+  ]);
 
   let participants = [];
 
   if (conversation) {
-    participants =
-      conversation.type !== 'GROUP'
-        ? conversation.participants.filter((participant) => participant._id !== user?._id)
-        : conversation.participants;
+    if (conversation.participants) {
+      participants =
+        conversation.type !== 'GROUP'
+          ? conversation.participants.filter((participant) => participant._id !== user?._id)
+          : conversation.participants;
+    } else {
+      participants =
+        conversation.type !== 'GROUP'
+          ? conversation._participants.filter((participant) => participant._id !== user?._id)
+          : conversation._participants;
+    }
   } else {
     participants = [];
   }
-
-  const handleAddRecipients = useCallback((selected) => {
-    setRecipients(selected);
-  }, []);
 
   const removeConversation = async (conversationId) => {
     await dispatch(deleteConversation(conversationId));
     enqueueSnackbar('删除成功');
   };
   const details = !!conversation && conversation._id;
-
-  const renderHead = (
-    <Stack
-      direction="row"
-      alignItems="center"
-      flexShrink={0}
-      sx={{ pr: 1, pl: 2.5, py: 1, minHeight: 72 }}
-    >
-      {selectedConversationId ? (
-        <>{details && <ChatHeaderDetail participants={participants} />}</>
-      ) : (
-        <ChatHeaderCompose
-          contacts={contacts.allIds.map((id) => contacts.byId[id])}
-          onAddRecipients={handleAddRecipients}
-        />
-      )}
-    </Stack>
-  );
 
   const renderNav = (
     <ChatNav
@@ -254,7 +193,6 @@ export default function ChatView() {
 
   const onRefresh = async (currentMessageLimit) => {
     setMessageLimit(currentMessageLimit + 20);
-    console.log('messageLimit', messageLimit);
     await dispatch(getMessages(selectedConversationId, messageLimit));
   };
 
@@ -276,7 +214,6 @@ export default function ChatView() {
 
       <ChatMessageInput
         recipients={recipients}
-        onAddRecipients={handleAddRecipients}
         selectedConversationId={selectedConversationId}
         disabled={!recipients.length && !selectedConversationId}
       />
@@ -305,66 +242,47 @@ export default function ChatView() {
             mb: { xs: 3, md: 5 },
           }}
         >
-          聊天
+          Chatgpt(AI 聊天)
         </Typography>
       )}
-      {(isDesktop || selectedConversationId) && 
-        // (conversationsLoading ? (
-        //   <Box
-        //     sx={{
-        //       zIndex: 10,
-        //       backgroundColor: '#ffffffc4',
-        //       width: '100%',
-        //       height: '100%',
-        //       display: 'flex',
-        //       padding: '16px',
-        //       justifyContent: 'center',
-        //       alignItems: 'center',
-        //     }}
-        //   >
-        //     <CircularProgress />
-        //   </Box>
-        // ) : (
-          <Stack
-            component={!isDesktop && selectedConversationId ? null : Card}
-            direction="row"
-            className="bottom-chat"
-            sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
-          >
-            {isDesktop && renderNav}
+      {isDesktop && (
+        <Stack
+          component={Card}
+          direction="row"
+          className="bottom-chat"
+          sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
+        >
+          {renderNav}
 
+          <Stack
+            sx={{
+              width: 1,
+              height: 1,
+              overflow: 'hidden',
+            }}
+          >
             <Stack
+              direction="row"
               sx={{
                 width: 1,
                 height: 1,
                 overflow: 'hidden',
+                borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
               }}
             >
-              {renderHead}
+              {renderMessages}
 
-              <Stack
-                direction="row"
-                sx={{
-                  width: 1,
-                  height: 1,
-                  overflow: 'hidden',
-                  borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
-                }}
-              >
-                {renderMessages}
-
-                {details && (
-                  <ChatRoom
-                    conversation={conversation}
-                    messages={messages.byId[selectedConversationId]}
-                    participants={participants}
-                  />
-                )}
-              </Stack>
+              {details && (
+                <ChatRoom
+                  conversation={conversation}
+                  messages={messages.byId[selectedConversationId]}
+                  participants={participants}
+                />
+              )}
             </Stack>
           </Stack>
-        // ))
-        }
+        </Stack>
+      )}
       {!selectedConversationId && (
         <Stack>
           {!isDesktop && (
@@ -378,41 +296,8 @@ export default function ChatView() {
                 {renderTabs}
               </Stack>
               <Divider />
-              {currentTab === 'organizations' &&
-                (loading ? (
-                  <Box
-                    sx={{
-                      zIndex: 10,
-                      backgroundColor: '#ffffffc4',
-                      width: '100%',
-                      height: '100%',
-                      display: 'flex',
-                      padding: '16px',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <CircularProgress />
-                  </Box>
-                ) : (
-                  <ChatOrganization />
-                ))}
-              {currentTab === 'contacts' &&
-                contacts.allIds
-                  .map((id) => contacts.byId[id])
-                  .map((contact) => (
-                    <ChatNavItem
-                      key={contact._id}
-                      conversation={{
-                        ...contact,
-                        type: 'contact',
-                      }}
-                      selected={contact._id === selectedConversationId}
-                    />
-                  ))}
               {currentTab === 'conversations' && (
                 <>
-                  {/* {loading && <LinearProgress color="inherit" sx={{ mt: 1, mb: 1, width: 1 }} />} */}
                   {conversations.allIds.map(
                     (conversationId) =>
                       !conversations.byId[conversationId].isRemove && (

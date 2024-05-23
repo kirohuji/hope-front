@@ -106,11 +106,11 @@ export default function UserNewEditForm({ currentUser }) {
           photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL,
         });
       } else {
-        await userService.patch({
-          _id: currentUser._id,
-          ...data,
-          photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL,
-        });
+        // await userService.patch({
+        //   _id: currentUser._id,
+        //   ...data,
+        //   photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL,
+        // });
         await profileService.patch({
           _id: currentUser._id,
           ...data,
@@ -266,8 +266,8 @@ export default function UserNewEditForm({ currentUser }) {
                 <MenuItem value="male">男</MenuItem>
                 <MenuItem value="female">女</MenuItem>
               </RHFSelect>
-              <RHFTextField name="email" label="电子邮件" disabled />
-              <RHFTextField name="phoneNumber" label="手机号" disabled />
+              <RHFTextField name="email" label="电子邮件" disabled={currentUser} />
+              <RHFTextField name="phoneNumber" label="手机号" disabled={currentUser} />
               <RHFSelect name="baptized" label="是否受洗" placeholder="是否受洗">
                 <MenuItem value="true">是</MenuItem>
                 <MenuItem value="false">否</MenuItem>

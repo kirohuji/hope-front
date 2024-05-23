@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Link from '@mui/material/Link';
 
 import InputAdornment from '@mui/material/InputAdornment';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -22,14 +23,17 @@ import Divider from '@mui/material/Divider';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 // redux
-import { useDispatch } from 'src/redux/store';
-import { deleteConversation } from 'src/redux/slices/chat';
-import ChatOrganization from 'src/sections/chat/chat-organization';
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getContacts, getOrganizations, deleteConversation } from 'src/redux/slices/chat';
+import _ from 'lodash';
+import { Button } from '@mui/material';
+import { fileService, messagingService } from 'src/composables/context-provider';
 import { useCollapseNav } from './hooks';
 import ChatNavItem from './chat-nav-item';
 import ChatNavAccount from './chat-nav-account';
 import { ChatNavItemSkeleton } from './chat-skeleton';
 import ChatNavSearchResults from './chat-nav-search-results';
+
 // ----------------------------------------------------------------------
 
 const NAV_WIDTH = 320;
@@ -39,17 +43,7 @@ const NAV_COLLAPSE_WIDTH = 96;
 const TABS = [
   {
     value: 'conversations',
-    label: '聊天会话',
-    count: 0,
-  },
-  // {
-  //   value: 'contacts',
-  //   label: ' 联系人',
-  //   count: 0,
-  // },
-  {
-    value: 'organizations',
-    label: '组织架构',
+    label: '历史记录',
     count: 0,
   },
 ];
@@ -63,19 +57,9 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
 
   const mdUp = useResponsive('up', 'md');
 
-  const [currentTab, setCurrentTab] = useState('conversations');
+  const { active } = useSelector((state) => state.scope);
 
-  const handleChangeTab = useCallback((event, newValue) => {
-    setCurrentTab(newValue);
-  }, []);
-  const renderTabs = (
-    <Tabs value={currentTab} onChange={handleChangeTab}>
-      {TABS.map((tab) => (
-        <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
-      ))}
-      )
-    </Tabs>
-  );
+  const [currentTab, setCurrentTab] = useState('conversations');
 
   const {
     collapseDesktop,
@@ -145,68 +129,23 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
     (result) => {
       handleClickAwaySearch();
 
-      router.push(`${paths.chat}?id=${result.id}`);
+      router.push(`${paths.dashboard.openai}?id=${result.id}`);
     },
     [handleClickAwaySearch, router]
   );
 
-  const renderToggleBtn = (
-    <IconButton
-      onClick={onOpenMobile}
-      sx={{
-        left: 0,
-        top: 84,
-        zIndex: 9,
-        width: 32,
-        height: 32,
-        position: 'absolute',
-        borderRadius: `0 12px 12px 0`,
-        bgcolor: theme.palette.primary.main,
-        boxShadow: theme.customShadows.primary,
-        color: theme.palette.primary.contrastText,
-        '&:hover': {
-          bgcolor: theme.palette.primary.darker,
-        },
-      }}
-    >
-      <Iconify width={16} icon="solar:users-group-rounded-bold" />
-    </IconButton>
-  );
 
-  const renderSkeleton = (
-    <>
-      {[...Array(12)].map((chatNavItem, index) => (
-        <ChatNavItemSkeleton key={index} />
-      ))}
-    </>
-  );
   const renderList = (
     <>
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ pl: 2.5, pr: 1 }}
-      >
-        {renderTabs}
-      </Stack>
       <Divider />
-      {currentTab === 'contacts' &&
-        contacts.map((contact) => (
-          <ChatNavItem
-            key={contact._id}
-            collapse={collapseDesktop}
-            conversation={contact}
-            selected={contact._id === selectedConversationId}
-            onCloseMobile={onCloseMobile}
-          />
-        ))}
-      {currentTab === 'organizations' && <ChatOrganization/>}
       {currentTab === 'conversations' &&
         conversations.allIds.map((conversationId) => (
           <ChatNavItem
             key={conversationId}
-            deleteConversation={() => dispatch(deleteConversation(conversationId))}
+            deleteConversation={async (callback) => {
+              await dispatch(deleteConversation(conversationId))
+              callback();
+            }}
             collapse={collapseDesktop}
             conversation={conversations.byId[conversationId]}
             selected={conversationId === selectedConversationId}
@@ -230,7 +169,7 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
         fullWidth
         value={searchContacts.query}
         onChange={(event) => handleSearchContacts(event.target.value)}
-        placeholder="搜索联系人..."
+        placeholder="搜索历史记录..."
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -278,6 +217,14 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
     </>
   );
 
+  const createConversation = useCallback(async () => {
+    const conversation = await messagingService.room({
+      participants: ['a5u9kNTzKAdghpr55'],
+      isSession: true,
+    });
+    router.push(`${paths.dashboard.openai}?id=${conversation._id}`);
+    return conversation._id;
+  }, [router]);
   return (
     <>
       {/* {!mdUp && renderToggleBtn} */}
@@ -298,6 +245,15 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
           }}
         >
           {renderContent}
+          <Divider />
+          <Button
+            variant="soft"
+            size="large"
+            sx={{ borderRadius: '0px' }}
+            onClick={createConversation}
+          >
+            新建会话
+          </Button>
         </Stack>
       ) : (
         <Drawer

@@ -35,6 +35,7 @@ export default function ChatClipboardDialog({ open, onClose, data, onUpload }) {
   }, [onClose]);
 
   const handleImage = useCallback(() => {
+    console.log('fileFormat(label)', url);
     if (type === 'folder') {
       return type;
     }
@@ -42,7 +43,7 @@ export default function ChatClipboardDialog({ open, onClose, data, onUpload }) {
       return data;
     }
     return label;
-  }, [data, label, type]);
+  }, [data, label, type, url]);
 
   const renderProperties = (
     <Stack spacing={1.5}>

@@ -9,10 +9,16 @@ export default class MessagingService {
     }
   }
 
-  usersAndConversations(target) {
-    if (target) {
-      return this.api.post(`${this.model}/users/conversations`, target);
+  usersAndConversations(conversationsId, isChatgpt) {
+    if (conversationsId) {
+      return this.api.post(`${this.model}/users/conversations`, conversationsId);
       // return this.api.post(`${this.model}/users/conversations`, target);
+    }
+    if (isChatgpt) {
+      return this.api.post(`${this.model}/users/conversations/participants`, {
+        participants: ['a5u9kNTzKAdghpr55'],
+        isSession: true,
+      });
     }
     return this.api.get(`${this.model}/users/conversations`);
   }

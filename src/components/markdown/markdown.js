@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-unresolved */
 // utils
 import PropTypes from 'prop-types';
 import 'src/utils/highlight';
@@ -6,6 +8,9 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 // @mui
 import Link from '@mui/material/Link';
 // routes
@@ -21,7 +26,13 @@ export default function Markdown({ sx, ...other }) {
   return (
     <StyledMarkdown sx={sx}>
       <ReactMarkdown
-        rehypePlugins={[rehypeRaw, rehypeHighlight, [remarkGfm, { singleTilde: false }]]}
+        remarkPlugins={[remarkMath]}
+        rehypePlugins={[
+          rehypeKatex,
+          rehypeRaw,
+          rehypeHighlight,
+          [remarkGfm, { singleTilde: false }],
+        ]}
         components={components}
         {...other}
       />

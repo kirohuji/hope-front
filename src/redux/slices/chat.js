@@ -1,6 +1,8 @@
 import keyBy from 'lodash/keyBy';
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { fetchEventSource } from '@microsoft/fetch-event-source';
 // utils
 import uuidv4 from 'src/utils/uuidv4';
 import { friendService, roleService, messagingService } from 'src/composables/context-provider';
@@ -30,6 +32,7 @@ const initialState = {
   recipients: [],
   lastMessage: {},
   sendingMessage: { byId: {} },
+  generate: { byId: {}, currentMessageId: '' },
 };
 
 const slice = createSlice({
@@ -219,6 +222,19 @@ const slice = createSlice({
       state.conversations.byId = keyBy(newData, '_id');
       state.conversations.allIds = Object.keys(state.conversations.byId);
     },
+    setGenerate(state, action) {
+      const { conversationId, messageId, message, isSet } = action.payload;
+      if (!state.generate.byId[conversationId]) {
+        state.generate.byId[conversationId] = {};
+      }
+      if (isSet) {
+        state.generate.byId[conversationId] = {};
+        state.generate.currentMessageId = messageId;
+        state.generate.byId[conversationId][state.generate.currentMessageId] = '';
+      } else {
+        state.generate.byId[conversationId][state.generate.currentMessageId] += message;
+      }
+    },
   },
 });
 
@@ -389,12 +405,63 @@ export function getOrganizations(scope) {
   };
 }
 
+// 获取组织架构
+export function getOrganizationsOnlyChildren(scope, id) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const data = await roleService.getChildrenRoleNamesWithUser({
+        scope,
+        _id: id,
+        type: 'org',
+      });
+      dispatch(slice.actions.getOrganizationsSuccess(data));
+      return data;
+    } catch (error) {
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+      return [];
+    }
+  };
+}
 // 获取聊天会话
 export function getConversations(conversationsId) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
       const data = await messagingService.usersAndConversations(conversationsId);
+      if (conversationsId) {
+        dispatch(slice.actions.getConversationSuccess(data[0]));
+      } else {
+        dispatch(
+          slice.actions.getConversationsSuccess(
+            data.map((conversation) => ({
+              ...conversation,
+              messages: _.compact(conversation.messages),
+            }))
+          )
+        );
+      }
+    } catch (error) {
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  };
+}
+// 获取聊天会话
+export function getSessions(conversationsId) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const data = await messagingService.usersAndConversations(conversationsId, true);
       if (conversationsId) {
         dispatch(slice.actions.getConversationSuccess(data[0]));
       } else {
@@ -522,6 +589,66 @@ export function mergeConversations(newData) {
           newData,
         })
       );
+    } catch (error) {
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  };
+}
+
+// 合并会话
+export function openai(selectedConversationId, message) {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const text = '';
+      const requestData = {
+        conversationId: selectedConversationId,
+        prompt: message,
+      };
+      const requestOptions = {
+        method: 'POST',
+        body: JSON.stringify(requestData),
+        headers: {
+          'X-Auth-Token': localStorage.getItem('accessToken'),
+          'Content-Type': 'application/json',
+        },
+      };
+      fetchEventSource('http://localhost:3030/openai', {
+        ...requestOptions,
+        // signal: ctrl.signal,
+        async onmessage(msg) {
+          if (msg.data !== '[DONE]') {
+            const msgData = JSON.parse(msg.data);
+            if (msgData?.choices) {
+              await dispatch(
+                slice.actions.setGenerate({
+                  conversationId: selectedConversationId,
+                  message: msgData.choices[0].delta.content,
+                })
+              );
+            } else if (msgData.messageId) {
+              await dispatch(
+                slice.actions.setGenerate({
+                  conversationId: selectedConversationId,
+                  messageId: msgData.messageId,
+                  message: '...',
+                  isSet: true,
+                })
+              );
+            }
+          }
+        },
+        onclose() {
+          console.log(text);
+        },
+      }).catch((e) => {
+        console.log(e);
+      });
     } catch (error) {
       dispatch(
         slice.actions.hasError({

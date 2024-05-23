@@ -70,7 +70,7 @@ export default function NavList({ data, depth, hasChild, config }) {
           active={active}
           externalLink={externalLink}
           onMouseEnter={handleOpen}
-          onMouseLeave={handleClose}
+          // onMouseLeave={handleClose}
           config={config}
         />
       </Restricted>
@@ -78,6 +78,7 @@ export default function NavList({ data, depth, hasChild, config }) {
         <Popover
           open={open}
           anchorEl={navRef.current}
+          onClose={handleClose}
           anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
           transformOrigin={{ vertical: 'center', horizontal: 'left' }}
           slotProps={{

@@ -4,7 +4,7 @@ import { paths } from 'src/routes/paths';
 // locales
 import { useLocales } from 'src/locales';
 // components
-// import Label from 'src/components/label';
+import Label from 'src/components/label';
 // import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 
@@ -23,6 +23,7 @@ export const ICONS = {
   blog: icon('ic_blog'),
   chat: icon('ic_chat'),
   chat2: icon('ic_chat', { width: '56px', height: '38px' }),
+  openai: icon('ic_mail'),
   mail: icon('ic_mail'),
   user: icon('ic_user'),
   file: icon('ic_file'),
@@ -266,7 +267,7 @@ export function useNavData() {
             ],
             icon: ICONS.broadcast,
             children: [
-              { title: t('list'), path: paths.dashboard.broadcast.root, auth: ['Broadcast'] },
+              { title: t('list'), path: paths.dashboard.broadcast.root, auth: ['BroadcastList'] },
               // { title: t('details'), path: paths.dashboard.broadcast.demo.details },
               // { title: t('create'), path: paths.dashboard.broadcast.new },
               // { title: t('edit'), path: paths.dashboard.broadcast.demo.edit },
@@ -280,21 +281,41 @@ export function useNavData() {
             icon: ICONS.folder,
             auth: ['FileManager'],
           },
-
+          // AI 
+          {
+            title: t('openai'),
+            path: paths.dashboard.openai,
+            icon: ICONS.openai,
+            auth: [
+              'Broadcast',
+              'BroadcastList',
+              'BroadcastListAdd',
+              'BroadcastListEdit',
+              'BroadcastListDelete',
+            ],
+            info: <Label color="error">+32</Label>,
+          },
           // MAIL
           // {
           //   title: t('mail'),
           //   path: paths.dashboard.mail,
           //   icon: ICONS.mail,
+          //   auth: [
+          //     'Broadcast',
+          //     'BroadcastList',
+          //     'BroadcastListAdd',
+          //     'BroadcastListEdit',
+          //     'BroadcastListDelete',
+          //   ],
           //   info: <Label color="error">+32</Label>,
           // },
 
           // CHAT
-          // {
-          //   title: t('chat'),
-          //   path: paths.dashboard.chat,
-          //   icon: ICONS.chat,
-          // },
+          {
+            title: t('chat'),
+            path: paths.dashboard.chat,
+            icon: ICONS.chat,
+          },
 
           // CALENDAR
           {
