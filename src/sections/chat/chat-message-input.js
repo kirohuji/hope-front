@@ -36,7 +36,6 @@ export default function ChatMessageInput({
   disabled,
   selectedConversationId,
 }) {
-
   const { server: ddpclient } = useMeteorContext();
   const loading = useBoolean(false);
 
@@ -139,23 +138,6 @@ export default function ChatMessageInput({
       try {
         if (event.key === 'Enter') {
           if (message && message !== '\n') {
-            ddpclient.call('getChatGPTResponseStream', message, (error, result) => {
-              if (error) {
-                console.error('Error:', error);
-              } else {
-                console.log('收到');
-                const responseStream = result.content; // 获取响应流
-                responseStream.on('data', (chunk) => {
-                  // 处理每个数据块
-                  console.log('Chunk of data received:', chunk);
-                });
-
-                responseStream.on('end', () => {
-                  // 响应流结束
-                  console.log('Response stream ended.');
-                });
-              }
-            });
             if (selectedConversationId) {
               setType('text');
               try {
@@ -178,7 +160,17 @@ export default function ChatMessageInput({
         console.error(error);
       }
     },
-    [message, ddpclient, selectedConversationId, dispatch, messageData, enqueueSnackbar, createConversation, conversationData, router, onAddRecipients]
+    [
+      message,
+      selectedConversationId,
+      dispatch,
+      messageData,
+      enqueueSnackbar,
+      createConversation,
+      conversationData,
+      router,
+      onAddRecipients,
+    ]
   );
   const handlePaste = useCallback(
     (event) => {

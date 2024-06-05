@@ -93,14 +93,14 @@ const TABS = [
 
 let reactiveCollection = null;
 let getMessage = null;
-// const conversations2Publish = null;
-// const conversations2Collection = null;
 
 export default function ChatView() {
   const router = useRouter();
+
   const pathname = usePathname();
 
   const { server: ddpclient } = useMeteorContext();
+
   const { enqueueSnackbar } = useSnackbar();
 
   const dispatch = useDispatch();
@@ -141,16 +141,6 @@ export default function ChatView() {
     await dispatch(getMessages(selectedConversationId, 0));
     setConversationsLoading(false);
   }, [dispatch, selectedConversationId]);
-
-  // 刷新 Organization
-  const onRefreshWithOrganization = useCallback(async () => {
-    if (active?._id) {
-      setLoading(true);
-      // onRefreshWithOrganization();
-      setLoading(false);
-    }
-  }, [active?._id, setLoading]);
-
   // 刷新 Conversations
   const onRefreshWithConversations = useCallback(async () => {
     setLoading(true);
@@ -159,11 +149,11 @@ export default function ChatView() {
   }, [dispatch]);
 
   useEffect(() => {
+    // 没有会话 id(没有聊天对象时)加载聊天列表界面
     if (!selectedConversationId) {
       dispatch(resetActiveConversation());
       switch (currentTab) {
         case 'organizations':
-          onRefreshWithOrganization();
           break;
         case 'conversations':
           onRefreshWithConversations();
@@ -174,11 +164,13 @@ export default function ChatView() {
         default:
           break;
       }
+      // 如果是 移动端 && 并且是聊天界面 要检查路径问题
     } else if (!isDesktop && pathname === '/dashboard/chat') {
       router.replace(`${paths.chat}?id=${selectedConversationId}`);
     } else {
       getDetails();
       if (ddpclient?.connected && user) {
+        console.log('金');
         getMessage = ddpclient.subscribe(
           'socialize.messagesFor2',
           selectedConversationId,
@@ -187,17 +179,9 @@ export default function ChatView() {
         );
         getMessage.ready();
         reactiveCollection = ddpclient.collection('socialize:messages').reactive();
-        reactiveCollection.onChange(
-          (target) => {
-            if (target.added) {
-              console.log('更新了');
-              dispatch(newMessageGet(selectedConversationId));
-            }
-          },
-          {
-            added: true,
-          }
-        );
+        reactiveCollection.onChange(() => dispatch(newMessageGet(selectedConversationId)), {
+          added: true,
+        });
       }
     }
 
@@ -215,7 +199,6 @@ export default function ChatView() {
     dispatch,
     getDetails,
     onRefreshWithConversations,
-    onRefreshWithOrganization,
     selectedConversationId,
     user,
     router,

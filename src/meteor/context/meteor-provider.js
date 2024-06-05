@@ -13,6 +13,22 @@ const initialState = {
   isConnected: false,
   isLoggingIn: false,
 };
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'INITIAL':
+      return {
+        ...state,
+        ...action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
+let conversationsPublish = null;
+let conversationsCollection = null;
+const messagesPublish = null;
+
 export const bindConnect = async (server, dispatch) => {
   server.on('connected', () => {
     dispatch({
@@ -59,29 +75,15 @@ export const bindConnect = async (server, dispatch) => {
     });
   });
   server.on('error', (m) => {
-    console.log('报错',m);
+    console.log('报错', m);
   });
   await server.connect();
 };
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'INITIAL':
-      return {
-        ...state,
-        ...action.payload,
-      };
-    default:
-      return state;
-  }
-};
-
-let conversationsPublish = null;
-let conversationsCollection = null;
-let messagesPublish = null;
 export function MeteorProvider({ endpoint, children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+
   const reducerDispatch = useDispatch();
+
   const updateConversationsByDebounce = _.debounce((target) => {
     reducerDispatch(
       getConversations({
@@ -132,8 +134,8 @@ export function MeteorProvider({ endpoint, children }) {
     //   //   reducerDispatch(getOverview());
     //   // }
     // });
-    messagesPublish = await server.subscribe('socialize.unreadConversations');
-    messagesPublish.ready();
+    // messagesPublish = await server.subscribe('socialize.unreadConversations');
+    // messagesPublish.ready();
     // messagesCollection = server.collection('socialize:messages');
     // messagesCollection.onChange((target) => {
     //   if (target.added) {
