@@ -406,7 +406,7 @@ export function getOrganizations(scope) {
 }
 
 // 获取组织架构
-export function getOrganizationsOnlyChildren(scope, id) {
+export function getOrganizationsOnlyChildren(scope, id, query) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
@@ -414,6 +414,7 @@ export function getOrganizationsOnlyChildren(scope, id) {
         scope,
         _id: id,
         type: 'org',
+        query,
       });
       dispatch(slice.actions.getOrganizationsSuccess(data));
       return data;

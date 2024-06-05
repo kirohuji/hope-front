@@ -1,18 +1,17 @@
-import { useState, memo, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { m } from 'framer-motion';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import Link from '@mui/material/Link';
 import MenuItem from '@mui/material/MenuItem';
 import InputBase from '@mui/material/InputBase';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Dialog, { dialogClasses } from '@mui/material/Dialog';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { useDispatch, useSelector } from 'src/redux/store';
+import { useSelector } from 'src/redux/store';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -20,18 +19,16 @@ import { useRouter } from 'src/routes/hook';
 import { useSnackbar } from 'src/components/snackbar';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useEventListener } from 'src/hooks/use-event-listener';
-import { getOrganizations } from 'src/redux/slices/chat';
 // components
 import { varHover } from 'src/components/animate';
 import Scrollbar from 'src/components/scrollbar';
 import Iconify from 'src/components/iconify';
 import SearchNotFound from 'src/components/search-not-found';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import ChatNavItem from 'src/sections/chat/chat-nav-item';
 import ChatHeaderCompose from 'src/sections/chat/chat-header-compose';
 import ChatOrganization from 'src/sections/chat/chat-organization';
 import _ from 'lodash';
-import { fileService, messagingService, roleService } from 'src/composables/context-provider';
+import { messagingService, roleService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
 export default function ChatPopover() {
@@ -47,15 +44,7 @@ export default function ChatPopover() {
 
   const [selectedContacts, setSelectedContacts] = useState([]);
 
-  const dispatch = useDispatch();
-
   const { active } = useSelector((state) => state.scope);
-
-  const [currentOrganization, setCurrentOrganization] = useState([]);
-
-  const [currentFirstOrganization, setCurrentFirstOrganization] = useState([]);
-
-  const [levels, setLevels] = useState([]);
 
   const [data, setData] = useState([]);
 
@@ -74,8 +63,6 @@ export default function ChatPopover() {
     setSearchQuery('');
     setCheckeds([]);
     setSelectedContacts([]);
-    setCurrentOrganization([]);
-    setLevels([]);
   }, [search]);
 
   const handleKeyDown = (event) => {
@@ -83,6 +70,10 @@ export default function ChatPopover() {
       search.onToggle();
       setSearchQuery('');
     }
+  };
+
+  const handleChange = (organization) => {
+    setData(organization);
   };
 
   const handleSelectContact = (contact) => {
@@ -135,14 +126,6 @@ export default function ChatPopover() {
     setSearchQuery(event.target.value);
   }, []);
 
-  const onRefreshWithOrganization = useCallback(async () => {
-    if (active?._id) {
-      const organizationData = await dispatch(getOrganizations(active?._id));
-      setCurrentFirstOrganization(organizationData);
-      setCurrentOrganization(organizationData);
-    }
-  }, [active?._id, dispatch]);
-
   const notFound = searchQuery && !data.length;
 
   const renderButton = (
@@ -171,98 +154,6 @@ export default function ChatPopover() {
         </Stack>
       </CustomPopover>
     </>
-  );
-
-  const onChildren = (organization) => {
-    if (organization.children || organization.users) {
-      const level = {
-        name: organization.label,
-        to: organization._id,
-      };
-      levels.push(level);
-      setCurrentOrganization(
-        _.compact([
-          ...(organization.children || []),
-          ...(organization.users || []).map((item) => ({
-            name: item.username,
-            photoURL: item.photoURL,
-            _id: item._id,
-            email: item.email,
-            displayName: item.displayName,
-            realName: item.realName,
-          })),
-        ])
-      );
-      setLevels(levels);
-      console.log('currentOrganization', currentOrganization);
-    }
-  };
-
-  const onGoTo = async (level) => {
-    let index = 0;
-    const length = _.findIndex(levels, ['to', level.to]);
-    let isChildren = false;
-    let currentOrganizations = currentFirstOrganization;
-    const levels2 = [];
-    while (index < length) {
-      isChildren = true;
-      const currentLevel = levels[index];
-      currentOrganizations = _.find(currentOrganizations, ['_id', currentLevel.to]);
-      index += 1;
-      levels2.push(currentLevel);
-    }
-    if (isChildren) {
-      await setCurrentOrganization([
-        ...currentOrganizations.children,
-        ...currentOrganizations.users.map((item) => ({
-          _id: item._id,
-          name: item.username,
-          photoURL: item.photoURL,
-          email: item.email,
-          displayName: item.displayName,
-          realName: item.realName,
-        })),
-      ]);
-    } else {
-      await setCurrentOrganization(currentOrganizations);
-    }
-    setLevels(levels2);
-  };
-
-  const styles = {
-    typography: 'body2',
-    alignItems: 'center',
-    color: 'text.primary',
-    display: 'inline-flex',
-  };
-
-  const renderOrganizationsMenuItem = (organization, id) => (
-    <ChatNavItem
-      key={id}
-      onSelect={() => handleSelectContact(organization)}
-      checked={checkeds.includes(organization._id) > 0}
-      onChildren={onChildren}
-      conversation={organization}
-      multi
-      sx={{ height: 'unset' }}
-    />
-  );
-  const renderOrganizations = (
-    <Scrollbar sx={{ height: '100%', ml: 1, mr: 1 }}>
-      {levels && levels.length > 0 && (
-        <Stack direction="row" alignItems="center" justifyContent="flex-start" sx={{ m: 1 }}>
-          {levels.map((level, index) => (
-            <Box key={index} sx={{ display: 'flex' }}>
-              <Link onClick={() => onGoTo(level)} sx={styles}>
-                {`${level.name}`}{' '}
-              </Link>
-              <div style={{ margin: '0 4px' }}> /</div>
-            </Box>
-          ))}
-        </Stack>
-      )}
-      {currentOrganization.map((item, i) => renderOrganizationsMenuItem(item, i))}
-    </Scrollbar>
   );
 
   const handleAddRecipients = useCallback((selected) => {
@@ -350,8 +241,10 @@ export default function ChatPopover() {
             <ChatOrganization
               isMulti
               cascadeCheck
+              searchQuery={searchQuery}
               selectedContacts={selectedContacts}
               checkeds={checkeds}
+              handleChange={(organization) => handleChange(organization)}
               handleSelectCascadeContacts={handleSelectCascadeContacts}
               handleSelectContact={handleSelectContact}
             />
