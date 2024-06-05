@@ -209,9 +209,9 @@ export default function ChatView() {
 
   if (conversation) {
     participants =
-      conversation.type !== 'GROUP'
+      conversation.type !== 'GROUP' && conversation.participants
         ? conversation.participants.filter((participant) => participant._id !== user?._id)
-        : conversation.participants;
+        : conversation.participants || [];
   } else {
     participants = [];
   }

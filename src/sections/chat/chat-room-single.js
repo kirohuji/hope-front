@@ -13,7 +13,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function ChatRoomSingle({ participant }) {
+export default function ChatRoomSingle({ participant = {} }) {
   const collapse = useBoolean(true);
 
   const { displayName, realName, username, photoURL, role, address, phoneNumber, email } =

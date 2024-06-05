@@ -144,7 +144,7 @@ export default function ChatView() {
       getDetails();
     }
     return () => {
-      if(sub){
+      if (sub) {
         sub.stop();
       }
     };
