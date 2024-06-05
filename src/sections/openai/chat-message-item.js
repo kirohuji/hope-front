@@ -36,7 +36,9 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
     participants,
     currentUserId: user._id,
   });
+
   const { generate } = useSelector((state) => state.openai);
+
   const isGenerate =
     message._id === generate.currentMessageId ||
     (generate.byId[conversationId] && generate.byId[conversationId][message._id]);
@@ -65,34 +67,29 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
     </Typography>
   );
 
-  const handleSendMessage = useCallback(
-    async (event) => {
-      try {
-        // // eslint-disable-next-line no-debugger
-        // debugger;
-        await dispatch(
-          sendMessage(conversationId, {
-            ...message,
-            message: message.body,
-          })
-        );
-      } catch (e) {
-        console.error();
-      }
-    },
-    [conversationId, dispatch, message]
-  );
+  const handleSendMessage = useCallback(async () => {
+    try {
+      await dispatch(
+        sendMessage(conversationId, {
+          ...message,
+          message: message.body,
+        })
+      );
+    } catch (e) {
+      console.error();
+    }
+  }, [conversationId, dispatch, message]);
 
   const renderBodyContent = ({ bodyContent, type }) => {
+    if (bodyContent === '') {
+      return (
+        <Stack spacing={0} direction="row" alignItems="center" sx={{ minWidth: 24 }}>
+          <CircularProgress size={12} />
+        </Stack>
+      );
+    }
     switch (type) {
       case 'text':
-        // eslint-disable-next-line react/no-danger
-        // return (
-        //   <div
-        //     style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
-        //     dangerouslySetInnerHTML={{ __html: bodyContent }}
-        //   />
-        // );
         return <Markdown children={bodyContent} />;
       case 'mp3':
         return (
@@ -119,6 +116,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
         );
     }
   };
+
   const renderBody = (
     <Stack
       sx={{
