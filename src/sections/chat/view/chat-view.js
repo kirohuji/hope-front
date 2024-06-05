@@ -10,7 +10,8 @@ import Tab from '@mui/material/Tab';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 // routes
-import { useSearchParams } from 'src/routes/hook';
+import { useRouter, useSearchParams, usePathname } from 'src/routes/hook';
+import { paths } from 'src/routes/paths';
 // hooks
 import { useAuthContext } from 'src/auth/hooks';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -96,6 +97,9 @@ let getMessage = null;
 // const conversations2Collection = null;
 
 export default function ChatView() {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const { server: ddpclient } = useMeteorContext();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -170,8 +174,9 @@ export default function ChatView() {
         default:
           break;
       }
+    } else if (!isDesktop && pathname === '/dashboard/chat') {
+      router.replace(`${paths.chat}?id=${selectedConversationId}`);
     } else {
-      console.log('获取数据')
       getDetails();
       if (ddpclient?.connected && user) {
         getMessage = ddpclient.subscribe(
@@ -202,7 +207,20 @@ export default function ChatView() {
         getMessage.stop();
       }
     };
-  }, [active._id, currentTab, ddpclient, dispatch, getDetails, onRefreshWithConversations, onRefreshWithOrganization, selectedConversationId, user]);
+  }, [
+    isDesktop,
+    active._id,
+    currentTab,
+    ddpclient,
+    dispatch,
+    getDetails,
+    onRefreshWithConversations,
+    onRefreshWithOrganization,
+    selectedConversationId,
+    user,
+    router,
+    pathname,
+  ]);
 
   let participants = [];
 
@@ -308,23 +326,24 @@ export default function ChatView() {
           聊天
         </Typography>
       )}
-      {(isDesktop || selectedConversationId) && 
-        // (conversationsLoading ? (
-        //   <Box
-        //     sx={{
-        //       zIndex: 10,
-        //       backgroundColor: '#ffffffc4',
-        //       width: '100%',
-        //       height: '100%',
-        //       display: 'flex',
-        //       padding: '16px',
-        //       justifyContent: 'center',
-        //       alignItems: 'center',
-        //     }}
-        //   >
-        //     <CircularProgress />
-        //   </Box>
-        // ) : (
+      {
+        (isDesktop || selectedConversationId) && (
+          // (conversationsLoading ? (
+          //   <Box
+          //     sx={{
+          //       zIndex: 10,
+          //       backgroundColor: '#ffffffc4',
+          //       width: '100%',
+          //       height: '100%',
+          //       display: 'flex',
+          //       padding: '16px',
+          //       justifyContent: 'center',
+          //       alignItems: 'center',
+          //     }}
+          //   >
+          //     <CircularProgress />
+          //   </Box>
+          // ) : (
           <Stack
             component={!isDesktop && selectedConversationId ? null : Card}
             direction="row"
@@ -363,8 +382,9 @@ export default function ChatView() {
               </Stack>
             </Stack>
           </Stack>
+        )
         // ))
-        }
+      }
       {!selectedConversationId && (
         <Stack>
           {!isDesktop && (
