@@ -48,7 +48,6 @@ export default function ChatOrganizationDialog({ open, onClose, conversation, pa
 
   const handleSelectContact = (contact) => {
     if (checkeds.includes(contact._id)) {
-      console.log('包含');
       setCheckeds((prevSelectedChecks) =>
         prevSelectedChecks.filter((checkedId) => checkedId !== contact._id)
       );
@@ -58,7 +57,6 @@ export default function ChatOrganizationDialog({ open, onClose, conversation, pa
         )
       );
     } else {
-      console.log('去除');
       setSelectedContacts((prevSelectedConatcts) =>
         _.compact([...prevSelectedConatcts].concat(contact))
       );

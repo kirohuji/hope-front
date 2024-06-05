@@ -36,9 +36,11 @@ export default function ChatNavItem({
   selected,
   checked,
   onSelect,
+  onSelectCascadeCheck,
   onChildren,
   collapse,
   conversation,
+  cascadeCheck,
   multi,
   onCloseMobile,
 }) {
@@ -137,6 +139,21 @@ export default function ChatNavItem({
           />
         </ListItemIcon>
       )}
+      {/* {cascadeCheck && type === 'org' && (
+        <ListItemIcon>
+          <Checkbox
+            edge="start"
+            tabIndex={-1}
+            disableRipple
+            checked={checked}
+            onClick={(e) => {
+              onSelectCascadeCheck(conversation._id, checked);
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          />
+        </ListItemIcon>
+      )} */}
       <Badge color="error" overlap="circular" badgeContent={conversation.unreadCount}>
         {group && participants ? renderGroup : singleParticipant && renderSingle}
       </Badge>
@@ -200,10 +217,12 @@ export default function ChatNavItem({
 
 ChatNavItem.propTypes = {
   onSelect: PropTypes.func,
+  onSelectCascadeCheck: PropTypes.func,
   checked: PropTypes.bool,
   onSwipe: PropTypes.func,
   onChildren: PropTypes.func,
   collapse: PropTypes.bool,
+  cascadeCheck: PropTypes.bool,
   multi: PropTypes.bool,
   conversation: PropTypes.object,
   onCloseMobile: PropTypes.func,

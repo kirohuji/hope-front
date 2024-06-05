@@ -14,7 +14,13 @@ import { getOrganizations, getOrganizationsOnlyChildren } from 'src/redux/slices
 import _ from 'lodash';
 
 const ISCHILDRENONLY = true;
-export default function ChatOrganization({ handleSelectContact, checkeds = [], isMulti }) {
+export default function ChatOrganization({
+  cascadeCheck = false,
+  handleSelectContact,
+  handleSelectCascadeContacts,
+  checkeds = [],
+  isMulti,
+}) {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(true);
@@ -37,13 +43,16 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
       setCurrentFirstOrganization(organizationData);
       setCurrentOrganization(organizationData);
       setLoading(false);
-      setIsFirst(false)
+      setIsFirst(false);
     }
-  }, [active?._id, dispatch,isFirst]);
+  }, [active?._id, dispatch, isFirst]);
 
   const onChildren = async (organization) => {
     let selectedOrganization = null;
-    if (!ISCHILDRENONLY && (organization.children && organization.children.length > 0) || organization.users) {
+    if (
+      (!ISCHILDRENONLY && organization.children && organization.children.length > 0) ||
+      organization.users
+    ) {
       selectedOrganization = organization;
     } else if (active?._id) {
       setLoading(true);
@@ -78,8 +87,12 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
   };
   const renderOrganizationsMenuItem = (organization, id) => (
     <ChatNavItem
+      cascadeCheck={cascadeCheck}
       key={id}
       onSelect={() => handleSelectContact && handleSelectContact(organization)}
+      onSelectCascadeCheck={() =>
+        handleSelectCascadeContacts && handleSelectCascadeContacts(organization)
+      }
       checked={checkeds.includes(organization._id) > 0}
       onChildren={onChildren}
       conversation={organization}
@@ -112,18 +125,14 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
     setLevels(levels2);
     if (isChildren) {
       let selectedOrganization = null;
-      const organizationData = await dispatch(
-        getOrganizationsOnlyChildren(active?._id, level.to)
-      );
+      const organizationData = await dispatch(getOrganizationsOnlyChildren(active?._id, level.to));
       selectedOrganization = {
         ...currentOrganizations,
         ...organizationData,
       };
-      console.log(active._id)
-      if(level.to === active._id){
-        setCurrentOrganization(
-          _.compact(organizationData)
-        );
+      console.log(active._id);
+      if (level.to === active._id) {
+        setCurrentOrganization(_.compact(organizationData));
       } else {
         setCurrentOrganization(
           _.compact([
@@ -163,11 +172,11 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
   );
 
   useEffect(() => {
-    if(levels.length ===0){
+    if (levels.length === 0) {
       levels.push({
         name: '希望之家',
         to: active?._id,
-      })
+      });
     }
     if (loading) {
       onRefreshWithOrganization();
@@ -178,7 +187,9 @@ export default function ChatOrganization({ handleSelectContact, checkeds = [], i
 }
 
 ChatOrganization.propTypes = {
+  cascadeCheck: PropTypes.bool,
   checkeds: PropTypes.array,
   handleSelectContact: PropTypes.func,
+  handleSelectCascadeContacts: PropTypes.func,
   isMulti: PropTypes.bool,
 };

@@ -29,8 +29,9 @@ import SearchNotFound from 'src/components/search-not-found';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import ChatNavItem from 'src/sections/chat/chat-nav-item';
 import ChatHeaderCompose from 'src/sections/chat/chat-header-compose';
+import ChatOrganization from 'src/sections/chat/chat-organization';
 import _ from 'lodash';
-import { fileService, messagingService } from 'src/composables/context-provider';
+import { fileService, messagingService, roleService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
 export default function ChatPopover() {
@@ -102,6 +103,32 @@ export default function ChatPopover() {
     }
   };
 
+  const handleSelectCascadeContacts = async (organization, check) => {
+    const { data: inheritedRoleNames } = await roleService.getUsersInRole({
+      options: {
+        scope: active._id,
+      },
+      roles: organization._id,
+    });
+    const inheritedRoleNamesIds = [organization._id, ...inheritedRoleNames.map((item) => item._id)];
+
+    if (checkeds.includes(organization._id)) {
+      setCheckeds((prevSelectedChecks) =>
+        prevSelectedChecks.filter((checkedId) => !inheritedRoleNamesIds.includes(checkedId))
+      );
+      setSelectedContacts((prevSelectedConatcts) =>
+        prevSelectedConatcts.filter(
+          (prevSelectedConatct) => !inheritedRoleNamesIds.includes(prevSelectedConatct._id)
+        )
+      );
+    } else {
+      setSelectedContacts((prevSelectedConatcts) =>
+        _.compact([...prevSelectedConatcts].concat(...inheritedRoleNames))
+      );
+      setCheckeds((prevSelectedChecks) => [...prevSelectedChecks].concat(inheritedRoleNamesIds));
+    }
+  };
+
   useEventListener('keydown', handleKeyDown);
 
   const handleSearch = useCallback((event) => {
@@ -135,7 +162,7 @@ export default function ChatPopover() {
         <Stack sx={{ p: 0.5 }}>
           <MenuItem
             onClick={() => {
-              onRefreshWithOrganization();
+              // onRefreshWithOrganization();
               search.onTrue();
             }}
           >
@@ -316,7 +343,19 @@ export default function ChatPopover() {
           />
         </Box>
         <Scrollbar sx={{ p: 0, pb: 2, height: 500 }}>
-          {notFound ? <SearchNotFound query={searchQuery} sx={{ py: 10 }} /> : renderOrganizations}
+          {/* {notFound ? <SearchNotFound query={searchQuery} sx={{ py: 10 }} /> : renderOrganizations} */}
+          {notFound ? (
+            <SearchNotFound query={searchQuery} sx={{ py: 10 }} />
+          ) : (
+            <ChatOrganization
+              isMulti
+              cascadeCheck
+              selectedContacts={selectedContacts}
+              checkeds={checkeds}
+              handleSelectCascadeContacts={handleSelectCascadeContacts}
+              handleSelectContact={handleSelectContact}
+            />
+          )}
         </Scrollbar>
         <Stack>
           <LoadingButton

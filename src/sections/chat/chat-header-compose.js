@@ -93,7 +93,7 @@ export default function ChatHeaderCompose({ contacts, onAddRecipients, selectedC
             </Box>
 
             {/* {recipient.username} */}
-            {`${recipient?.displayName}(${recipient?.realName})`}
+            {`${recipient?.displayName || ''}(${recipient?.realName})`}
           </li>
         )}
         renderTags={(selected, getTagProps) =>
@@ -101,7 +101,7 @@ export default function ChatHeaderCompose({ contacts, onAddRecipients, selectedC
             <Chip
               {...getTagProps({ index })}
               key={recipient._id}
-              label={`${recipient?.displayName}(${recipient?.realName})`}
+              label={`${recipient?.displayName || ''}(${recipient?.realName})`}
               avatar={<Avatar alt={recipient.username} src={recipient.photoURL} />}
               size="small"
               variant="soft"
