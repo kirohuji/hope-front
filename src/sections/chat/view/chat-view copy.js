@@ -20,12 +20,22 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { useSettingsContext } from 'src/components/settings';
 //
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getOrganizations, getConversations, resetActiveConversation, getMessages, getConversation, getContacts, deleteConversation, newMessageGet, mergeConversations } from 'src/redux/slices/chat';
+import {
+  getOrganizations,
+  getConversations,
+  resetActiveConversation,
+  getMessages,
+  getConversation,
+  getContacts,
+  deleteConversation,
+  newMessageGet,
+  mergeConversations,
+} from 'src/redux/slices/chat';
 import { fileService, ddpclient } from 'src/composables/context-provider';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { OpenVidu } from 'openvidu-browser';
 import { useBoolean } from 'src/hooks/use-boolean';
-import _ from 'lodash'
+import _ from 'lodash';
 import ChatNav from '../chat-nav';
 import ChatRoom from '../chat-room';
 import ChatMessageList from '../chat-message-list';
@@ -33,7 +43,7 @@ import ChatMessageInput from '../chat-message-input';
 import ChatHeaderDetail from '../chat-header-detail';
 import ChatHeaderCompose from '../chat-header-compose';
 import ChatNavItem from '../chat-nav-item';
-import UserModel from './user-model'
+import UserModel from './user-model';
 
 const conversationSelector = (state) => {
   const { conversations, activeConversationId } = state.chat;
@@ -51,16 +61,16 @@ const conversationSelector = (state) => {
   return initState;
 };
 
-function calcHeight (isDesktop, selectedConversationId) {
+function calcHeight(isDesktop, selectedConversationId) {
   if (isDesktop) {
-    return '72vh'
+    return '72vh';
   }
   return selectedConversationId ? 'calc(100vh - 70px)' : 'calc(100vh - 140px)';
 }
 
-const getToken = async (mySessionId) => fileService.getToken({ customSessionId: mySessionId })
+const getToken = async (mySessionId) => fileService.getToken({ customSessionId: mySessionId });
 
-function checkSomeoneShareScreen (subscribers) {
+function checkSomeoneShareScreen(subscribers) {
   const isScreenShared = subscribers.some((user) => user.isScreenShareActive());
   return {
     maxRatio: 3 / 2,
@@ -82,7 +92,7 @@ const sendSignalUserChanged = (data) => {
     type: 'userChanged',
   };
   OVSession.signal(signalOptions);
-}
+};
 
 const TABS = [
   {
@@ -102,7 +112,6 @@ const TABS = [
   },
 ];
 
-
 // ----------------------------------------------------------------------
 
 const OV = null;
@@ -116,7 +125,7 @@ let getMessage = null;
 let conversations2Publish = null;
 let conversations2Collection = null;
 
-export default function ChatView () {
+export default function ChatView() {
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState('conversations');
   const { conversations, contacts } = useSelector((state) => state.chat);
@@ -155,88 +164,88 @@ export default function ChatView () {
     mySessionId: selectedConversationId || 'sessionA',
     myUserName: user.username,
     localUser: new UserModel(),
-    mainStreamManager: undefined,  // Main video of the page. Will be the 'publisher' or one of the 'subscribers'
+    mainStreamManager: undefined, // Main video of the page. Will be the 'publisher' or one of the 'subscribers'
     publisher: undefined,
     subscribers: [],
-  })
+  });
 
   const onChildren = (organization) => {
     if (organization.children) {
       const level = {
         name: organization.label,
         to: organization._id,
-      }
+      };
       levels.push(level);
-      setCurrentOrganization([...organization.children, ...organization.users.map(item => ({
-        name: item.account.username,
-        photoURL: item.profile.photoURL,
-        _id: item.profile._id
-      }))])
-      setLevels(levels)
+      setCurrentOrganization([
+        ...organization.children,
+        ...organization.users.map((item) => ({
+          name: item.account.username,
+          photoURL: item.profile.photoURL,
+          _id: item.profile._id,
+        })),
+      ]);
+      setLevels(levels);
     }
-  }
+  };
   const onGoTo = async (level) => {
     let index = 0;
-    const length = _.findIndex(levels, ["to", level.to])
+    const length = _.findIndex(levels, ['to', level.to]);
     let isChildren = false;
-    let currentOrganizations = organizations
-    const levels2 = []
+    let currentOrganizations = organizations;
+    const levels2 = [];
     while (index < length) {
       isChildren = true;
       const currentLevel = levels[index];
-      currentOrganizations = _.find(currentOrganizations, ["_id", currentLevel.to]);
+      currentOrganizations = _.find(currentOrganizations, ['_id', currentLevel.to]);
       index += 1;
-      levels2.push(currentLevel)
+      levels2.push(currentLevel);
     }
     if (isChildren) {
-      await setCurrentOrganization([...currentOrganizations.children, ...currentOrganizations.users.map(item => ({
-        _id: item.account._id,
-        name: item.account.username,
-        photoURL: item.profile.photoURL
-      }))]);
+      await setCurrentOrganization([
+        ...currentOrganizations.children,
+        ...currentOrganizations.users.map((item) => ({
+          _id: item.account._id,
+          name: item.account.username,
+          photoURL: item.profile.photoURL,
+        })),
+      ]);
     } else {
       await setCurrentOrganization(currentOrganizations);
     }
     setLevels(levels2);
-  }
+  };
 
   const subscribeToChatCreated = useCallback(async () => {
     OVSession.on('signal:chat', async (event) => {
-      console.log('获取到新数据')
       // await dispatch(getConversation(selectedConversationId, 0));
-    })
-  }, [])
+    });
+  }, []);
 
   const connectToSession = useCallback(async () => {
     try {
-      console.log('connectToSession')
+      console.log('connectToSession');
       const tempToken = await getToken(session.mySessionId);
-      await setToken(tempToken)
-      OVSession
-        .connect(
-          tempToken, { clientData: session.myUserName },
-        )
-        .then(() => {
-          subscribeToChatCreated();
-          session.localUser.setNickname(session.myUserName);
-          session.localUser.setScreenShareActive(false);
-        })
+      await setToken(tempToken);
+      OVSession.connect(tempToken, { clientData: session.myUserName }).then(() => {
+        subscribeToChatCreated();
+        session.localUser.setNickname(session.myUserName);
+        session.localUser.setScreenShareActive(false);
+      });
     } catch (error) {
       console.error('There was an error getting the token:', error.code, error.message);
       alert('There was an error getting the token:', error.message);
     }
-  }, [session.mySessionId, session.localUser, session.myUserName, subscribeToChatCreated])
+  }, [session.mySessionId, session.localUser, session.myUserName, subscribeToChatCreated]);
 
   const joinSession = useCallback(async () => {
-    console.log('joinSession', joinSession)
+    console.log('joinSession', joinSession);
     OVSession = OV.initSession();
-    connectToSession()
+    connectToSession();
   }, [connectToSession]);
-
 
   const subscribeToStreamCreated = useCallback(async () => {
     OVSession.on('streamCreated', (event) => {
-      console.log('streamCreated开始数据流')
+      console.log('streamCreated开始数据流');
       const subscriber = OVSession.subscribe(event.stream, undefined);
       subscriber.on('streamPlaying', (e) => {
         checkSomeoneShareScreen(session.subscribers);
@@ -248,9 +257,9 @@ export default function ChatView () {
       //   ...session,
       //   localUser: session.localUser
       // })
-      console.log('session.localUser', session.localUser)
+      console.log('session.localUser', session.localUser);
     });
-  }, [session])
+  }, [session]);
 
   const updateSubscribers = useCallback(async () => {
     session.subscribers = remotes;
@@ -260,31 +269,34 @@ export default function ChatView () {
         isVideoActive: session.localUser.isVideoActive(),
         nickname: session.localUser.getNickname(),
         isScreenShareActive: session.localUser.isScreenShareActive(),
-      })
+      });
     }
-  }, [session, remotes])
+  }, [session, remotes]);
 
-
-  const deleteSubscriber = useCallback((stream) => {
-    const remoteUsers = session.subscribers;
-    const userStream = remoteUsers.filter((currentUser) => currentUser.getStreamManager().stream === stream)[0];
-    const index = remoteUsers.indexOf(userStream, 0);
-    if (index > -1) {
-      remoteUsers.splice(index, 1);
-      setSession({
-        ...session,
-        subscribers: remoteUsers
-      })
-    }
-  }, [session])
-
+  const deleteSubscriber = useCallback(
+    (stream) => {
+      const remoteUsers = session.subscribers;
+      const userStream = remoteUsers.filter(
+        (currentUser) => currentUser.getStreamManager().stream === stream
+      )[0];
+      const index = remoteUsers.indexOf(userStream, 0);
+      if (index > -1) {
+        remoteUsers.splice(index, 1);
+        setSession({
+          ...session,
+          subscribers: remoteUsers,
+        });
+      }
+    },
+    [session]
+  );
 
   const subscribeToStreamDestroyed = useCallback(() => {
     OVSession.on('streamDestroyed', (event) => {
       // Remove the stream from 'subscribers' array
       deleteSubscriber(event.stream);
     });
-  }, [deleteSubscriber])
+  }, [deleteSubscriber]);
 
   const subscribeToUserChanged = useCallback(() => {
     OVSession.on('signal:userChanged', (event) => {
@@ -310,16 +322,15 @@ export default function ChatView () {
       setSession({
         ...session,
         subscribers: remoteUsers,
-      })
+      });
     });
-  }, [session])
-
+  }, [session]);
 
   const connectWebCam = useCallback(async () => {
-    await subscribeToStreamCreated()
+    await subscribeToStreamCreated();
     await OV.getUserMedia({ audioSource: undefined, videoSource: undefined });
     const devices = await OV.getDevices();
-    const videoDevices = devices.filter(device => device.kind === 'videoinput');
+    const videoDevices = devices.filter((device) => device.kind === 'videoinput');
 
     const publisher = OV.initPublisher(undefined, {
       audioSource: undefined,
@@ -337,44 +348,54 @@ export default function ChatView () {
           updateSubscribers();
         });
       });
-
     }
     session.localUser.setStreamManager(publisher);
     subscribeToUserChanged();
-    subscribeToStreamDestroyed()
+    subscribeToStreamDestroyed();
     sendSignalUserChanged({ isScreenShareActive: session.localUser.isScreenShareActive() });
-  }, [updateSubscribers, subscribeToStreamDestroyed, subscribeToUserChanged, subscribeToStreamCreated, session.localUser])
+  }, [
+    updateSubscribers,
+    subscribeToStreamDestroyed,
+    subscribeToUserChanged,
+    subscribeToStreamCreated,
+    session.localUser,
+  ]);
 
   const getDetails = useCallback(async () => {
-    setConversationsLoading(true)
+    setConversationsLoading(true);
     await dispatch(getConversations());
-    await dispatch(getConversation(selectedConversationId))
+    await dispatch(getConversation(selectedConversationId));
     await dispatch(getMessages(selectedConversationId, 0));
-    setConversationsLoading(false)
+    setConversationsLoading(false);
   }, [dispatch, selectedConversationId]);
 
   useEffect(() => {
-    setConversationsLoading(true)
+    setConversationsLoading(true);
     if (selectedConversationId) {
-      getDetails()
+      getDetails();
       if (ddpclient.connected) {
-        getMessage = ddpclient.subscribe("socialize.messagesFor2", selectedConversationId, user._id, new Date());
+        getMessage = ddpclient.subscribe(
+          'socialize.messagesFor2',
+          selectedConversationId,
+          user._id,
+          new Date()
+        );
         getMessage.ready();
         reactiveCollection = ddpclient.collection('socialize:messages').reactive();
         reactiveCollection.onChange(() => {
-          dispatch(newMessageGet(selectedConversationId))
+          dispatch(newMessageGet(selectedConversationId));
         });
       }
     } else {
       dispatch(resetActiveConversation());
     }
-    setConversationsLoading(false)
+    setConversationsLoading(false);
     return () => {
       if (reactiveCollection) {
         reactiveCollection.stop();
         getMessage.stop();
       }
-    }
+    };
   }, [dispatch, active._id, getDetails, selectedConversationId, user._id]);
 
   useEffect(() => {
@@ -387,14 +408,14 @@ export default function ChatView () {
         case 'conversations':
           dispatch(getConversations());
           try {
-            conversations2Publish = ddpclient.subscribe("socialize.conversations2", user._id);
+            conversations2Publish = ddpclient.subscribe('socialize.conversations2', user._id);
             conversations2Publish.ready();
             conversations2Collection = ddpclient.collection('socialize:conversations').reactive();
             conversations2Collection.onChange(async () => {
               dispatch(getConversations());
             });
           } catch (e) {
-            console.log(e)
+            console.log(e);
           }
           break;
         case 'contacts':
@@ -406,10 +427,10 @@ export default function ChatView () {
           conversations2Publish.stop();
           conversations2Collection.stop();
         }
-      }
+      };
     }
-    return () => { };
-  }, [active._id, currentTab, dispatch, selectedConversationId, user._id])
+    return () => {};
+  }, [active._id, currentTab, dispatch, selectedConversationId, user._id]);
 
   const participants = conversation
     ? conversation.participants.filter((participant) => participant._id !== user._id)
@@ -429,19 +450,27 @@ export default function ChatView () {
       sx={{ pr: 1, pl: 2.5, py: 1, minHeight: 72 }}
     >
       {selectedConversationId ? (
-        <>{details && <ChatHeaderDetail
-          mainStreamManager={session.localUser.getStreamManager()}
-          openMedia={() => connectWebCam()}
-          participants={participants} />}</>
+        <>
+          {details && (
+            <ChatHeaderDetail
+              mainStreamManager={session.localUser.getStreamManager()}
+              openMedia={() => connectWebCam()}
+              participants={participants}
+            />
+          )}
+        </>
       ) : (
-        <ChatHeaderCompose contacts={contacts.allIds.map(id => contacts.byId[id])} onAddRecipients={handleAddRecipients} />
+        <ChatHeaderCompose
+          contacts={contacts.allIds.map((id) => contacts.byId[id])}
+          onAddRecipients={handleAddRecipients}
+        />
       )}
     </Stack>
   );
 
   const renderNav = (
     <ChatNav
-      contacts={contacts.allIds.map(id => contacts.byId[id])}
+      contacts={contacts.allIds.map((id) => contacts.byId[id])}
       conversations={conversations}
       loading={conversationsLoading}
       selectedConversationId={selectedConversationId}
@@ -450,8 +479,8 @@ export default function ChatView () {
 
   const onRefresh = async () => {
     setMessageLimit(messageLimit + 20);
-    await dispatch(getMessages(selectedConversationId, messageLimit))
-  }
+    await dispatch(getMessages(selectedConversationId, messageLimit));
+  };
 
   const renderMessages = (
     <Stack
@@ -461,7 +490,11 @@ export default function ChatView () {
         overflow: 'hidden',
       }}
     >
-      <ChatMessageList messages={conversation?.messages} participants={participants} onRefresh={onRefresh} />
+      <ChatMessageList
+        messages={conversation?.messages}
+        participants={participants}
+        onRefresh={onRefresh}
+      />
 
       <ChatMessageInput
         recipients={recipients}
@@ -487,53 +520,51 @@ export default function ChatView () {
   }, []);
 
   const renderTabs = (
-    <Tabs sx={{ width: "100%" }} variant="fullWidth" value={currentTab} onChange={handleChangeTab}>
+    <Tabs sx={{ width: '100%' }} variant="fullWidth" value={currentTab} onChange={handleChangeTab}>
       {TABS.map((tab) => (
-        <Tab
-          key={tab.value}
-          iconPosition="end"
-          value={tab.value}
-          label={tab.label} />
-      ))})
+        <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
+      ))}
+      )
     </Tabs>
-  )
+  );
   const styles = {
     typography: 'body2',
     alignItems: 'center',
     color: 'text.primary',
     display: 'inline-flex',
   };
-  const renderOrganizationsMenuItem = (organization, id) => <ChatNavItem
-    key={id}
-    onChildren={onChildren}
-    conversation={organization}
-    selected={organization._id === selectedConversationId}
-  />
+  const renderOrganizationsMenuItem = (organization, id) => (
+    <ChatNavItem
+      key={id}
+      onChildren={onChildren}
+      conversation={organization}
+      selected={organization._id === selectedConversationId}
+    />
+  );
   const renderOrganizations = (
     <Scrollbar sx={{ height: 320, ml: 1, mr: 1 }}>
-      {
-        levels && levels.length > 0 && <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="flex-start"
-          sx={{ m: 1 }}
-        >
-          {
-            levels.map((level, index) => (<Box key={index} sx={{ display: 'flex' }}>
-              <Link onClick={() => onGoTo(level)} sx={styles}>{`${level.name}`} </Link>
+      {levels && levels.length > 0 && (
+        <Stack direction="row" alignItems="center" justifyContent="flex-start" sx={{ m: 1 }}>
+          {levels.map((level, index) => (
+            <Box key={index} sx={{ display: 'flex' }}>
+              <Link onClick={() => onGoTo(level)} sx={styles}>
+                {`${level.name}`}{' '}
+              </Link>
               <div style={{ margin: '0 4px' }}> /</div>
-            </Box>))
-          }
+            </Box>
+          ))}
         </Stack>
-      }
-      {currentOrganization && currentOrganization.length > 0 ? currentOrganization.map((item, i) => renderOrganizationsMenuItem(item, i)) : organizations.map((item, i) => renderOrganizationsMenuItem(item, i))}
+      )}
+      {currentOrganization && currentOrganization.length > 0
+        ? currentOrganization.map((item, i) => renderOrganizationsMenuItem(item, i))
+        : organizations.map((item, i) => renderOrganizationsMenuItem(item, i))}
     </Scrollbar>
-  )
+  );
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-      {
-        isDesktop && <Typography
+      {isDesktop && (
+        <Typography
           variant="h4"
           sx={{
             mb: { xs: 3, md: 5 },
@@ -541,9 +572,13 @@ export default function ChatView () {
         >
           聊天
         </Typography>
-      }
-      {
-        (isDesktop || selectedConversationId) && <Stack component={!isDesktop && selectedConversationId ? null : Card} direction="row" sx={{ height: calcHeight(isDesktop, selectedConversationId) }}>
+      )}
+      {(isDesktop || selectedConversationId) && (
+        <Stack
+          component={!isDesktop && selectedConversationId ? null : Card}
+          direction="row"
+          sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
+        >
           {renderNav}
 
           <Stack
@@ -570,44 +605,47 @@ export default function ChatView () {
             </Stack>
           </Stack>
         </Stack>
-      }
-      {
-        !selectedConversationId && <Stack>
-          {!isDesktop && <>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="center"
-              sx={{ pl: 0, pr: 0 }}
-            >
-              {renderTabs}
-            </Stack>
-            <Divider />
-            {currentTab === "organizations" && renderOrganizations}
-            {currentTab === "contacts" && contacts.allIds.map(id => contacts.byId[id]).map((contact) => (
-              <ChatNavItem
-                key={contact._id}
-                conversation={{
-                  ...contact,
-                  type: 'contact'
-                }}
-                selected={contact._id === selectedConversationId}
-              />
-            ))}
-            {
-              currentTab === "conversations" && conversations.allIds.map((conversationId) => (
-                <ChatNavItem
-                  key={conversationId}
-                  deleteConversation={() => dispatch(deleteConversation(conversationId))}
-                  conversation={conversations.byId[conversationId]}
-                  selected={conversationId === selectedConversationId}
-                />
-              ))
-            }
-          </>
-          }
+      )}
+      {!selectedConversationId && (
+        <Stack>
+          {!isDesktop && (
+            <>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="center"
+                sx={{ pl: 0, pr: 0 }}
+              >
+                {renderTabs}
+              </Stack>
+              <Divider />
+              {currentTab === 'organizations' && renderOrganizations}
+              {currentTab === 'contacts' &&
+                contacts.allIds
+                  .map((id) => contacts.byId[id])
+                  .map((contact) => (
+                    <ChatNavItem
+                      key={contact._id}
+                      conversation={{
+                        ...contact,
+                        type: 'contact',
+                      }}
+                      selected={contact._id === selectedConversationId}
+                    />
+                  ))}
+              {currentTab === 'conversations' &&
+                conversations.allIds.map((conversationId) => (
+                  <ChatNavItem
+                    key={conversationId}
+                    deleteConversation={() => dispatch(deleteConversation(conversationId))}
+                    conversation={conversations.byId[conversationId]}
+                    selected={conversationId === selectedConversationId}
+                  />
+                ))}
+            </>
+          )}
         </Stack>
-      }
+      )}
     </Container>
   );
 }

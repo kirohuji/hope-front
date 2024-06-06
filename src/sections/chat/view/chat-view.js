@@ -170,7 +170,6 @@ export default function ChatView() {
     } else {
       getDetails();
       if (ddpclient?.connected && user) {
-        console.log('金');
         getMessage = ddpclient.subscribe(
           'socialize.messagesFor2',
           selectedConversationId,

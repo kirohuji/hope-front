@@ -4,7 +4,6 @@ import { Box, Skeleton, Card } from '@mui/material';
 // ----------------------------------------------------------------------
 
 export default function SkeletonPostItem({ ...other }) {
-  console.log('骨骼')
   return (
     <Card sx={{ margin: '15px 0 15px 15px', width: '110px', height: '140px' }}>
       <Skeleton variant="rectangular" width="100%" sx={{ height: 200, borderRadius: 2 }} />

@@ -15,7 +15,7 @@ export default function ChatMessageList({
   sendingMessages = [],
   messages = [],
   conversationId,
-  participants
+  participants,
 }) {
   const [isFetching, setIsFetching] = useState(false); // 是否正在加载更多消息
   const { messagesEndRef } = useMessagesScroll(messages);
@@ -28,11 +28,9 @@ export default function ChatMessageList({
 
   const handleScroll = useCallback(async () => {
     if (messagesEndRef.current.scrollTop === 0 && !isFetching) {
-      console.log('滚到顶部了');
       const scrollPosition = messagesEndRef.current.scrollHeight - messagesEndRef.current.scrollTop;
       if (!isFetching) {
         setIsFetching(true);
-        console.log('请求数据');
         await onRefresh(messages.length); // 获取更多消息
         setIsFetching(false); // 加载完成后重置状态
         messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight - scrollPosition;

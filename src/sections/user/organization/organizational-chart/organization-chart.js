@@ -197,7 +197,6 @@ export default function OrganizationalChart({
         open={openManager}
         onClose={handleCloseManagerModal}
         onDelete={() => {
-          console.log('删除');
           setOpenDeleteConfirm(true);
         }}
       />

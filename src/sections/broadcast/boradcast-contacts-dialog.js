@@ -266,7 +266,6 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
     console.log('open', open);
     if (open) {
       // setIsUpdate(true);
-      console.log('触发2');
       onRefresh();
     } else {
       setLevels([]);
