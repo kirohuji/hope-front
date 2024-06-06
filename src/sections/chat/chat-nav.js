@@ -201,18 +201,22 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
             onCloseMobile={onCloseMobile}
           />
         ))}
-      {currentTab === 'organizations' && <ChatOrganization/>}
+      {currentTab === 'organizations' && <ChatOrganization />}
       {currentTab === 'conversations' &&
-        conversations.allIds.map((conversationId) => (
-          <ChatNavItem
-            key={conversationId}
-            deleteConversation={() => dispatch(deleteConversation(conversationId))}
-            collapse={collapseDesktop}
-            conversation={conversations.byId[conversationId]}
-            selected={conversationId === selectedConversationId}
-            onCloseMobile={onCloseMobile}
-          />
-        ))}
+        conversations.allIds.map(
+          (conversationId) =>
+            !conversations.byId[conversationId].isRemove &&
+            !conversations.byId[conversationId].sessionId && (
+              <ChatNavItem
+                key={conversationId}
+                deleteConversation={() => dispatch(deleteConversation(conversationId))}
+                collapse={collapseDesktop}
+                conversation={conversations.byId[conversationId]}
+                selected={conversationId === selectedConversationId}
+                onCloseMobile={onCloseMobile}
+              />
+            )
+        )}
     </>
   );
 

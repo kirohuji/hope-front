@@ -418,7 +418,8 @@ export default function ChatView() {
                   {/* {loading && <LinearProgress color="inherit" sx={{ mt: 1, mb: 1, width: 1 }} />} */}
                   {conversations.allIds.map(
                     (conversationId) =>
-                      !conversations.byId[conversationId].isRemove && (
+                      !conversations.byId[conversationId].isRemove &&
+                      !conversations.byId[conversationId].sessionId && (
                         <ChatNavItem
                           key={conversationId}
                           deleteConversation={() => {

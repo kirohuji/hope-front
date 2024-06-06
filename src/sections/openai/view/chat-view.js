@@ -300,7 +300,8 @@ export default function ChatView() {
                 <>
                   {conversations.allIds.map(
                     (conversationId) =>
-                      !conversations.byId[conversationId].isRemove && (
+                      !conversations.byId[conversationId].isRemove &&
+                      conversations.byId[conversationId].sessionId && (
                         <ChatNavItem
                           key={conversationId}
                           deleteConversation={() => {
