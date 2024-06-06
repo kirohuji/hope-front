@@ -10,6 +10,7 @@ import Avatar from '@mui/material/Avatar';
 import Collapse from '@mui/material/Collapse';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
+import ListItem from '@mui/material/ListItem';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSnackbar } from 'src/components/snackbar';
@@ -53,7 +54,7 @@ export default function ChatRoomGroup({ conversation, participants }) {
   const totalParticipants = participants.length;
 
   const renderBtn = (
-    <ListItemButton
+    <ListItem
       onClick={collapse.onToggle}
       sx={{
         pl: 2.5,
@@ -73,8 +74,9 @@ export default function ChatRoomGroup({ conversation, participants }) {
             size="small"
             color="primary"
             onClick={(e) => {
-              e.stopPropagation();
               dialog.onTrue();
+              e.preventDefault();
+              e.stopPropagation();
             }}
             sx={{
               ml: 1,
@@ -95,13 +97,17 @@ export default function ChatRoomGroup({ conversation, participants }) {
         width={16}
         icon={collapse.value ? 'eva:arrow-ios-downward-fill' : 'eva:arrow-ios-forward-fill'}
       />
-    </ListItemButton>
+    </ListItem>
   );
 
   const renderContent = (
     <Scrollbar sx={{ height: 56 * 8 }}>
       {participants.map((participant) => (
-        <ListItemButton key={participant._id} onClick={() => handleOpen(participant)}>
+        <ListItem
+          key={participant._id}
+          onClick={() => handleOpen(participant)}
+          sx={{ cursor: 'pointer' }}
+        >
           <Badge
             variant={participant.status}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -135,7 +141,7 @@ export default function ChatRoomGroup({ conversation, participants }) {
               <Iconify icon="eva:more-vertical-fill" />
             </IconButton>
           )}
-        </ListItemButton>
+        </ListItem>
       ))}
     </Scrollbar>
   );
