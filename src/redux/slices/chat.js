@@ -457,14 +457,15 @@ export function getConversations(conversationsId) {
     }
   };
 }
-// 获取聊天会话
+// 获取聊天会话 // 需要优化,因为 每次自动刷新都会影响所有的会话
 export function getSessions(conversationsId) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
       const data = await messagingService.usersAndConversations(conversationsId, true);
       if (conversationsId) {
-        dispatch(slice.actions.getConversationSuccess(data[0]));
+        // dispatch(slice.actions.getConversationSuccess(data[0]));
+        dispatch(slice.actions.getConversationsSuccess(data));
       } else {
         dispatch(
           slice.actions.getConversationsSuccess(

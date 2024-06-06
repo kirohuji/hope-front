@@ -4,7 +4,7 @@ import SimpleDDP from 'simpleddp';
 import { simpleDDPLogin } from 'simpleddp-plugin-login';
 import _ from 'lodash';
 import { useDispatch } from 'src/redux/store';
-import { getConversations } from 'src/redux/slices/chat';
+import { getConversations, getSessions } from 'src/redux/slices/chat';
 import { MeteorContext } from './meteor-context';
 
 const initialState = {
@@ -84,12 +84,20 @@ export function MeteorProvider({ endpoint, children }) {
 
   const reducerDispatch = useDispatch();
 
-  const updateConversationsByDebounce = _.debounce((target) => {
-    reducerDispatch(
-      getConversations({
-        ids: target.map((item) => item.id),
-      })
-    );
+  const updateConversationsByDebounce = _.debounce((target, isChatgpt) => {
+    if (isChatgpt) {
+      reducerDispatch(
+        getSessions({
+          ids: target.map((item) => item.id),
+        })
+      );
+    } else {
+      reducerDispatch(
+        getConversations({
+          ids: target.map((item) => item.id),
+        })
+      );
+    }
   }, 2000);
 
   const subConversations = useCallback(async () => {
@@ -99,7 +107,8 @@ export function MeteorProvider({ endpoint, children }) {
     conversationsCollection = server.collection('socialize:conversations');
     conversationsCollection.onChange((target) => {
       if (target.changed && target.changed.next) {
-        updateConversationsByDebounce([target.changed.next]);
+        console.log('target.changed.next', target.changed.next);
+        updateConversationsByDebounce([target.changed.next], !!target.changed.next.sessionId);
       }
     });
   }, [state, updateConversationsByDebounce]);

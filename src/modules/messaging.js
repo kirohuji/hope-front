@@ -10,15 +10,15 @@ export default class MessagingService {
   }
 
   usersAndConversations(conversationsId, isChatgpt) {
-    if (conversationsId) {
-      return this.api.post(`${this.model}/users/conversations`, conversationsId);
-      // return this.api.post(`${this.model}/users/conversations`, target);
-    }
     if (isChatgpt) {
       return this.api.post(`${this.model}/users/conversations/participants`, {
         participants: ['a5u9kNTzKAdghpr55'],
         isSession: true,
       });
+    }
+    if (conversationsId) {
+      return this.api.post(`${this.model}/users/conversations`, conversationsId);
+      // return this.api.post(`${this.model}/users/conversations`, target);
     }
     return this.api.get(`${this.model}/users/conversations`);
   }
