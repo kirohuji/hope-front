@@ -23,7 +23,6 @@ import { useEventListener } from 'src/hooks/use-event-listener';
 import { varHover } from 'src/components/animate';
 import Scrollbar from 'src/components/scrollbar';
 import Iconify from 'src/components/iconify';
-import SearchNotFound from 'src/components/search-not-found';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import ChatHeaderCompose from 'src/sections/chat/chat-header-compose';
 import ChatOrganization from 'src/sections/chat/chat-organization';
@@ -126,8 +125,6 @@ export default function ChatPopover() {
     setSearchQuery(event.target.value);
   }, []);
 
-  const notFound = searchQuery && !data.length;
-
   const renderButton = (
     <>
       <IconButton
@@ -219,7 +216,7 @@ export default function ChatPopover() {
           <InputBase
             fullWidth
             autoFocus
-            placeholder="Search..."
+            placeholder="搜索..."
             value={searchQuery}
             sx={{ mt: 1 }}
             onChange={handleSearch}
@@ -234,21 +231,15 @@ export default function ChatPopover() {
           />
         </Box>
         <Scrollbar sx={{ p: 0, pb: 2, height: 500 }}>
-          {/* {notFound ? <SearchNotFound query={searchQuery} sx={{ py: 10 }} /> : renderOrganizations} */}
-          {notFound ? (
-            <SearchNotFound query={searchQuery} sx={{ py: 10 }} />
-          ) : (
-            <ChatOrganization
-              isMulti
-              cascadeCheck
-              searchQuery={searchQuery}
-              selectedContacts={selectedContacts}
-              checkeds={checkeds}
-              handleChange={(organization) => handleChange(organization)}
-              handleSelectCascadeContacts={handleSelectCascadeContacts}
-              handleSelectContact={handleSelectContact}
-            />
-          )}
+          <ChatOrganization
+            isMulti
+            cascadeCheck
+            searchQuery={searchQuery}
+            selectedContacts={selectedContacts}
+            checkeds={checkeds}
+            handleSelectCascadeContacts={handleSelectCascadeContacts}
+            handleSelectContact={handleSelectContact}
+          />
         </Scrollbar>
         <Stack>
           <LoadingButton

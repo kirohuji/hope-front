@@ -13,6 +13,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { getOrganizations, getOrganizationsOnlyChildren } from 'src/redux/slices/chat';
 import _ from 'lodash';
+import SearchNotFound from 'src/components/search-not-found';
 
 const ISCHILDRENONLY = true;
 export default function ChatOrganization({
@@ -20,7 +21,6 @@ export default function ChatOrganization({
   handleSelectContact,
   searchQuery,
   handleSelectCascadeContacts,
-  handleChange,
   checkeds = [],
   isMulti,
 }) {
@@ -29,44 +29,33 @@ export default function ChatOrganization({
 
   const [loading, setLoading] = useState(true);
 
-  const [levels, setLevels] = useState([]);
-
   const { active } = useSelector((state) => state.scope);
 
   const [currentOrganization, setCurrentOrganization] = useState([]);
 
   const [currentFirstOrganization, setCurrentFirstOrganization] = useState([]);
 
-  const [isFirst, setIsFirst] = useState(true);
+  const [levels, setLevels] = useState([
+    {
+      name: '希望之家',
+      to: active?._id,
+    },
+  ]);
+  const notFound = debouncedFilters && !currentOrganization.length;
+
   const onRefreshWithOrganization = useCallback(
     async (query) => {
-      if (active?._id && query) {
+      if (active?._id) {
         setLoading(true);
         const organizationData = await dispatch(
           getOrganizationsOnlyChildren(active?._id, active?._id, query)
         );
         setCurrentFirstOrganization(organizationData);
-        if (handleChange) {
-          handleChange(organizationData);
-        }
         setCurrentOrganization(organizationData);
         setLoading(false);
-        setIsFirst(false);
-      } else if (active?._id && isFirst) {
-        setLoading(true);
-        const organizationData = await dispatch(
-          getOrganizationsOnlyChildren(active?._id, active?._id, query)
-        );
-        setCurrentFirstOrganization(organizationData);
-        if (handleChange) {
-          handleChange(organizationData);
-        }
-        setCurrentOrganization(organizationData);
-        setLoading(false);
-        setIsFirst(false);
       }
     },
-    [active?._id, dispatch, handleChange, isFirst]
+    [active?._id, dispatch]
   );
 
   const onChildren = async (organization) => {
@@ -189,24 +178,28 @@ export default function ChatOrganization({
           ))}
         </Stack>
       )}
-      {currentOrganization.map((item, i) => renderOrganizationsMenuItem(item, i))}
+      {loading ? (
+        <div
+          style={{
+            display: 'flex',
+            height: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          加载中...
+        </div>
+      ) : (
+        currentOrganization.map((item, i) => renderOrganizationsMenuItem(item, i))
+      )}
     </Scrollbar>
   );
 
   useEffect(() => {
-    console.log(debouncedFilters);
-    if (levels.length === 0) {
-      levels.push({
-        name: '希望之家',
-        to: active?._id,
-      });
-    }
-    if (loading) {
-      onRefreshWithOrganization(debouncedFilters);
-    }
-  }, [active?._id, levels, loading, onRefreshWithOrganization, debouncedFilters]);
+    onRefreshWithOrganization(debouncedFilters);
+  }, [onRefreshWithOrganization, debouncedFilters]);
 
-  return renderOrganizations;
+  return notFound ? <SearchNotFound query={searchQuery} sx={{ py: 10 }} /> : renderOrganizations;
 }
 
 ChatOrganization.propTypes = {
@@ -214,7 +207,6 @@ ChatOrganization.propTypes = {
   checkeds: PropTypes.array,
   searchQuery: PropTypes.any,
   handleSelectContact: PropTypes.func,
-  handleChange: PropTypes.func,
   handleSelectCascadeContacts: PropTypes.func,
   isMulti: PropTypes.bool,
 };

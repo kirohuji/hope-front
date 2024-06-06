@@ -148,7 +148,7 @@ export default function ChatOrganizationDialog({ open, onClose, conversation, pa
         <InputBase
           fullWidth
           autoFocus
-          placeholder="Search..."
+          placeholder="搜索..."
           value={searchQuery}
           sx={{ mt: 1 }}
           onChange={handleSearch}
@@ -165,6 +165,7 @@ export default function ChatOrganizationDialog({ open, onClose, conversation, pa
       <Scrollbar sx={{ p: 0, pb: 2, height: 500 }}>
         <ChatOrganization
           isMulti
+          searchQuery={searchQuery}
           selectedContacts={selectedContacts}
           checkeds={checkeds}
           handleSelectContact={handleSelectContact}
