@@ -307,7 +307,7 @@ export function List({ data, parentNode, depth, variant, sx }) {
                 }}
                 onDelete={() => {
                   setItem(data);
-                  setParent(null);
+                  setParent(parentNode);
                   setOpenDeleteConfirm(true);
                   setOpenManager(false);
                 }}
