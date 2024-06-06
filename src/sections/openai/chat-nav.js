@@ -134,7 +134,6 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
     [handleClickAwaySearch, router]
   );
 
-
   const renderList = (
     <>
       <Divider />
@@ -143,7 +142,7 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
           <ChatNavItem
             key={conversationId}
             deleteConversation={async (callback) => {
-              await dispatch(deleteConversation(conversationId))
+              await dispatch(deleteConversation(conversationId, true));
               callback();
             }}
             collapse={collapseDesktop}

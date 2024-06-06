@@ -526,13 +526,18 @@ export function getConversationByConversationKey(conversationKey) {
 }
 
 // 删除聊天会话
-export function deleteConversation(conversationKey) {
+export function deleteConversation(conversationKey, isChatgpt) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
       await messagingService.deleteConversation({ _id: conversationKey });
-      const data = await messagingService.usersAndConversations();
-      dispatch(slice.actions.getConversationsSuccess(data));
+      if (isChatgpt) {
+        const data = await messagingService.usersAndConversations(null, true);
+        dispatch(slice.actions.getConversationsSuccess(data));
+      } else {
+        const data = await messagingService.usersAndConversations();
+        dispatch(slice.actions.getConversationsSuccess(data));
+      }
     } catch (error) {
       dispatch(
         slice.actions.hasError({
