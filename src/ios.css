@@ -110,3 +110,9 @@
 .MuiInputBase-root.message-input {
   width: 100%;
 }
+.return-layout {
+
+}
+.return-main {
+  height: calc(100vh - 72px);
+}

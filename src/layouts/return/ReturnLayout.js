@@ -15,15 +15,17 @@ export default function ReturnLayout() {
   const isOffset = useOffSetTop(HEADER.H_MAIN_DESKTOP);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative' }}  className='return-layout'>
       <Header isOffset={isOffset} />
       <Box
+        component="main"
+        className='return-main'
         sx={{
           // display: { lg: 'flex' },
           display: 'flex',
-          minHeight: 1,
+          // minHeight: 1,
           // minHeight: { lg: 1 },
-          height: 'calc(100vh - 128px)',
+          // height: 'calc(100vh - 72px)',
           // height: '400px',
         }}
       >

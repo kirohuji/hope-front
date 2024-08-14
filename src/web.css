@@ -93,3 +93,11 @@ body {
 .MuiInputBase-root.message-input {
   width: 100%;
 }
+
+.return-main {
+  height: calc(100vh - 72px);
+  margin-top: 72px;
+}
+.return-layout {
+  overflow: hidden;
+}

@@ -10,6 +10,7 @@ import { bgBlur } from 'src/theme/css';
 // routes
 import { IconButtonAnimate } from 'src/components/animate';
 import { useRouter } from 'src/routes/hook';
+import { useResponsive } from 'src/hooks/use-responsive';
 import { paths } from '../../routes/paths';
 // components
 import Logo from '../../components/logo';
@@ -23,8 +24,9 @@ Header.propTypes = {
 export default function Header({ isOffset }) {
   const theme = useTheme();
   const router = useRouter();
+  const mdUp = useResponsive('up', 'md');
   return (
-    <AppBar color="transparent" sx={{ boxShadow: 0 }} position="static">
+    <AppBar color="transparent" sx={{ boxShadow: 0 }} position={mdUp ? 'static' : 'absolute'}>
       <Toolbar
         sx={{
           height: {
