@@ -374,20 +374,20 @@ export default function ChatMessageInput({
         onChange={uploadImage}
         type="file"
         ref={imageRef}
-        style={{ display: 'none' }}
+        style={{ display: 'none', position: 'absolute' }}
         accept="image/*"
       />
       <input
         onChange={uploadFile}
         type="file"
         ref={fileRef}
-        style={{ display: 'none' }}
+        style={{ display: 'none', position: 'absolute' }}
         accept=".xls,.xlsx,.pdf,.doc,.docx,.ppt,.pptx,.mp4,.mov,.avi,.mkv,.mp3"
       />
       <input
         ref={clipboardRef}
         type="file"
-        style={{ display: 'none' }}
+        style={{ display: 'none', position: 'absolute' }}
         contentEditable="true"
         onPaste={handlePaste}
       />
