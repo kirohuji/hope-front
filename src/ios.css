@@ -13,6 +13,7 @@
   .yarl__root,
   .history-content-drawer,
   .notification-popover,
+  .calendar-filter-drawer,
   .chat-room-group-drawer {
     padding-top: calc(constant(safe-area-inset-top)) !important;
     padding-top: calc(env(safe-area-inset-top)) !important;
