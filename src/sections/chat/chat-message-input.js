@@ -352,14 +352,12 @@ export default function ChatMessageInput({
               <IconButton onClick={handleImage}>
                 <Iconify icon="solar:gallery-add-bold" />
               </IconButton>
-              <IconButton onClick={handleAttach}>
+              {/* <IconButton onClick={handleAttach}>
                 <Iconify icon="eva:attach-2-fill" />
-              </IconButton>
-              {false && (
-                <IconButton>
+              </IconButton> */}
+              {/* <IconButton>
                   <Iconify icon="solar:microphone-bold" />
-                </IconButton>
-              )}
+                </IconButton> */}
             </Stack>
           }
           sx={{
