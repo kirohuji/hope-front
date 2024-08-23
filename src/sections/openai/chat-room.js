@@ -96,10 +96,7 @@ export default function ChatRoom({ participants, conversation, messages }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lgUp]);
 
-
-  const renderContent = (
-    <ChatRoomAttachments attachments={attachments} />
-  );
+  const renderContent = <ChatRoomAttachments attachments={attachments} />;
 
   const handleToggleHistory = useCallback(() => {
     setDate(new Date());
@@ -286,12 +283,14 @@ export default function ChatRoom({ participants, conversation, messages }) {
           sx: { width: '100%' },
         }}
       >
-        <div style={{ mt: '14px', background: 'white' }}>
-          <IconButtonAnimate sx={{ mr: 1, color: 'text.primary' }} onClick={onCloseHistoryMobile}>
-            <Iconify icon="eva:arrow-ios-back-fill" />
-          </IconButtonAnimate>
+        <div className="history-content-drawer">
+          <div style={{ mt: '14px', background: 'white' }}>
+            <IconButtonAnimate sx={{ mr: 1, color: 'text.primary' }} onClick={onCloseHistoryMobile}>
+              <Iconify icon="eva:arrow-ios-back-fill" />
+            </IconButtonAnimate>
+          </div>
+          {renderHistoryContent}
         </div>
-        {renderHistoryContent}
       </Drawer>
     </Box>
   );

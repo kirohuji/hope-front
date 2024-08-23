@@ -1767,6 +1767,11 @@
   resolved "https://registry.npmmirror.com/@capacitor/ios/-/ios-6.1.0.tgz#0f6b9818032f4e187bbdd63015c8c040fcde85a7"
   integrity sha512-ex2q0LAyDDgfJj4fKDQuSNUYSpic3939/8A/sIIIxslwuRBF5i5fuhAngu6BhCt/pQSfEETcHtg2j2vD+YEZ2w==
 
+"@capacitor/keyboard@^6.0.2":
+  version "6.0.2"
+  resolved "https://registry.npmmirror.com/@capacitor/keyboard/-/keyboard-6.0.2.tgz#5c8e2a499284dfbfd90142d08c91cb5a13e3c801"
+  integrity sha512-fOfO3rQ0ZXuTHpK03INVTwmBnpqMiH8EHPpNaHjwjKwdrVRWBvtgIFhuyHNXh53rdcXw+uHB+1RIiNabnCrITw==
+
 "@capacitor/preferences@^6.0.0":
   version "6.0.1"
   resolved "https://registry.npmmirror.com/@capacitor/preferences/-/preferences-6.0.1.tgz#a6cccee02ea0a8bccac879235ebc18cae15d55ba"
@@ -1776,6 +1781,11 @@
   version "6.0.1"
   resolved "https://registry.npmmirror.com/@capacitor/splash-screen/-/splash-screen-6.0.1.tgz#562213f375a200a89cf8f33addf1f69ca882c1df"
   integrity sha512-ndsqq335Mb6NxDrcXsT0PVwomo/UrDN4ykqpu8wY8F3HT4vbr8Hojh5PLqtlTy6TCIIIen58fkEgIoyGPsPSaw==
+
+"@capacitor/status-bar@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.npmmirror.com/@capacitor/status-bar/-/status-bar-6.0.1.tgz#27cef2560cdefb8e14d2cecc976056ede7b822ef"
+  integrity sha512-Usd9hZZQVAqy+jJfL7jRcYI7dcsxN09Na1yttwdl+F1bk3Ztoukk7CGPDm5VgKUSs53ihQBOy1+sczCACxhNiw==
 
 "@capgo/capacitor-updater@^5.3.43":
   version "5.3.44"

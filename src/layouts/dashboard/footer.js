@@ -1,5 +1,6 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import Badge from '@mui/material/Badge';
@@ -11,6 +12,8 @@ import { updateBottomNavigationActionValue } from 'src/redux/slices/dashboard';
 import { usePathname } from 'src/routes/hook';
 import _ from 'lodash';
 import { useAuthContext } from 'src/auth/hooks';
+import { Capacitor } from '@capacitor/core';
+import { Keyboard } from '@capacitor/keyboard';
 import { ICONS } from './config-navigation';
 
 const navigations = [
@@ -20,12 +23,12 @@ const navigations = [
     to: '/dashboard/chat',
     auth: ['Chat'],
   },
-  {
-    label: '文件',
-    icon: ICONS.file,
-    to: '/dashboard/file-manager',
-    auth: ['FileManager'],
-  },
+  // {
+  //   label: '文件',
+  //   icon: ICONS.file,
+  //   to: '/dashboard/file-manager',
+  //   auth: ['FileManager'],
+  // },
   {
     label: '活动',
     icon: ICONS.tour,
@@ -36,11 +39,11 @@ const navigations = [
     icon: ICONS.user,
     to: '/dashboard/calendar',
   },
-  {
-    label: '阅读',
-    icon: ICONS.blog,
-    to: '/dashboard/training/dashboard',
-  },
+  // {
+  //   label: '阅读',
+  //   icon: ICONS.blog,
+  //   to: '/dashboard/training/dashboard',
+  // },
 ];
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -53,6 +56,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 export default function DashboardFooter() {
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
   const dashboard = useSelector((state) => state.dashboard);
 
   const chat = useSelector((state) => state.chat);
@@ -70,6 +75,22 @@ export default function DashboardFooter() {
     } else {
       dispatch(updateBottomNavigationActionValue(0));
     }
+    if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
+      console.log('执行监听')
+      Keyboard.addListener('keyboardWillShow', () => {
+        console.log('keyboardWillShow')
+        setIsKeyboardVisible(true);
+      });
+
+      Keyboard.addListener('keyboardWillHide', () => {
+        setIsKeyboardVisible(false);
+      });
+
+      return () => {
+        Keyboard.removeAllListeners();
+      };
+    }
+    return ()=>{}
   }, [dispatch, pathname, chat.conversations.unreadCount]);
 
   const checkAuth = (nav, index) => {
@@ -107,7 +128,14 @@ export default function DashboardFooter() {
 
   return (
     <Paper
-      sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100, background: 'none' }}
+      sx={{
+        position: 'fixed',
+        bottom: isKeyboardVisible ? '-100px' : 0,
+        left: 0,
+        right: 0,
+        zIndex: 100,
+        background: 'none',
+      }}
       elevation={5}
       className="bottom-navigation"
     >

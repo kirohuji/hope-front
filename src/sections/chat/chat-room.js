@@ -283,7 +283,7 @@ export default function ChatRoom({ participants, conversation, messages }) {
             sx: { width: NAV_WIDTH },
           }}
         >
-          {renderContent}
+          <div className="chat-room-group-drawer">{renderContent}</div>
         </Drawer>
       )}
       <Drawer
@@ -297,12 +297,14 @@ export default function ChatRoom({ participants, conversation, messages }) {
           sx: { width: '100%' },
         }}
       >
-        <div style={{ mt: '14px', background: 'white' }}>
-          <IconButtonAnimate sx={{ mr: 1, color: 'text.primary' }} onClick={onCloseHistoryMobile}>
-            <Iconify icon="eva:arrow-ios-back-fill" />
-          </IconButtonAnimate>
+        <div className="history-content-drawer">
+          <div style={{ mt: '14px', background: 'white' }}>
+            <IconButtonAnimate sx={{ mr: 1, color: 'text.primary' }} onClick={onCloseHistoryMobile}>
+              <Iconify icon="eva:arrow-ios-back-fill" />
+            </IconButtonAnimate>
+          </div>
+          {renderHistoryContent}
         </div>
-        {renderHistoryContent}
       </Drawer>
     </Box>
   );

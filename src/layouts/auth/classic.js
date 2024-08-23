@@ -128,12 +128,31 @@ export default function AuthClassicLayout({ children, image, title }) {
     </Stack>
   );
 
+  const renderFooter = (
+    <Box
+      sx={{
+        width: '100%',
+        py: 2,
+        textAlign: 'center',
+        position: 'absolute',
+        bottom: 0,
+        bgcolor: alpha(theme.palette.background.default, 0.8),
+        color: theme.palette.text.secondary,
+      }}
+    >
+      <Typography variant="body2">
+        © 2024 lourd.top | 浙ICP备2023041140号-2A
+      </Typography>
+    </Box>
+  );
+
   return (
     <Stack
       component="main"
       direction="row"
       sx={{
         minHeight: '100vh',
+        position: 'relative',
       }}
     >
       {renderLogo}
@@ -141,6 +160,8 @@ export default function AuthClassicLayout({ children, image, title }) {
       {upMd && renderSection}
 
       {renderContent}
+
+      {renderFooter}
     </Stack>
   );
 }

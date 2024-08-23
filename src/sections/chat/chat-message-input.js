@@ -346,9 +346,9 @@ export default function ChatMessageInput({
           }
           endAdornment={
             <Stack direction="row" sx={{ flexShrink: 0 }}>
-              <IconButton onClick={triggerPasteEvent}>
+              {/* <IconButton onClick={triggerPasteEvent}>
                 <Iconify icon="streamline:copy-paste" />
-              </IconButton>
+              </IconButton> */}
               <IconButton onClick={handleImage}>
                 <Iconify icon="solar:gallery-add-bold" />
               </IconButton>

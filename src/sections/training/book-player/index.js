@@ -190,14 +190,14 @@ export default function BookPlayer() {
               px: 2,
               pb: 2,
               height: '100vh',
-              overflow: 'auto',
+              overflow: 'hidden',
             }}
           >
             <Header isOffset={isOffset} onClose={toggleDrawer(false)} />
-            <ScrollProgress
+            {/* <ScrollProgress
               scrollYProgress={scrollContainer.scrollYProgress}
               sx={{ position: 'unset', height: 6, background: 'black' }}
-            />
+            /> */}
 
             <Box
               sx={{
@@ -205,7 +205,7 @@ export default function BookPlayer() {
                 height: 'calc(100% - 64px)',
               }}
             >
-              <Scrollbar ref={containerRef} sx={{ height: '100%' }}>
+              <Scrollbar ref={containerRef} sx={{ height: 'calc(100% - 80px)' }}>
                 {!selectLoading.value && (
                   <ArticleDetailsView
                     articleId={article._id}

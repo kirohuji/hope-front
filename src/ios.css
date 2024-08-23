@@ -10,6 +10,13 @@
 /* @supports (bottom: env(safe-area-inset-bottom)) { */
 @supports (-webkit-touch-callout: none) {
   /*针对IOS的css*/
+  .yarl__root,
+  .history-content-drawer,
+  .notification-popover,
+  .chat-room-group-drawer {
+    padding-top: calc(constant(safe-area-inset-top)) !important;
+    padding-top: calc(env(safe-area-inset-top)) !important;
+  }
   main,
   .main {
     padding-top: calc(constant(safe-area-inset-top) * 2.5) !important;

@@ -8,6 +8,7 @@ import { Capacitor } from '@capacitor/core';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { App } from '@capacitor/app';
 import { useMeteorContext } from 'src/meteor/hooks';
+import { StatusBar } from '@capacitor/status-bar';
 import { AuthContext } from './auth-context';
 import { setSession, setInfo } from './utils';
 
@@ -165,8 +166,10 @@ export function AuthProvider({ children }) {
     if (Capacitor.getPlatform() === 'ios') {
       console.log('iOS!');
       import('../../../ios.css');
+      StatusBar.setOverlaysWebView({ overlay: true });
     } else if (Capacitor.getPlatform() === 'android') {
       console.log('Android!');
+      StatusBar.setOverlaysWebView({ overlay: true });
     } else {
       console.log('Web!');
       import('../../../web.css');

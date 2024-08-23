@@ -45,7 +45,7 @@ import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 import { MeteorProvider } from 'src/meteor/context';
 
 console.log(process.env.NODE_ENV)
-const connectUrl = process.env.NODE_ENV === 'development' ? 'ws://localhost:3030/websocket' : 'wss://www.lourd.top/websocket';
+const connectUrl = process.env.NODE_ENV === 'development' ? 'wss://www.lourd.top/websocket' : 'wss://www.lourd.top/websocket';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/amplify';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/firebase';
