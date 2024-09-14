@@ -118,8 +118,28 @@ export default function ChatMessageInput({
       source: CameraSource.Photos, // 直接打开 Photo Library
       quality: 90,
     });
-    uploadImage(image)
+    const response = await fetch(image.webPath);
+    const blob = await response.blob();
+    const file = new File([blob], 'photo.jpg', { type: blob.type });
+    uploadImage(file)
   };
+  const handleCamera = useCallback(async ()=>{
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const image = await Camera.getPhoto({
+          resultType: CameraResultType.Uri, // 使用 URI 作为结果类型
+          source: CameraSource.Camera, // 指定使用相机
+          quality: 90, // 设置图像质量
+        });
+        const response = await fetch(image.webPath);
+        const blob = await response.blob();
+        const file = new File([blob], 'photo.jpg', { type: blob.type });
+        uploadImage(file)
+      } catch (error) {
+        console.error('Error taking photo:', error);
+      }
+    } 
+  },[])
   const handleImage = useCallback(() => {
     if (Capacitor.isNativePlatform()) {
       console.log('isNativePlatform');
@@ -370,6 +390,9 @@ export default function ChatMessageInput({
               </IconButton> */}
               <IconButton onClick={handleImage}>
                 <Iconify icon="solar:gallery-add-bold" />
+              </IconButton>
+              <IconButton onClick={handleCamera}>
+                <Iconify icon="mdi:camera" />
               </IconButton>
               {/* <IconButton onClick={handleAttach}>
                 <Iconify icon="eva:attach-2-fill" />
