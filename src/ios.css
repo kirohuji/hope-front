@@ -1,4 +1,8 @@
 @supports (top: env(safe-area-inset-top)) {
+  .notistack-SnackbarContainer {
+    margin-top: constant(safe-area-inset-top);
+    margin-top: env(safe-area-inset-top);
+  }
   header,
   .header {
     background-color: white;
