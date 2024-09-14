@@ -1708,6 +1708,11 @@
     tslib "2.6.2"
     yargs "17.7.2"
 
+"@capacitor/camera@^6.0.2":
+  version "6.0.2"
+  resolved "https://registry.npmmirror.com/@capacitor/camera/-/camera-6.0.2.tgz#353374f83a64b66b8b474a04d5e8167d680490ef"
+  integrity sha512-bC2xxCcNTyfKYuLNLbGIyLlK9fok2MDhF4v8s01jusYAxoBI7LaKWQMQoGBA1MY/Ec6x/2pjIr+7k89Kmdr74g==
+
 "@capacitor/cli@^5.3.0":
   version "5.7.6"
   resolved "https://registry.npmmirror.com/@capacitor/cli/-/cli-5.7.6.tgz"

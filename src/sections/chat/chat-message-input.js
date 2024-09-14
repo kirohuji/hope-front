@@ -8,6 +8,9 @@ import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'src/components/snackbar';
+import { Capacitor } from '@capacitor/core';
+import { Camera, CameraSource, CameraResultType } from '@capacitor/camera';
+
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -109,9 +112,20 @@ export default function ChatMessageInput({
     }
   }, []);
 
+  const openPhotoLibrary = async () => {
+    const image = await Camera.getPhoto({
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Photos, // 直接打开 Photo Library
+      quality: 90,
+    });
+    uploadImage(image)
+  };
   const handleImage = useCallback(() => {
-    if (imageRef.current) {
-      imageRef.current.click();
+    if (Capacitor.isNativePlatform()) {
+      console.log('isNativePlatform');
+      openPhotoLibrary();
+    } else if (imageRef.current) {
+        imageRef.current.click();
     }
   }, []);
 
@@ -201,11 +215,16 @@ export default function ChatMessageInput({
     },
     [clipboardOpen]
   );
-  const uploadImage = async () => {
+  const uploadImage = async (receivedImage) => {
     try {
+      let file = null;
       if (imageRef.current) {
+        file = imageRef.current.files[0];
+      } else if(receivedImage){
+        file = receivedImage
+      }
+      if(file){
         loading.onTrue();
-        const file = imageRef.current.files[0];
         const formData = new FormData();
         formData.append('file', file);
         const { link } = await fileService.uploadToMessage(formData);
