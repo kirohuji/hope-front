@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 // @mui
-import { useTheme } from '@mui/material/styles';
+import { useTheme, styled } from '@mui/material/styles';
 import { AppBar, Toolbar, Box } from '@mui/material';
 // config
 import { HEADER } from 'src/config-global';
@@ -10,21 +10,47 @@ import { bgBlur } from 'src/theme/css';
 // routes
 import { IconButtonAnimate } from 'src/components/animate';
 import { useRouter } from 'src/routes/hook';
+import { useSelector } from 'src/redux/store';
+import { usePathname } from 'src/routes/hook';
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useDispatch } from 'src/redux/store';
+import { getConversations } from 'src/redux/slices/chat';
 import { paths } from '../../routes/paths';
 // components
 import Logo from '../../components/logo';
 import Iconify from '../../components/iconify';
+import { useEffect } from 'react';
 // ----------------------------------------------------------------------
 
 Header.propTypes = {
   isOffset: PropTypes.bool,
 };
 
+const CircleText = styled('div')(({ theme }) => ({
+  backgroundColor: '#ccc',
+  width: '22px',
+  height: '22px',
+  borderRadius: '50%',
+  marginTop: '2px',
+  marginLeft: '-8px',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  fontSize: '12px',
+  color: '#333',
+}));
 export default function Header({ isOffset }) {
   const theme = useTheme();
   const router = useRouter();
   const mdUp = useResponsive('up', 'md');
+  const chat = useSelector((state) => state.chat);
+  const pathname = usePathname();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (pathname === '/chat') {
+      dispatch(getConversations());
+    }
+  }, [dispatch]);
   return (
     <AppBar color="transparent" sx={{ boxShadow: 0 }} position={mdUp ? 'static' : 'absolute'}>
       <Toolbar
@@ -48,15 +74,27 @@ export default function Header({ isOffset }) {
           background: 'white',
         }}
       >
-        <div style={{ position: 'absolute', top: '14px', left: 0 }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '14px',
+            left: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <IconButtonAnimate
-            sx={{ mr: 1, color: 'text.primary' }}
+            sx={{ mr: 0, color: 'text.primary' }}
             onClick={() => {
               router.back();
             }}
           >
             <Iconify icon="eva:arrow-ios-back-fill" />
           </IconButtonAnimate>
+          {pathname === '/chat' && chat.conversations.unreadCount > 0 && (
+            <CircleText>{chat.conversations.unreadCount}</CircleText>
+          )}
         </div>
       </Toolbar>
 

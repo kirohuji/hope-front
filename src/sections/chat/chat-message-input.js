@@ -120,7 +120,7 @@ export default function ChatMessageInput({
     });
     const response = await fetch(image.webPath);
     const blob = await response.blob();
-    const file = new File([blob], 'photo.jpg', { type: blob.type });
+    const file = new File([blob], `photo-library-${Date.now()}.jpg`, { type: blob.type });
     uploadImage(file)
   };
   const handleCamera = useCallback(async ()=>{
@@ -133,7 +133,7 @@ export default function ChatMessageInput({
         });
         const response = await fetch(image.webPath);
         const blob = await response.blob();
-        const file = new File([blob], 'photo.jpg', { type: blob.type });
+        const file = new File([blob], `photo-camera-${Date.now()}.jpg`, { type: blob.type });
         uploadImage(file)
       } catch (error) {
         console.error('Error taking photo:', error);
@@ -238,11 +238,11 @@ export default function ChatMessageInput({
   const uploadImage = async (receivedImage) => {
     try {
       let file = null;
-      if (imageRef.current) {
-        file = imageRef.current.files[0];
-      } else if(receivedImage){
+      if(receivedImage){
         file = receivedImage
-      }
+      } else if (imageRef.current) {
+        file = imageRef.current.files[0];
+      } 
       if(file){
         loading.onTrue();
         const formData = new FormData();
