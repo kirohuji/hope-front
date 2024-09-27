@@ -7,6 +7,9 @@ const config: CapacitorConfig = {
     CapacitorUpdater: {
       autoUpdate: false,
     },
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+    },
     SplashScreen: {
       launchAutoHide: true, // 自动隐藏启动画面
       launchShowDuration: 0, // 设置显示时长为0，启动画面不会出现

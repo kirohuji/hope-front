@@ -50,7 +50,7 @@ export default function ChatMessageList({
 
   return (
     <>
-      <Scrollbar ref={messagesEndRef} sx={{ px: 3, py: 5, height: 1 }}>
+      <Scrollbar ref={messagesEndRef} sx={{ px: 3, py: 5, height: 1 }} className="message-list">
         <Box sx={{ height: 1 }}>
           {messages.map((message, index) => (
             <ChatMessageItem

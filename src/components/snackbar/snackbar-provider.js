@@ -49,6 +49,7 @@ export default function SnackbarProvider({ children }) {
             <Iconify icon="solar:danger-bold" width={24} />
           </StyledIcon>
         ),
+        message: (<div></div>)
       }}
       Components={{
         default: StyledNotistack,
@@ -56,6 +57,7 @@ export default function SnackbarProvider({ children }) {
         success: StyledNotistack,
         warning: StyledNotistack,
         error: StyledNotistack,
+        message:StyledNotistack
       }}
       // with close as default
       action={(snackbarId) => (

@@ -128,3 +128,6 @@
 .return-main {
   height: calc(100vh - 72px);
 }
+.message-list {
+  margin-bottom: 10px;
+}

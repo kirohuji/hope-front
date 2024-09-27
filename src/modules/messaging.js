@@ -47,6 +47,10 @@ export default class MessagingService {
     return this.api.get(`${this.model}/conversations/${target._id}/lastMessage/${target.lastId}`);
   }
 
+  getLastMessage(target) {
+    return this.api.get(`${this.model}/conversations/${target._id}/lastMessage`);
+  }
+
   getConversationParticipantsById(target) {
     return this.api.get(`${this.model}/conversations/${target._id}/participantsAsUsers`);
   }
@@ -78,5 +82,9 @@ export default class MessagingService {
   deleteConversation(target) {
     // return this.api.delete(`${this.model}/conversations/${target._id}`, target)
     return this.api.post(`${this.model}/conversations/delete/${target._id}`, target);
+  }
+  savePushNotificationToken(target) {
+    // return this.api.delete(`${this.model}/conversations/${target._id}`, target)
+    return this.api.post(`${this.model}/conversations/savePushNotificationToken`, target);
   }
 }
