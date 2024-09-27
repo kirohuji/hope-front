@@ -1782,6 +1782,11 @@
   resolved "https://registry.npmmirror.com/@capacitor/preferences/-/preferences-6.0.1.tgz#a6cccee02ea0a8bccac879235ebc18cae15d55ba"
   integrity sha512-5UvSK3O/tgPcQ1QyX0zYjb0uujFw+PQgYUSt6i2evf609jAIo7QG1IUZzGb6swEPCpk621wEc6R7Yq/Ywa3GPA==
 
+"@capacitor/push-notifications@^6.0.2":
+  version "6.0.2"
+  resolved "https://registry.npmmirror.com/@capacitor/push-notifications/-/push-notifications-6.0.2.tgz#1ad4a6eddfed4615f29d4b9d877cb99d489b3b09"
+  integrity sha512-VYo8h+Dfw7B/JtsQCCnSKi34jr3oN9LacwmgCqwi3KPIE/sKID75lTEACZBQQ6c4rPct0yRQ0ihHdK/OPXl3Tw==
+
 "@capacitor/splash-screen@^6.0.0":
   version "6.0.1"
   resolved "https://registry.npmmirror.com/@capacitor/splash-screen/-/splash-screen-6.0.1.tgz#562213f375a200a89cf8f33addf1f69ca882c1df"
