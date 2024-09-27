@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { userService, versionService } from 'src/composables/context-provider';
 import { Capacitor } from '@capacitor/core';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
+import { registerNotifications } from 'src/cap/push-notification';
 import { App } from '@capacitor/app';
 import { useMeteorContext } from 'src/meteor/hooks';
 import { StatusBar } from '@capacitor/status-bar';
@@ -26,6 +27,14 @@ const reducer = (state, action) => {
       isAuthenticated: action.payload.isAuthenticated,
       loading: false,
       user: action.payload.user,
+    };
+  }
+  if (action.type === 'DISCONNECTED') {
+    return {
+      ...state,
+      isInitialized: false,
+      isAuthenticated: false,
+      loading: false,
     };
   }
   if (action.type === 'LOGIN') {
@@ -69,7 +78,7 @@ export function AuthProvider({ children }) {
     useLogin: loginWithMeteor,
     useLogout: logoutWithMeteor,
     useMethod: callWithMeteor,
-    subConversations,
+    // subConversations,
     subNotifications,
   } = useMeteorContext();
   const meteor = useMeteorContext();
@@ -158,10 +167,12 @@ export function AuthProvider({ children }) {
       });
     }
 
-    subConversations();
+    // subConversations();
     subNotifications();
+
     if (Capacitor.isNativePlatform()) {
       console.log('isNativePlatform');
+      await registerNotifications();
     }
     if (Capacitor.getPlatform() === 'ios') {
       console.log('iOS!');
@@ -174,12 +185,18 @@ export function AuthProvider({ children }) {
       console.log('Web!');
       import('../../../web.css');
     }
-  }, [callWithMeteor, subConversations, subNotifications]);
+  }, [callWithMeteor, subNotifications]);
 
   useEffect(() => {
     if (meteor.isConnected && !state.isInitialized) {
-      console.log('初始化');
+      console.log('因为Meteor 连接成功,执行初始化,initialize')
       initialize();
+    } else if(!meteor.isConnected && state.isInitialized){
+      console.log('因为Meteor 失去了连接,所以修改状态为未初始化')
+      dispatch({
+        type: 'DISCONNECTED',
+        payload: {}
+      });
     }
   }, [initialize, meteor.isConnected, state.isInitialized]);
 
@@ -206,7 +223,7 @@ export function AuthProvider({ children }) {
         permissions,
       });
       subNotifications();
-      subConversations();
+      // subConversations();
       dispatch({
         type: 'LOGIN',
         payload: {
@@ -219,7 +236,7 @@ export function AuthProvider({ children }) {
         },
       });
     },
-    [loginWithMeteor, subNotifications, subConversations]
+    [loginWithMeteor, subNotifications]
   );
 
   // REGISTER
@@ -304,44 +321,48 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
 }
 
+// ----------------------------------------------------------------------
+
 let data = { version: -1 };
 CapacitorUpdater.notifyAppReady();
-App.addListener('appStateChange', async (state) => {
-  if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
-    const current = await CapacitorUpdater.current();
-    if (state.isActive) {
-      console.log('当前正在使用的安装包', current);
-      const datas = await versionService.getAll();
-      const config = _.maxBy(datas, 'value');
-      if (current.bundle.version !== config.value) {
-        console.log('从后台拿到的安装包URL开始下载', config);
-        data = await CapacitorUpdater.download({
-          version: config.value,
-          url: config.file,
-        });
-        console.log('从后台下载好的安装包', data);
-      } else {
-        console.log('当前安装包已经是最新的了');
-      }
-    }
-    if (
-      !state.isActive &&
-      data.version !== '' &&
-      data.version !== -1 &&
-      current.version !== data.version
-    ) {
-      console.log('安装包安装状态');
-      try {
-        console.log('安装包bundle list', await CapacitorUpdater.list());
-        await CapacitorUpdater.set(data);
-        console.log('安装包安装安好了');
-      } catch (err) {
-        console.log('安装包安装失败了');
-        console.log(err);
-      }
-    }
-  }
-});
+// App.addListener('appStateChange', async (state) => {
+//   if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
+//     const current = await CapacitorUpdater.current();
+//     if (state.isActive) {
+//       console.log('当前正在使用的安装包', current);
+//       const allVersion = await versionService.getAll();
+//       const config = _.maxBy(allVersion, 'value');
+//       // 当前版本不是最新版本时获取最新的版本
+//       if (current.bundle.version !== config.value) {
+//         console.log('从后台拿到的安装包URL开始下载', config);
+//         data = await CapacitorUpdater.download({
+//           version: config.value,
+//           url: config.file,
+//         });
+//         console.log('从后台下载好的安装包', data);
+//       } else {
+//         console.log('当前安装包已经是最新的了');
+//       }
+//     }
+//     // 确保在后台状态进行安装最新的安装包
+//     if (
+//       !state.isActive &&
+//       data.version !== '' &&
+//       data.version !== -1 &&
+//       current.version !== data.version
+//     ) {
+//       console.log('安装包安装状态');
+//       try {
+//         console.log('安装包bundle list', await CapacitorUpdater.list());
+//         await CapacitorUpdater.set(data);
+//         console.log('安装包安装安好了');
+//       } catch (err) {
+//         console.log('安装包安装失败了');
+//         console.log(err);
+//       }
+//     }
+//   }
+// });
 
 AuthProvider.propTypes = {
   children: PropTypes.node,

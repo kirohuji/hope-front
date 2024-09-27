@@ -6,7 +6,8 @@ import _ from 'lodash';
 import { useDispatch } from 'src/redux/store';
 import { getConversations, getSessions } from 'src/redux/slices/chat';
 import { MeteorContext } from './meteor-context';
-
+import { getOverview } from 'src/redux/slices/notification';
+// import { useNotificationSnackbar } from 'src/components/notification-snackbar/index';
 const initialState = {
   server: null,
   isInitialized: true,
@@ -25,12 +26,16 @@ const reducer = (state, action) => {
   }
 };
 
-let conversationsPublish = null;
-let conversationsCollection = null;
+export let conversationsPublish = null;
+export let conversationsCollection = null;
+export let conversationsCollectionChange = null;
+export let notificationsPublish = null;
+export let notificationsCollection = null;
 const messagesPublish = null;
 
 export const bindConnect = async (server, dispatch) => {
   server.on('connected', () => {
+    console.log('连接成功')
     dispatch({
       type: 'INITIAL',
       payload: {
@@ -41,6 +46,7 @@ export const bindConnect = async (server, dispatch) => {
     });
   });
   server.on('disconnected', () => {
+    console.log('失去连接')
     dispatch({
       type: 'INITIAL',
       payload: {
@@ -50,6 +56,7 @@ export const bindConnect = async (server, dispatch) => {
       },
     });
   });
+
   server.on('logout', (m) => {
     dispatch({
       type: 'SETLOGGINGIN',
@@ -58,6 +65,7 @@ export const bindConnect = async (server, dispatch) => {
       },
     });
   });
+
   server.on('login', (m) => {
     dispatch({
       type: 'SETLOGGINGIN',
@@ -66,6 +74,7 @@ export const bindConnect = async (server, dispatch) => {
       },
     });
   });
+
   server.on('loginResume', (m) => {
     dispatch({
       type: 'SETLOGGINGIN',
@@ -74,6 +83,7 @@ export const bindConnect = async (server, dispatch) => {
       },
     });
   });
+
   server.on('error', (m) => {
     console.log('报错', m);
   });
@@ -98,70 +108,65 @@ export function MeteorProvider({ endpoint, children }) {
         })
       );
     }
-  }, 2000);
+  }, 100);
 
-  const subConversations = useCallback(async () => {
+  const subConversations = useCallback(async (callback) => {
     const { server } = state;
+    // 关闭上一次的监听
+    if (conversationsPublish) {
+      conversationsCollectionChange.stop();
+      conversationsPublish.stop();
+    }
     conversationsPublish = server.subscribe('newMessagesConversations', new Date());
     conversationsPublish.ready();
     conversationsCollection = server.collection('socialize:conversations');
-    conversationsCollection.onChange((target) => {
+    conversationsCollectionChange = conversationsCollection.onChange(async (target) => {
       if (target.changed && target.changed.next) {
-        console.log('target.changed.next', target.changed.next);
+        console.log('target.changed.next', target.changed);
         updateConversationsByDebounce([target.changed.next], !!target.changed.next.sessionId);
+        callback(target.changed.next)
       }
     });
   }, [state, updateConversationsByDebounce]);
 
   const subNotifications = useCallback(async () => {
     const { server } = state;
-    // notificationsPublish = await server.subscribe('userUnreadNotifications');
-    // notificationsPublish.ready();
-    // notificationsCollection = server.collection('notifications');
-    // reducerDispatch(getOverview());
-    // notificationsCollection.onChange((target) => {
-    //   console.log('target.added', target.added);
-    //   reducerDispatch(getOverview());
-    //   // if (target.added) {
-    //   //   // reducerDispatch(
-    //   //   //   newNotificationGet({
-    //   //   //     ...target.added,
-    //   //   //     _id: target.added.id,
-    //   //   //     createdAt: new Date(target.added.createdAt).toISOString(),
-    //   //   //     isUnRead: true,
-    //   //   //   })
-    //   //   // );
-    //   //   reducerDispatch(getOverview());
-    //   // } else if (target.removed) {
-    //   //   reducerDispatch(getOverview());
-    //   //   // reducerDispatch(
-    //   //   //   newNotificationRemove({
-    //   //   //     _id: target.removed.id,
-    //   //   //   })
-    //   //   // );
-    //   // } else if (target.changed) {
-    //   //   reducerDispatch(getOverview());
-    //   // }
-    // });
-    // messagesPublish = await server.subscribe('socialize.unreadConversations');
-    // messagesPublish.ready();
-    // messagesCollection = server.collection('socialize:messages');
-    // messagesCollection.onChange((target) => {
-    //   if (target.added) {
-    //     console.log('有未读消息')
-    //     console.log('messages', target.added);
-    //   }
-    // });
-    // messagesPublish = await server.subscribe('unreadConversations');
-    // messagesPublish.ready();
+    notificationsPublish = await server.subscribe('userUnreadNotifications');
+    notificationsPublish.ready();
+    notificationsCollection = server.collection('notifications');
+    reducerDispatch(getOverview());
+    notificationsCollection.onChange((target) => {
+      console.log('target.added', target.added);
+      reducerDispatch(getOverview());
+      // if (target.added) {
+      //   reducerDispatch(
+      //     newNotificationGet({
+      //       ...target.added,
+      //       _id: target.added.id,
+      //       createdAt: new Date(target.added.createdAt).toISOString(),
+      //       isUnRead: true,
+      //     })
+      //   );
+      //   reducerDispatch(getOverview());
+      // } else if (target.removed) {
+      //   reducerDispatch(getOverview());
+      //   reducerDispatch(
+      //     newNotificationRemove({
+      //       _id: target.removed.id,
+      //     })
+      //   );
+      // } else if (target.changed) {
+      //   reducerDispatch(getOverview());
+      // }
+    });
   }, [state]);
+
   const useLogin = useCallback(
     async (opt) => {
       const { server } = state;
       if (server) {
         try {
-          const response = await server.login(opt);
-          return response;
+          return await server.login(opt);
         } catch (e) {
           console.log(e);
           dispatch({
