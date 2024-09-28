@@ -30,7 +30,9 @@ const initialState = {
   activeConversationId: null,
   participants: [],
   recipients: [],
-  lastMessage: {},
+  lastMessage: {
+    byId: {},
+  },
   sendingMessage: { byId: {} },
   generate: { byId: {}, currentMessageId: '' },
 };
@@ -141,6 +143,28 @@ const slice = createSlice({
       }
       state.sendingMessage.byId[conversationId].push(newMessage);
     },
+    pushMessageSuccess(state,action){
+      const { message } = action.payload;
+      // const orderedData = _.unionBy(
+      //   _.orderBy([...state.messages.byId[message.conversationId], message], ['createdAt'], ['asc']),
+      //   '_id'
+      // );
+      // state.messages.byId[message.conversationId] = orderedData;
+      state.messages.byId[message.conversationId].push(message)
+      state.lastMessage.byId[message.conversationId] = _.last(message);
+    },
+    onSendMessageSuccess(state, action) {
+      const { conversationId, messageId, message } = action.payload;
+      const orderedData = _.unionBy(
+        _.orderBy([...state.messages.byId[conversationId], message], ['createdAt'], ['asc']),
+        '_id'
+      );
+      state.messages.byId[conversationId] = orderedData;
+      state.lastMessage.byId[conversationId] = _.last(orderedData);
+      state.sendingMessage.byId[conversationId] = state.sendingMessage.byId[conversationId].filter(
+        (item) => item._id !== messageId
+      );
+    },
 
     onSendMessageFailure(state, action) {
       const { conversationId, messageId } = action.payload;
@@ -167,10 +191,9 @@ const slice = createSlice({
 
       // 更新状态
       state.messages.byId[conversationId] = orderedData;
-      state.lastMessage = _.last(orderedData);
+      state.lastMessage.byId[conversationId] = _.last(orderedData);
       state.sendingMessage.byId[conversationId] = [];
     },
-
     // 获取最新数据
     getNewMessagesSuccess(state, action) {
       const { conversationId, data } = action.payload;
@@ -183,7 +206,7 @@ const slice = createSlice({
         [...state.messages.byId[conversationId].filter((item) => item._id !== '-1'), ...orderData],
         '_id'
       );
-      state.lastMessage = _.last(newMessages);
+      state.lastMessage.byId[conversationId] = _.last(newMessages);
       state.messages.byId[conversationId] = newMessages;
       state.sendingMessage.byId[conversationId] = _.differenceBy(
         state.sendingMessage.byId[conversationId],
@@ -265,16 +288,20 @@ export function sendMessage(conversationKey, body) {
         })
       );
       // 发送消息到后端
-      await messagingService.sendMessage({
+      const message = await messagingService.sendMessage({
         _id: conversationKey,
         body: body.message,
         contentType: body.contentType,
         attachments: body.attachments,
         sendingMessageId: body.sendingMessageId || uuid,
       });
-      // dispatch(
-      //   slice.actions.onSendMessageSuccess({ conversationId: conversationKey, messageId: uuid })
-      // );
+      dispatch(
+        slice.actions.onSendMessageSuccess({
+          conversationId: conversationKey,
+          messageId: uuid,
+          message,
+        })
+      );
       dispatch(slice.actions.stopSending());
     } catch (error) {
       console.log('收到报错信息');
@@ -319,16 +346,33 @@ export function getMessages(conversationKey, messageLimit) {
     }
   };
 }
-
+export function pushMessage(message) {
+  return async (dispatch) => {
+    await dispatch(
+      slice.actions.pushMessageSuccess({
+        message,
+      })
+    );
+    try {
+    } catch (error) {
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  }
+}
 // 获取最新消息
 export function newMessageGet(conversationId) {
   return async (dispatch, getState) => {
     try {
       const { lastMessage } = getState().chat;
-      if (lastMessage && lastMessage._id) {
+      if (lastMessage.byId[conversationId] && lastMessage.byId[conversationId]._id) {
         const data = await messagingService.getLastMessageBy({
           _id: conversationId,
-          lastId: lastMessage._id,
+          lastId: lastMessage.byId[conversationId]._id,
         });
         await dispatch(
           slice.actions.getNewMessagesSuccess({

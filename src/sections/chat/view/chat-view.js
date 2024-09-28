@@ -15,6 +15,7 @@ import { paths } from 'src/routes/paths';
 // hooks
 import { useAuthContext } from 'src/auth/hooks';
 import { useResponsive } from 'src/hooks/use-responsive';
+// import { useMessageQueue } from 'src/hooks/use-message-queue';
 import { useMeteorContext } from 'src/meteor/hooks';
 // components
 import { useSettingsContext } from 'src/components/settings';
@@ -28,6 +29,7 @@ import {
   getContacts,
   deleteConversation,
   newMessageGet,
+  pushMessage,
 } from 'src/redux/slices/chat';
 import _ from 'lodash';
 import { useSnackbar } from 'src/components/snackbar';
@@ -92,9 +94,12 @@ const TABS = [
 ];
 
 let reactiveCollection = null;
+let reactiveCollectionChange = null;
 let getMessage = null;
 
 export default function ChatView() {
+  // const { addMessageToQueue } = useMessageQueue();
+
   const router = useRouter();
 
   const pathname = usePathname();
@@ -170,23 +175,37 @@ export default function ChatView() {
     } else {
       getDetails();
       if (ddpclient?.connected && user) {
+        const date = new Date();
+        date.setMinutes(date.getMinutes() - 1);
         getMessage = ddpclient.subscribe(
           'socialize.messagesFor2',
           selectedConversationId,
           user._id,
-          new Date()
+          date
         );
         getMessage.ready();
-        reactiveCollection = ddpclient.collection('socialize:messages').reactive();
-        reactiveCollection.onChange(() => dispatch(newMessageGet(selectedConversationId)), {
-          added: true,
+        console.log('准备好接受数据');
+        reactiveCollection = ddpclient.collection('socialize:messages');
+        reactiveCollectionChange = reactiveCollection.onChange(async (target) => {
+          console.log(target);
+          if (target && target.added) {
+            await dispatch(
+              pushMessage({
+                ...target.added,
+                senderId: target.added.userId,
+                createdAt: target.added.createdAt?.toISOString(),
+                updatedAt: target.added.updatedAt?.toISOString(),
+              })
+            );
+          }
+          // dispatch(newMessageGet(selectedConversationId))
         });
       }
     }
 
     return () => {
-      if (reactiveCollection) {
-        reactiveCollection.stop();
+      if (getMessage) {
+        reactiveCollectionChange.stop();
         getMessage.stop();
       }
     };
