@@ -87,8 +87,8 @@ export default function Main({ children, sx, ...other }) {
             />,
             {
               variant: 'message',
-              // autoHideDuration: 5000,
-              persist: true,
+              autoHideDuration: 3000,
+              // persist: true,
             }
           );
         }

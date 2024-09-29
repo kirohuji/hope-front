@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Chip from '@mui/material/Chip';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
 // hooks
@@ -48,16 +49,24 @@ export default function ChatRoomAttachments({ attachments }) {
       />
     </ListItemButton>
   );
-
+  const isExpired = (target) => {
+    if (target.type!=='image') {
+      const createAt = new Date(target.createAt);
+      const now = new Date();
+      const threeDaysAgo = new Date(now.setDate(now.getDate() - 3));
+      return threeDaysAgo>createAt
+    }
+    return false;
+  };
   const renderContent = (
-    <Scrollbar sx={{ px: 2, py: 2.5, height: '100%' }}>
+    <Scrollbar sx={{ px: 2, py: 2.5, height: `100%` }}>
       {attachments.map((attachment, index) => (
         <Stack
           key={attachment.name + index}
           spacing={1.5}
           direction="row"
           alignItems="center"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, position: 'relative' }}
         >
           <Stack
             alignItems="center"
@@ -76,7 +85,9 @@ export default function ChatRoomAttachments({ attachments }) {
               imageView
               file={attachment.preview}
               onDownload={() => {
-                window.open(attachment.preview, 'blank');
+                if(!isExpired(attachment)) {
+                  window.open(attachment.preview, 'blank');
+                }
               }}
               sx={{ width: 28, height: 28 }}
             />
@@ -97,11 +108,39 @@ export default function ChatRoomAttachments({ attachments }) {
               color: 'text.disabled',
             }}
           />
+          {isExpired(attachment) && (
+            <Chip
+              label="已过期"
+              color="error"
+              size="small"
+              sx={{
+                position: 'absolute',
+                top: '8px',
+                zIndex: 2,
+                left: '0',
+              }}
+            />
+          )}
+          {/* {(
+            <Box
+              sx={{
+                zIndex: 1,
+                position: 'absolute',
+                top: '0px',
+                left: '0px',
+                width: 'calc(100% + 0px)',
+                height: 'calc(100% + 0px)',
+                backgroundColor: 'rgba(0, 0, 0, 0.2)', // 半透明黑色遮罩
+                zIndex: 1,
+              }}
+            />
+          )} */}
         </Stack>
       ))}
     </Scrollbar>
   );
 
+  console.log('执行')
   return (
     <>
       {renderBtn}
@@ -109,7 +148,7 @@ export default function ChatRoomAttachments({ attachments }) {
       <Box
         sx={{
           overflow: 'hidden',
-          height: collapse.value ? 1 : 0,
+          height: collapse.value ? 'calc(100vh - 450px)' : 0,
           transition: (theme) =>
             theme.transitions.create(['height'], {
               duration: theme.transitions.duration.shorter,

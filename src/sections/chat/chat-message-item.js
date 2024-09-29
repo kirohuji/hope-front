@@ -5,6 +5,7 @@ import { formatDistanceToNowStrict } from 'date-fns';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
+import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 // hooks
@@ -60,28 +61,30 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
     </Typography>
   );
 
-  const handleSendMessage = useCallback(
-    async (event) => {
-      try {
-        // // eslint-disable-next-line no-debugger
-        // debugger;
-        await dispatch(
-          sendMessage(conversationId, {
-            ...message,
-            message: message.body,
-          })
-        );
-      } catch (e) {
-        console.error();
-      }
-    },
-    [conversationId, dispatch, message]
-  );
-
+  const handleSendMessage = useCallback(async () => {
+    try {
+      await dispatch(
+        sendMessage(conversationId, {
+          ...message,
+          message: message.body,
+        })
+      );
+    } catch (e) {
+      console.error();
+    }
+  }, [conversationId, dispatch, message]);
+  const isExpired = (target) => {
+    if (target.createAt) {
+      const createAt = new Date(target.createAt);
+      const now = new Date();
+      const threeDaysAgo = new Date(now.setDate(now.getDate() - 3));
+      return createAt < threeDaysAgo;
+    }
+    return false;
+  };
   const renderBodyContent = ({ bodyContent, type }) => {
     switch (type) {
       case 'text':
-        // eslint-disable-next-line react/no-danger
         return (
           <div
             style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
@@ -97,7 +100,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
         );
       default:
         return (
-          <Stack spacing={1} direction="row" alignItems="center">
+          <Stack spacing={1} direction="row" alignItems="center" sx={{ position: 'relative' }}>
             <FileThumbnail file={type} />
             <Typography
               sx={{
@@ -109,6 +112,34 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
             >
               {attachments[0]?.name}
             </Typography>
+            {isExpired(attachments[0]) && (
+              <Chip
+                label="已过期"
+                color="error"
+                size="small"
+                sx={{
+                  position: 'absolute',
+                  top: '-20px',
+                  zIndex: 2,
+                  left: '-20px',
+                }}
+              />
+            )}
+            {isExpired(attachments[0]) && (
+              <Box
+                sx={{
+                  zIndex: 1,
+                  position: 'absolute',
+                  top: '-12px',
+                  left: '-12px',
+                  borderRadius: 1.5,
+                  width: 'calc(100% + 24px)',
+                  height: 'calc(100% + 24px)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.2)', // 半透明黑色遮罩
+                  zIndex: 1,
+                }}
+              />
+            )}
           </Stack>
         );
     }

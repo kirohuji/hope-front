@@ -189,15 +189,21 @@ export default function ChatView() {
         reactiveCollectionChange = reactiveCollection.onChange(async (target) => {
           console.log(target);
           if (target && target.added) {
-            await dispatch(
-              pushMessage({
-                ...target.added,
-                _id: target.added.id,
-                senderId: target.added.userId,
-                createdAt: target.added.createdAt?.toISOString(),
-                updatedAt: target.added.updatedAt?.toISOString(),
-              })
-            );
+            const message = {
+              ...target.added,
+              _id: target.added.id,
+              senderId: target.added.userId,
+              createdAt: target.added.createdAt?.toISOString(),
+              updatedAt: target.added.updatedAt?.toISOString(),
+            };
+            if (message.attachments && message.attachments.length > 0) {
+              message.attachments = message.attachments.map((item) => ({
+                ...item,
+                createdAt:
+                  item.createdAt instanceof Date ? item.createdAt?.toISOString() : item.createdAt,
+              }));
+            }
+            await dispatch(pushMessage(message));
           }
           // dispatch(newMessageGet(selectedConversationId))
         });

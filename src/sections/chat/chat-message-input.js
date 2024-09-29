@@ -72,7 +72,7 @@ export default function ChatMessageInput({
       address: user.address,
       name: user.displayName,
       username: user.username,
-      lastActivity: new Date(),
+      lastActivity: new Date()?.toISOString(),
       photoURL: user.photoURL,
       phoneNumber: user.phoneNumber,
       status: 'online',
@@ -265,7 +265,7 @@ export default function ChatMessageInput({
                 name: file.name,
                 preview: link,
                 type: 'image',
-                createdAt: new Date(),
+                createdAt: new Date()?.toISOString(),
               },
             ],
             contentType: 'image',
@@ -305,7 +305,7 @@ export default function ChatMessageInput({
                 name: file.name,
                 preview: link,
                 type: `${file.name.split('.').pop()}`,
-                createdAt: new Date(),
+                createdAt: new Date()?.toISOString(),
               },
             ],
           })
@@ -394,9 +394,9 @@ export default function ChatMessageInput({
               <IconButton onClick={handleCamera}>
                 <Iconify icon="mdi:camera" />
               </IconButton>
-              {/* <IconButton onClick={handleAttach}>
+              <IconButton onClick={handleAttach}>
                 <Iconify icon="eva:attach-2-fill" />
-              </IconButton> */}
+              </IconButton>
               {/* <IconButton>
                   <Iconify icon="solar:microphone-bold" />
                 </IconButton> */}
