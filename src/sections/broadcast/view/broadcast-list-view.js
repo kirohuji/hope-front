@@ -19,6 +19,7 @@ import { fTimestamp } from 'src/utils/format-time';
 import { _tours } from 'src/_mock';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
+import { useResponsive } from 'src/hooks/use-responsive';
 import { pagination } from 'src/redux/slices/broadcast';
 
 // components
@@ -51,6 +52,8 @@ export default function BroadcastListView() {
   const { enqueueSnackbar } = useSnackbar();
 
   const settings = useSettingsContext();
+
+  const lgUp = useResponsive('up', 'lg');
 
   const { data, total } = useSelector((state) => state.broadcast);
 
@@ -188,7 +191,7 @@ export default function BroadcastListView() {
           { name: '' },
         ]}
         action={
-          <Restricted to={['BroadcastListAdd']}>
+          lgUp ? <Restricted to={['BroadcastListAdd']}>
             <Button
               component={RouterLink}
               href={paths.dashboard.broadcast.new}
@@ -197,7 +200,7 @@ export default function BroadcastListView() {
             >
               新建一个新的活动通知
             </Button>
-          </Restricted>
+          </Restricted> : <div/>
         }
         sx={{
           mb: { xs: 3, md: 5 },

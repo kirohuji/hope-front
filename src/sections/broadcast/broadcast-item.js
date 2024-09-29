@@ -10,6 +10,7 @@ import ListItemText from '@mui/material/ListItemText';
 // routes
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+import { useResponsive } from 'src/hooks/use-responsive';
 // utils
 import { fDateTime } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
@@ -36,7 +37,7 @@ const BROAECAST_TYPE_OPTIONS = [
 
 export default function BroadcastItem({ broadcast, onView, onEdit, onDelete }) {
   const popover = usePopover();
-
+  const lgUp = useResponsive('up', 'lg');
   const {
     _id,
     label,
@@ -243,29 +244,33 @@ export default function BroadcastItem({ broadcast, onView, onEdit, onDelete }) {
           <Iconify icon="solar:eye-bold" />
           查看
         </MenuItem>
-        <Restricted to={['BroadcastListEdit']}>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-              onEdit();
-            }}
-          >
-            <Iconify icon="solar:pen-bold" />
-            编辑
-          </MenuItem>
-        </Restricted>
-        <Restricted to={['BroadcastListDelete']}>
-          <MenuItem
-            onClick={() => {
-              popover.onClose();
-              onDelete();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="solar:trash-bin-trash-bold" />
-            删除
-          </MenuItem>
-        </Restricted>
+        {lgUp && (
+          <Restricted to={['BroadcastListEdit']}>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+                onEdit();
+              }}
+            >
+              <Iconify icon="solar:pen-bold" />
+              编辑
+            </MenuItem>
+          </Restricted>
+        )}
+        {lgUp && (
+          <Restricted to={['BroadcastListDelete']}>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+                onDelete();
+              }}
+              sx={{ color: 'error.main' }}
+            >
+              <Iconify icon="solar:trash-bin-trash-bold" />
+              删除
+            </MenuItem>
+          </Restricted>
+        )}
       </CustomPopover>
     </>
   );
