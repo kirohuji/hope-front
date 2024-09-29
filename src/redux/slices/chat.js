@@ -143,15 +143,17 @@ const slice = createSlice({
       }
       state.sendingMessage.byId[conversationId].push(newMessage);
     },
-    pushMessageSuccess(state,action){
+    pushMessageSuccess(state, action) {
       const { message } = action.payload;
       // const orderedData = _.unionBy(
       //   _.orderBy([...state.messages.byId[message.conversationId], message], ['createdAt'], ['asc']),
-      //   '_id'
+      //   'id'
       // );
       // state.messages.byId[message.conversationId] = orderedData;
-      state.messages.byId[message.conversationId].push(message)
-      state.lastMessage.byId[message.conversationId] = _.last(message);
+      if (!state.messages.byId[message.conversationId].some((m) => m.id === message.id)) {
+        state.messages.byId[message.conversationId].push(message);
+        state.lastMessage.byId[message.conversationId] = _.last(message);
+      }
     },
     onSendMessageSuccess(state, action) {
       const { conversationId, messageId, message } = action.payload;
@@ -362,7 +364,7 @@ export function pushMessage(message) {
         })
       );
     }
-  }
+  };
 }
 // 获取最新消息
 export function newMessageGet(conversationId) {

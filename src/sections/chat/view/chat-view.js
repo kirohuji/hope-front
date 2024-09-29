@@ -192,6 +192,7 @@ export default function ChatView() {
             await dispatch(
               pushMessage({
                 ...target.added,
+                _id: target.added.id,
                 senderId: target.added.userId,
                 createdAt: target.added.createdAt?.toISOString(),
                 updatedAt: target.added.updatedAt?.toISOString(),

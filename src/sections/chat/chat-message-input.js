@@ -411,7 +411,7 @@ export default function ChatMessageInput({
         />
       </Box>
       <input
-        onChange={uploadImage}
+        onChange={()=> uploadImage()}
         type="file"
         ref={imageRef}
         style={{ display: 'none', position: 'absolute' }}

@@ -58,6 +58,14 @@ export default function Main({ children, sx, ...other }) {
   const router = useRouter();
   const isNavMini = settings.themeLayout === 'mini';
   const pathname = usePathname();
+  function handleMessage(message){
+    switch(message.contentType){
+      case 'text':
+        return message.body;
+      case 'image':
+        return '对方发送了一张图片给你'
+    }
+  }
   useEffect(() => {
     if (isConnected) {
       console.log(pathname);
@@ -70,7 +78,7 @@ export default function Main({ children, sx, ...other }) {
             <CustomSnackbar
               name={message.user.displayName}
               avatarUrl={message.user.photoURL}
-              message={message.body}
+              message={handleMessage(message)}
               conversationId={conversation.id}
               onGoto={() => {
                 closeSnackbar(key);
