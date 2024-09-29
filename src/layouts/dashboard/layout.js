@@ -101,12 +101,12 @@ export default function DashboardLayout({ children }) {
           {lgUp ? renderNavMini : renderNavVertical}
 
           <Main>{children}</Main>
-          {!lgUp && <DashboardFooter />}
+          {!lgUp && !pathname.includes('/dashboard/broadcast/') && <DashboardFooter />}
         </Box>
       </>
     );
   }
-
+  console.log(pathname)
   return (
     <>
       <Header onOpenNav={nav.onTrue} />
@@ -121,7 +121,7 @@ export default function DashboardLayout({ children }) {
         {renderNavVertical}
 
         <Main className="main">{children}</Main>
-        {!lgUp && <DashboardFooter />}
+        {!lgUp && !pathname.includes('/dashboard/broadcast/') && <DashboardFooter />}
         {!lgUp && pathname === '/dashboard/file-manager' && (
           <Box
             ref={musicPlayerRef}
