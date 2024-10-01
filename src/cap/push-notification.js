@@ -52,7 +52,16 @@ export const registerNotifications = async () => {
   await PushNotifications.register();
 }
 
-const getDeliveredNotifications = async () => {
+export const getDeliveredNotifications = async () => {
   const notificationList = await PushNotifications.getDeliveredNotifications();
   console.log('delivered notifications', notificationList);
 }
+// 清空所有已交付的通知
+export const clearAllNotifications = async () => {
+  try {
+    await PushNotifications.removeAllDeliveredNotifications();
+    console.log('所有通知已清空');
+  } catch (error) {
+    console.error('清空通知时出错:', error);
+  }
+};

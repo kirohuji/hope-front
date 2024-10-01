@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'src/components/snackbar';
 import { Capacitor } from '@capacitor/core';
 import { Camera, CameraSource, CameraResultType } from '@capacitor/camera';
-
+import { FilePicker } from '@capawesome/capacitor-file-picker';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -106,9 +106,15 @@ export default function ChatMessageInput({
     [messageData, myContact, recipients]
   );
 
-  const handleAttach = useCallback(() => {
-    if (fileRef.current) {
-      fileRef.current.click();
+  const handleAttach = useCallback(async () => {
+    if (Capacitor.isNativePlatform()) {
+      const result = await FilePicker.pickFiles();
+      const file = result.files[0];
+      uploadFile(file)
+    } else {
+      if (fileRef.current) {
+        fileRef.current.click();
+      }
     }
   }, []);
 
@@ -279,11 +285,16 @@ export default function ChatMessageInput({
       loading.onFalse();
     }
   };
-  const uploadFile = async () => {
+  const uploadFile = async (receivedFile) => {
     try {
+      let file = null;
+      if(receivedFile){
+        file = receivedFile
+      } else if (fileRef.current) {
+        file = fileRef.current.files[0];
+      } 
       loading.onTrue();
-      if (fileRef.current) {
-        const file = fileRef.current.files[0];
+      if (file) {
         const formData = new FormData();
         formData.append('file', file);
         const { link } = await fileService.uploadToMessage(formData);

@@ -15,8 +15,8 @@ import { useAuthContext } from 'src/auth/hooks';
 import { Capacitor } from '@capacitor/core';
 import { Keyboard } from '@capacitor/keyboard';
 import { ICONS } from './config-navigation';
-
-const navigations = [
+import { clearAllNotifications } from 'src/cap/push-notification';
+const navigation = [
   {
     label: '聊天',
     icon: ICONS.chat2,
@@ -69,16 +69,16 @@ export default function DashboardFooter() {
   const { permissions, isAdmin } = useAuthContext();
 
   React.useEffect(() => {
-    const index = _.findIndex(navigations, ['to', pathname]);
+    const index = _.findIndex(navigation, ['to', pathname]);
     if (index !== -1) {
       dispatch(updateBottomNavigationActionValue(index));
     } else {
       dispatch(updateBottomNavigationActionValue(0));
     }
     if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
-      console.log('执行监听')
+      console.log('执行监听');
       Keyboard.addListener('keyboardWillShow', () => {
-        console.log('keyboardWillShow')
+        console.log('keyboardWillShow');
         setIsKeyboardVisible(true);
       });
 
@@ -90,9 +90,16 @@ export default function DashboardFooter() {
         Keyboard.removeAllListeners();
       };
     }
-    return ()=>{}
-  }, [dispatch, pathname, chat.conversations.unreadCount]);
+    return () => {};
+  }, [dispatch, pathname]);
 
+  React.useEffect(() => {
+    if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
+      if (chat.conversations.unreadCount === 0) {
+        clearAllNotifications();
+      }
+    }
+  }, [chat.conversations.unreadCount]);
   const checkAuth = (nav, index) => {
     if (!nav.auth) {
       return (
@@ -154,7 +161,7 @@ export default function DashboardFooter() {
         {/**         <BottomNavigationAction label="工作台" icon={ICONS.kanban} /> */}
         {/* <BottomNavigationAction label="聊天" icon={ICONS.chat} component={Link} to="/dashboard/chat"/>
         <BottomNavigationAction label="文件" icon={ICONS.file} component={Link} to="/dashboard/file-manager"/> */}
-        {navigations.map((navigation, index) => checkAuth(navigation, index))}
+        {navigation.map((navigation, index) => checkAuth(navigation, index))}
       </BottomNavigation>
     </Paper>
   );

@@ -1767,6 +1767,11 @@
   dependencies:
     tslib "^2.1.0"
 
+"@capacitor/filesystem@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.npmmirror.com/@capacitor/filesystem/-/filesystem-6.0.1.tgz#2c8aa67217c628ee3237555148b021e69df7b198"
+  integrity sha512-eHhXm6tzBIQhErzFnfOE6eA1U+15DHc2212/COfzzGGRk/dyGympoVV3ct2YPVzvpTSxMEW3xFocORv/xD9gFg==
+
 "@capacitor/ios@^6.0.0":
   version "6.1.0"
   resolved "https://registry.npmmirror.com/@capacitor/ios/-/ios-6.1.0.tgz#0f6b9818032f4e187bbdd63015c8c040fcde85a7"
@@ -1796,6 +1801,11 @@
   version "6.0.1"
   resolved "https://registry.npmmirror.com/@capacitor/status-bar/-/status-bar-6.0.1.tgz#27cef2560cdefb8e14d2cecc976056ede7b822ef"
   integrity sha512-Usd9hZZQVAqy+jJfL7jRcYI7dcsxN09Na1yttwdl+F1bk3Ztoukk7CGPDm5VgKUSs53ihQBOy1+sczCACxhNiw==
+
+"@capawesome/capacitor-file-picker@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.npmmirror.com/@capawesome/capacitor-file-picker/-/capacitor-file-picker-6.0.1.tgz#b07e8d045f719c4798867ffe2b80aa7f7cf36a52"
+  integrity sha512-JWYmqfYMRwvhJMACC4oovzBGtcP1MXnRKbENPjXhL0ni0p0nnVgddKD+07kc81SNiABBuCksQjNiFiEDqqy49A==
 
 "@capgo/capacitor-updater@^5.3.43":
   version "5.3.44"
