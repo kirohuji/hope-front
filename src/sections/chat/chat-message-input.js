@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'src/components/snackbar';
 import { Capacitor } from '@capacitor/core';
 import { Camera, CameraSource, CameraResultType } from '@capacitor/camera';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
 // routes
 import { paths } from 'src/routes/paths';
@@ -108,9 +109,18 @@ export default function ChatMessageInput({
 
   const handleAttach = useCallback(async () => {
     if (Capacitor.isNativePlatform()) {
-      const result = await FilePicker.pickFiles();
+      const result = await FilePicker.pickFiles({
+        multiple: false, // 是否允许选择多个文件
+      });
       const file = result.files[0];
-      uploadFile(file)
+      const contents = await Filesystem.readFile({
+        path: file.path,
+      });
+      // const response = await fetch(file.path);
+      // const blob = await response.blob();
+      // const rawFile = new File([blob], `${file.name}-${Date.now()}`, { type: file.mimeType });
+      // console.log('文件分析成功', rawFile);
+      uploadFile(rawFile);
     } else {
       if (fileRef.current) {
         fileRef.current.click();
@@ -127,9 +137,9 @@ export default function ChatMessageInput({
     const response = await fetch(image.webPath);
     const blob = await response.blob();
     const file = new File([blob], `photo-library-${Date.now()}.jpg`, { type: blob.type });
-    uploadImage(file)
+    uploadImage(file);
   };
-  const handleCamera = useCallback(async ()=>{
+  const handleCamera = useCallback(async () => {
     if (Capacitor.isNativePlatform()) {
       try {
         const image = await Camera.getPhoto({
@@ -140,18 +150,18 @@ export default function ChatMessageInput({
         const response = await fetch(image.webPath);
         const blob = await response.blob();
         const file = new File([blob], `photo-camera-${Date.now()}.jpg`, { type: blob.type });
-        uploadImage(file)
+        uploadImage(file);
       } catch (error) {
         console.error('Error taking photo:', error);
       }
-    } 
-  },[])
+    }
+  }, []);
   const handleImage = useCallback(() => {
     if (Capacitor.isNativePlatform()) {
       console.log('isNativePlatform');
       openPhotoLibrary();
     } else if (imageRef.current) {
-        imageRef.current.click();
+      imageRef.current.click();
     }
   }, []);
 
@@ -244,12 +254,12 @@ export default function ChatMessageInput({
   const uploadImage = async (receivedImage) => {
     try {
       let file = null;
-      if(receivedImage){
-        file = receivedImage
+      if (receivedImage) {
+        file = receivedImage;
       } else if (imageRef.current) {
         file = imageRef.current.files[0];
-      } 
-      if(file){
+      }
+      if (file) {
         loading.onTrue();
         const formData = new FormData();
         formData.append('file', file);
@@ -288,11 +298,11 @@ export default function ChatMessageInput({
   const uploadFile = async (receivedFile) => {
     try {
       let file = null;
-      if(receivedFile){
-        file = receivedFile
+      if (receivedFile) {
+        file = receivedFile;
       } else if (fileRef.current) {
         file = fileRef.current.files[0];
-      } 
+      }
       loading.onTrue();
       if (file) {
         const formData = new FormData();
@@ -405,9 +415,9 @@ export default function ChatMessageInput({
               <IconButton onClick={handleCamera}>
                 <Iconify icon="mdi:camera" />
               </IconButton>
-              <IconButton onClick={handleAttach}>
+              {/* <IconButton onClick={handleAttach}>
                 <Iconify icon="eva:attach-2-fill" />
-              </IconButton>
+              </IconButton> */}
               {/* <IconButton>
                   <Iconify icon="solar:microphone-bold" />
                 </IconButton> */}
@@ -422,7 +432,7 @@ export default function ChatMessageInput({
         />
       </Box>
       <input
-        onChange={()=> uploadImage()}
+        onChange={() => uploadImage()}
         type="file"
         ref={imageRef}
         style={{ display: 'none', position: 'absolute' }}

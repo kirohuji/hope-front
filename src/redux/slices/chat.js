@@ -145,12 +145,8 @@ const slice = createSlice({
     },
     pushMessageSuccess(state, action) {
       const { message } = action.payload;
-      // const orderedData = _.unionBy(
-      //   _.orderBy([...state.messages.byId[message.conversationId], message], ['createdAt'], ['asc']),
-      //   'id'
-      // );
-      // state.messages.byId[message.conversationId] = orderedData;
-      if (!state.messages.byId[message.conversationId].some((m) => m.id === message.id)) {
+      if (state.sendingMessage.byId[message.conversationId].filter((m) => m.sendingMessageId === message.sendingMessageId).length === 0 &&
+      state.messages.byId[message.conversationId].filter((m) => m.sendingMessageId === message.sendingMessageId).length === 0) {
         state.messages.byId[message.conversationId].push(message);
         state.lastMessage.byId[message.conversationId] = _.last(message);
       }
@@ -161,11 +157,11 @@ const slice = createSlice({
         _.orderBy([...state.messages.byId[conversationId], message], ['createdAt'], ['asc']),
         '_id'
       );
-      state.messages.byId[conversationId] = orderedData;
-      state.lastMessage.byId[conversationId] = _.last(orderedData);
       state.sendingMessage.byId[conversationId] = state.sendingMessage.byId[conversationId].filter(
         (item) => item._id !== messageId
       );
+      state.messages.byId[conversationId] = orderedData;
+      state.lastMessage.byId[conversationId] = _.last(orderedData);
     },
 
     onSendMessageFailure(state, action) {
@@ -348,6 +344,7 @@ export function getMessages(conversationKey, messageLimit) {
     }
   };
 }
+
 export function pushMessage(message) {
   return async (dispatch) => {
     await dispatch(
@@ -550,6 +547,7 @@ export function getConversation(conversationKey) {
     }
   };
 }
+
 export function getConversationByConversationKey(conversationKey) {
   return async (dispatch, getState) => {
     try {

@@ -19,6 +19,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { useMeteorContext } from 'src/meteor/hooks';
 // components
 import { useSettingsContext } from 'src/components/settings';
+import Iconify from 'src/components/iconify';
 //
 import { useDispatch, useSelector } from 'src/redux/store';
 import {
@@ -122,7 +123,7 @@ export default function ChatView() {
 
   const isDesktop = useResponsive('up', 'md');
 
-  const { user } = useAuthContext();
+  const { user, isInitialized } = useAuthContext();
 
   const settings = useSettingsContext();
 
@@ -256,7 +257,7 @@ export default function ChatView() {
       direction="row"
       alignItems="center"
       flexShrink={0}
-      sx={{ pr: 1, pl: 2.5, py: 1, minHeight: 72 }}
+      sx={{ pr: 1, pl: 2.5, py: 1, minHeight: isDesktop ? 72 : 56 }}
     >
       {selectedConversationId ? (
         <>{details && <ChatHeaderDetail participants={participants} />}</>
@@ -397,6 +398,19 @@ export default function ChatView() {
         <Stack>
           {!isDesktop && (
             <>
+              {!isInitialized && (
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="center"
+                  sx={{ pl: 0, pr: 0 }}
+                >
+                  <Box sx={{ display: 'flex' }}>
+                    <Iconify icon="svg-spinners:8-dots-rotate" sx={{ mr: -3 }} />
+                    <div style={{ marginLeft: '32px' }}>正在连接中</div>
+                  </Box>
+                </Stack>
+              )}
               <Stack
                 direction="row"
                 alignItems="center"

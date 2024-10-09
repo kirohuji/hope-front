@@ -34,7 +34,7 @@ const reducer = (state, action) => {
       ...state,
       isInitialized: false,
       isAuthenticated: false,
-      loading: true,
+      loading: false,
     };
   }
   if (action.type === 'LOGIN') {

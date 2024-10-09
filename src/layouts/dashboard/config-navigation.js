@@ -282,19 +282,19 @@ export function useNavData() {
             auth: ['FileManager'],
           },
           // AI 
-          {
-            title: t('openai'),
-            path: paths.dashboard.openai,
-            icon: ICONS.openai,
-            auth: [
-              'Broadcast',
-              'BroadcastList',
-              'BroadcastListAdd',
-              'BroadcastListEdit',
-              'BroadcastListDelete',
-            ],
-            info: <Label color="error">+32</Label>,
-          },
+          // {
+          //   title: t('openai'),
+          //   path: paths.dashboard.openai,
+          //   icon: ICONS.openai,
+          //   auth: [
+          //     'Broadcast',
+          //     'BroadcastList',
+          //     'BroadcastListAdd',
+          //     'BroadcastListEdit',
+          //     'BroadcastListDelete',
+          //   ],
+          //   info: <Label color="error">+32</Label>,
+          // },
           // MAIL
           // {
           //   title: t('mail'),
