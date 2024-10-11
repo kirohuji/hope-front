@@ -9,17 +9,15 @@ import { HEADER } from 'src/config-global';
 import { bgBlur } from 'src/theme/css';
 // routes
 import { IconButtonAnimate } from 'src/components/animate';
-import { useRouter } from 'src/routes/hook';
-import { useSelector } from 'src/redux/store';
-import { usePathname } from 'src/routes/hook';
+import { useRouter , usePathname } from 'src/routes/hook';
+import { useSelector, useDispatch} from 'src/redux/store';
 import { useResponsive } from 'src/hooks/use-responsive';
-import { useDispatch } from 'src/redux/store';
 import { getConversations } from 'src/redux/slices/chat';
+import { useEffect } from 'react';
 import { paths } from '../../routes/paths';
 // components
 import Logo from '../../components/logo';
 import Iconify from '../../components/iconify';
-import { useEffect } from 'react';
 // ----------------------------------------------------------------------
 
 Header.propTypes = {
@@ -50,7 +48,7 @@ export default function Header({ isOffset }) {
     if (pathname === '/chat') {
       dispatch(getConversations());
     }
-  }, [dispatch]);
+  }, [dispatch, pathname]);
   return (
     <AppBar color="transparent" sx={{ boxShadow: 0 }} position={mdUp ? 'static' : 'absolute'}>
       <Toolbar

@@ -180,6 +180,7 @@ export function AuthProvider({ children }) {
       StatusBar.setOverlaysWebView({ overlay: true });
     } else if (Capacitor.getPlatform() === 'android') {
       console.log('Android!');
+      import('../../../android.css');
       StatusBar.setOverlaysWebView({ overlay: true });
     } else {
       console.log('Web!');
@@ -323,7 +324,7 @@ export function AuthProvider({ children }) {
 
 // ----------------------------------------------------------------------
 
-let data = { version: -1 };
+// const data = { version: -1 };
 CapacitorUpdater.notifyAppReady();
 // App.addListener('appStateChange', async (state) => {
 //   if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {

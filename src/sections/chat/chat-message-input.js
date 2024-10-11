@@ -10,8 +10,8 @@ import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'src/components/snackbar';
 import { Capacitor } from '@capacitor/core';
 import { Camera, CameraSource, CameraResultType } from '@capacitor/camera';
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import { FilePicker } from '@capawesome/capacitor-file-picker';
+// import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+// import { FilePicker } from '@capawesome/capacitor-file-picker';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -108,27 +108,27 @@ export default function ChatMessageInput({
   );
 
   const handleAttach = useCallback(async () => {
-    if (Capacitor.isNativePlatform()) {
-      const result = await FilePicker.pickFiles({
-        multiple: false, // 是否允许选择多个文件
-      });
-      const file = result.files[0];
-      const contents = await Filesystem.readFile({
-        path: file.path,
-      });
-      // const response = await fetch(file.path);
-      // const blob = await response.blob();
-      // const rawFile = new File([blob], `${file.name}-${Date.now()}`, { type: file.mimeType });
-      // console.log('文件分析成功', rawFile);
-      uploadFile(rawFile);
-    } else {
-      if (fileRef.current) {
-        fileRef.current.click();
-      }
-    }
+    // if (Capacitor.isNativePlatform()) {
+    //   const result = await FilePicker.pickFiles({
+    //     multiple: false, // 是否允许选择多个文件
+    //   });
+    //   const file = result.files[0];
+    //   const contents = await Filesystem.readFile({
+    //     path: file.path,
+    //   });
+    //   // const response = await fetch(file.path);
+    //   // const blob = await response.blob();
+    //   // const rawFile = new File([blob], `${file.name}-${Date.now()}`, { type: file.mimeType });
+    //   // console.log('文件分析成功', rawFile);
+    //   uploadFile(rawFile);
+    // } else {
+    //   if (fileRef.current) {
+    //     fileRef.current.click();
+    //   }
+    // }
   }, []);
 
-  const openPhotoLibrary = async () => {
+  const openPhotoLibrary = useCallback(async () => {
     const image = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Photos, // 直接打开 Photo Library
@@ -138,7 +138,8 @@ export default function ChatMessageInput({
     const blob = await response.blob();
     const file = new File([blob], `photo-library-${Date.now()}.jpg`, { type: blob.type });
     uploadImage(file);
-  };
+  },[uploadImage]);
+
   const handleCamera = useCallback(async () => {
     if (Capacitor.isNativePlatform()) {
       try {
@@ -155,7 +156,7 @@ export default function ChatMessageInput({
         console.error('Error taking photo:', error);
       }
     }
-  }, []);
+  }, [uploadImage]);
   const handleImage = useCallback(() => {
     if (Capacitor.isNativePlatform()) {
       console.log('isNativePlatform');
@@ -163,7 +164,7 @@ export default function ChatMessageInput({
     } else if (imageRef.current) {
       imageRef.current.click();
     }
-  }, []);
+  }, [openPhotoLibrary]);
 
   const handleChangeMessage = useCallback((event) => {
     if (event.key !== 'Enter' || !event.shiftKey) {
@@ -251,7 +252,7 @@ export default function ChatMessageInput({
     },
     [clipboardOpen]
   );
-  const uploadImage = async (receivedImage) => {
+  const uploadImage = useCallback(async (receivedImage) => {
     try {
       let file = null;
       if (receivedImage) {
@@ -294,7 +295,7 @@ export default function ChatMessageInput({
       enqueueSnackbar(e?.response?.data?.message);
       loading.onFalse();
     }
-  };
+  },[dispatch, enqueueSnackbar, loading, messageData, selectedConversationId]);
   const uploadFile = async (receivedFile) => {
     try {
       let file = null;

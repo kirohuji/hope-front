@@ -353,6 +353,7 @@ export function pushMessage(message) {
       })
     );
     try {
+      /**  */
     } catch (error) {
       dispatch(
         slice.actions.hasError({

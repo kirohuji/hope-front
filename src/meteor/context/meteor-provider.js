@@ -1,3 +1,4 @@
+/* eslint-disable import/no-mutable-exports */
 import PropTypes from 'prop-types';
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 import SimpleDDP from 'simpleddp';
@@ -5,8 +6,8 @@ import { simpleDDPLogin } from 'simpleddp-plugin-login';
 import _ from 'lodash';
 import { useDispatch } from 'src/redux/store';
 import { getConversations, getSessions } from 'src/redux/slices/chat';
-import { MeteorContext } from './meteor-context';
 import { getOverview } from 'src/redux/slices/notification';
+import { MeteorContext } from './meteor-context';
 // import { useNotificationSnackbar } from 'src/components/notification-snackbar/index';
 const initialState = {
   server: null,
@@ -159,7 +160,7 @@ export function MeteorProvider({ endpoint, children }) {
       //   reducerDispatch(getOverview());
       // }
     });
-  }, [state]);
+  }, [reducerDispatch, state]);
 
   const useLogin = useCallback(
     async (opt) => {

@@ -9,22 +9,20 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { useSettingsContext } from 'src/components/settings';
 //
 import { paths } from 'src/routes/paths';
-import { HEADER, NAV } from '../config-layout';
 import { useMeteorContext } from 'src/meteor/hooks';
 import { useEffect } from 'react';
 import { useSnackbar } from 'src/components/snackbar';
-import { useRouter } from 'src/routes/hook';
-import { usePathname } from 'src/routes/hook';
+import { useRouter , usePathname } from 'src/routes/hook';
 import { messagingService } from 'src/composables/context-provider';
 import {
   conversationsCollectionChange,
   conversationsPublish
 } from 'src/meteor/context/meteor-provider';
+import { HEADER, NAV } from '../config-layout';
 // ----------------------------------------------------------------------
 
 const SPACING = 8;
-const CustomSnackbar = ({ message, name, avatarUrl, onGoto }) => {
-  return (
+const CustomSnackbar = ({ message, name, avatarUrl, onGoto }) => (
     <Box
       display="flex"
       alignItems="center"
@@ -48,7 +46,6 @@ const CustomSnackbar = ({ message, name, avatarUrl, onGoto }) => {
       </Box>
     </Box>
   );
-};
 export default function Main({ children, sx, ...other }) {
   const { isConnected, subConversations } = useMeteorContext();
   const settings = useSettingsContext();
@@ -58,19 +55,23 @@ export default function Main({ children, sx, ...other }) {
   const router = useRouter();
   const isNavMini = settings.themeLayout === 'mini';
   const pathname = usePathname();
+
   function handleMessage(message){
     switch(message.contentType){
       case 'text':
         return message.body;
       case 'image':
         return '对方发送了一张图片给你'
+      default:
+        return message.body;
     }
   }
+  
   useEffect(() => {
     if (isConnected) {
       console.log(pathname);
       subConversations(async (conversation) => {
-        if (pathname != '/dashboard/chat' && pathname != '/chat') {
+        if (pathname !== '/dashboard/chat' && pathname !== '/chat') {
           const message = await messagingService.getLastMessage({
             _id: conversation.id,
           });
@@ -93,14 +94,17 @@ export default function Main({ children, sx, ...other }) {
           );
         }
       });
-      return ()=> {
+      return () => {
         if (conversationsPublish) {
           conversationsCollectionChange.stop();
           conversationsPublish.stop();
         }
       }
     }
+    return ()=> {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, pathname]);
+
   if (isNavHorizontal) {
     return (
       <Box
@@ -152,3 +156,10 @@ Main.propTypes = {
   children: PropTypes.node,
   sx: PropTypes.object,
 };
+
+CustomSnackbar.propTypes = {
+  message: PropTypes.any,
+  name: PropTypes.any,
+  avatarUrl: PropTypes.any,
+   onGoto: PropTypes.any
+}

@@ -49,7 +49,7 @@ export default function SnackbarProvider({ children }) {
             <Iconify icon="solar:danger-bold" width={24} />
           </StyledIcon>
         ),
-        message: (<div></div>)
+        message: (<div/>)
       }}
       Components={{
         default: StyledNotistack,

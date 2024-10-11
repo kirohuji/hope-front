@@ -1802,11 +1802,6 @@
   resolved "https://registry.npmmirror.com/@capacitor/status-bar/-/status-bar-6.0.1.tgz#27cef2560cdefb8e14d2cecc976056ede7b822ef"
   integrity sha512-Usd9hZZQVAqy+jJfL7jRcYI7dcsxN09Na1yttwdl+F1bk3Ztoukk7CGPDm5VgKUSs53ihQBOy1+sczCACxhNiw==
 
-"@capawesome/capacitor-file-picker@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.npmmirror.com/@capawesome/capacitor-file-picker/-/capacitor-file-picker-6.0.1.tgz#b07e8d045f719c4798867ffe2b80aa7f7cf36a52"
-  integrity sha512-JWYmqfYMRwvhJMACC4oovzBGtcP1MXnRKbENPjXhL0ni0p0nnVgddKD+07kc81SNiABBuCksQjNiFiEDqqy49A==
-
 "@capgo/capacitor-updater@^5.3.43":
   version "5.3.44"
   resolved "https://registry.npmmirror.com/@capgo/capacitor-updater/-/capacitor-updater-5.3.44.tgz"

@@ -1,5 +1,7 @@
 import { PushNotifications } from '@capacitor/push-notifications';
+
 import { messagingService } from 'src/composables/context-provider';
+
 export const addListeners = async () => {
   await PushNotifications.addListener('registration', token => {
     console.info('Registration token: ', token.value);

@@ -1,0 +1,133 @@
+@supports (top: env(safe-area-inset-top)) {
+  .notistack-SnackbarContainer {
+    margin-top: constant(safe-area-inset-top);
+    margin-top: env(safe-area-inset-top);
+  }
+  header,
+  .header {
+    background-color: white;
+    padding-top: constant(safe-area-inset-top);
+    padding-top: env(safe-area-inset-top);
+    height: unset !important;
+  }
+}
+/* @supports (bottom: env(safe-area-inset-bottom)) { */
+@supports (-webkit-touch-callout: none) {
+  /*针对IOS的css*/
+  .yarl__root,
+  .history-content-drawer,
+  .notification-popover,
+  .calendar-filter-drawer,
+  .chat-room-group-drawer {
+    padding-top: calc(constant(safe-area-inset-top)) !important;
+    padding-top: calc(env(safe-area-inset-top)) !important;
+  }
+  main,
+  .main {
+    padding-top: calc(constant(safe-area-inset-top) * 2.5) !important;
+    padding-top: calc(env(safe-area-inset-top) * 2.5) !important;
+    /* padding-bottom: calc(126px + constant(safe-area-inset-bottom) * 2.5) !important;
+     padding-bottom: calc(126px + (safe-area-inset-bottom) * 2.5) !important; */
+  }
+  .book-player {
+    background-color: none !important;
+    /* bottom: 56px !important; */
+    /* bottom: calc(2px + constant(safe-area-inset-bottom) * 2.5) !important;
+    bottom: calc(2px + env(safe-area-inset-bottom) * 2.5) !important; */
+  }
+  .bottom-navigation {
+    background-color: white;
+  }
+  .bottom-navigation > div {
+    padding-bottom: calc(constant(safe-area-inset-bottom) * 2.5) !important;
+    padding-bottom: calc(env(safe-area-inset-bottom) * 2.5) !important;
+  }
+  .bottom-navigation div a {
+    height: 56px !important;
+  }
+  .bottom-chat {
+    height: calc(100vh - 140px) !important;
+  }
+}
+
+/*适配苹果XR */
+@media only screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 2) {
+  .book-player {
+    background-color: none !important;
+    /* bottom: 56px !important; */
+  }
+  .bottom-chat {
+    height: calc(100vh - 70px) !important;
+  }
+}
+
+@media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+  .book-player {
+    background-color: none !important;
+    /* bottom: 56px !important; */
+  }
+  .bottom-chat {
+    height: calc(100vh - 70px) !important;
+  }
+}
+
+/*适配，6，7，8*/
+@media only screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) {
+  .book-player {
+    background-color: none !important;
+    /* bottom: 56px !important; */
+  }
+  .bottom-chat {
+    height: calc(100vh - 70px) !important;
+  }
+}
+
+/*适配，6+，7+，8+*/
+@media only screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) {
+  .book-player {
+    background-color: none !important;
+    /* bottom: 56px !important; */
+  }
+  .bottom-chat {
+    height: calc(100vh - 70px) !important;
+  }
+}
+
+/*适配，5*/
+@media only screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) {
+  .book-player {
+    background-color: none !important;
+    /* bottom: 56px !important; */
+  }
+  .bottom-chat {
+    height: calc(100vh - 70px) !important;
+  }
+}
+
+/*适配，4*/
+@media only screen and (device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2) {
+  .book-player {
+    background-color: none !important;
+    /* bottom: 56px !important; */
+  }
+  .bottom-chat {
+    height: calc(100vh - 70px) !important;
+  }
+}
+
+.MuiBottomNavigationAction-label {
+  opacity: 1 !important;
+}
+
+.MuiInputBase-root.message-input {
+  width: 100%;
+}
+.return-layout {
+
+}
+.return-main {
+  height: calc(100vh - 72px);
+}
+.message-list {
+  margin-bottom: 10px;
+}

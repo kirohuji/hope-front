@@ -135,8 +135,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
                   borderRadius: 1.5,
                   width: 'calc(100% + 24px)',
                   height: 'calc(100% + 24px)',
-                  backgroundColor: 'rgba(0, 0, 0, 0.2)', // 半透明黑色遮罩
-                  zIndex: 1,
+                  backgroundColor: 'rgba(0, 0, 0, 0.2)' // 半透明黑色遮罩
                 }}
               />
             )}
