@@ -1,13 +1,6 @@
-export default class MessagingService {
-  constructor(options) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const name in options) {
-      // eslint-disable-next-line no-prototype-builtins
-      if (options.hasOwnProperty(name)) {
-        this[name] = options[name];
-      }
-    }
-  }
+import { Service } from './base'
+
+export default class MessagingService extends Service {
 
   usersAndConversations(conversationsId, isChatgpt) {
     if (isChatgpt) {
@@ -25,6 +18,10 @@ export default class MessagingService {
 
   getConversationById(target) {
     return this.api.get(`${this.model}/conversations/${target._id}`);
+  }
+
+  updateConversationById(target) {
+    return this.api.patch(`${this.model}/conversations/${target._id}`, target);
   }
 
   participantsAsUsers(target) {

@@ -8,6 +8,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Card from '@mui/material/Card';
+import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
@@ -30,6 +31,7 @@ import FormProvider, {
   RHFEditor,
   RHFSwitch,
   RHFTextField,
+  RHFRadioGroup,
 } from 'src/components/hook-form';
 import { versionService, fileService } from 'src/composables/context-provider';
 import { getScopes } from 'src/redux/slices/scope';
@@ -139,13 +141,25 @@ export default function ScopeNewEditForm({ current }) {
 
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">名称</Typography>
+              <Typography variant="subtitle2">版本名</Typography>
               <RHFTextField name="label" />
             </Stack>
-
-            <Stack spacing={1.5}>
+            {/* <Stack spacing={1.5}>
               <Typography variant="subtitle2">编码</Typography>
               <RHFTextField name="value" />
+            </Stack> */}
+
+            <Stack spacing={1.5}>
+            <Typography variant="subtitle2">平台</Typography>
+            <RHFRadioGroup
+              row
+              name="platform"
+              options={[
+                { label: 'Android', value: 'Android' },
+                { label: 'Apple', value: 'Apple' },
+              ]}
+            />
+
             </Stack>
 
             <Stack spacing={1.5}>

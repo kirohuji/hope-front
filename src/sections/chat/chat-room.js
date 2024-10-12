@@ -6,6 +6,10 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { StaticDatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import {
+  TextField,
+} from '@mui/material';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -25,7 +29,9 @@ import { useCollapseNav } from './hooks';
 import ChatRoomGroup from './chat-room-group';
 import ChatRoomSingle from './chat-room-single';
 import ChatRoomAttachments from './chat-room-attachments';
+import ChatRoomSettings from './chat-room-settings';
 import useCollapseHistory from './hooks/use-collapse-history';
+import useCollapseSettings from './hooks/use-collapse-settings';
 import ChatMessageList from './chat-message-list';
 // ----------------------------------------------------------------------
 
@@ -52,6 +58,8 @@ export default function ChatRoom({ participants, conversation, messages }) {
   } = useCollapseNav();
 
   const { openHistoryMobile, onOpenHistoryMobile, onCloseHistoryMobile } = useCollapseHistory();
+
+  const { openSettingsMobile, onOpenSettingsMobile, onCloseSettingsMobile } = useCollapseSettings();
 
   const fetchAttachments = useCallback(async () => {
     const response = await messagingService.getConversationMessagesAttachmentsById({
@@ -102,6 +110,7 @@ export default function ChatRoom({ participants, conversation, messages }) {
 
   const renderContent = (
     <>
+      {group && <ChatRoomSettings participants={participants} conversation={conversation}/> }
       {group ? (
         <ChatRoomGroup participants={participants} conversation={conversation} />
       ) : (
@@ -117,6 +126,10 @@ export default function ChatRoom({ participants, conversation, messages }) {
     getHistoryMessage(new Date());
     onOpenHistoryMobile();
   }, [getHistoryMessage, onOpenHistoryMobile]);
+
+  const handleToggleSettings = useCallback(() => {
+    onOpenSettingsMobile();
+  }, [onOpenSettingsMobile]);
 
   const renderHistoryContent = (
     <>
@@ -213,6 +226,42 @@ export default function ChatRoom({ participants, conversation, messages }) {
     </IconButton>
   );
 
+  const renderSettingBtn = (
+    <IconButton
+      onClick={handleToggleSettings}
+      sx={{
+        top: 84,
+        right: 0,
+        zIndex: 9,
+        width: 32,
+        height: 32,
+        borderRight: 0,
+        position: 'absolute',
+        borderRadius: `12px 0 0 12px`,
+        boxShadow: theme.customShadows.z8,
+        bgcolor: theme.palette.background.paper,
+        border: `solid 1px ${theme.palette.divider}`,
+        '&:hover': {
+          bgcolor: theme.palette.background.neutral,
+        },
+        ...(lgUp && {
+          ...(!collapseDesktop && {
+            right: NAV_WIDTH,
+          }),
+        }),
+      }}
+    >
+      {lgUp ? (
+        <Iconify
+          width={16}
+          icon={collapseDesktop ? 'solar:settings-outline' : 'solar:settings-outline'}
+        />
+      ) : (
+        <Iconify width={16} icon="solar:settings-outline" />
+      )}
+    </IconButton>
+  );
+
   const renderToggleBtn = (
     <IconButton
       onClick={handleToggleNav}
@@ -248,11 +297,28 @@ export default function ChatRoom({ participants, conversation, messages }) {
       )}
     </IconButton>
   );
+  const labelStyles = {
+    mb: 1.5,
+    pl: 1,
+    color: 'text.disabled',
+    fontWeight: 'fontWeightSemiBold',
+  };
+
+
+  const renderMode = (
+    <Stack spacing={2} sx={{ p: 2 }}>
+      <Typography variant="caption" component="div" sx={{ ...labelStyles }}>
+        Notifications Mode
+      </Typography>
+
+    </Stack>
+  );
 
   return (
     <Box sx={{ position: 'relative' }}>
       {participants && participants.length > 0 && renderToggleBtn}
       {!lgUp && renderHistoryBtn}
+      {/* {!lgUp && renderSettingBtn} */}
 
       {lgUp ? (
         <Stack
@@ -305,6 +371,52 @@ export default function ChatRoom({ participants, conversation, messages }) {
           </div>
           {renderHistoryContent}
         </div>
+      </Drawer>
+      <Drawer
+        anchor="right"
+        open={openSettingsMobile}
+        onClose={onCloseSettingsMobile}
+        slotProps={{
+          backdrop: { invisible: true },
+        }}
+        PaperProps={{
+          sx: { width: 320 },
+        }}
+      >
+        <Box className="history-content-drawer">
+          <Stack
+            style={{ mt: '14px', background: 'white' }}
+            justifyContent="space-between"
+            flexDirection="row"
+            alignItems="center"
+            sx={{ pl: 2, pr: 1, py: 2 }}
+          >
+            {/* <Box sx={{ flex: 1}}>
+              <IconButtonAnimate sx={{ color: 'text.primary' }} onClick={onCloseSettingsMobile}>
+                <Iconify icon="eva:arrow-ios-back-fill" />
+              </IconButtonAnimate>
+            </Box> */}
+            <Typography variant="subtitle2">设置中心</Typography>
+          </Stack>
+          <Divider sx={{ mb: 1 }}/>
+          <Typography
+            variant="caption"
+            sx={{
+              p: 2,
+              m: 1,
+              color: 'text.secondary',
+              fontWeight: 'fontWeightMedium',
+            }}
+          >
+            群聊名称
+          </Typography>
+          <Stack spacing={2} sx={{ px: 2 }}>
+            <TextField
+              size="small"
+            />
+          </Stack>
+          {renderMode}
+        </Box>
       </Drawer>
     </Box>
   );

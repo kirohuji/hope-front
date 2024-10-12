@@ -28,7 +28,7 @@ export default function useGetNavItem({ currentUserId, conversation, user }) {
   const group = participantsInConversation.length > 2 || conversation.isGroup === 'GROUP';
 
   const displayName = group
-    ? participantsInConversation.map((participant) => participant.realName).join(', ')
+    ? conversation.label || participantsInConversation.map((participant) => participant.realName).join(', ')
     : participantsInConversation[0]?.displayName || participantsInConversation[0]?.username || conversation.label;
   const realName = group
     ? // ? participantsInConversation.map((participant) => participant.realName).join(', ')
