@@ -181,7 +181,7 @@ export function AuthProvider({ children }) {
     } else if (Capacitor.getPlatform() === 'android') {
       console.log('Android!');
       import('../../../android.css');
-      StatusBar.setOverlaysWebView({ overlay: true });
+      StatusBar.setOverlaysWebView({ overlay: false });
     } else {
       console.log('Web!');
       import('../../../web.css');

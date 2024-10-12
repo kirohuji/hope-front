@@ -1,12 +1,16 @@
 import { PushNotifications } from '@capacitor/push-notifications';
-
+import { Device } from '@capacitor/device';
 import { messagingService } from 'src/composables/context-provider';
 
 export const addListeners = async () => {
-  await PushNotifications.addListener('registration', token => {
+  await PushNotifications.addListener('registration', async token => {
     console.info('Registration token: ', token.value);
+    const device = await Device.getInfo();
+    const deviceId = await Device.getId(); 
     messagingService.savePushNotificationToken({
-      token: token.value
+      token: token.value,
+      device,
+      deviceId
     })
   });
 
@@ -24,10 +28,14 @@ export const addListeners = async () => {
 }
 
 export const registerNotifications = async () => {
-  PushNotifications.addListener('registration', token => {
+  PushNotifications.addListener('registration', async token => {
     console.info('Registration token: ', token.value);
+    const device = await Device.getInfo();
+    const deviceId = await Device.getId(); 
     messagingService.savePushNotificationToken({
-      token: token.value
+      token: token.value,
+      device,
+      deviceId
     })
   });
   PushNotifications.addListener('registrationError', err => {

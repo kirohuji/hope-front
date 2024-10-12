@@ -137,8 +137,7 @@ export default function ChatPopover() {
         <Iconify icon="lets-icons:add-duotone" width={32} />
       </IconButton>
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
+        {/* <Divider sx={{ borderStyle: 'dashed' }} /> */}
         <Stack sx={{ p: 0.5 }}>
           <MenuItem
             onClick={() => {

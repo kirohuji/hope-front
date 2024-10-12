@@ -127,7 +127,53 @@ export default function ChatMessageInput({
     //   }
     // }
   }, []);
-
+  const uploadImage = useCallback(
+    async (receivedImage) => {
+      try {
+        let file = null;
+        if (receivedImage) {
+          file = receivedImage;
+        } else if (imageRef.current) {
+          file = imageRef.current.files[0];
+        }
+        if (file) {
+          loading.onTrue();
+          const formData = new FormData();
+          formData.append('file', file);
+          const { link } = await fileService.uploadToMessage(formData);
+          // await fileManagerService.createCurrentUser({
+          //   url: link,
+          //   label: file.name,
+          //   size: file.size,
+          //   type: `${file.name.split('.').pop()}`,
+          //   lastModified: new Date(file.lastModified),
+          // });
+          await dispatch(
+            sendMessage(selectedConversationId, {
+              ...messageData,
+              body: link,
+              message: link,
+              attachments: [
+                {
+                  name: file.name,
+                  preview: link,
+                  type: 'image',
+                  createdAt: new Date()?.toISOString(),
+                },
+              ],
+              contentType: 'image',
+            })
+          );
+        }
+        loading.onFalse();
+        enqueueSnackbar('图片上传成功');
+      } catch (e) {
+        enqueueSnackbar(e?.response?.data?.message);
+        loading.onFalse();
+      }
+    },
+    [dispatch, enqueueSnackbar, loading, messageData, selectedConversationId]
+  );
   const openPhotoLibrary = useCallback(async () => {
     const image = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
@@ -138,7 +184,7 @@ export default function ChatMessageInput({
     const blob = await response.blob();
     const file = new File([blob], `photo-library-${Date.now()}.jpg`, { type: blob.type });
     uploadImage(file);
-  },[uploadImage]);
+  }, [uploadImage]);
 
   const handleCamera = useCallback(async () => {
     if (Capacitor.isNativePlatform()) {
@@ -252,50 +298,6 @@ export default function ChatMessageInput({
     },
     [clipboardOpen]
   );
-  const uploadImage = useCallback(async (receivedImage) => {
-    try {
-      let file = null;
-      if (receivedImage) {
-        file = receivedImage;
-      } else if (imageRef.current) {
-        file = imageRef.current.files[0];
-      }
-      if (file) {
-        loading.onTrue();
-        const formData = new FormData();
-        formData.append('file', file);
-        const { link } = await fileService.uploadToMessage(formData);
-        // await fileManagerService.createCurrentUser({
-        //   url: link,
-        //   label: file.name,
-        //   size: file.size,
-        //   type: `${file.name.split('.').pop()}`,
-        //   lastModified: new Date(file.lastModified),
-        // });
-        await dispatch(
-          sendMessage(selectedConversationId, {
-            ...messageData,
-            body: link,
-            message: link,
-            attachments: [
-              {
-                name: file.name,
-                preview: link,
-                type: 'image',
-                createdAt: new Date()?.toISOString(),
-              },
-            ],
-            contentType: 'image',
-          })
-        );
-      }
-      loading.onFalse();
-      enqueueSnackbar('图片上传成功');
-    } catch (e) {
-      enqueueSnackbar(e?.response?.data?.message);
-      loading.onFalse();
-    }
-  },[dispatch, enqueueSnackbar, loading, messageData, selectedConversationId]);
   const uploadFile = async (receivedFile) => {
     try {
       let file = null;
