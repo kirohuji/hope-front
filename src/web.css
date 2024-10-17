@@ -97,6 +97,7 @@ body {
 .return-main {
   height: calc(100vh - 72px);
   margin-top: 72px;
+  overflow: auto;
 }
 .return-layout {
   overflow: hidden;

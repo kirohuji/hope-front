@@ -110,7 +110,6 @@ export default function DashboardLayout({ children }) {
   return (
     <>
       <Header onOpenNav={nav.onTrue} />
-
       <Box
         sx={{
           minHeight: 1,
@@ -121,7 +120,7 @@ export default function DashboardLayout({ children }) {
         {renderNavVertical}
 
         <Main className="main">{children}</Main>
-        {!lgUp && !pathname.includes('/dashboard/broadcast/') && <DashboardFooter />}
+        {!lgUp && !pathname.includes('/dashboard/broadcast/') && !pathname.includes('/dashboard/article/') && <DashboardFooter />}
         {!lgUp && pathname === '/dashboard/file-manager' && (
           <Box
             ref={musicPlayerRef}

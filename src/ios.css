@@ -29,6 +29,9 @@
     /* padding-bottom: calc(126px + constant(safe-area-inset-bottom) * 2.5) !important;
      padding-bottom: calc(126px + (safe-area-inset-bottom) * 2.5) !important; */
   }
+  .book-scrollbar {
+    height: calc(100% - 24px) !important;
+  }
   .book-player {
     background-color: none !important;
     /* bottom: 56px !important; */
@@ -127,6 +130,7 @@
 }
 .return-main {
   height: calc(100vh - 72px);
+  overflow: auto;
 }
 .message-list {
   margin-bottom: 10px;

@@ -40,11 +40,11 @@ const navigations = [
     icon: ICONS.user,
     to: '/dashboard/calendar',
   },
-  // {
-  //   label: '阅读',
-  //   icon: ICONS.blog,
-  //   to: '/dashboard/training/dashboard',
-  // },
+  {
+    label: '阅读',
+    icon: ICONS.blog,
+    to: '/dashboard/training/dashboard',
+  },
 ];
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -77,7 +77,6 @@ export default function DashboardFooter() {
       dispatch(updateBottomNavigationActionValue(0));
     }
     if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
-      console.log('执行监听');
       Keyboard.addListener('keyboardWillShow', () => {
         console.log('keyboardWillShow');
         setIsKeyboardVisible(true);

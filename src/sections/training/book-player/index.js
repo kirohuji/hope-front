@@ -17,8 +17,12 @@ import IconButton from '@mui/material/IconButton';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { getBooksWithCurrentUserBySummarize, select } from 'src/redux/slices/trainning';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+// import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import Drawer from '@mui/material/Drawer';
 import moment from 'moment';
+// routes
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hook';
 import Scrollbar from 'src/components/scrollbar';
 import ScrollProgress from 'src/components/scroll-progress';
 import { HEADER } from 'src/config-global';
@@ -44,7 +48,7 @@ export default function BookPlayer() {
   const { book, article, list, selectedArticle } = useSelector((state) => state.trainning);
   const [open, setOpen] = useState(false);
   const isOffset = useOffSetTop(HEADER.H_MAIN_DESKTOP);
-
+  const router = useRouter();
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
@@ -119,7 +123,9 @@ export default function BookPlayer() {
               sx={{ display: 'flex', flexDirection: 'row', p: 0, pl: 1, alignItems: 'center' }}
             >
               {!isPlay.value ? (
-                <IconButton onClick={toggleDrawer(true)}>
+                <IconButton onClick={()=> {
+                  router.push(`${paths.reading(article._id)}`);
+                }}>
                   <Iconify icon="bi:play-fill" />
                 </IconButton>
               ) : (
@@ -174,13 +180,19 @@ export default function BookPlayer() {
               )
           )}
         </Menu>
-        <SwipeableDrawer
+        <Drawer
           container={container}
-          anchor="bottom"
+          anchor="right"
           open={open}
           onClose={toggleDrawer(false)}
-          onOpen={toggleDrawer(true)}
-          disableSwipeToOpen={false}
+          // onOpen={toggleDrawer(true)}
+          // disableSwipeToOpen={false}
+          slotProps={{
+            backdrop: { invisible: true },
+          }}
+          PaperProps={{
+            sx: { width: '100%' },
+          }}
           ModalProps={{
             keepMounted: true,
           }}
@@ -205,7 +217,7 @@ export default function BookPlayer() {
                 height: 'calc(100% - 64px)',
               }}
             >
-              <Scrollbar ref={containerRef} sx={{ height: 'calc(100% - 80px)' }}>
+              <Scrollbar ref={containerRef} sx={{ height: 'calc(100% - 24px)' }} className="book-scrollbar">
                 {!selectLoading.value && (
                   <ArticleDetailsView
                     articleId={article._id}
@@ -223,7 +235,7 @@ export default function BookPlayer() {
               </Scrollbar>
             </Box>
           </StyledBox>
-        </SwipeableDrawer>
+        </Drawer>
       </>
     )
   );

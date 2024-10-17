@@ -32,7 +32,7 @@ export default function useGetNavItem({ currentUserId, conversation, user }) {
     : participantsInConversation[0]?.displayName || participantsInConversation[0]?.username || conversation.label;
   const realName = group
     ? // ? participantsInConversation.map((participant) => participant.realName).join(', ')
-      '多人聊天'
+      '群聊'
     : participantsInConversation[0]?.realName;
 
   const hasOnlineInGroup = group

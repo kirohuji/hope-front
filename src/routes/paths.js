@@ -19,7 +19,7 @@ const ROOTS = {
 export const paths = {
   comingSoon: '/coming-soon',
   maintenance: '/maintenance',
-  reading: (id) => `/reading/root/${id}`,
+  reading: (id) => `/reading/${id}`,
   pricing: '/pricing',
   payment: '/payment',
   about: '/about-us',

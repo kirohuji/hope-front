@@ -53,7 +53,7 @@ export default function Router () {
       path: 'reading', element: <ReturnLayout />,
       children: [
         {
-          path: 'root/:id', element: <ArticleDetailPage />
+          path: ':id', element: <ArticleDetailPage />
         },
       ]
     },
@@ -73,6 +73,7 @@ export default function Router () {
       element: <ReturnLayout />,
       children: [
         { path: 'chat', element: <ChatPage /> },
+        { path: 'openai', element: <AiPage /> },
         { path: 'openai', element: <AiPage /> },
         {
           path: 'training', element: <TrainingPage />
