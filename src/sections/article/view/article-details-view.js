@@ -263,7 +263,7 @@ export default function ArticleDetailsView({ onClose, articleId }) {
   );
 
   return (
-    <Container maxWidth={themeStretch ? false : 'lg'}>
+    <Container maxWidth={themeStretch ? false : 'lg'} sx={{ overflow: 'auto', pb: '48px'}}>
       {loadingPost && renderSkeleton}
 
       {errorMsg && renderError}

@@ -19,8 +19,7 @@
   width: 100%;
 }
 .return-main {
-  height: calc(100vh - 72px);
-  overflow: auto;
+  /* height: calc(100vh - 72px); */
 }
 .message-list {
   margin-bottom: 10px;
