@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = process.env.NODE_ENV !== 'development' ? 'http://localhost:3030/api/v1' : 'https://www.lourd.top/api/v1/';
+const baseURL = process.env.NODE_ENV === 'development' ? 'http://localhost:3030/api/v1' : 'https://www.lourd.top/api/v1/';
 const service = axios.create({
   baseURL,
   timeout: 180000,
