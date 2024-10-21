@@ -26,7 +26,11 @@ import { useTable, getComparator } from 'src/components/table';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
 import { getFiles } from 'src/redux/slices/file';
+// routes
+import { paths } from 'src/routes/paths';
 //
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import Restricted from 'src/auth/guard/restricted';
 import FileManagerTable from '../file-manager-table';
 import FileManagerFilters from '../file-manager-filters';
 import FileManagerGridView from '../file-manager-grid-view';
@@ -241,7 +245,30 @@ export default function FileManagerView() {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <CustomBreadcrumbs
+          heading="文件 管理"
+          links={[
+            {
+              name: '文件 管理',
+              href: paths.dashboard.fileManager.root,
+            },
+          ]}
+          action={
+            <Restricted to={['VersionListAdd']}>
+              <Button
+                variant="contained"
+                startIcon={<Iconify icon="eva:cloud-upload-fill" />}
+                onClick={upload.onTrue}
+              >
+                上传
+              </Button>
+            </Restricted>
+          }
+          sx={{
+            mb: { xs: 3, md: 5 },
+          }}
+        />
+        {/* <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Typography variant="h4">文件 管理</Typography>
           <Button
             variant="contained"
@@ -250,7 +277,7 @@ export default function FileManagerView() {
           >
             上传
           </Button>
-        </Stack>
+        </Stack> */}
         {!upMd && (
           <Stack sx={{ my: { xs: 3, md: 5 } }} spacing={2.5}>
             {renderStorageOverview}

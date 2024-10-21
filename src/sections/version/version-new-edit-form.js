@@ -46,9 +46,12 @@ export default function ScopeNewEditForm({ current }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const NewScopeSchema = Yup.object().shape({
-    label: Yup.string().required('请输入标题'),
-    value: Yup.string().required('请输入编码'),
-    description: Yup.string().required('请输入描述'),
+    value: Yup.string(),
+    majorVersion: Yup.string().required('主版本号'),
+    minorVersion: Yup.string().required('辅版本号'),
+    patchVersion: Yup.string().required('修订版本号'),
+    releaseDate: Yup.string(),
+    description: Yup.string(),
     file: Yup.string(),
     isActive: Yup.boolean(),
   });
@@ -109,9 +112,13 @@ export default function ScopeNewEditForm({ current }) {
         await versionService.patch({
           _id: current._id,
           ...data,
+          label: `${data.majorVersion}.${data.minorVersion}.${data.patchVersion}`,
         });
       } else {
-        await versionService.post(data);
+        await versionService.post({
+          ...data,
+          label: `${data.majorVersion}.${data.minorVersion}.${data.patchVersion}`,
+        });
       }
       dispatch(getScopes());
       reset();
@@ -140,27 +147,36 @@ export default function ScopeNewEditForm({ current }) {
           {!mdUp && <CardHeader label="Details" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">版本名</Typography>
-              <RHFTextField name="label" />
+            <Stack spacing={3} direction="row" justifyContent="space-between">
+              <Stack spacing={1.5}>
+                <Typography variant="subtitle2">主版本号</Typography>
+                <RHFTextField name="majorVersion" />
+              </Stack>
+              <Stack spacing={1.5}>
+                <Typography variant="subtitle2">辅版本号</Typography>
+                <RHFTextField name="minorVersion" />
+              </Stack>
+              <Stack spacing={1.5}>
+                <Typography variant="subtitle2">修订版本号</Typography>
+                <RHFTextField name="patchVersion" />
+              </Stack>
             </Stack>
             {/* <Stack spacing={1.5}>
               <Typography variant="subtitle2">编码</Typography>
               <RHFTextField name="value" />
             </Stack> */}
 
-            <Stack spacing={1.5}>
-            <Typography variant="subtitle2">平台</Typography>
-            <RHFRadioGroup
-              row
-              name="platform"
-              options={[
-                { label: 'Android', value: 'Android' },
-                { label: 'Apple', value: 'Apple' },
-              ]}
-            />
-
-            </Stack>
+            {/* <Stack spacing={1.5}>
+              <Typography variant="subtitle2">平台</Typography>
+              <RHFRadioGroup
+                row
+                name="platform"
+                options={[
+                  { label: 'Android', value: 'Android' },
+                  { label: 'Apple', value: 'Apple' },
+                ]}
+              />
+            </Stack> */}
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">描述</Typography>
@@ -208,7 +224,7 @@ export default function ScopeNewEditForm({ current }) {
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'right' }}>
         <FormControlLabel
-          control={<RHFSwitch name="isActive" defaultChecked label="设为最新版本" />}
+          control={<RHFSwitch name="isActive" defaultChecked label="是否激活" />}
           sx={{ flexGrow: 1, pl: 3 }}
         />
         <LoadingButton

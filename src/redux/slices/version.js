@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 import { versionService } from '../../composables/context-provider';
 // ----------------------------------------------------------------------
@@ -10,7 +11,6 @@ const initialState = {
   details: { byId: {}, participantsBy: {}, count: {} },
   active: null,
 };
-
 const slice = createSlice({
   name: 'version',
   initialState,
@@ -49,8 +49,17 @@ export function pagination(query, options) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
-      const response = await versionService.pagination(query, options);
-      dispatch(slice.actions.getDatasSuccess(response));
+      const { data, total } = await versionService.pagination(query, options);
+      const groupedData = _.groupBy(data, 'majorVersion');
+      const mappedResult = _.map(groupedData, (items, category) => ({
+        category, // 每组的键作为 category
+        list: items // 提取每个分组中所有的 name
+      }));
+    
+      dispatch(slice.actions.getDatasSuccess({ 
+        data: mappedResult,
+        total
+      }));
     } catch (error) {
       dispatch(
         slice.actions.hasError({

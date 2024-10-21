@@ -1,5 +1,3 @@
-import orderBy from 'lodash/orderBy';
-import isEqual from 'lodash/isEqual';
 import { useCallback, useEffect, useState } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
@@ -7,11 +5,10 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Pagination from '@mui/material/Pagination';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 // routes
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
-// _mock
-import { _jobs } from 'src/_mock';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
@@ -23,18 +20,7 @@ import { useDispatch, useSelector } from 'src/redux/store';
 import { pagination } from 'src/redux/slices/version';
 import Restricted from 'src/auth/guard/restricted';
 import VersionList from '../version-list';
-// auth
-
-// ----------------------------------------------------------------------
-
-const defaultFilters = {
-  roles: [],
-  locations: [],
-  benefits: [],
-  experience: 'all',
-  employmentTypes: [],
-};
-
+import VersionManagerPanel from '../version-manager-panel';
 // ----------------------------------------------------------------------
 
 export default function VersionListView() {
@@ -46,13 +32,9 @@ export default function VersionListView() {
 
   const [page, setPage] = useState(1);
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(100);
 
   const settings = useSettingsContext();
-
-  const [sortBy, setSortBy] = useState('latest');
-
-  const [filters, setFilters] = useState(defaultFilters);
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -78,15 +60,13 @@ export default function VersionListView() {
     onRefresh();
   }, [onRefresh]);
 
-  const dataFiltered = applyFilter({
-    inputData: _jobs,
-    filters,
-    sortBy,
-  });
+  const notFound = !data.length;
+  const renderFilters = (
+    <Stack direction="row" justifyContent="flex-end">
+      <Typography sx={{ fontSize: '14px', fontWeight: 'bold' }}>根据版本分类</Typography>
+    </Stack>
+  );
 
-  const canReset = !isEqual(defaultFilters, filters);
-
-  const notFound = !dataFiltered.length && canReset;
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -114,11 +94,27 @@ export default function VersionListView() {
           mb: { xs: 3, md: 5 },
         }}
       />
-
+      <Stack
+        spacing={2.5}
+        sx={{
+          my: { xs: 3, md: 5 },
+        }}
+      >
+        {renderFilters}
+      </Stack>
       {notFound && <EmptyContent filled title="没有数据" sx={{ py: 10 }} />}
-
-      <VersionList versions={data} onRefresh={() => onRefresh()} />
-      <Box
+      {data.map((item, index) => (
+        <Stack
+          key={index}
+          sx={{
+            mb: 4
+          }}
+        >
+          <VersionManagerPanel title={`大版本号: ${item.category}`} subTitle="" />
+          <VersionList versions={item.list} onRefresh={() => onRefresh()} />
+        </Stack>
+      ))}
+      {/* <Box
         sx={{
           display: 'flex',
           justifyContent: 'center',
@@ -132,51 +128,7 @@ export default function VersionListView() {
           page={page}
           onChange={handlePageChange}
         />
-      </Box>
+      </Box> */}
     </Container>
   );
 }
-
-// ----------------------------------------------------------------------
-
-const applyFilter = ({ inputData, filters, sortBy }) => {
-  const { employmentTypes, experience, roles, locations, benefits } = filters;
-
-  // SORT BY
-  if (sortBy === 'latest') {
-    inputData = orderBy(inputData, ['createdAt'], ['desc']);
-  }
-
-  if (sortBy === 'oldest') {
-    inputData = orderBy(inputData, ['createdAt'], ['asc']);
-  }
-
-  if (sortBy === 'popular') {
-    inputData = orderBy(inputData, ['totalViews'], ['desc']);
-  }
-
-  // FILTERS
-  if (employmentTypes.length) {
-    inputData = inputData.filter((job) =>
-      job.employmentTypes.some((item) => employmentTypes.includes(item))
-    );
-  }
-
-  if (experience !== 'all') {
-    inputData = inputData.filter((job) => job.experience === experience);
-  }
-
-  if (roles.length) {
-    inputData = inputData.filter((job) => roles.includes(job.role));
-  }
-
-  if (locations.length) {
-    inputData = inputData.filter((job) => job.locations.some((item) => locations.includes(item)));
-  }
-
-  if (benefits.length) {
-    inputData = inputData.filter((job) => job.benefits.some((item) => benefits.includes(item)));
-  }
-
-  return inputData;
-};
