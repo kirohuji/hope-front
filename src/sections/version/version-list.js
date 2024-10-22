@@ -25,7 +25,7 @@ export default function VersionList({ versions, onRefresh }) {
 
   const handleView = useCallback(
     (_id) => {
-      router.push(paths.dashboard.version.details(_id));
+      router.push(paths.dashboard.version.details.root(_id));
     },
     [router]
   );
@@ -63,7 +63,7 @@ export default function VersionList({ versions, onRefresh }) {
           <VersionItem
             key={version._id}
             version={version}
-            // onView={() => handleView(version._id)}
+            onView={() => handleView(version._id)}
             onEdit={() => handleEdit(version._id)}
             onDelete={() => {
               setCurrent(version);

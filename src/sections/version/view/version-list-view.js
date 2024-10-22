@@ -20,7 +20,6 @@ import { useDispatch, useSelector } from 'src/redux/store';
 import { pagination } from 'src/redux/slices/version';
 import Restricted from 'src/auth/guard/restricted';
 import VersionList from '../version-list';
-import VersionManagerPanel from '../version-manager-panel';
 // ----------------------------------------------------------------------
 
 export default function VersionListView() {
@@ -103,18 +102,8 @@ export default function VersionListView() {
         {renderFilters}
       </Stack>
       {notFound && <EmptyContent filled title="没有数据" sx={{ py: 10 }} />}
-      {data.map((item, index) => (
-        <Stack
-          key={index}
-          sx={{
-            mb: 4
-          }}
-        >
-          <VersionManagerPanel title={`大版本号: ${item.category}`} subTitle="" />
-          <VersionList versions={item.list} onRefresh={() => onRefresh()} />
-        </Stack>
-      ))}
-      {/* <Box
+      <VersionList versions={data} onRefresh={() => onRefresh()} />
+      <Box
         sx={{
           display: 'flex',
           justifyContent: 'center',
@@ -128,7 +117,7 @@ export default function VersionListView() {
           page={page}
           onChange={handlePageChange}
         />
-      </Box> */}
+      </Box>
     </Container>
   );
 }

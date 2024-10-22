@@ -54,6 +54,7 @@ const ScopeCreatePage = lazy(() => import('src/pages/dashboard/scope/new'));
 const ScopeEditPage = lazy(() => import('src/pages/dashboard/scope/edit'));
 
 // VERSION
+const VersionDetailsPage = lazy(() => import('src/pages/dashboard/version/details'));
 const VersionListPage = lazy(() => import('src/pages/dashboard/version/list'));
 const VersionCreatePage = lazy(() => import('src/pages/dashboard/version/new'));
 const VersionEditPage = lazy(() => import('src/pages/dashboard/version/edit'));
@@ -208,6 +209,8 @@ export const dashboardRoutes = [
         children: [
           { element: <VersionListPage />, index: true },
           { path: 'list', element: <VersionListPage /> },
+          { path: ':id', element: <VersionDetailsPage /> },
+          { path: ':id/tab/:tabId', element: <VersionDetailsPage /> },
           { path: 'new', element: <VersionCreatePage /> },
           { path: ':id/edit', element: <VersionEditPage /> },
         ],

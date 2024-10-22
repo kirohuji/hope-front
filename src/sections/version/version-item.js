@@ -23,7 +23,7 @@ import Restricted from 'src/auth/guard/restricted';
 export default function VersionItem({ version, onView, onEdit, onDelete }) {
   const popover = usePopover();
 
-  const { _id, label, cover, createdAt, candidates } = version;
+  const { _id, label, majorVersion, cover, createdAt, candidates } = version;
 
   return (
     <>
@@ -33,7 +33,7 @@ export default function VersionItem({ version, onView, onEdit, onDelete }) {
         </IconButton>
 
         <Stack sx={{ p: 3, pb: 2 }}>
-          <Avatar alt={label} src={cover} variant="rounded" sx={{ width: 48, height: 48, mb: 2 }} />
+          <Avatar alt={majorVersion} src={cover} variant="rounded" sx={{ width: 48, height: 48, mb: 2 }} />
 
           <ListItemText
             sx={{ mb: 1 }}
@@ -43,7 +43,7 @@ export default function VersionItem({ version, onView, onEdit, onDelete }) {
                 // href={paths.dashboard.version.details(_id)}
                 color="inherit"
               >
-                {label}
+                主版本号: {majorVersion}
               </Link>
             }
             secondary={`创建时间: ${fDate(createdAt)}`}

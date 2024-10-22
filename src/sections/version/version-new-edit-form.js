@@ -10,6 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Card from '@mui/material/Card';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
@@ -227,6 +228,14 @@ export default function ScopeNewEditForm({ current }) {
           control={<RHFSwitch name="isActive" defaultChecked label="是否激活" />}
           sx={{ flexGrow: 1, pl: 3 }}
         />
+        <Button
+          color="error"
+          variant="contained"
+          onClick={() => router.push(paths.dashboard.version.root)}
+          sx={{ mr: 1 }}
+        >
+          返回
+        </Button>
         <LoadingButton
           type="submit"
           variant="contained"

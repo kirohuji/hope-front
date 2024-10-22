@@ -8,7 +8,7 @@ const initialState = {
   error: null,
   data: [],
   total: 0,
-  details: { byId: {}, participantsBy: {}, count: {} },
+  details: { byId: {} },
   active: null,
 };
 const slice = createSlice({
@@ -28,7 +28,11 @@ const slice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
-
+    getDataSuccess(state, action) {
+      const { id, data } = action.payload;
+      state.isLoading = false;
+      state.details.byId[id] = data;
+    },
     getDatasSuccess(state, action) {
       const { data, total } = action.payload;
       state.isLoading = false;
@@ -50,16 +54,37 @@ export function pagination(query, options) {
     dispatch(slice.actions.startLoading());
     try {
       const { data, total } = await versionService.pagination(query, options);
-      const groupedData = _.groupBy(data, 'majorVersion');
-      const mappedResult = _.map(groupedData, (items, category) => ({
-        category, // 每组的键作为 category
-        list: items // 提取每个分组中所有的 name
-      }));
-    
       dispatch(slice.actions.getDatasSuccess({ 
-        data: mappedResult,
+        data,
         total
       }));
+    } catch (error) {
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  };
+}
+
+export function getData({ id, user }) {
+  return async (dispatch, getState) => {
+    const { details } = getState().broadcast;
+    if (!details.byId[id]) {
+      dispatch(slice.actions.startLoading());
+    }
+    try {
+      const response = await versionService.get({
+        _id: id,
+      });
+      dispatch(
+        slice.actions.getDataSuccess({
+          id: response._id,
+          data: response,
+        })
+      );
     } catch (error) {
       dispatch(
         slice.actions.hasError({
