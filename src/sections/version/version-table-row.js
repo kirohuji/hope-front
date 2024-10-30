@@ -11,6 +11,8 @@ import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+// utils
+import { fDate } from 'src/utils/format-time';
 // components
 import Restricted from 'src/auth/guard/restricted';
 import Label from 'src/components/label';
@@ -28,20 +30,7 @@ export default function VersionTableRow({
   onSelectRow,
   onDeleteRow,
 }) {
-  const {
-    username,
-    realName,
-    displayName,
-    baptized,
-    gender,
-    age,
-    photoURL,
-    address,
-    status,
-    available,
-    email,
-    phoneNumber,
-  } = row;
+  const { majorVersion, minorVersion, patchVersion, createdAt, releaseDate, description, isActive } = row;
 
   const confirm = useBoolean();
 
@@ -55,12 +44,9 @@ export default function VersionTableRow({
         <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={username} src={photoURL} sx={{ mr: 2 }} />
-
-          <ListItemText
-            primary={`${username}${realName ? `(${realName})` : ''}`}
-            secondary={email}
+        <TableCell>
+        <ListItemText
+            primary={`${majorVersion}.${minorVersion}.${patchVersion}`}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
           />
@@ -68,18 +54,13 @@ export default function VersionTableRow({
 
         <TableCell>
           <ListItemText
-            primary={displayName}
-            secondary={`${gender === 'male' ? '男' : '女'}(${age})`}
+            primary={fDate(createdAt)}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
           />
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNumber}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{baptized ? '是' : '否'}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{address}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{description}</TableCell>
 
         {/** <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell> */}
 
@@ -87,13 +68,13 @@ export default function VersionTableRow({
           <Label
             variant="soft"
             color={
-              (available === 'active' && 'success') ||
+              (isActive === 'active' && 'success') ||
               // (available === 'pending' && 'warning') ||
-              (available === 'banned' && 'error') ||
+              (isActive === 'banned' && 'error') ||
               'default'
             }
           >
-            {available === 'active' ? '激活' : '注销'}
+            {isActive === 'active' ? '激活' : '注销'}
           </Label>
         </TableCell>
         <Restricted to={['UserListEdit', 'UserListDelete']}>

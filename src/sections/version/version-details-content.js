@@ -50,13 +50,11 @@ import VersionTableFiltersResult from './version-table-filters-result';
 
 const TABLE_HEAD = [
   // { id: 'selected', label: '', width: 80 },
-  { id: 'username', label: '账户', width: 180 },
-  { id: 'displayName', label: '用户名', width: 150 },
-  { id: 'phoneNumber', label: '手机号', width: 150 },
-  { id: 'baptized', label: ' 受洗情况', width: 100 },
-  { id: 'address', label: '地址', width: 250 },
-  // { id: 'role', label: 'Role', width: 180 },
-  { id: 'available', label: '状态', width: 100 },
+  { id: 'versionNumber', label: '版本号', width: 100 },
+  { id: 'releaseDate', label: '发布时间', width: 200 },
+  { id: 'releaseDate', label: '发布时间', width: 200 },
+  { id: 'description', label: '变更日志', width: 300 },
+  { id: 'isActive', label: '发布状态', width: 100 },
   { id: '', width: 88 },
 ];
 
@@ -103,6 +101,7 @@ export default function VersionDetailsContent({ content }) {
           {
             ...selector,
             ..._.pickBy(_.omit(debouncedFilters, ['role'])),
+            majorVersion: content.majorVersion
           },
           {
             ...options,
@@ -117,7 +116,7 @@ export default function VersionDetailsContent({ content }) {
         enqueueSnackbar(error.message);
       }
     },
-    [debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
+    [debouncedFilters, content.majorVersion, table.page, table.rowsPerPage, enqueueSnackbar]
   );
 
   const handleFilters = useCallback(
