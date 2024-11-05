@@ -30,9 +30,7 @@ const initialState = {
   activeConversationId: null,
   participants: [],
   recipients: [],
-  lastMessage: {
-    byId: {},
-  },
+  lastMessage: { byId: {} },
   sendingMessage: { byId: {} },
   generate: { byId: {}, currentMessageId: '' },
 };
@@ -180,6 +178,8 @@ const slice = createSlice({
     getMessagesSuccess(state, action) {
       const { conversationId, data, messageLimit } = action.payload;
       if (!state.messages.byId[conversationId] || messageLimit === 0) {
+        state.messages.byId[conversationId] = [];
+        state.messages.byId[conversationId] = [];
         state.messages.byId[conversationId] = [];
       }
       // 合并新数据和现有数据
