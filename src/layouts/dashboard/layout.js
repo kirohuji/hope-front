@@ -61,6 +61,8 @@ export default function DashboardLayout({ children }) {
         const navigationElement = document.getElementById('bottom-navigation');
         if (navigationElement) {
           bookPlayerElement.style.bottom = `${navigationElement.clientHeight}px`;
+        } else {
+          bookPlayerElement.style.bottom = `${56}px`;
         }
       }
     } else if (!lgUp && pathname === '/dashboard/file-manager') {

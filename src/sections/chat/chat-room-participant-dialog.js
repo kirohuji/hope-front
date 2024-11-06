@@ -33,7 +33,7 @@ export default function ChatRoomParticipantDialog({ participant, open, onClose, 
   }, [participant._id, router, user._id]);
   return (
     <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
-      <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8 }}>
+      <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8, zIndex: 10 }}>
         <Iconify icon="mingcute:close-line" />
       </IconButton>
 

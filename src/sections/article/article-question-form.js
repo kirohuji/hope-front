@@ -71,6 +71,12 @@ export default function ArticleQuestionForm ({
           placeholder="写下你的想法..."
           multiline
           rows={4}
+          onFocus={(e)=>{
+            e.target.scrollIntoView({
+              behavior: 'smooth',  // 滚动效果
+              block: 'center'      // 居中显示
+            });
+          }}
           onChange={(e)=>{
             onChangeComment(e);
             setValue('comment', e.target.value);

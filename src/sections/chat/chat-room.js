@@ -23,6 +23,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import Iconify from 'src/components/iconify';
 import { IconButtonAnimate } from 'src/components/animate';
 //
+import { useAuthContext } from 'src/auth/hooks';
 import { messagingService } from 'src/composables/context-provider';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useCollapseNav } from './hooks';
@@ -38,6 +39,7 @@ import ChatMessageList from './chat-message-list';
 const NAV_WIDTH = 240;
 
 export default function ChatRoom({ participants, conversation, messages }) {
+  const { user } = useAuthContext();
   const historyMessagesLoading = useBoolean(true);
   const [date, setDate] = useState(new Date());
   const [historyMessages, setHistoryMessages] = useState([]);
@@ -110,7 +112,7 @@ export default function ChatRoom({ participants, conversation, messages }) {
 
   const renderContent = (
     <>
-      {group && <ChatRoomSettings participants={participants} conversation={conversation}/> }
+      {group && conversation.createdBy === user._id &&<ChatRoomSettings participants={participants} conversation={conversation}/> }
       {group ? (
         <ChatRoomGroup participants={participants} conversation={conversation} />
       ) : (
