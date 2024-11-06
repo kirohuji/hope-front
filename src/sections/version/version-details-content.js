@@ -51,11 +51,11 @@ import VersionTableFiltersResult from './version-table-filters-result';
 const TABLE_HEAD = [
   // { id: 'selected', label: '', width: 80 },
   { id: 'versionNumber', label: '版本号', width: 100 },
+  { id: 'description', label: '描述', width: 200 },
+  { id: 'isMandatory', label: '是否自动发布', width: 200 },
   { id: 'releaseDate', label: '发布时间', width: 200 },
-  { id: 'releaseDate', label: '发布时间', width: 200 },
-  { id: 'description', label: '变更日志', width: 300 },
-  { id: 'isActive', label: '发布状态', width: 100 },
-  { id: '', width: 88 },
+  { id: ' status', label: '发布状态', width: 100 },
+  // { id: '', width: 88 },
 ];
 
 const defaultFilters = {
@@ -175,7 +175,7 @@ export default function VersionDetailsContent({ content }) {
           <Restricted to={['VersionListAdd']}>
             <Button
               component={RouterLink}
-              href={paths.dashboard.version.new}
+              href={paths.dashboard.version.new(content.majorVersion)}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >

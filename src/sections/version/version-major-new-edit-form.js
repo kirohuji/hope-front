@@ -19,7 +19,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useResponsive } from 'src/hooks/use-responsive';
 // routes
 import { paths } from 'src/routes/paths';
-import { useParams, useRouter } from 'src/routes/hook';
+import { useRouter } from 'src/routes/hook';
 
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -39,24 +39,22 @@ import { getScopes } from 'src/redux/slices/scope';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeNewEditForm({ current }) {
+export default function VersionMajorNewEditForm({ current }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const mdUp = useResponsive('up', 'md');
-  const params = useParams();
   const loading = useBoolean(false);
-  const { id } = params;
   const { enqueueSnackbar } = useSnackbar();
 
   const NewScopeSchema = Yup.object().shape({
     value: Yup.string(),
     majorVersion: Yup.string().required('主版本号'),
-    minorVersion: Yup.string().required('辅版本号'),
-    patchVersion: Yup.string().required('修订版本号'),
-    releaseDate: Yup.string(),
+    // minorVersion: Yup.string().required('辅版本号'),
+    // patchVersion: Yup.string().required('修订版本号'),
+    // releaseDate: Yup.string(),
     description: Yup.string(),
-    file: Yup.string(),
-    isActive: Yup.boolean(),
+    // file: Yup.string(),
+    // isActive: Yup.boolean(),
   });
 
   const defaultValues = useMemo(
@@ -64,11 +62,10 @@ export default function ScopeNewEditForm({ current }) {
       label: current?.label || '',
       value: current?.value || '',
       description: current?.description || '',
-      file: current?.file || '',
-      majorVersion: id,
+      // file: current?.file || '',
       // published: current?.published || false,
     }),
-    [current,id]
+    [current]
   );
 
   const methods = useForm({
@@ -141,7 +138,7 @@ export default function ScopeNewEditForm({ current }) {
             基本描述
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            标题, 基本描述, 图片...
+            标题, 基本描述...
           </Typography>
         </Grid>
       )}
@@ -151,20 +148,20 @@ export default function ScopeNewEditForm({ current }) {
           {!mdUp && <CardHeader label="Details" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
-            <Stack spacing={3} direction="row" justifyContent="space-between">
+            {/* <Stack spacing={3} direction="row" justifyContent="space-between"> */}
               <Stack spacing={1.5}>
                 <Typography variant="subtitle2">主版本号</Typography>
-                <RHFTextField name="majorVersion" disabled />
+                <RHFTextField name="majorVersion" />
               </Stack>
-              <Stack spacing={1.5}>
+              {/* <Stack spacing={1.5}>
                 <Typography variant="subtitle2">辅版本号</Typography>
                 <RHFTextField name="minorVersion" />
               </Stack>
               <Stack spacing={1.5}>
                 <Typography variant="subtitle2">修订版本号</Typography>
                 <RHFTextField name="patchVersion" />
-              </Stack>
-            </Stack>
+              </Stack> */}
+            {/* </Stack> */}
             {/* <Stack spacing={1.5}>
               <Typography variant="subtitle2">编码</Typography>
               <RHFTextField name="value" />
@@ -186,7 +183,7 @@ export default function ScopeNewEditForm({ current }) {
               <Typography variant="subtitle2">描述</Typography>
               <RHFEditor simple name="description" />
             </Stack>
-            <Stack spacing={1.5} sx={{ position: 'relative' }}>
+            {/* <Stack spacing={1.5} sx={{ position: 'relative' }}>
               <Typography variant="subtitle2">文件</Typography>
               {loading.value && (
                 <Box
@@ -216,7 +213,7 @@ export default function ScopeNewEditForm({ current }) {
                 // onRemoveAll={handleRemoveAllFiles}
                 onUpload={() => console.info('ON UPLOAD')}
               />
-            </Stack>
+            </Stack> */}
           </Stack>
         </Card>
       </Grid>
@@ -227,10 +224,10 @@ export default function ScopeNewEditForm({ current }) {
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'right' }}>
-        <FormControlLabel
+        {/* <FormControlLabel
           control={<RHFSwitch name="isActive" defaultChecked label="是否激活" />}
           sx={{ flexGrow: 1, pl: 3 }}
-        />
+        /> */}
         <Button
           color="error"
           variant="contained"
@@ -263,6 +260,6 @@ export default function ScopeNewEditForm({ current }) {
   );
 }
 
-ScopeNewEditForm.propTypes = {
+VersionMajorNewEditForm.propTypes = {
   current: PropTypes.object,
 };

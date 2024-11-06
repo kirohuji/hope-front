@@ -191,12 +191,14 @@ export const paths = {
     },
     version: {
       root: `${ROOTS.DASHBOARD}/version`,
-      new: `${ROOTS.DASHBOARD}/version/new`,
+      new: (id)=> `${ROOTS.DASHBOARD}/version/${id}/new`,
+      newMajor: `${ROOTS.DASHBOARD}/version/major/new`,
       details: {
         root: (id) => `${ROOTS.DASHBOARD}/version/${id}`,
         tab: (id, tabId) => `${ROOTS.DASHBOARD}/version/${id}/tab/${tabId}`,
       },
       edit: (id) => `${ROOTS.DASHBOARD}/version/${id}/edit`,
+      editMajor: (id) => `${ROOTS.DASHBOARD}/version/major/${id}/edit`,
     },
     book: {
       root: `${ROOTS.DASHBOARD}/book`,

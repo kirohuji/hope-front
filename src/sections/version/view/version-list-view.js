@@ -81,7 +81,7 @@ export default function VersionListView() {
           <Restricted to={['VersionListAdd']}>
             <Button
               component={RouterLink}
-              href={paths.dashboard.version.new}
+              href={paths.dashboard.version.newMajor}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >

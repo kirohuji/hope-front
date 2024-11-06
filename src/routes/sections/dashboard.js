@@ -57,7 +57,9 @@ const ScopeEditPage = lazy(() => import('src/pages/dashboard/scope/edit'));
 const VersionDetailsPage = lazy(() => import('src/pages/dashboard/version/details'));
 const VersionListPage = lazy(() => import('src/pages/dashboard/version/list'));
 const VersionCreatePage = lazy(() => import('src/pages/dashboard/version/new'));
+const VersionMajorCreatePage = lazy(() => import('src/pages/dashboard/version/major-new'));
 const VersionEditPage = lazy(() => import('src/pages/dashboard/version/edit'));
+const VersionMajorEditPage = lazy(() => import('src/pages/dashboard/version/major-edit'));
 
 // BOOK
 const BookDetailsPage = lazy(() => import('src/pages/dashboard/book/details'));
@@ -211,8 +213,10 @@ export const dashboardRoutes = [
           { path: 'list', element: <VersionListPage /> },
           { path: ':id', element: <VersionDetailsPage /> },
           { path: ':id/tab/:tabId', element: <VersionDetailsPage /> },
-          { path: 'new', element: <VersionCreatePage /> },
+          { path: ':id/new', element: <VersionCreatePage /> },
+          { path: 'major/new', element: <VersionMajorCreatePage /> },
           { path: ':id/edit', element: <VersionEditPage /> },
+          { path: 'major/:id/edit', element: <VersionMajorEditPage /> },
         ],
       },
       {
