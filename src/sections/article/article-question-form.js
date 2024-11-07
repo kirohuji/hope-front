@@ -72,10 +72,12 @@ export default function ArticleQuestionForm ({
           multiline
           rows={4}
           onFocus={(e)=>{
-            e.target.scrollIntoView({
-              behavior: 'smooth',  // 滚动效果
-              block: 'center'      // 居中显示
-            });
+            setTimeout(()=>{
+              e.target.scrollIntoView({
+                behavior: 'smooth',  // 滚动效果
+                block: 'center'      // 居中显示
+              });
+            },1000)
           }}
           onChange={(e)=>{
             onChangeComment(e);

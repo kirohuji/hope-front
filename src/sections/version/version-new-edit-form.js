@@ -65,7 +65,7 @@ export default function ScopeNewEditForm({ current }) {
       value: current?.value || '',
       description: current?.description || '',
       file: current?.file || '',
-      majorVersion: id,
+      majorVersion: current?.majorVersion || id,
       // published: current?.published || false,
     }),
     [current,id]
@@ -234,7 +234,7 @@ export default function ScopeNewEditForm({ current }) {
         <Button
           color="error"
           variant="contained"
-          onClick={() => router.push(paths.dashboard.version.root)}
+          onClick={() => router.back()}
           sx={{ mr: 1 }}
         >
           返回

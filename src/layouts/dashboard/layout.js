@@ -60,9 +60,13 @@ export default function DashboardLayout({ children }) {
       if (bookPlayerElement) {
         const navigationElement = document.getElementById('bottom-navigation');
         if (navigationElement) {
-          bookPlayerElement.style.bottom = `${navigationElement.clientHeight}px`;
+          if(navigationElement.clientHeight > 56){
+            bookPlayerElement.style.bottom = `${navigationElement.clientHeight}px`;
+          } else {
+            bookPlayerElement.style.bottom = `${85}px`;
+          }
         } else {
-          bookPlayerElement.style.bottom = `${56}px`;
+          bookPlayerElement.style.bottom = `${85}px`;
         }
       }
     } else if (!lgUp && pathname === '/dashboard/file-manager') {

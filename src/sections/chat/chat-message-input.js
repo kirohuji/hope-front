@@ -62,6 +62,7 @@ export default function ChatMessageInput({
   const imageRef = useRef(null);
 
   const [message, setMessage] = useState('');
+  const [sendingType, setSendingType] = useState('send');
 
   const [type, setType] = useState('text');
 
@@ -236,21 +237,27 @@ export default function ChatMessageInput({
         if (event.key === 'Enter') {
           if (message && message !== '\n') {
             if (selectedConversationId) {
+              const sendingMessage = messageData;
+              setMessage('');
+              // setSendingType('done')
               setType('text');
               try {
-                await dispatch(sendMessage(selectedConversationId, messageData));
-                setMessage('');
+                await dispatch(sendMessage(selectedConversationId, sendingMessage));
+                setSendingType('send')
               } catch (e) {
+                setSendingType('send')
                 enqueueSnackbar(e.message);
               }
             } else {
               setMessage('');
+              setSendingType('send')
               const conversationKey = await createConversation(conversationData);
               router.push(`${paths.chat}?id=${conversationKey}`);
               onAddRecipients([]);
             }
           } else {
             setMessage('');
+            setSendingType('send')
           }
         }
       } catch (error) {
@@ -391,7 +398,7 @@ export default function ChatMessageInput({
         <InputBase
           type="search"
           className="message-input"
-          inputProps={{ enterKeyHint: 'send' }}
+          inputProps={{ enterKeyHint: sendingType }}
           value={message}
           onKeyUp={handleSendMessage}
           onPaste={handlePaste}
