@@ -55,7 +55,7 @@ export default function UserTableRow({
     <>
       <TableRow hover selected={selected}>
         <TableCell padding="checkbox">
-          <Checkbox checked={selected} onClick={onSelectRow} />
+          <Checkbox checked={selected} onClick={onSelectRow} disabled={username==='admin'} />
         </TableCell>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar alt={username} src={photoURL} sx={{ mr: 2 }} />

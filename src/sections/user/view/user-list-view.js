@@ -310,7 +310,7 @@ export default function UserListView() {
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
-              rowCount={tableData.length}
+              rowCount={tableData.filter(row=> row.username !== 'admin').length}
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
@@ -319,7 +319,7 @@ export default function UserListView() {
               }
               action={
                 <>
-                  <Tooltip title="禁用">
+                  <Tooltip title="删除">
                     <IconButton color="primary" onClick={confirm.onTrue}>
                       <Iconify icon="solar:trash-bin-trash-bold" />
                     </IconButton>
@@ -339,14 +339,14 @@ export default function UserListView() {
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
+                  rowCount={tableData.filter(row=> row.username !== 'admin').length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
                       _.compact(
-                        tableData.map((row) => row._id)
+                        tableData.filter(row=> row.username !== 'admin').map((row) => row._id)
                       )
                     )
                   }
@@ -364,9 +364,7 @@ export default function UserListView() {
                           row={row}
                           onClose={() => getTableData()}
                           selected={table.selected.includes(row._id)}
-                          onSelectRow={() => {
-                              table.onSelectRow(row._id);
-                          }}
+                          onSelectRow={() => table.onSelectRow(row._id)}
                           onDeleteRow={() => handleDeleteRow(row._id)}
                           onEditRow={() => handleEditRow(row._id)}
                         />
