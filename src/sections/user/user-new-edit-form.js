@@ -101,7 +101,7 @@ export default function UserNewEditForm({ currentUser }) {
           ...data,
         });
         await profileService.patch({
-          _id: user._id,
+          _id: user._id || user.id || user,
           ...data,
           photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL,
         });
@@ -158,7 +158,7 @@ export default function UserNewEditForm({ currentUser }) {
                 color={values.available === 'active' ? 'success' : 'error'}
                 sx={{ textTransform: 'uppercase', position: 'absolute', top: 24, right: 24 }}
               >
-                {values.available === 'active' ? '激活' : '注销'}
+                {values.available === 'active' ? '激活' : '禁用'}
               </Label>
             )}
 

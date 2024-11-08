@@ -55,7 +55,7 @@ export default function useTable(props) {
   }, []);
 
   const onChangePage = useCallback((event, newPage) => {
-    setPage(newPage);
+    setPage(newPage - 1);
   }, []);
 
   const onResetPage = useCallback(() => {

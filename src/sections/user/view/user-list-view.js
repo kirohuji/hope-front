@@ -319,7 +319,7 @@ export default function UserListView() {
               }
               action={
                 <>
-                  <Tooltip title="删除">
+                  <Tooltip title="禁用">
                     <IconButton color="primary" onClick={confirm.onTrue}>
                       <Iconify icon="solar:trash-bin-trash-bold" />
                     </IconButton>
@@ -346,12 +346,7 @@ export default function UserListView() {
                     table.onSelectAllRows(
                       checked,
                       _.compact(
-                        tableData.map((row) => {
-                          if (row.username !== 'admin') {
-                            return row._id;
-                          }
-                          return null;
-                        })
+                        tableData.map((row) => row._id)
                       )
                     )
                   }
@@ -370,9 +365,7 @@ export default function UserListView() {
                           onClose={() => getTableData()}
                           selected={table.selected.includes(row._id)}
                           onSelectRow={() => {
-                            if (row.username !== 'admin') {
                               table.onSelectRow(row._id);
-                            }
                           }}
                           onDeleteRow={() => handleDeleteRow(row._id)}
                           onEditRow={() => handleEditRow(row._id)}

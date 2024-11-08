@@ -74,7 +74,7 @@ export default function VersionTableRow({
               'default'
             }
           >
-            {isActive === 'active' ? '激活' : '注销'}
+            {isActive === 'active' ? '激活' : '禁用'}
           </Label>
         </TableCell>
         <Restricted to={['UserListEdit', 'UserListDelete']}>

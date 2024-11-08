@@ -95,7 +95,7 @@ export default function UserTableRow({
               'default'
             }
           >
-            {available === 'active' ? '激活' : '注销'}
+            {available === 'active' ? '激活' : '禁用'}
           </Label>
         </TableCell>
         <Restricted to={['UserListEdit', 'UserListDelete']}>
