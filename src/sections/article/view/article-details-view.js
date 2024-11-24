@@ -117,7 +117,9 @@ export default function ArticleDetailsView({ onClose, articleId }) {
       setAnswers(getArticleUser.answers);
       enqueueSnackbar('保存成功!');
       setIsSubmitting(false);
-      onClose();
+      if(onClose){
+        onClose();
+      }
     } catch (e) {
       setIsSubmitting(false);
       enqueueSnackbar('保存失败!');
