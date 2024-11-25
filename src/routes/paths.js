@@ -83,6 +83,9 @@ export const paths = {
     searchDetail: (id) => `/training/search/detail/${id}`,
     detail: `/training/detail/`,
   },
+  user: {
+    account: `/account`,
+  },
   authDemo: {
     classic: {
       login: `${ROOTS.AUTH_DEMO}/classic/login`,

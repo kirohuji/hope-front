@@ -36,7 +36,7 @@ const OPTIONS = [
   // },
   {
     label: '设置',
-    linkTo: paths.dashboard.user.account,
+    linkTo: paths.user.account,
   },
 ];
 

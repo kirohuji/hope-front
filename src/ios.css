@@ -38,6 +38,10 @@
     /* bottom: calc(2px + constant(safe-area-inset-bottom) * 2.5) !important;
     bottom: calc(2px + env(safe-area-inset-bottom) * 2.5) !important; */
   }
+  .account-general-form {
+    padding-bottom: calc(constant(safe-area-inset-bottom) * 2.5) !important;
+    padding-bottom: calc(env(safe-area-inset-bottom) * 2.5) !important;
+  }
   .bottom-navigation {
     background-color: white;
   }

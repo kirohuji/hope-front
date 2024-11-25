@@ -127,127 +127,129 @@ export default function AccountGeneral() {
   );
 
   return (
-    <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Grid container spacing={3}>
-        <Grid xs={12} md={4}>
-          <Card sx={{ pt: 10, pb: 5, px: 3, textAlign: 'center', position: 'relative' }}>
-            {loading.value && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  zIndex: 10,
-                  backgroundColor: '#ffffffc4',
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <CircularProgress />
-              </Box>
-            )}
-            <RHFUploadAvatar
-              name="photoURL"
-              // maxSize={3145728}
-              onDrop={handleDrop}
-              onDropRejected={() => {
-                loading.onFalse();
-              }}
-              helperText={
-                <Typography
-                  variant="caption"
+    <Box className="account-general-form" style={{ height: '100%', overflowX: 'auto', paddingBottom: '80px' }}>
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        <Grid container spacing={3}>
+          <Grid xs={12} md={4}>
+            <Card sx={{ pt: 10, pb: 5, px: 3, textAlign: 'center', position: 'relative' }}>
+              {loading.value && (
+                <Box
                   sx={{
-                    mt: 3,
-                    mx: 'auto',
-                    display: 'block',
-                    textAlign: 'center',
-                    color: 'text.disabled',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 10,
+                    backgroundColor: '#ffffffc4',
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}
                 >
-                  允许 *.jpeg, *.jpg, *.png, *.gif
-                  <br /> 最大限制 {fData(3145728)}
-                </Typography>
-              }
-            />
-            {false && (
-              <div>
-                <RHFSwitch name="isPublic" labelPlacement="start" label="是否公开" sx={{ mt: 5 }} />
-
-                <Button variant="soft" color="error" sx={{ mt: 3 }}>
-                  Delete User
-                </Button>
-              </div>
-            )}
-          </Card>
-        </Grid>
-
-        <Grid xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-              }}
-            >
-              <RHFTextField name="displayName" label="昵称" />
-              <RHFTextField name="email" label="电子邮件" disabled />
-              <RHFTextField name="phoneNumber" label="手机号码" disabled />
-              <RHFSelect name="gender" label="性别" placeholder="性别">
-                <MenuItem value="male">男</MenuItem>
-                <MenuItem value="female">女</MenuItem>
-              </RHFSelect>
-              <RHFTextField name="age" label=" 年龄" />
-              <RHFTextField name="address" label="详细地址" />
-
-              <RHFAutocomplete
-                name="country"
-                label="请选择国家"
-                options={countries.map((country) => country.label)}
-                getOptionLabel={(option) => option}
-                renderOption={(props, option) => {
-                  const { code, label, phone } = countries.filter(
-                    (country) => country.label === option
-                  )[0];
-
-                  if (!label) {
-                    return null;
-                  }
-
-                  return (
-                    <li {...props} key={label}>
-                      <Iconify
-                        key={label}
-                        icon={`circle-flags:${code.toLowerCase()}`}
-                        width={28}
-                        sx={{ mr: 1 }}
-                      />
-                      {label} ({code}) +{phone}
-                    </li>
-                  );
+                  <CircularProgress />
+                </Box>
+              )}
+              <RHFUploadAvatar
+                name="photoURL"
+                // maxSize={3145728}
+                onDrop={handleDrop}
+                onDropRejected={() => {
+                  loading.onFalse();
                 }}
+                helperText={
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      mt: 3,
+                      mx: 'auto',
+                      display: 'block',
+                      textAlign: 'center',
+                      color: 'text.disabled',
+                    }}
+                  >
+                    允许 *.jpeg, *.jpg, *.png, *.gif
+                    <br /> 最大限制 {fData(3145728)}
+                  </Typography>
+                }
               />
+              {false && (
+                <div>
+                  <RHFSwitch name="isPublic" labelPlacement="start" label="是否公开" sx={{ mt: 5 }} />
 
-              <RHFTextField name="state" label="省份" />
-              <RHFTextField name="city" label="城市" />
-              <RHFTextField name="zipCode" label="邮政编码" />
-            </Box>
+                  <Button variant="soft" color="error" sx={{ mt: 3 }}>
+                    Delete User
+                  </Button>
+                </div>
+              )}
+            </Card>
+          </Grid>
 
-            <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              <RHFTextField name="about" multiline rows={4} label="结束" />
+          <Grid xs={12} md={8}>
+            <Card sx={{ p: 3 }}>
+              <Box
+                rowGap={3}
+                columnGap={2}
+                display="grid"
+                gridTemplateColumns={{
+                  xs: 'repeat(1, 1fr)',
+                  sm: 'repeat(2, 1fr)',
+                }}
+              >
+                <RHFTextField name="displayName" label="昵称" />
+                <RHFTextField name="email" label="电子邮件" disabled />
+                <RHFTextField name="phoneNumber" label="手机号码" disabled />
+                <RHFSelect name="gender" label="性别" placeholder="性别">
+                  <MenuItem value="male">男</MenuItem>
+                  <MenuItem value="female">女</MenuItem>
+                </RHFSelect>
+                <RHFTextField name="age" label=" 年龄" />
+                <RHFTextField name="address" label="详细地址" />
 
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                保存修改
-              </LoadingButton>
-            </Stack>
-          </Card>
+                <RHFAutocomplete
+                  name="country"
+                  label="请选择国家"
+                  options={countries.map((country) => country.label)}
+                  getOptionLabel={(option) => option}
+                  renderOption={(props, option) => {
+                    const { code, label, phone } = countries.filter(
+                      (country) => country.label === option
+                    )[0];
+
+                    if (!label) {
+                      return null;
+                    }
+
+                    return (
+                      <li {...props} key={label}>
+                        <Iconify
+                          key={label}
+                          icon={`circle-flags:${code.toLowerCase()}`}
+                          width={28}
+                          sx={{ mr: 1 }}
+                        />
+                        {label} ({code}) +{phone}
+                      </li>
+                    );
+                  }}
+                />
+
+                <RHFTextField name="state" label="省份" />
+                <RHFTextField name="city" label="城市" />
+                <RHFTextField name="zipCode" label="邮政编码" />
+              </Box>
+
+              <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
+                <RHFTextField name="about" multiline rows={4} label="结束" />
+
+                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  保存修改
+                </LoadingButton>
+              </Stack>
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
-    </FormProvider>
+      </FormProvider>
+    </Box>
   );
 }
