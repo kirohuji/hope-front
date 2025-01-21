@@ -66,11 +66,9 @@ export default function AccountView() {
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       {isDesktop && (
         <CustomBreadcrumbs
-          heading="Account"
+          heading="个人设置 "
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'User', href: paths.dashboard.user.root },
-            { name: 'Account' },
+            { name: '个人设置' },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
