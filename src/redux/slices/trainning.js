@@ -142,7 +142,6 @@ export function getBooksWithCurrentUserBySummarize() {
 export function select(item) {
   return async (dispatch, getState) => {
     try {
-      console.log('getState()', getState());
       await bookService.select({
         book_id: getState().trainning.book._id,
         article_id: item._id,

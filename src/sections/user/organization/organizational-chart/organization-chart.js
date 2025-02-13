@@ -92,7 +92,6 @@ export default function OrganizationalChart({
       } else if (parent.children) {
         for (let i = 0; i < parent.children.length; i += 1) {
           if (parent.children[i]._id === getData.data._id) {
-            console.log('getData', getData);
             parent.children[i] = {
               ...parent.children[i],
               ...getData.data,
@@ -128,7 +127,6 @@ export default function OrganizationalChart({
 
   // 修改负责人
   const handleChangeLeader = async (person) => {
-    console.log('person', person);
     for (let i = 0; i < parent.children.length; i += 1) {
       if (parent?.children[i] && parent.children[i]._id === item._id) {
         parent.children[i].leader = {
@@ -250,7 +248,6 @@ export function List({ data, parentNode, depth, variant, sx }) {
   const [isOpen, setIsOpen] = useState(false);
   const hasChild = data.children && !!data.children && _.compact(data.children).length > 0;
   const handleToggle = () => {
-    console.log('isOpen', isOpen);
     setIsOpen(!isOpen);
   };
   return (

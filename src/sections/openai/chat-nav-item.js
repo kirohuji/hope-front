@@ -53,7 +53,6 @@ export default function ChatNavItem({
           onCloseMobile && onCloseMobile();
         }
         if (type === 'contact') {
-          console.log('conversation', conversation);
           const newConversation = await messagingService.room({
             sessionId: conversation.sessionId,
             isSession: true,

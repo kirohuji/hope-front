@@ -108,7 +108,6 @@ export default function TrainingSearchPage() {
   }, [getBooks]);
 
   const onDetail = (post) => {
-    console.log(post);
     navigate(paths.training.searchDetail(post._id));
   };
   return (

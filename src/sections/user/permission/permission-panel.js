@@ -55,7 +55,6 @@ const getAllFathers = (permissions, _id, list = []) => {
 };
 
 function isAllChildrenChecked(permissions, selectedNodes, selectedNodesNotChild, node, list) {
-  console.log('isAllChildrenChecked');
   const allChild = getAllChild(permissions, node._id);
   const nodeIdIndex = allChild.indexOf(node._id);
   allChild.splice(nodeIdIndex, 1);

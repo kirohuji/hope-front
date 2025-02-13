@@ -249,7 +249,6 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
   const onRefresh = useCallback(async () => {
     if (currentFirstOrganization.length <= 0) {
       setLoading(true);
-      console.log('active._id', active._id);
       const data = await dispatch(getOrganizations(active._id));
       const currentData = _.cloneDeep(data);
       // const assignee = details.participantsBy[current._id].map(item => ({ ...item, _id: item.user_id }))
@@ -263,7 +262,6 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
   }, [active._id, currentFirstOrganization.length, dispatch]);
 
   useEffect(() => {
-    console.log('open', open);
     if (open) {
       // setIsUpdate(true);
       onRefresh();

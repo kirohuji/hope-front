@@ -404,9 +404,7 @@ App.addListener('appStateChange', async (state) => {
         console.log('安装包安装失败了');
         console.log(err);
       }
-    } else {
-      console.log('安装包没有下载好');
-    }
+    } 
   }
 });
 AuthProvider.propTypes = {

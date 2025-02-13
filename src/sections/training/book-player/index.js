@@ -223,7 +223,6 @@ export default function BookPlayer() {
                     articleId={article._id}
                     onClose={() => {
                       setOpen(false);
-                      console.log('关闭');
                       dispatch(
                         getBooksWithCurrentUserBySummarize({
                           bookId: book._id,

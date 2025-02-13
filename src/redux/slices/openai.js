@@ -60,7 +60,6 @@ export default slice.reducer;
 // 合并会话
 export function openai(selectedConversationId, message) {
   return async (dispatch) => {
-    console.log('启动')
     dispatch(slice.actions.startLoading());
 
     const controller = new AbortController();
