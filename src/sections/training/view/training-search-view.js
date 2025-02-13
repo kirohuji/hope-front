@@ -158,7 +158,7 @@ export default function TrainingSearchPage() {
             ))}
           </Box>
           <Divider />
-          <Box sx={{ paddingTop: '8px', overflowY: "auto", height: "calc(100vh - 180px)" }}>
+          <Box sx={{ paddingTop: '8px', overflowY: "auto", height: "calc(100vh - 180px)", paddingRight: "8px" }} className="training-list">
             {isLoading && (
               <Box
                 sx={{

@@ -46,7 +46,7 @@ export default function Header({ isOffset }) {
   const dispatch = useDispatch();
   useEffect(() => {
     if (pathname === '/chat') {
-      dispatch(getConversations());
+      // dispatch(getConversations());
     }
   }, [dispatch, pathname]);
   return (

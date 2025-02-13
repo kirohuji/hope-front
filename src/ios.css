@@ -139,3 +139,7 @@
 .message-list {
   margin-bottom: 10px;
 }
+
+.training-list {
+  height: calc(100vh - 250px) !important;
+}
