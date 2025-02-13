@@ -116,18 +116,20 @@ export default function ScopeNewEditForm({ current }) {
         await versionService.patch({
           _id: current._id,
           ...data,
+          isMain: false,
           label: `${data.majorVersion}.${data.minorVersion}.${data.patchVersion}`,
         });
       } else {
         await versionService.post({
           ...data,
+          isMain: false,
           label: `${data.majorVersion}.${data.minorVersion}.${data.patchVersion}`,
         });
       }
       dispatch(getScopes());
       reset();
       enqueueSnackbar(current ? '更新成功!' : '创建成功!');
-      router.push(paths.dashboard.version.root);
+      router.back()
     } catch (e) {
       enqueueSnackbar(e.response.data.message);
     }
@@ -227,10 +229,10 @@ export default function ScopeNewEditForm({ current }) {
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'right' }}>
-        <FormControlLabel
+        {/* <FormControlLabel
           control={<RHFSwitch name="isActive" defaultChecked label="是否激活" />}
           sx={{ flexGrow: 1, pl: 3 }}
-        />
+        /> */}
         <Button
           color="error"
           variant="contained"

@@ -55,7 +55,7 @@ const TABLE_HEAD = [
   { id: 'isMandatory', label: '是否自动发布', width: 200 },
   { id: 'releaseDate', label: '发布时间', width: 200 },
   { id: ' status', label: '发布状态', width: 100 },
-  // { id: '', width: 88 },
+  { id: '', width: 88 },
 ];
 
 const defaultFilters = {
@@ -101,7 +101,8 @@ export default function VersionDetailsContent({ content }) {
           {
             ...selector,
             ..._.pickBy(_.omit(debouncedFilters, ['role'])),
-            majorVersion: content.majorVersion
+            majorVersion: content.majorVersion,
+            isMain: false
           },
           {
             ...options,
@@ -135,6 +136,17 @@ export default function VersionDetailsContent({ content }) {
       router.push(paths.dashboard.version.edit(id));
     },
     [router]
+  );
+
+  const handleActiveRow = useCallback(
+    async (id) => {
+      await versionService.active({
+        _id: id,
+      });
+      enqueueSnackbar('激活成功');
+      getTableData();
+    },
+    [enqueueSnackbar, getTableData]
   );
 
 
@@ -279,6 +291,7 @@ export default function VersionDetailsContent({ content }) {
                         }}
                         onDeleteRow={() => handleDeleteRow(row._id)}
                         onEditRow={() => handleEditRow(row._id)}
+                        onActiveRow={() => handleActiveRow(row._id)}
                       />
                     ))}
                     {notFound && <TableNoData notFound={notFound} />}

@@ -113,11 +113,13 @@ export default function VersionMajorNewEditForm({ current }) {
         await versionService.patch({
           _id: current._id,
           ...data,
+          isMain: true,
           label: `${data.majorVersion}.${data.minorVersion}.${data.patchVersion}`,
         });
       } else {
         await versionService.post({
           ...data,
+          isMain: true,
           label: `${data.majorVersion}.${data.minorVersion}.${data.patchVersion}`,
         });
       }

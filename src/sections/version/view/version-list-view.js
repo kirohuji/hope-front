@@ -43,7 +43,9 @@ export default function VersionListView() {
     try {
       dispatch(
         pagination(
-          {},
+          {
+            isMain: true
+          },
           {
             skip: (page - 1) * rowsPerPage,
             limit: rowsPerPage,

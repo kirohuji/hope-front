@@ -27,10 +27,20 @@ export default function VersionTableRow({
   selected,
   onClose,
   onEditRow,
+  onActiveRow,
   onSelectRow,
   onDeleteRow,
 }) {
-  const { majorVersion, minorVersion, patchVersion, createdAt, releaseDate, description, isActive } = row;
+  const {
+    majorVersion,
+    minorVersion,
+    patchVersion,
+    isMandatory,
+    createdAt,
+    releaseDate,
+    description,
+    isActive,
+  } = row;
 
   const confirm = useBoolean();
 
@@ -45,7 +55,7 @@ export default function VersionTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
         <TableCell>
-        <ListItemText
+          <ListItemText
             primary={`${majorVersion}.${minorVersion}.${patchVersion}`}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
@@ -54,27 +64,19 @@ export default function VersionTableRow({
 
         <TableCell>
           <ListItemText
-            primary={fDate(createdAt)}
+            primary={description || '无'}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
           />
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{description}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{isMandatory || '否'}</TableCell>
 
-        {/** <TableCell sx={{ whiteSpace: 'nowrap' }}>{role}</TableCell> */}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{releaseDate || '未定'}</TableCell>
 
         <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (isActive === 'active' && 'success') ||
-              // (available === 'pending' && 'warning') ||
-              (isActive === 'banned' && 'error') ||
-              'default'
-            }
-          >
-            {isActive === 'active' ? '激活' : '禁用'}
+          <Label variant="soft" color={isActive ? 'success' : 'default'}>
+            {isActive ? '激活' : '禁用'}
           </Label>
         </TableCell>
         <Restricted to={['UserListEdit', 'UserListDelete']}>
@@ -103,6 +105,17 @@ export default function VersionTableRow({
         arrow="right-top"
         sx={{ width: 140 }}
       >
+        <Restricted to={['UserListEdit']}>
+          <MenuItem
+            onClick={() => {
+              onActiveRow();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="material-symbols:motion-sensor-active" />
+            激活
+          </MenuItem>
+        </Restricted>
         <Restricted to={['UserListEdit']}>
           <MenuItem
             onClick={() => {
@@ -154,6 +167,7 @@ VersionTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onClose: PropTypes.func,
   onEditRow: PropTypes.func,
+  onActiveRow: PropTypes.func,
   onSelectRow: PropTypes.func,
   row: PropTypes.object,
   selected: PropTypes.bool,
