@@ -190,13 +190,13 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (meteor.isConnected && !state.isInitialized) {
-      console.log('因为Meteor 连接成功,执行初始化,initialize')
+      console.log('因为Meteor 连接成功,执行初始化,initialize');
       initialize();
-    } else if(!meteor.isConnected && state.isInitialized){
-      console.log('因为Meteor 失去了连接,所以修改状态为未初始化')
+    } else if (!meteor.isConnected && state.isInitialized) {
+      console.log('因为Meteor 失去了连接,所以修改状态为未初始化');
       dispatch({
         type: 'DISCONNECTED',
-        payload: {}
+        payload: {},
       });
     }
   }, [initialize, meteor.isConnected, state.isInitialized]);
@@ -364,7 +364,51 @@ CapacitorUpdater.notifyAppReady();
 //     }
 //   }
 // });
+let data = { version: -1 };
+App.addListener('appStateChange', async (state) => {
+  if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
+    const current = await CapacitorUpdater.current();
+    if (state.isActive) {
+      const config = await versionService.getActive();
+      const version = `${config.majorVersion}.${config.minorVersion}.${config.patchVersion}`;
+      // 当前版本不是最新版本时获取最新的版本
+      if (current.bundle.version !== version) {
+        console.log('从后台拿到的安装包URL开始下载', config);
+        if(config.file){
+          data = await CapacitorUpdater.download({
+            version,
+            url: config.file,
+          });
+          console.log('从后台下载好的安装包', data);
+        } else {
+          console.log('后台没有配置安装包');
+        }
 
+      } else {
+        console.log('当前安装包已经是最新的了');
+      }
+    }
+    // 确保在后台状态进行安装最新的安装包
+    if (
+      !state.isActive &&
+      data.version !== '' &&
+      data.version !== -1 &&
+      current.version !== data.version
+    ) {
+      console.log('安装包安装状态');
+      try {
+        console.log('安装包bundle list', await CapacitorUpdater.list());
+        await CapacitorUpdater.set(data);
+        console.log('安装包安装安好了');
+      } catch (err) {
+        console.log('安装包安装失败了');
+        console.log(err);
+      }
+    } else {
+      console.log('安装包没有下载好');
+    }
+  }
+});
 AuthProvider.propTypes = {
   children: PropTypes.node,
 };

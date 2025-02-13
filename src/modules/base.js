@@ -30,6 +30,10 @@ export class Service {
     return this.api.post(`${this.model}/active`, target)
   }
 
+  getActive(target) {
+    return this.api.get(`${this.model}/active`, target)
+  }
+
   put(target) {
     return this.api.put(`${this.model}/${target._id}`, target)
   }
