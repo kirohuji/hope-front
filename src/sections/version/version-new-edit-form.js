@@ -212,7 +212,7 @@ export default function ScopeNewEditForm({ current }) {
                 thumbnail
                 accept={{ '*': [] }}
                 name="file"
-                maxSize={314572800}
+                // maxSize={314572800}
                 onDrop={handleDrop}
                 // onRemove={handleRemoveFile}
                 // onRemoveAll={handleRemoveAllFiles}

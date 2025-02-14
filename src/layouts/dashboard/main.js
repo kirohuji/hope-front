@@ -69,7 +69,6 @@ export default function Main({ children, sx, ...other }) {
   
   useEffect(() => {
     if (isConnected) {
-      console.log(pathname);
       subConversations(async (conversation) => {
         if (pathname !== '/dashboard/chat' && pathname !== '/chat') {
           const message = await messagingService.getLastMessage({
@@ -103,7 +102,7 @@ export default function Main({ children, sx, ...other }) {
     }
     return ()=> {}
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnected, pathname]);
+  }, [isConnected]);
 
   if (isNavHorizontal) {
     return (
