@@ -7,6 +7,7 @@ import { userService, versionService } from 'src/composables/context-provider';
 import { Capacitor } from '@capacitor/core';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { registerNotifications } from 'src/cap/push-notification';
+import { registerNotificationsByHuawei } from 'src/huawei/push-notification';
 import { App } from '@capacitor/app';
 import { useMeteorContext } from 'src/meteor/hooks';
 import { StatusBar } from '@capacitor/status-bar';
@@ -172,15 +173,16 @@ export function AuthProvider({ children }) {
 
     if (Capacitor.isNativePlatform()) {
       console.log('isNativePlatform');
-      await registerNotifications();
     }
     if (Capacitor.getPlatform() === 'ios') {
       console.log('iOS!');
       import('../../../ios.css');
+      await registerNotifications();
       StatusBar.setOverlaysWebView({ overlay: true });
     } else if (Capacitor.getPlatform() === 'android') {
       console.log('Android!');
       import('../../../android.css');
+      await registerNotificationsByHuawei();
       StatusBar.setOverlaysWebView({ overlay: false });
     } else {
       console.log('Web!');

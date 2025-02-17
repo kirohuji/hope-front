@@ -94,10 +94,12 @@ export default function DashboardFooter() {
   }, [dispatch, pathname]);
 
   React.useEffect(() => {
-    if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
+    if (Capacitor.getPlatform() === 'ios') {
       if (chat.conversations.unreadCount === 0) {
         clearAllNotifications();
       }
+    } else if(Capacitor.getPlatform() === 'android'){
+      console.log('清空安卓 通知');
     }
   }, [chat.conversations.unreadCount]);
   const checkAuth = (nav, index) => {
