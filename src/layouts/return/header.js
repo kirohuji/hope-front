@@ -84,7 +84,7 @@ export default function Header({ isOffset }) {
         <div
           style={{
             position: 'absolute',
-            top: '14px',
+            top: '11px',
             left: 0,
             display: 'flex',
             justifyContent: 'center',

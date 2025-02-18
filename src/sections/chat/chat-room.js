@@ -7,9 +7,7 @@ import { StaticDatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import {
-  TextField,
-} from '@mui/material';
+import { TextField } from '@mui/material';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -112,7 +110,9 @@ export default function ChatRoom({ participants, conversation, messages }) {
 
   const renderContent = (
     <>
-      {group && conversation.createdBy === user._id &&<ChatRoomSettings participants={participants} conversation={conversation}/> }
+      {group && conversation.createdBy === user._id && (
+        <ChatRoomSettings participants={participants} conversation={conversation} />
+      )}
       {group ? (
         <ChatRoomGroup participants={participants} conversation={conversation} />
       ) : (
@@ -179,13 +179,15 @@ export default function ChatRoom({ participants, conversation, messages }) {
             <CircularProgress size={20} />
           </Box>
         )}
-        <ChatMessageList
-          conversationId={conversation._id}
-          messages={historyMessages}
-          sendingMessages={[]}
-          participants={participants}
-          onRefresh={() => {}}
-        />
+        <div style={{ height: 'calc(100vh - 370px)', overflowY: 'hidden' }}>
+          <ChatMessageList
+            conversationId={conversation._id}
+            messages={historyMessages}
+            sendingMessages={[]}
+            participants={participants}
+            onRefresh={() => {}}
+          />
+        </div>
       </Stack>
     </>
   );
@@ -306,13 +308,11 @@ export default function ChatRoom({ participants, conversation, messages }) {
     fontWeight: 'fontWeightSemiBold',
   };
 
-
   const renderMode = (
     <Stack spacing={2} sx={{ p: 2 }}>
       <Typography variant="caption" component="div" sx={{ ...labelStyles }}>
         Notifications Mode
       </Typography>
-
     </Stack>
   );
 
@@ -362,7 +362,7 @@ export default function ChatRoom({ participants, conversation, messages }) {
           backdrop: { invisible: true },
         }}
         PaperProps={{
-          sx: { width: '100%' },
+          sx: { width: '100%', overflow: 'hidden' },
         }}
       >
         <div className="history-content-drawer">
@@ -400,7 +400,7 @@ export default function ChatRoom({ participants, conversation, messages }) {
             </Box> */}
             <Typography variant="subtitle2">设置中心</Typography>
           </Stack>
-          <Divider sx={{ mb: 1 }}/>
+          <Divider sx={{ mb: 1 }} />
           <Typography
             variant="caption"
             sx={{
@@ -413,9 +413,7 @@ export default function ChatRoom({ participants, conversation, messages }) {
             群聊名称
           </Typography>
           <Stack spacing={2} sx={{ px: 2 }}>
-            <TextField
-              size="small"
-            />
+            <TextField size="small" />
           </Stack>
           {renderMode}
         </Box>

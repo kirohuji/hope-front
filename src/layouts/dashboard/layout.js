@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }) {
       if (bookPlayerElement) {
         const navigationElement = document.getElementById('bottom-navigation');
         if (navigationElement) {
-          if(navigationElement.clientHeight > 56){
+          if (navigationElement.clientHeight > 56) {
             bookPlayerElement.style.bottom = `${navigationElement.clientHeight}px`;
           } else {
             bookPlayerElement.style.bottom = `${56}px`;
@@ -112,7 +112,6 @@ export default function DashboardLayout({ children }) {
       </>
     );
   }
-  console.log(pathname)
   return (
     <>
       <Header onOpenNav={nav.onTrue} />
@@ -126,7 +125,9 @@ export default function DashboardLayout({ children }) {
         {renderNavVertical}
 
         <Main className="main">{children}</Main>
-        {!lgUp && !pathname.includes('/dashboard/broadcast/') && !pathname.includes('/dashboard/article/') && <DashboardFooter />}
+        {!lgUp &&
+          !pathname.includes('/dashboard/broadcast/') &&
+          !pathname.includes('/dashboard/article/') && <DashboardFooter />}
         {!lgUp && pathname === '/dashboard/file-manager' && (
           <Box
             ref={musicPlayerRef}
