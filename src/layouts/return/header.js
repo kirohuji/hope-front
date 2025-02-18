@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 // @mui
 import { useTheme, styled } from '@mui/material/styles';
 import { AppBar, Toolbar, Box } from '@mui/material';
@@ -9,12 +8,10 @@ import { HEADER } from 'src/config-global';
 import { bgBlur } from 'src/theme/css';
 // routes
 import { IconButtonAnimate } from 'src/components/animate';
-import { useRouter , usePathname } from 'src/routes/hook';
-import { useSelector, useDispatch} from 'src/redux/store';
+import { useRouter, usePathname } from 'src/routes/hook';
+import { useSelector } from 'src/redux/store';
 import { useResponsive } from 'src/hooks/use-responsive';
-import { getConversations } from 'src/redux/slices/chat';
-import { useEffect } from 'react';
-import { paths } from '../../routes/paths';
+
 // components
 import Logo from '../../components/logo';
 import Iconify from '../../components/iconify';
@@ -43,12 +40,23 @@ export default function Header({ isOffset }) {
   const mdUp = useResponsive('up', 'md');
   const chat = useSelector((state) => state.chat);
   const pathname = usePathname();
-  const dispatch = useDispatch();
-  useEffect(() => {
-    if (pathname === '/chat') {
-      // dispatch(getConversations());
+
+  const renderConversationTitle = () => {
+    const { activeConversation } = chat;
+    if (activeConversation) {
+      const group = activeConversation.participants.length > 2;
+      if (group) {
+        if (activeConversation.label) {
+          return `${activeConversation.label}(${activeConversation.participants.length})`;
+        }
+        return `${activeConversation.participants
+          .map((participant) => participant.realName)
+          .join(', ')}(群聊)`;
+      }
+      return activeConversation.participants[0].realName;
     }
-  }, [dispatch, pathname]);
+    return '';
+  };
   return (
     <AppBar color="transparent" sx={{ boxShadow: 0 }} position={mdUp ? 'static' : 'absolute'}>
       <Toolbar
@@ -72,6 +80,7 @@ export default function Header({ isOffset }) {
           background: 'white',
         }}
       >
+        <div>{pathname === '/chat' && renderConversationTitle()}</div>
         <div
           style={{
             position: 'absolute',

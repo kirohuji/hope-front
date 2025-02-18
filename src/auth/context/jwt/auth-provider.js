@@ -34,7 +34,7 @@ const reducer = (state, action) => {
     return {
       ...state,
       isInitialized: false,
-      isAuthenticated: false,
+      isAuthenticated: true,
       loading: false,
     };
   }
@@ -376,7 +376,7 @@ App.addListener('appStateChange', async (state) => {
       // 当前版本不是最新版本时获取最新的版本
       if (current.bundle.version !== version) {
         console.log('从后台拿到的安装包URL开始下载', config);
-        if(config.file){
+        if (config.file) {
           data = await CapacitorUpdater.download({
             version,
             url: config.file,
@@ -385,7 +385,6 @@ App.addListener('appStateChange', async (state) => {
         } else {
           console.log('后台没有配置安装包');
         }
-
       } else {
         console.log('当前安装包已经是最新的了');
       }
@@ -406,7 +405,7 @@ App.addListener('appStateChange', async (state) => {
         console.log('安装包安装失败了');
         console.log(err);
       }
-    } 
+    }
   }
 });
 AuthProvider.propTypes = {

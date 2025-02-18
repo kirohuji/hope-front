@@ -28,6 +28,7 @@ const initialState = {
   messagesByAll: [],
   contactsByAll: [],
   activeConversationId: null,
+  activeConversation: {},
   participants: [],
   recipients: [],
   lastMessage: { byId: {} },
@@ -95,11 +96,13 @@ const slice = createSlice({
         state.conversationsByAll[index] = conversation;
         state.conversations.byId[conversation._id] = conversation;
         state.activeConversationId = conversation._id;
+        state.activeConversation = conversation;
         if (!state.conversations.allIds.includes(conversation._id)) {
           state.conversations.allIds.push(conversation._id);
         }
       } else {
         state.activeConversationId = null;
+        state.activeConversation = {};
       }
       state.conversations.unreadCount = state.conversationsByAll.reduce(
         (previous, current) => previous + current.unreadCount,
@@ -110,6 +113,10 @@ const slice = createSlice({
     getConversationByConversationKeySuccess(state, action) {
       const conversationKey = action.payload;
       state.activeConversationId = conversationKey;
+    },
+    getConversationByConversationSuccess(state, action) {
+      const conversation = action.payload;
+      state.activeConversation = conversation;
     },
 
     // ON SEND MESSAGE
@@ -143,8 +150,14 @@ const slice = createSlice({
     },
     pushMessageSuccess(state, action) {
       const { message } = action.payload;
-      if (state.sendingMessage.byId[message.conversationId].filter((m) => m.sendingMessageId === message.sendingMessageId).length === 0 &&
-      state.messages.byId[message.conversationId].filter((m) => m.sendingMessageId === message.sendingMessageId).length === 0) {
+      if (
+        state.sendingMessage.byId[message.conversationId].filter(
+          (m) => m.sendingMessageId === message.sendingMessageId
+        ).length === 0 &&
+        state.messages.byId[message.conversationId].filter(
+          (m) => m.sendingMessageId === message.sendingMessageId
+        ).length === 0
+      ) {
         state.messages.byId[message.conversationId].push(message);
         state.lastMessage.byId[message.conversationId] = _.last(message);
       }
@@ -555,8 +568,13 @@ export function getConversationByConversationKey(conversationKey) {
       const { conversations } = getState().chat;
       if (conversations.byId[conversationKey]) {
         dispatch(slice.actions.getConversationByConversationKeySuccess(conversationKey));
+        dispatch(
+          slice.actions.getConversationByConversationSuccess(conversations.byId[conversationKey])
+        );
       } else {
-        const data = await messagingService.getConversationById({ _id: conversationKey });
+        const data = await messagingService.getConversationById(
+          conversations.byId[conversationKey]
+        );
         dispatch(slice.actions.getConversationSuccess(data));
       }
     } catch (error) {

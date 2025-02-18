@@ -219,7 +219,7 @@ export default function ChatView() {
     };
   }, [
     isDesktop,
-    active._id,
+    active,
     currentTab,
     ddpclient,
     dispatch,
@@ -368,7 +368,7 @@ export default function ChatView() {
                 overflow: 'hidden',
               }}
             >
-              {renderHead}
+              {isDesktop && renderHead}
 
               <Stack
                 direction="row"
