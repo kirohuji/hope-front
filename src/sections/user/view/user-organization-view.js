@@ -40,26 +40,28 @@ export default function UserOrganizationView() {
   };
 
   const onRefresh = useCallback(async () => {
-    setIsLoading(true);
-    await dispatch(
-      getOrganizations({
-        selector: {
-          scope: active._id,
-          type: debouncedView,
-        },
-      })
-    );
-    if (debouncedView === 'role') {
+    if (active) {
+      setIsLoading(true);
       await dispatch(
-        getPermissions({
+        getOrganizations({
           selector: {
-            type: 'permission',
+            scope: active._id,
+            type: debouncedView,
           },
         })
       );
+      if (debouncedView === 'role') {
+        await dispatch(
+          getPermissions({
+            selector: {
+              type: 'permission',
+            },
+          })
+        );
+      }
+      setIsLoading(false);
     }
-    setIsLoading(false);
-  }, [active._id, dispatch, debouncedView]);
+  }, [active, dispatch, debouncedView]);
 
   useEffect(() => {
     onRefresh();

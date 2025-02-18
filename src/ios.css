@@ -143,3 +143,6 @@
 .training-list {
   height: calc(100vh - 250px) !important;
 }
+.chat-room-history {
+  height: calc(100vh - 420px) !important;
+}

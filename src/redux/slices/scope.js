@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import _ from 'lodash';
 import { scopeService } from '../../composables/context-provider';
 // ----------------------------------------------------------------------
 
@@ -53,13 +54,14 @@ export const { setActive } = slice.actions;
 
 // ----------------------------------------------------------------------
 
-export function getScopes() {
+export function getScopes(profile) {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
       const response = await scopeService.getAll();
       dispatch(slice.actions.getScopesSuccess(response));
-      dispatch(slice.actions.setActive(response[0]));
+      console.log('profile', profile);
+      dispatch(slice.actions.setActive(_.find(response, { _id: profile.scope }) || response[0]));
     } catch (error) {
       console.error(error);
       dispatch(

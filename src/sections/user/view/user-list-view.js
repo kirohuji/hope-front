@@ -41,6 +41,8 @@ import {
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+// redux
+import { useSelector } from 'src/redux/store';
 // service
 import { fileService, userService } from 'src/composables/context-provider';
 //
@@ -103,6 +105,8 @@ export default function UserListView() {
 
   const canReset = !_.isEqual(defaultFilters, filters);
 
+  const scope = useSelector((state) => state.scope);
+
   const debouncedFilters = useDebounce(filters);
 
   const notFound = (!tableDataCount && canReset) || !tableDataCount;
@@ -114,6 +118,7 @@ export default function UserListView() {
         const response = await userService.pagination(
           {
             ...selector,
+            scope: scope.active._id,
             ..._.pickBy(_.omit(debouncedFilters, ['role'])),
           },
           {
@@ -141,7 +146,7 @@ export default function UserListView() {
         enqueueSnackbar(error.message);
       }
     },
-    [debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
+    [scope.active._id, debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
   );
 
   useEffect(() => {
@@ -310,7 +315,7 @@ export default function UserListView() {
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
-              rowCount={tableData.filter(row=> row.username !== 'admin').length}
+              rowCount={tableData.filter((row) => row.username !== 'admin').length}
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
@@ -339,14 +344,14 @@ export default function UserListView() {
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tableData.filter(row=> row.username !== 'admin').length}
+                  rowCount={tableData.filter((row) => row.username !== 'admin').length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
                       _.compact(
-                        tableData.filter(row=> row.username !== 'admin').map((row) => row._id)
+                        tableData.filter((row) => row.username !== 'admin').map((row) => row._id)
                       )
                     )
                   }

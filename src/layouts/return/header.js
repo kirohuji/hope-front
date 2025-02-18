@@ -43,7 +43,7 @@ export default function Header({ isOffset }) {
 
   const renderConversationTitle = () => {
     const { activeConversation } = chat;
-    if (activeConversation) {
+    if (activeConversation && activeConversation?.participants?.length > 0) {
       const group = activeConversation.participants.length > 2;
       if (group) {
         if (activeConversation.label) {

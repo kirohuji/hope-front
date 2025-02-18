@@ -1,7 +1,6 @@
-import { Service } from './base'
+import { Service } from './base';
 
 export default class MessagingService extends Service {
-
   usersAndConversations(conversationsId, isChatgpt) {
     if (isChatgpt) {
       return this.api.post(`${this.model}/users/conversations/participants`, {
@@ -80,9 +79,13 @@ export default class MessagingService extends Service {
     // return this.api.delete(`${this.model}/conversations/${target._id}`, target)
     return this.api.post(`${this.model}/conversations/delete/${target._id}`, target);
   }
-  
+
   savePushNotificationToken(target) {
     // return this.api.delete(`${this.model}/conversations/${target._id}`, target)
     return this.api.post(`${this.model}/conversations/savePushNotificationToken`, target);
+  }
+
+  updateDeviceStatus(target) {
+    return this.api.post(`${this.model}/conversations/updateDeviceStatus`, target);
   }
 }

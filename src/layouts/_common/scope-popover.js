@@ -9,27 +9,31 @@ import IconButton from '@mui/material/IconButton';
 import Image from 'src/components/image';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
+// hooks
+import { useAuthContext } from 'src/auth/hooks';
+
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
 import { setActive, getScopes } from 'src/redux/slices/scope';
 import { varHover } from 'src/components/animate';
 // ----------------------------------------------------------------------
 
-export default function ScopePopover () {
-
+export default function ScopePopover() {
   const dispatch = useDispatch();
+
+  const { user } = useAuthContext();
+
   const scope = useSelector((state) => state.scope);
 
   const popover = usePopover();
 
   const handleChange = (item) => {
-    dispatch(setActive(item))
+    dispatch(setActive(item));
     popover.onClose();
   };
   const getAllEvents = useCallback(() => {
-    dispatch(getScopes());
-  }, [dispatch]);
-
+    dispatch(getScopes(user));
+  }, [dispatch, user]);
 
   useEffect(() => {
     getAllEvents();
@@ -70,7 +74,8 @@ export default function ScopePopover () {
                 src={option.cover}
                 sx={{
                   width: 40,
-                  height: 40, mr: 2
+                  height: 40,
+                  mr: 2,
                 }}
               />
 

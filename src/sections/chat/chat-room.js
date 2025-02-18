@@ -179,7 +179,10 @@ export default function ChatRoom({ participants, conversation, messages }) {
             <CircularProgress size={20} />
           </Box>
         )}
-        <div style={{ height: 'calc(100vh - 370px)', overflowY: 'hidden' }}>
+        <div
+          style={{ height: 'calc(100vh - 370px)', overflowY: 'hidden' }}
+          className="chat-room-history"
+        >
           <ChatMessageList
             conversationId={conversation._id}
             messages={historyMessages}

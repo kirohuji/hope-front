@@ -281,7 +281,7 @@ export function useNavData() {
             icon: ICONS.folder,
             auth: ['FileManager'],
           },
-          // AI 
+          // AI
           // {
           //   title: t('openai'),
           //   path: paths.dashboard.openai,

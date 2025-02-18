@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useAuthContext } from 'src/auth/hooks';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import MusicPlayer from 'src/components/music-player';
@@ -27,6 +28,9 @@ export default function DashboardLayout({ children }) {
   const musicPlayerRef = useRef(null);
 
   const dispatch = useDispatch();
+
+  const { user } = useAuthContext();
+
   const scope = useSelector((state) => state.scope);
 
   const settings = useSettingsContext();
@@ -49,9 +53,9 @@ export default function DashboardLayout({ children }) {
 
   const getAllEvents = useCallback(() => {
     if (!scope.active?._id) {
-      dispatch(getScopes());
+      dispatch(getScopes(user));
     }
-  }, [dispatch, scope.active]);
+  }, [dispatch, scope.active?._id, user]);
 
   useEffect(() => {
     getAllEvents();

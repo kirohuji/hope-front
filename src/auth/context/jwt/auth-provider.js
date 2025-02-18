@@ -1,9 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
+import { Device } from '@capacitor/device';
 import _ from 'lodash';
 
-import { userService, versionService } from 'src/composables/context-provider';
+import { userService, versionService, messagingService } from 'src/composables/context-provider';
 import { Capacitor } from '@capacitor/core';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { registerNotifications } from 'src/cap/push-notification';
@@ -370,7 +371,12 @@ let data = { version: -1 };
 App.addListener('appStateChange', async (state) => {
   if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
     const current = await CapacitorUpdater.current();
+    const deviceId = await Device.getId();
     if (state.isActive) {
+      messagingService.updateDeviceStatus({
+        deviceId,
+        status: 'active',
+      });
       const config = await versionService.getActive();
       const version = `${config.majorVersion}.${config.minorVersion}.${config.patchVersion}`;
       // 当前版本不是最新版本时获取最新的版本
@@ -388,6 +394,11 @@ App.addListener('appStateChange', async (state) => {
       } else {
         console.log('当前安装包已经是最新的了');
       }
+    } else {
+      messagingService.updateDeviceStatus({
+        deviceId,
+        status: 'deactive',
+      });
     }
     // 确保在后台状态进行安装最新的安装包
     if (
