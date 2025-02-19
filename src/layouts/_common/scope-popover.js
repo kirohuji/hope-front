@@ -1,4 +1,3 @@
-import { useEffect, useCallback } from 'react';
 import { m } from 'framer-motion';
 // @mui
 import { alpha } from '@mui/material/styles';
@@ -9,19 +8,14 @@ import IconButton from '@mui/material/IconButton';
 import Image from 'src/components/image';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-// hooks
-import { useAuthContext } from 'src/auth/hooks';
-
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
-import { setActive, getScopes } from 'src/redux/slices/scope';
+import { setActive } from 'src/redux/slices/scope';
 import { varHover } from 'src/components/animate';
 // ----------------------------------------------------------------------
 
 export default function ScopePopover() {
   const dispatch = useDispatch();
-
-  const { user } = useAuthContext();
 
   const scope = useSelector((state) => state.scope);
 

@@ -7,45 +7,62 @@ import Avatar from '@mui/material/Avatar';
 import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import { useSettingsContext } from 'src/components/settings';
+
+// capacitor
+import { Capacitor } from '@capacitor/core';
+import { Device } from '@capacitor/device';
 //
 import { paths } from 'src/routes/paths';
+import { useDispatch, useSelector } from 'src/redux/store';
+import { getScopes, setScope } from 'src/redux/slices/scope';
 import { useMeteorContext } from 'src/meteor/hooks';
 import { useEffect } from 'react';
 import { useSnackbar } from 'src/components/snackbar';
-import { useRouter , usePathname } from 'src/routes/hook';
+import { useRouter, usePathname } from 'src/routes/hook';
+import { useAuthContext } from 'src/auth/hooks';
 import { messagingService } from 'src/composables/context-provider';
 import {
   conversationsCollectionChange,
-  conversationsPublish
+  conversationsPublish,
 } from 'src/meteor/context/meteor-provider';
 import { HEADER, NAV } from '../config-layout';
 // ----------------------------------------------------------------------
 
 const SPACING = 8;
 const CustomSnackbar = ({ message, name, avatarUrl, onGoto }) => (
-    <Box
-      display="flex"
-      alignItems="center"
-      onClick={onGoto}
-      sx={{ cursor: 'pointer', margin: '4px 0px' }}
-    >
-      <Avatar alt={name} src={avatarUrl} />
-      <Box ml={2}>
-        <Typography variant="subtitle2">{name}</Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            whiteSpace: 'nowrap' /* 不换行 */,
-            overflow: 'hidden' /* 超出部分隐藏 */,
-            textOverflow: 'ellipsis' /* 超出部分显示... */,
-            width: '235px',
-          }}
-        >
-          {message}
-        </Typography>
-      </Box>
+  <Box
+    display="flex"
+    alignItems="center"
+    onClick={onGoto}
+    sx={{ cursor: 'pointer', margin: '4px 0px' }}
+  >
+    <Avatar alt={name} src={avatarUrl} />
+    <Box ml={2}>
+      <Typography variant="subtitle2">{name}</Typography>
+      <Typography
+        variant="body2"
+        sx={{
+          whiteSpace: 'nowrap' /* 不换行 */,
+          overflow: 'hidden' /* 超出部分隐藏 */,
+          textOverflow: 'ellipsis' /* 超出部分显示... */,
+          width: '235px',
+        }}
+      >
+        {message}
+      </Typography>
     </Box>
-  );
+  </Box>
+);
+async function updateDeviceStatus() {
+  if (Capacitor.isNativePlatform()) {
+    console.log('updateDeviceStatus');
+    const deviceId = await Device.getId();
+    messagingService.updateDeviceStatus({
+      deviceId,
+      status: 'active',
+    });
+  }
+}
 export default function Main({ children, sx, ...other }) {
   const { isConnected, subConversations } = useMeteorContext();
   const settings = useSettingsContext();
@@ -53,21 +70,28 @@ export default function Main({ children, sx, ...other }) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const isNavHorizontal = settings.themeLayout === 'horizontal';
   const router = useRouter();
+  const dispatch = useDispatch();
+  const scope = useSelector((state) => state.scope);
   const isNavMini = settings.themeLayout === 'mini';
   const pathname = usePathname();
+  const { user } = useAuthContext();
 
-  function handleMessage(message){
-    switch(message.contentType){
+  function handleMessage(message) {
+    switch (message.contentType) {
       case 'text':
         return message.body;
       case 'image':
-        return '对方发送了一张图片给你'
+        return '对方发送了一张图片给你';
       default:
         return message.body;
     }
   }
-  
   useEffect(() => {
+    updateDeviceStatus();
+    if (!scope.active?._id) {
+      dispatch(getScopes());
+      dispatch(setScope(user));
+    }
     if (isConnected) {
       subConversations(async (conversation) => {
         if (pathname !== '/dashboard/chat' && pathname !== '/chat') {
@@ -98,10 +122,10 @@ export default function Main({ children, sx, ...other }) {
           conversationsCollectionChange.stop();
           conversationsPublish.stop();
         }
-      }
+      };
     }
-    return ()=> {}
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected]);
 
   if (isNavHorizontal) {
@@ -160,5 +184,5 @@ CustomSnackbar.propTypes = {
   message: PropTypes.any,
   name: PropTypes.any,
   avatarUrl: PropTypes.any,
-   onGoto: PropTypes.any
-}
+  onGoto: PropTypes.any,
+};

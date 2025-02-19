@@ -14,6 +14,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import Logo from 'src/components/logo';
 import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
+import Restricted from 'src/auth/guard/restricted';
 //
 import { usePathname } from 'src/routes/hook';
 import { HEADER, NAV } from '../config-layout';
@@ -66,7 +67,9 @@ export default function Header({ onOpenNav }) {
         {/* { lgUp && <ScopePopover /> } */}
         {/* <ContactsPopover /> */}
         {/* <SettingsButton /> */}
-        <ScopePopover />
+        <Restricted to={['Scope:Admin']}>
+          <ScopePopover />
+        </Restricted>
         {pathname === '/dashboard/chat' && <ChatPopover />}
         <AccountPopover />
       </Stack>

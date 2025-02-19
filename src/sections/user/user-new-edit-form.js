@@ -15,6 +15,9 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from '@mui/material/CircularProgress';
+import Restricted from 'src/auth/guard/restricted';
+// hooks
+import { useAuthContext } from 'src/auth/hooks';
 // utils
 import { fData } from 'src/utils/format-number';
 // routes
@@ -39,6 +42,7 @@ export default function UserNewEditForm({ currentUser }) {
   const scope = useSelector((state) => state.scope);
   const loading = useBoolean(false);
 
+  const { user } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
@@ -52,7 +56,7 @@ export default function UserNewEditForm({ currentUser }) {
     gender: Yup.string().required('请选择性别'),
     available: Yup.string(),
     scope: Yup.string().required('请选择组织'),
-    baptized: Yup.boolean().required('请选择是否受洗'),
+    // baptized: Yup.boolean().required('请选择是否受洗'),
     // country: Yup.string().required('Country is required'),
     // company: Yup.string().required('Company is required'),
     // state: Yup.string().required('State is required'),
@@ -97,12 +101,13 @@ export default function UserNewEditForm({ currentUser }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (!isEdit) {
-        const user = await userService.register({
+        const registeredUser = await userService.register({
           ...data,
         });
         await profileService.patch({
-          _id: user._id || user.id || user,
+          _id: registeredUser._id || registeredUser.id || registeredUser,
           ...data,
+          scope: data.scope || user.scope,
           photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL,
         });
       } else {

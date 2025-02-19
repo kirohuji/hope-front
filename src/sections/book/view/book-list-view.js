@@ -57,6 +57,8 @@ export default function BookListView() {
 
   const [page, setPage] = useState(1);
 
+  const scope = useSelector((state) => state.scope);
+
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [sortBy, setSortBy] = useState('latest');
@@ -82,6 +84,7 @@ export default function BookListView() {
           pagination(
             {
               ...selector,
+              scope: scope.active?._id,
               label: {
                 $regex: debouncedFilters.label,
                 $options: 'i',
@@ -100,7 +103,7 @@ export default function BookListView() {
         enqueueSnackbar(error.message);
       }
     },
-    [debouncedFilters.label, dispatch, enqueueSnackbar, page, rowsPerPage]
+    [debouncedFilters.label, dispatch, enqueueSnackbar, page, rowsPerPage, scope.active]
   );
 
   useEffect(() => {

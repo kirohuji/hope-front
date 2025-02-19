@@ -65,6 +65,8 @@ export default function BroadcastListView() {
 
   const dispatch = useDispatch();
 
+  const scope = useSelector((state) => state.scope);
+
   const [sortBy, setSortBy] = useState('latest');
 
   const [search, setSearch] = useState({
@@ -88,6 +90,7 @@ export default function BroadcastListView() {
           pagination(
             {
               ...selector,
+              scope: scope.active?._id,
               label: {
                 $regex: debouncedFilters.label,
                 $options: 'i',
@@ -106,7 +109,7 @@ export default function BroadcastListView() {
         enqueueSnackbar(error.message);
       }
     },
-    [debouncedFilters.label, dispatch, enqueueSnackbar, page, rowsPerPage]
+    [debouncedFilters.label, dispatch, enqueueSnackbar, page, rowsPerPage, scope.active]
   );
 
   useEffect(() => {
@@ -191,16 +194,20 @@ export default function BroadcastListView() {
           { name: '' },
         ]}
         action={
-          lgUp ? <Restricted to={['BroadcastListAdd']}>
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.broadcast.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              新建一个新的活动通知
-            </Button>
-          </Restricted> : <div/>
+          lgUp ? (
+            <Restricted to={['BroadcastListAdd']}>
+              <Button
+                component={RouterLink}
+                href={paths.dashboard.broadcast.new}
+                variant="contained"
+                startIcon={<Iconify icon="mingcute:add-line" />}
+              >
+                新建一个新的活动通知
+              </Button>
+            </Restricted>
+          ) : (
+            <div />
+          )
         }
         sx={{
           mb: { xs: 3, md: 5 },

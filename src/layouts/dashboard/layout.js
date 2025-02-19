@@ -5,15 +5,12 @@ import Box from '@mui/material/Box';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
-import { useAuthContext } from 'src/auth/hooks';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import MusicPlayer from 'src/components/music-player';
 import BookPlayer from 'src/sections/training/book-player';
 //
 import { usePathname } from 'src/routes/hook';
-import { useDispatch, useSelector } from 'src/redux/store';
-import { getScopes, setScope } from 'src/redux/slices/scope';
 import Main from './main';
 import Header from './header';
 import NavMini from './nav-mini';
@@ -25,12 +22,6 @@ import DashboardFooter from './footer';
 export default function DashboardLayout({ children }) {
   const bookPlayerRef = useRef(null);
   const musicPlayerRef = useRef(null);
-
-  const dispatch = useDispatch();
-
-  const { user } = useAuthContext();
-
-  const scope = useSelector((state) => state.scope);
 
   const settings = useSettingsContext();
 
@@ -50,15 +41,7 @@ export default function DashboardLayout({ children }) {
 
   const pathname = usePathname();
 
-  const getAllEvents = useCallback(() => {
-    if (!scope.active?._id) {
-      dispatch(getScopes());
-      dispatch(setScope(user));
-    }
-  }, [dispatch, scope.active?._id, user]);
-
   useEffect(() => {
-    getAllEvents();
     if (!lgUp && pathname === '/dashboard/training/dashboard') {
       const bookPlayerElement = bookPlayerRef.current;
       if (bookPlayerElement) {
@@ -82,7 +65,7 @@ export default function DashboardLayout({ children }) {
         }
       }
     }
-  }, [getAllEvents, lgUp, pathname]);
+  }, [lgUp, pathname]);
 
   if (isHorizontal) {
     return (

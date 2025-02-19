@@ -55,7 +55,7 @@ export default function UserTableRow({
     <>
       <TableRow hover selected={selected}>
         <TableCell padding="checkbox">
-          <Checkbox checked={selected} onClick={onSelectRow} disabled={username==='admin'} />
+          <Checkbox checked={selected} onClick={onSelectRow} disabled={username === 'admin'} />
         </TableCell>
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar alt={username} src={photoURL} sx={{ mr: 2 }} />
@@ -78,8 +78,6 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{phoneNumber}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{baptized ? '是' : '否'}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{address}</TableCell>
 
