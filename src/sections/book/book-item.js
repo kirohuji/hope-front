@@ -28,7 +28,7 @@ const TYPE_OPTIONS = new Map([
   ['children', '儿童'],
   ['adolescent', '青少年'],
   ['adult', '成人'],
-  ['newBelievers', '初信'],
+  ['newBelievers', '新人'],
 ]);
 export default function BookItem({ book, onView, onEdit, onDelete }) {
   const theme = useTheme();

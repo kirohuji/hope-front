@@ -42,7 +42,7 @@ export const TYPE_OPTIONS = [
   { value: 'children', label: '儿童' },
   { value: 'adolescent', label: '青少年' },
   { value: 'adult', label: '成人' },
-  { value: 'newBelievers', label: '初信' },
+  { value: 'newBelievers', label: '新人' },
   // { value: 'book', label: '阅读' },
 ];
 
