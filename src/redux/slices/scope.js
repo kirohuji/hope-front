@@ -54,14 +54,29 @@ export const { setActive } = slice.actions;
 
 // ----------------------------------------------------------------------
 
-export function getScopes(profile) {
+export function getScopes() {
   return async (dispatch) => {
     dispatch(slice.actions.startLoading());
     try {
       const response = await scopeService.getAll();
       dispatch(slice.actions.getScopesSuccess(response));
-      console.log('profile', profile);
-      dispatch(slice.actions.setActive(_.find(response, { _id: profile.scope }) || response[0]));
+    } catch (error) {
+      console.error(error);
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  };
+}
+export function setScope(profile) {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    const { scopes } = getState().scope;
+    try {
+      dispatch(slice.actions.setActive(_.find(scopes, { _id: profile.scope })));
     } catch (error) {
       console.error(error);
       dispatch(

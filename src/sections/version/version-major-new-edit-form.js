@@ -5,16 +5,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
 import Card from '@mui/material/Card';
-import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // routes
@@ -25,23 +21,14 @@ import { useRouter } from 'src/routes/hook';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 // redux
-import { useDispatch } from 'src/redux/store';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {
-  RHFUpload,
-  RHFEditor,
-  RHFSwitch,
-  RHFTextField,
-  RHFRadioGroup,
-} from 'src/components/hook-form';
+import FormProvider, { RHFEditor, RHFTextField } from 'src/components/hook-form';
 import { versionService, fileService } from 'src/composables/context-provider';
-import { getScopes } from 'src/redux/slices/scope';
 
 // ----------------------------------------------------------------------
 
 export default function VersionMajorNewEditForm({ current }) {
   const router = useRouter();
-  const dispatch = useDispatch();
   const mdUp = useResponsive('up', 'md');
   const loading = useBoolean(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -123,7 +110,6 @@ export default function VersionMajorNewEditForm({ current }) {
           label: `${data.majorVersion}.${data.minorVersion}.${data.patchVersion}`,
         });
       }
-      dispatch(getScopes());
       reset();
       enqueueSnackbar(current ? '更新成功!' : '创建成功!');
       router.push(paths.dashboard.version.root);
@@ -151,11 +137,11 @@ export default function VersionMajorNewEditForm({ current }) {
 
           <Stack spacing={3} sx={{ p: 3 }}>
             {/* <Stack spacing={3} direction="row" justifyContent="space-between"> */}
-              <Stack spacing={1.5}>
-                <Typography variant="subtitle2">主版本号</Typography>
-                <RHFTextField name="majorVersion" />
-              </Stack>
-              {/* <Stack spacing={1.5}>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">主版本号</Typography>
+              <RHFTextField name="majorVersion" />
+            </Stack>
+            {/* <Stack spacing={1.5}>
                 <Typography variant="subtitle2">辅版本号</Typography>
                 <RHFTextField name="minorVersion" />
               </Stack>

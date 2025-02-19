@@ -17,7 +17,13 @@ import { useSettingsContext } from 'src/components/settings';
 //
 import { usePathname } from 'src/routes/hook';
 import { HEADER, NAV } from '../config-layout';
-import { Searchbar, AccountPopover, ChatPopover, NotificationsPopover } from '../_common';
+import {
+  Searchbar,
+  AccountPopover,
+  ChatPopover,
+  ScopePopover,
+  NotificationsPopover,
+} from '../_common';
 
 // ----------------------------------------------------------------------
 
@@ -60,6 +66,7 @@ export default function Header({ onOpenNav }) {
         {/* { lgUp && <ScopePopover /> } */}
         {/* <ContactsPopover /> */}
         {/* <SettingsButton /> */}
+        <ScopePopover />
         {pathname === '/dashboard/chat' && <ChatPopover />}
         <AccountPopover />
       </Stack>

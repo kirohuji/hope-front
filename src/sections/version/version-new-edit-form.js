@@ -8,24 +8,20 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Card from '@mui/material/Card';
-import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // routes
-import { paths } from 'src/routes/paths';
 import { useParams, useRouter } from 'src/routes/hook';
 
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 
 // redux
-import { useDispatch } from 'src/redux/store';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFUpload,
@@ -35,13 +31,11 @@ import FormProvider, {
   RHFRadioGroup,
 } from 'src/components/hook-form';
 import { versionService, fileService } from 'src/composables/context-provider';
-import { getScopes } from 'src/redux/slices/scope';
 
 // ----------------------------------------------------------------------
 
 export default function ScopeNewEditForm({ current }) {
   const router = useRouter();
-  const dispatch = useDispatch();
   const mdUp = useResponsive('up', 'md');
   const params = useParams();
   const loading = useBoolean(false);
@@ -68,7 +62,7 @@ export default function ScopeNewEditForm({ current }) {
       majorVersion: current?.majorVersion || id,
       // published: current?.published || false,
     }),
-    [current,id]
+    [current, id]
   );
 
   const methods = useForm({
@@ -126,10 +120,9 @@ export default function ScopeNewEditForm({ current }) {
           label: `${data.majorVersion}.${data.minorVersion}.${data.patchVersion}`,
         });
       }
-      dispatch(getScopes());
       reset();
       enqueueSnackbar(current ? '更新成功!' : '创建成功!');
-      router.back()
+      router.back();
     } catch (e) {
       enqueueSnackbar(e.response.data.message);
     }
@@ -233,12 +226,7 @@ export default function ScopeNewEditForm({ current }) {
           control={<RHFSwitch name="isActive" defaultChecked label="是否激活" />}
           sx={{ flexGrow: 1, pl: 3 }}
         /> */}
-        <Button
-          color="error"
-          variant="contained"
-          onClick={() => router.back()}
-          sx={{ mr: 1 }}
-        >
+        <Button color="error" variant="contained" onClick={() => router.back()} sx={{ mr: 1 }}>
           返回
         </Button>
         <LoadingButton

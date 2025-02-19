@@ -31,13 +31,6 @@ export default function ScopePopover() {
     dispatch(setActive(item));
     popover.onClose();
   };
-  const getAllEvents = useCallback(() => {
-    dispatch(getScopes(user));
-  }, [dispatch, user]);
-
-  useEffect(() => {
-    getAllEvents();
-  }, [getAllEvents]);
 
   return (
     <>

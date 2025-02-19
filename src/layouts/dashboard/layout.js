@@ -13,8 +13,7 @@ import BookPlayer from 'src/sections/training/book-player';
 //
 import { usePathname } from 'src/routes/hook';
 import { useDispatch, useSelector } from 'src/redux/store';
-import { getScopes } from 'src/redux/slices/scope';
-import _ from 'lodash';
+import { getScopes, setScope } from 'src/redux/slices/scope';
 import Main from './main';
 import Header from './header';
 import NavMini from './nav-mini';
@@ -53,7 +52,8 @@ export default function DashboardLayout({ children }) {
 
   const getAllEvents = useCallback(() => {
     if (!scope.active?._id) {
-      dispatch(getScopes(user));
+      dispatch(getScopes());
+      dispatch(setScope(user));
     }
   }, [dispatch, scope.active?._id, user]);
 
