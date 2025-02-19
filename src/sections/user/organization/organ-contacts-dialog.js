@@ -49,7 +49,7 @@ export default function OrganContactsDialog({ open, onClose, current }) {
   const [users, setUsers] = useState([]);
   const [assignee, setAssignee] = useState([]);
   const [user, setUser] = useState([]);
-  const { active } = useSelector((state) => state.scope);
+  const scope = useSelector((state) => state.scope);
   const [loading, setLoading] = useState(false);
   const [buttonLoading, setButtonLoading] = useState(false);
   const [buttonLoadingId, setButtonLoadingId] = useState(-1);
@@ -94,14 +94,14 @@ export default function OrganContactsDialog({ open, onClose, current }) {
         isShowJoinedUser: 'on',
       },
       options: {
-        scope: active._id,
+        scope: scope.active._id,
         // anyScope: true
       },
       roles: current._id,
     });
     setLoading(false);
     setUsers(response.data);
-  }, [debouncedSearchContacts, active, current, setUsers]);
+  }, [debouncedSearchContacts, scope, current, setUsers]);
 
   const getUsersInRoleOnly = useCallback(async () => {
     const response2 = await roleService.getUsersInRoleOnly({
@@ -110,12 +110,12 @@ export default function OrganContactsDialog({ open, onClose, current }) {
         isShowJoinedUser: 'on',
       },
       options: {
-        scope: active._id,
+        scope: scope.active._id,
       },
       roles: current._id,
     });
     setAssignee(response2.data);
-  }, [active._id, current._id]);
+  }, [scope.active, current._id]);
 
   const handleSearchContacts = (event) => {
     setSearchContacts(event.target.value);
@@ -128,7 +128,7 @@ export default function OrganContactsDialog({ open, onClose, current }) {
         users: user,
         roles: current._id,
         options: {
-          scope: active._id,
+          scope: scope.active._id,
         },
       });
       enqueueSnackbar('删除成功');
@@ -148,7 +148,7 @@ export default function OrganContactsDialog({ open, onClose, current }) {
         users: contact,
         roles: current._id,
         options: {
-          scope: active._id,
+          scope: scope.active._id,
         },
       });
       enqueueSnackbar('添加成功');
@@ -270,7 +270,7 @@ export default function OrganContactsDialog({ open, onClose, current }) {
                         primaryTypographyProps={{ typography: 'subtitle2', sx: { mb: 0.25 } }}
                         secondaryTypographyProps={{ typography: 'caption' }}
                         primary={`${contact?.displayName}(${contact?.realName})`}
-                        secondary={contact.emails[0].address}
+                        secondary={contact.email}
                       />
                     </ListItem>
                   );

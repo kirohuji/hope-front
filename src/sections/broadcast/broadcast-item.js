@@ -31,27 +31,15 @@ function isAssetTypeAnImage(ext) {
 const BROAECAST_TYPE_OPTIONS = [
   { value: 'activity', label: '活动通知' },
   { value: 'notification', label: '消息公告' },
-  { value: 'familyGathering', label: '家庭聚会' },
+  { value: 'familyGathering', label: '社交聚会' },
   // { value: 'book', label: '阅读' },
 ];
 
 export default function BroadcastItem({ broadcast, onView, onEdit, onDelete }) {
   const popover = usePopover();
   const lgUp = useResponsive('up', 'lg');
-  const {
-    _id,
-    label,
-    price,
-    images,
-    participants,
-    createdAt,
-    available,
-    priceSale,
-    destination,
-    leaders,
-    ratingNumber,
-    type,
-  } = broadcast;
+  const { _id, label, price, images, createdAt, available, priceSale, destination, leaders, type } =
+    broadcast;
 
   const imageSet = images.filter((img) => isAssetTypeAnImage(img.path));
   const shortLabel = shortDateLabel(new Date(available.startDate), new Date(available.endDate));

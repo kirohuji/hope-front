@@ -34,6 +34,7 @@ import FormProvider, {
 } from 'src/components/hook-form';
 
 import { bookService, fileService } from 'src/composables/context-provider';
+import { useSelector } from 'src/redux/store';
 
 // ----------------------------------------------------------------------
 
@@ -53,6 +54,8 @@ export default function BookNewEditForm({ currentBook }) {
   const { user } = useAuthContext();
 
   const isEdit = !!currentBook;
+
+  const scope = useSelector((state) => state.scope);
 
   const mdUp = useResponsive('up', 'md');
 
@@ -134,7 +137,7 @@ export default function BookNewEditForm({ currentBook }) {
       if (!isEdit) {
         await bookService.post({
           ...data,
-          scope: user.scope,
+          scope: scope.active._id,
         });
       } else {
         await bookService.patch({

@@ -107,7 +107,7 @@ export default function UserNewEditForm({ currentUser }) {
         await profileService.patch({
           _id: registeredUser._id || registeredUser.id || registeredUser,
           ...data,
-          scope: data.scope || user.scope,
+          scope: data.scope || scope.active._id,
           photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL,
         });
       } else {

@@ -44,6 +44,7 @@ import FormProvider, {
 import { fData } from 'src/utils/format-number';
 
 import { broadcastService, userService, fileService } from 'src/composables/context-provider';
+import { useSelector } from 'src/redux/store';
 import moment from 'moment';
 
 // ----------------------------------------------------------------------
@@ -64,7 +65,7 @@ export const BROADCAST_SERVICE_OPTIONS = [
 export const BROAECAST_TYPE_OPTIONS = [
   { value: 'activity', label: '活动通知' },
   { value: 'notification', label: '消息公告' },
-  { value: 'familyGathering', label: '家庭聚会' },
+  { value: 'familyGathering', label: '社交聚会' },
   // { value: 'book', label: '阅读' },
 ];
 export default function BroadcastNewEditForm({ currentBroadcast }) {
@@ -80,6 +81,8 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
 
   const { user } = useAuthContext();
 
+  const scope = useSelector((state) => state.scope);
+
   const [searchLeaders, setSearchLeaders] = useState('');
 
   const debouncedFilters = useDebounce(searchLeaders);
@@ -89,6 +92,7 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
       const response = await userService.paginationByProfile(
         {
           username: debouncedFilters,
+          scope: scope.active._id,
         },
         {
           fields: {
@@ -99,7 +103,7 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
       );
       setUsers(response.data);
     }
-  }, [debouncedFilters]);
+  }, [debouncedFilters, scope.active]);
 
   useEffect(() => {
     handleSearchLeaders();
@@ -192,7 +196,7 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
       if (!isEdit) {
         await broadcastService.post({
           ...data,
-          scope: user.scope,
+          scope: scope.active._id,
           leaders: data.leaders && data.leaders.length > 0 ? data.leaders.map((l) => l._id) : [],
           modifiedDate: moment(new Date()).format('YYYY/MM/DD'),
         });
@@ -289,7 +293,7 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">标题</Typography>
-              <RHFTextField name="label" placeholder="例如: 圣诞节活动 ..." />
+              <RHFTextField name="label" placeholder="例如: 劳动节活动 ..." />
             </Stack>
 
             <Stack spacing={1.5}>
