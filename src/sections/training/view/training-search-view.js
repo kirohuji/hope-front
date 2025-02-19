@@ -13,9 +13,7 @@ import {
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-
-// form
-import { useForm } from 'react-hook-form';
+import { useSelector } from 'src/redux/store';
 
 import { useNavigate } from 'react-router-dom';
 import TrainingCard from 'src/sections/training/training-card';
@@ -72,6 +70,7 @@ TabPanel.propTypes = {
 
 export default function TrainingSearchPage() {
   const navigate = useNavigate();
+  const scope = useSelector((state) => state.scope);
   const [isLoading, setIsLoading] = useState(true);
   const [scrollable, setScrollable] = useState('one');
   const [tableData, setTableData] = useState([]);
@@ -87,12 +86,15 @@ export default function TrainingSearchPage() {
       };
       if (currentTag.value) {
         response = await bookService.pagination({
+          scope: scope.active?._id,
           type: {
             $in: [currentTag.value],
           },
         });
       } else {
-        response = await bookService.pagination({});
+        response = await bookService.pagination({
+          scope: scope.active?._id,
+        });
       }
       setTableData(response.data);
       setIsLoading(false);
@@ -101,7 +103,7 @@ export default function TrainingSearchPage() {
       // setLoadingPost(false);
       // setErrorMsg(error.message);
     }
-  }, [setTableData, currentTag]);
+  }, [currentTag.value, scope]);
 
   useEffect(() => {
     getBooks();
@@ -157,7 +159,15 @@ export default function TrainingSearchPage() {
             ))}
           </Box>
           <Divider />
-          <Box sx={{ paddingTop: '8px', overflowY: "auto", height: "calc(100vh - 180px)", paddingRight: "8px" }} className="training-list">
+          <Box
+            sx={{
+              paddingTop: '8px',
+              overflowY: 'auto',
+              height: 'calc(100vh - 180px)',
+              paddingRight: '8px',
+            }}
+            className="training-list"
+          >
             {isLoading && (
               <Box
                 sx={{
