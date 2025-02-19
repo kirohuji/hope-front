@@ -17,6 +17,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useAuthContext } from 'src/auth/hooks';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -48,6 +49,8 @@ export default function BookNewEditForm({ currentBook }) {
   const loading = useBoolean(false);
 
   const router = useRouter();
+
+  const { user } = useAuthContext();
 
   const isEdit = !!currentBook;
 
@@ -129,7 +132,10 @@ export default function BookNewEditForm({ currentBook }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       if (!isEdit) {
-        await bookService.post(data);
+        await bookService.post({
+          ...data,
+          scope: user.scope,
+        });
       } else {
         await bookService.patch({
           _id: currentBook._id,

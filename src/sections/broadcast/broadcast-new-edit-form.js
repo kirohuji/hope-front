@@ -23,6 +23,7 @@ import Box from '@mui/material/Box';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useAuthContext } from 'src/auth/hooks';
 import { useDebounce } from 'src/hooks/use-debounce';
 // routes
 import { paths } from 'src/routes/paths';
@@ -76,6 +77,8 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
   const mdUp = useResponsive('up', 'md');
 
   const [users, setUsers] = useState([]);
+
+  const { user } = useAuthContext();
 
   const [searchLeaders, setSearchLeaders] = useState('');
 
@@ -189,6 +192,7 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
       if (!isEdit) {
         await broadcastService.post({
           ...data,
+          scope: user.scope,
           leaders: data.leaders && data.leaders.length > 0 ? data.leaders.map((l) => l._id) : [],
           modifiedDate: moment(new Date()).format('YYYY/MM/DD'),
         });
@@ -387,27 +391,27 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
                 }}
                 getOptionLabel={(option) => option.username}
                 isOptionEqualToValue={(option, value) => option._id === value._id}
-                renderOption={(props, user) => (
-                  <li {...props} key={user._id}>
+                renderOption={(props, currentUser) => (
+                  <li {...props} key={currentUser._id}>
                     <Avatar
-                      key={user._id}
-                      alt={user?.photoURL}
-                      src={user?.photoURL}
+                      key={currentUser._id}
+                      alt={currentUser?.photoURL}
+                      src={currentUser?.photoURL}
                       sx={{ width: 24, height: 24, flexShrink: 0, mr: 1 }}
                     />
 
-                    {user.username}
+                    {currentUser.username}
                   </li>
                 )}
                 renderTags={(selected, getTagProps) =>
-                  selected.map((user, index) => (
+                  selected.map((currentUser, index) => (
                     <Chip
                       {...getTagProps({ index })}
-                      key={user._id}
+                      key={currentUser._id}
                       size="small"
                       variant="soft"
-                      label={user.username}
-                      avatar={<Avatar alt={user.username} src={user?.photoURL} />}
+                      label={currentUser.username}
+                      avatar={<Avatar alt={currentUser.username} src={currentUser?.photoURL} />}
                     />
                   ))
                 }
