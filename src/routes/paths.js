@@ -194,7 +194,7 @@ export const paths = {
     },
     version: {
       root: `${ROOTS.DASHBOARD}/version`,
-      new: (id)=> `${ROOTS.DASHBOARD}/version/${id}/new`,
+      new: (id) => `${ROOTS.DASHBOARD}/version/${id}/new`,
       newMajor: `${ROOTS.DASHBOARD}/version/major/new`,
       details: {
         root: (id) => `${ROOTS.DASHBOARD}/version/${id}`,
@@ -245,6 +245,9 @@ export const paths = {
         details: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}`,
         edit: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}/edit`,
       },
+    },
+    audit: {
+      root: `${ROOTS.DASHBOARD}/audit`,
     },
     broadcast: {
       root: `${ROOTS.DASHBOARD}/broadcast`,

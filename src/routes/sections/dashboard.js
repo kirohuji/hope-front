@@ -109,6 +109,9 @@ const TrainingDashboardPage = lazy(() => import('src/pages/dashboard/training/da
 
 const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'));
 
+// Audit
+const AuditListPage = lazy(() => import('src/pages/dashboard/audit/list'));
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -265,6 +268,16 @@ export const dashboardRoutes = [
         children: [
           { element: <BroadcastListPage />, index: true },
           { path: 'list', element: <BroadcastListPage /> },
+          { path: ':id', element: <BroadcastDetailsPage /> },
+          { path: 'new', element: <BroadcastCreatePage /> },
+          { path: ':id/edit', element: <BroadcastEditPage /> },
+        ],
+      },
+      {
+        path: 'audit',
+        children: [
+          { element: <AuditListPage />, index: true },
+          { path: 'list', element: <AuditListPage /> },
           { path: ':id', element: <BroadcastDetailsPage /> },
           { path: 'new', element: <BroadcastCreatePage /> },
           { path: ':id/edit', element: <BroadcastEditPage /> },

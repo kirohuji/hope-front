@@ -6,6 +6,7 @@
   "scope": "作用域",
   "organization": "组织架构",
   "permission": "权限配置",
+  "audit": "审核管理",
   "user": "用户管理",
   "list": "列表",
   "edit": "编辑",
