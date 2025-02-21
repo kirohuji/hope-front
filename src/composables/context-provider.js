@@ -16,6 +16,8 @@ import DictionaryService from '../modules/dictionaries';
 import DictionaryOptionService from '../modules/dictionaries_options';
 import ArticleService from '../modules/articles';
 import NotificationService from '../modules/notifications';
+import SensitiveWordService from '../modules/sensitiveWords';
+import AuditService from '../modules/audits';
 
 export const authService = new AuthService({ api, model: '' });
 export const userService = new UserService({ api, model: 'users' });
@@ -36,5 +38,7 @@ export const dictionaryOptionService = new DictionaryOptionService({
 export const articleService = new ArticleService({ api, model: 'articles' });
 export const broadcastService = new BroadcastService({ api, model: 'broadcasts' });
 export const notificationService = new NotificationService({ api, model: 'notifications' });
+export const auditService = new AuditService({ api, model: 'audits' });
+export const sensitiveWordService = new SensitiveWordService({ api, model: 'sensitve/words' });
 
 export const fileService = new FlieService({ api: fileApi, model: '' });

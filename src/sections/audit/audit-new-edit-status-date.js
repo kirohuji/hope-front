@@ -24,7 +24,7 @@ export default function AuditNewEditStatusDate() {
       <RHFSelect
         fullWidth
         name="status"
-        label="Status"
+        label="状态"
         InputLabelProps={{ shrink: true }}
         PaperPropsSx={{ textTransform: 'capitalize' }}
       >

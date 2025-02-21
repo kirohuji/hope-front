@@ -5,19 +5,13 @@ import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-
 // components
 import Iconify from 'src/components/iconify';
+import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
-import _ from 'lodash';
 // ----------------------------------------------------------------------
 
-const USER_STATUS_OPTIONS = [
-  { value: 'active', label: '激活' },
-  { value: 'banned', label: '禁用' },
-];
-
-export default function UserTableFiltersResult({
+export default function AuditTableFiltersResult({
   filters,
   onFilters,
   //
@@ -26,13 +20,20 @@ export default function UserTableFiltersResult({
   results,
   ...other
 }) {
+  const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
+
+  const handleRemoveService = (inputValue) => {
+    const newValue = filters.service.filter((item) => item !== inputValue);
+    onFilters('service', newValue);
+  };
+
   const handleRemoveStatus = () => {
     onFilters('status', 'all');
   };
 
-  const handleRemoveRole = (inputValue) => {
-    const newValue = filters.role.filter((item) => item !== inputValue);
-    onFilters('role', newValue);
+  const handleRemoveDate = () => {
+    onFilters('startDate', null);
+    onFilters('endDate', null);
   };
 
   return (
@@ -45,21 +46,28 @@ export default function UserTableFiltersResult({
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {filters.status && filters.status !== 'all' && (
-          <Block label="状态:">
-            <Chip
-              size="small"
-              label={_.find(USER_STATUS_OPTIONS, ['value', filters.status])?.label}
-              onDelete={handleRemoveStatus}
-            />
+        {!!filters.service.length && (
+          <Block label="分类:">
+            {filters.service.map((item) => (
+              <Chip
+                key={item}
+                label={item}
+                size="small"
+                onDelete={() => handleRemoveService(item)}
+              />
+            ))}
           </Block>
         )}
 
-        {!!filters.role.length && (
-          <Block label="角色:">
-            {filters.role.map((item) => (
-              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
-            ))}
+        {filters.status !== 'all' && (
+          <Block label="等级:">
+            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
+          </Block>
+        )}
+
+        {filters.startDate && filters.endDate && (
+          <Block label="Date:">
+            <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
           </Block>
         )}
 
@@ -75,7 +83,7 @@ export default function UserTableFiltersResult({
   );
 }
 
-UserTableFiltersResult.propTypes = {
+AuditTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,

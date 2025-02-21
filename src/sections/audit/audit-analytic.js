@@ -2,17 +2,18 @@ import PropTypes from 'prop-types';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 // utils
-import { fShortenNumber, fCurrency } from 'src/utils/format-number';
+import { fShortenNumber } from 'src/utils/format-number';
 // components
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function AuditAnalytic({ title, total, icon, color, percent, price }) {
+export default function AuditAnalytic({ title, level, total, icon, color, percent, content }) {
   return (
     <Stack
       spacing={2.5}
@@ -49,12 +50,27 @@ export default function AuditAnalytic({ title, total, icon, color, percent, pric
 
       <Stack spacing={0.5}>
         <Typography variant="subtitle1">{title}</Typography>
-
-        <Box component="span" sx={{ color: 'text.disabled', typography: 'body2' }}>
-          {fShortenNumber(total)} audits
-        </Box>
-
-        <Typography variant="subtitle2">{fCurrency(price)}</Typography>
+        {/* <Typography variant="subtitle2">{fCurrency(price)}</Typography> */}
+        {/* <Typography variant="subtitle2">
+          <Button>查看</Button>
+        </Typography> */}
+        <Typography variant="subtitle2" sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          查看详情{' '}
+          {/* <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
+            [{1000000} 条]
+          </Typography> */}
+        </Typography>
+        {/* <Box
+          component="span"
+          sx={{
+            color: 'text.disabled',
+            typography: 'body2',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          共{fShortenNumber(total)} 条
+        </Box> */}
       </Stack>
     </Stack>
   );
@@ -64,7 +80,8 @@ AuditAnalytic.propTypes = {
   color: PropTypes.string,
   icon: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
   percent: PropTypes.number,
-  price: PropTypes.number,
   title: PropTypes.string,
+  level: PropTypes.number,
+  content: PropTypes.string,
   total: PropTypes.number,
 };

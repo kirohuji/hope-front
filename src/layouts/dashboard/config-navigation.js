@@ -156,28 +156,28 @@ export function useNavData() {
           // },
 
           // ORDER
-          {
-            title: t('order'),
-            path: paths.dashboard.order.root,
-            icon: ICONS.order,
-            children: [
-              { title: t('list'), path: paths.dashboard.order.root },
-              { title: t('details'), path: paths.dashboard.order.demo.details },
-            ],
-          },
+          // {
+          //   title: t('order'),
+          //   path: paths.dashboard.order.root,
+          //   icon: ICONS.order,
+          //   children: [
+          //     { title: t('list'), path: paths.dashboard.order.root },
+          //     { title: t('details'), path: paths.dashboard.order.demo.details },
+          //   ],
+          // },
 
           // INVOICE
-          {
-            title: t('invoice'),
-            path: paths.dashboard.invoice.root,
-            icon: ICONS.invoice,
-            children: [
-              { title: t('list'), path: paths.dashboard.invoice.root },
-              { title: t('details'), path: paths.dashboard.invoice.demo.details },
-              { title: t('create'), path: paths.dashboard.invoice.new },
-              { title: t('edit'), path: paths.dashboard.invoice.demo.edit },
-            ],
-          },
+          // {
+          //   title: t('invoice'),
+          //   path: paths.dashboard.invoice.root,
+          //   icon: ICONS.invoice,
+          //   children: [
+          //     { title: t('list'), path: paths.dashboard.invoice.root },
+          //     { title: t('details'), path: paths.dashboard.invoice.demo.details },
+          //     { title: t('create'), path: paths.dashboard.invoice.new },
+          //     { title: t('edit'), path: paths.dashboard.invoice.demo.edit },
+          //   ],
+          // },
 
           // // BLOG
           // {
@@ -193,17 +193,17 @@ export function useNavData() {
           // },
 
           // JOB
-          {
-            title: t('job'),
-            path: paths.dashboard.job.root,
-            icon: ICONS.job,
-            children: [
-              { title: t('list'), path: paths.dashboard.job.root },
-              { title: t('details'), path: paths.dashboard.job.demo.details },
-              { title: t('create'), path: paths.dashboard.job.new },
-              { title: t('edit'), path: paths.dashboard.job.demo.edit },
-            ],
-          },
+          // {
+          //   title: t('job'),
+          //   path: paths.dashboard.job.root,
+          //   icon: ICONS.job,
+          //   children: [
+          //     { title: t('list'), path: paths.dashboard.job.root },
+          //     { title: t('details'), path: paths.dashboard.job.demo.details },
+          //     { title: t('create'), path: paths.dashboard.job.new },
+          //     { title: t('edit'), path: paths.dashboard.job.demo.edit },
+          //   ],
+          // },
           // BOOK
           {
             title: t('book'),
@@ -221,7 +221,7 @@ export function useNavData() {
             title: t('audit'),
             auth: ['Audit', 'AuditList', 'AuditListAdd', 'AuditListEdit', 'AuditListDelete'],
             path: paths.dashboard.audit.root,
-            icon: ICONS.job,
+            icon: ICONS.invoice,
             children: [
               { title: t('list'), path: paths.dashboard.audit.root, auth: ['AuditList'] },
               // { title: t('details'), path: paths.dashboard.book.demo.details },
@@ -255,17 +255,17 @@ export function useNavData() {
             icon: ICONS.mail,
           },
           // TOUR
-          {
-            title: t('tour'),
-            path: paths.dashboard.tour.root,
-            icon: ICONS.tour,
-            children: [
-              { title: t('list'), path: paths.dashboard.tour.root },
-              { title: t('details'), path: paths.dashboard.tour.demo.details },
-              { title: t('create'), path: paths.dashboard.tour.new },
-              { title: t('edit'), path: paths.dashboard.tour.demo.edit },
-            ],
-          },
+          // {
+          //   title: t('tour'),
+          //   path: paths.dashboard.tour.root,
+          //   icon: ICONS.tour,
+          //   children: [
+          //     { title: t('list'), path: paths.dashboard.tour.root },
+          //     { title: t('details'), path: paths.dashboard.tour.demo.details },
+          //     { title: t('create'), path: paths.dashboard.tour.new },
+          //     { title: t('edit'), path: paths.dashboard.tour.demo.edit },
+          //   ],
+          // },
 
           {
             title: t('broadcast'),

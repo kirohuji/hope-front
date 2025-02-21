@@ -41,7 +41,7 @@ export default function AuditTableFiltersResult({
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          results found
+          条结果被发现
         </Box>
       </Box>
 
@@ -76,7 +76,7 @@ export default function AuditTableFiltersResult({
           onClick={onResetFilters}
           startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
-          Clear
+          清除
         </Button>
       </Stack>
     </Stack>

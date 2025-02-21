@@ -1,5 +1,6 @@
 import sumBy from 'lodash/sumBy';
-import { useState, useCallback } from 'react';
+import _ from 'lodash';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import { useTheme, alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -22,6 +23,7 @@ import { useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useDebounce } from 'src/hooks/use-debounce';
 // utils
 import { fTimestamp } from 'src/utils/format-time';
 // _mock
@@ -30,6 +32,7 @@ import { _audits, INVOICE_SERVICE_OPTIONS } from 'src/_mock';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -45,11 +48,14 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 //
-import AuditAnalytic from '../audit-analytic';
-import AuditTableRow from '../audit-table-row';
+// service
+import { sensitiveWordService } from 'src/composables/context-provider';
+
+// redux
+import { useSelector } from 'src/redux/store';
+import AuditSensitiveTableRow from '../audit-sensitive-table-row';
 import AuditTableToolbar from '../audit-table-toolbar';
-import AuditTableFiltersResult from '../audit-table-filters-result';
-import AuditSensitiveListView from './audit-sensitive-list-view';
+import AuditSensitiveTableFiltersResult from '../audit-sensitive-table-filters-result';
 
 // ----------------------------------------------------------------------
 
@@ -73,7 +79,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function AuditListView() {
+export default function AuditSensitiveListView() {
   const theme = useTheme();
 
   const settings = useSettingsContext();
@@ -82,13 +88,64 @@ export default function AuditListView() {
 
   const table = useTable({ defaultOrderBy: 'createDate' });
 
+  const [loading, setLoading] = useState(true);
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_audits);
+  const [tableData, setTableData] = useState([]);
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [tableDataCount, setTableDataCount] = useState(0);
 
   const [filters, setFilters] = useState(defaultFilters);
 
   const [openForm, setOpenForm] = useState(false);
+
+  const debouncedFilters = useDebounce(filters);
+
+  const scope = useSelector((state) => state.scope);
+
+  const getTableData = useCallback(
+    async (selector = {}, options = {}) => {
+      try {
+        setLoading(true);
+        const response = await sensitiveWordService.pagination(
+          {
+            ...selector,
+            scope: scope.active._id,
+            ..._.pickBy(_.omit(debouncedFilters, ['role'])),
+          },
+          {
+            ...options,
+            fields: {
+              photoURL: 1,
+              username: 1,
+              realName: 1,
+              displayName: 1,
+              phoneNumber: 1,
+              gender: 1,
+              age: 1,
+              email: 1,
+              address: 1,
+              available: 1,
+            },
+            skip: table.page * table.rowsPerPage,
+            limit: table.rowsPerPage,
+          }
+        );
+        setTableData(response.data);
+        setTableDataCount(response.total);
+        setLoading(false);
+      } catch (error) {
+        enqueueSnackbar(error.message);
+      }
+    },
+    [scope.active._id, debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
+  );
+
+  useEffect(() => {
+    getTableData();
+  }, [getTableData]);
 
   const handleCloseFormModal = () => {
     setOpenForm(false);
@@ -140,10 +197,20 @@ export default function AuditListView() {
 
   const TABS = [
     { value: 'all', label: '全部', color: 'default', count: tableData.length },
-    { value: 'paid', label: '已审核', color: 'success', count: getAuditLength('paid') },
-    { value: 'pending', label: '正在审核', color: 'warning', count: getAuditLength('pending') },
-    { value: 'overdue', label: '未通过', color: 'error', count: getAuditLength('overdue') },
-    { value: 'draft', label: '已撤回', color: 'default', count: getAuditLength('draft') },
+    { value: 'paid', label: '五级(极高敏感)', color: 'error', count: getAuditLength('paid') },
+    {
+      value: 'pending',
+      label: '四级(高度敏感)',
+      color: 'warning',
+      count: getAuditLength('pending'),
+    },
+    {
+      value: 'overdue',
+      label: '三级(中度敏感)',
+      color: 'default',
+      count: getAuditLength('overdue'),
+    },
+    { value: 'draft', label: '二级(轻度敏感)', color: 'info', count: getAuditLength('draft') },
   ];
 
   const handleFilters = useCallback(
@@ -207,18 +274,18 @@ export default function AuditListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="列表"
+          heading=""
           links={[
             // {
             //   name: 'Dashboard',
             //   href: paths.dashboard.root,
             // },
+            // {
+            //   name: '审核管理',
+            //   href: paths.dashboard.audit.root,
+            // },
             {
-              name: '审核管理',
-              href: paths.dashboard.audit.root,
-            },
-            {
-              name: '列表',
+              name: '',
             },
           ]}
           action={
@@ -229,73 +296,13 @@ export default function AuditListView() {
               onClick={() => handleOpenFormModal()}
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              敏感词库管理
+              新增敏感词
             </Button>
           }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
-
-        <Card
-          sx={{
-            mb: { xs: 3, md: 5 },
-          }}
-        >
-          <Scrollbar>
-            <Stack
-              direction="row"
-              divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-              sx={{ py: 2 }}
-            >
-              <AuditAnalytic
-                title="5级(极高敏感)"
-                level={5}
-                total={100}
-                percent={100}
-                icon="solar:bell-bing-bold-duotone"
-                color={theme.palette.error.main}
-              />
-
-              <AuditAnalytic
-                title="4级(高度敏感)"
-                level={4}
-                total={100}
-                percent={100}
-                icon="solar:sort-by-time-bold-duotone"
-                color={theme.palette.warning.main}
-              />
-
-              <AuditAnalytic
-                title="3级(中度敏感)"
-                level={3}
-                total={100}
-                percent={100}
-                icon="solar:file-corrupted-bold-duotone"
-                color={theme.palette.text.secondary}
-              />
-
-              <AuditAnalytic
-                title="2级(轻度敏感)"
-                level={2}
-                total={100}
-                percent={100}
-                icon="solar:bill-list-bold-duotone"
-                color={theme.palette.info.main}
-              />
-
-              {/* <AuditAnalytic
-                title="1级(普通信息)"
-                level={1}
-                total={100}
-                percent={100}
-                icon="solar:file-check-bold-duotone"
-                color={theme.palette.success.main}
-              /> */}
-            </Stack>
-          </Scrollbar>
-        </Card>
-
         <Card>
           <Tabs
             value={filters.status}
@@ -334,7 +341,7 @@ export default function AuditListView() {
           />
 
           {canReset && (
-            <AuditTableFiltersResult
+            <AuditSensitiveTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               //
@@ -409,7 +416,7 @@ export default function AuditListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <AuditTableRow
+                      <AuditSensitiveTableRow
                         key={row.id}
                         row={row}
                         selected={table.selected.includes(row.id)}
@@ -466,9 +473,9 @@ export default function AuditListView() {
           </Button>
         }
       />
-      <Dialog fullWidth maxWidth="lg" open={openForm} onClose={handleCloseFormModal}>
-        <DialogTitle>敏感词管理</DialogTitle>
-        <AuditSensitiveListView />
+      <Dialog fullWidth maxWidth="xs" open={openForm} onClose={handleCloseFormModal}>
+        <DialogTitle>新增</DialogTitle>
+        <AuditSensitiveWorldsForm onSubmitData={onSave} onCancel={handleCloseFormModal} />
       </Dialog>
     </>
   );
