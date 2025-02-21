@@ -17,6 +17,8 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
+import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -36,12 +38,15 @@ import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import AuditSensitiveWorldsForm from 'src/sections/audit/audit-sensitive-words-form';
+import AuditSensitiveWorldsForm, {
+  categories,
+} from 'src/sections/audit/audit-sensitive-words-form';
 import {
   useTable,
   getComparator,
   emptyRows,
   TableNoData,
+  TableSkeleton,
   TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
@@ -54,27 +59,25 @@ import { sensitiveWordService } from 'src/composables/context-provider';
 // redux
 import { useSelector } from 'src/redux/store';
 import AuditSensitiveTableRow from '../audit-sensitive-table-row';
-import AuditTableToolbar from '../audit-table-toolbar';
+import AuditSensitiveTableToolbar from '../audit-sensitive-table-toolbar';
 import AuditSensitiveTableFiltersResult from '../audit-sensitive-table-filters-result';
-
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'auditNumber', label: '创建人' },
-  { id: 'createDate', label: '创建时间' },
-  { id: 'dueDate', label: '大致内容' },
-  { id: 'price', label: '创建人' },
-  { id: 'sent', label: '分类', align: 'center' },
+  { id: 'word', label: '敏感词' },
+  { id: 'level', label: '敏感词等级' },
+  { id: 'category', label: '分类' },
+  { id: 'description', label: '描述' },
+  { id: 'createdBy', label: '创建人' },
+  { id: 'createdAt', label: '创建时间' },
   { id: 'status', label: '状态' },
   { id: '' },
 ];
 
 const defaultFilters = {
-  name: '',
-  service: [],
-  status: 'all',
-  startDate: null,
-  endDate: null,
+  label: '',
+  category: [],
+  level: 'all',
 };
 
 // ----------------------------------------------------------------------
@@ -89,11 +92,14 @@ export default function AuditSensitiveListView() {
   const table = useTable({ defaultOrderBy: 'createDate' });
 
   const [loading, setLoading] = useState(true);
+
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState([]);
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const [importLoading, setImportLoading] = useState(false);
 
   const [tableDataCount, setTableDataCount] = useState(0);
 
@@ -113,22 +119,10 @@ export default function AuditSensitiveListView() {
           {
             ...selector,
             scope: scope.active._id,
-            ..._.pickBy(_.omit(debouncedFilters, ['role'])),
+            ..._.pickBy(debouncedFilters),
           },
           {
             ...options,
-            fields: {
-              photoURL: 1,
-              username: 1,
-              realName: 1,
-              displayName: 1,
-              phoneNumber: 1,
-              gender: 1,
-              age: 1,
-              email: 1,
-              address: 1,
-              available: 1,
-            },
             skip: table.page * table.rowsPerPage,
             limit: table.rowsPerPage,
           }
@@ -155,95 +149,79 @@ export default function AuditSensitiveListView() {
     setOpenForm(true);
   };
 
-  const onSave = async (form) => {
+  const onSave = async () => {
     handleCloseFormModal();
+    getTableData();
   };
   const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
       : false;
 
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-    dateError,
-  });
-
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
-
   const denseHeight = table.dense ? 56 : 76;
 
-  const canReset =
-    !!filters.name ||
-    !!filters.service.length ||
-    filters.status !== 'all' ||
-    (!!filters.startDate && !!filters.endDate);
+  const canReset = !_.isEqual(defaultFilters, filters);
 
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  const notFound = (!tableDataCount && canReset) || !tableDataCount;
 
   const getAuditLength = (status) => tableData.filter((item) => item.status === status).length;
 
-  const getTotalAmount = (status) =>
-    sumBy(
-      tableData.filter((item) => item.status === status),
-      'totalAmount'
-    );
-
-  const getPercentByStatus = (status) => (getAuditLength(status) / tableData.length) * 100;
-
   const TABS = [
     { value: 'all', label: '全部', color: 'default', count: tableData.length },
-    { value: 'paid', label: '五级(极高敏感)', color: 'error', count: getAuditLength('paid') },
+    { value: '5', label: '五级(极高敏感)', color: 'error', count: getAuditLength('paid') },
     {
-      value: 'pending',
+      value: '4',
       label: '四级(高度敏感)',
       color: 'warning',
       count: getAuditLength('pending'),
     },
     {
-      value: 'overdue',
+      value: '3',
       label: '三级(中度敏感)',
       color: 'default',
       count: getAuditLength('overdue'),
     },
-    { value: 'draft', label: '二级(轻度敏感)', color: 'info', count: getAuditLength('draft') },
+    { value: '2', label: '二级(轻度敏感)', color: 'info', count: getAuditLength('draft') },
   ];
 
   const handleFilters = useCallback(
-    (name, value) => {
+    (label, value) => {
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
-        [name]: value,
+        [label]: value,
       }));
     },
     [table]
   );
 
   const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
+    async (id) => {
+      await sensitiveWordService.delete({
+        _id: id,
+      });
+      enqueueSnackbar('删除成功');
+      getTableData();
     },
-    [dataInPage.length, table, tableData]
+    [enqueueSnackbar, getTableData]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+  const handleDeleteRows = useCallback(async () => {
+    confirm.onFalse();
+    setImportLoading(true);
+    try {
+      await sensitiveWordService.deleteMany({
+        _ids: table.selected,
+      });
+      table.onUpdatePageDeleteRowsByAsync();
+      enqueueSnackbar('删除成功');
+      getTableData();
+      setImportLoading(false);
+    } catch (e) {
+      enqueueSnackbar('删除失败,请联系管理员!');
+      setImportLoading(false);
+    }
+  }, [confirm, enqueueSnackbar, getTableData, table]);
 
   const handleEditRow = useCallback(
     (id) => {
@@ -261,7 +239,7 @@ export default function AuditSensitiveListView() {
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
-      handleFilters('status', newValue);
+      handleFilters('level', newValue);
     },
     [handleFilters]
   );
@@ -305,7 +283,7 @@ export default function AuditSensitiveListView() {
         />
         <Card>
           <Tabs
-            value={filters.status}
+            value={filters.level}
             onChange={handleFilterStatus}
             sx={{
               px: 2.5,
@@ -321,7 +299,7 @@ export default function AuditSensitiveListView() {
                 icon={
                   <Label
                     variant={
-                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
+                      ((tab.value === 'all' || tab.value === filters.level) && 'filled') || 'soft'
                     }
                     color={tab.color}
                   >
@@ -332,12 +310,12 @@ export default function AuditSensitiveListView() {
             ))}
           </Tabs>
 
-          <AuditTableToolbar
+          <AuditSensitiveTableToolbar
             filters={filters}
             onFilters={handleFilters}
             //
             dateError={dateError}
-            serviceOptions={INVOICE_SERVICE_OPTIONS.map((option) => option.name)}
+            serviceOptions={categories}
           />
 
           {canReset && (
@@ -347,7 +325,7 @@ export default function AuditSensitiveListView() {
               //
               onResetFilters={handleResetFilters}
               //
-              results={dataFiltered.length}
+              results={tableDataCount}
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
@@ -410,36 +388,39 @@ export default function AuditSensitiveListView() {
                 />
 
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <AuditSensitiveTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                      />
-                    ))}
-
-                  <TableEmptyRows
+                  {loading ? (
+                    [...Array(table.rowsPerPage)].map((i, index) => (
+                      <TableSkeleton key={index} sx={{ height: denseHeight }} />
+                    ))
+                  ) : (
+                    <>
+                      {tableData.map((row) => (
+                        <AuditSensitiveTableRow
+                          key={row._id}
+                          row={row}
+                          onClose={() => getTableData()}
+                          selected={table.selected.includes(row._id)}
+                          onSelectRow={() => table.onSelectRow(row._id)}
+                          onDeleteRow={() => handleDeleteRow(row._id)}
+                          onEditRow={() => handleEditRow(row._id)}
+                        />
+                      ))}
+                      {notFound && <TableNoData notFound={notFound} />}
+                    </>
+                  )}
+                  {/* <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
                   />
 
-                  <TableNoData notFound={notFound} />
+                  <TableNoData notFound={notFound} /> */}
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
 
           <TablePaginationCustom
-            count={dataFiltered.length}
+            count={tableDataCount}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
@@ -449,6 +430,9 @@ export default function AuditSensitiveListView() {
             onChangeDense={table.onChangeDense}
           />
         </Card>
+        <Backdrop sx={{ color: '#000', zIndex: (t) => t.zIndex.drawer + 1 }} open={importLoading}>
+          <CircularProgress color="info" />
+        </Backdrop>
       </Container>
 
       <ConfirmDialog
@@ -473,7 +457,7 @@ export default function AuditSensitiveListView() {
           </Button>
         }
       />
-      <Dialog fullWidth maxWidth="xs" open={openForm} onClose={handleCloseFormModal}>
+      <Dialog fullWidth maxWidth="md" open={openForm} onClose={handleCloseFormModal}>
         <DialogTitle>新增</DialogTitle>
         <AuditSensitiveWorldsForm onSubmitData={onSave} onCancel={handleCloseFormModal} />
       </Dialog>

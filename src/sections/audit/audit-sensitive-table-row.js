@@ -16,12 +16,14 @@ import ListItemText from '@mui/material/ListItemText';
 import { useBoolean } from 'src/hooks/use-boolean';
 // utils
 import { fCurrency } from 'src/utils/format-number';
+import { fDate } from 'src/utils/format-time';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-
+import { levels, categories } from './audit-sensitive-words-form';
+import { getLabelFromValue } from '../../utils/map';
 // ----------------------------------------------------------------------
 
 export default function AuditSensitiveTableRow({
@@ -32,7 +34,7 @@ export default function AuditSensitiveTableRow({
   onEditRow,
   onDeleteRow,
 }) {
-  const { sent, auditNumber, createDate, dueDate, status, auditTo, totalAmount } = row;
+  const { label, value, level, category, description, status, createdAt, createdUser } = row;
 
   const confirm = useBoolean();
 
@@ -46,34 +48,9 @@ export default function AuditSensitiveTableRow({
         </TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          {/* <Avatar alt={auditTo.name} sx={{ mr: 2 }}>
-            {auditTo.name.charAt(0).toUpperCase()}
-          </Avatar> */}
-
           <ListItemText
-            disableTypography
-            // primary={
-            //   <Typography variant="body2" noWrap>
-            //     {auditTo.name}
-            //   </Typography>
-            // }
-            secondary={
-              <Link
-                noWrap
-                variant="body2"
-                onClick={onViewRow}
-                sx={{ color: 'text.disabled', cursor: 'pointer' }}
-              >
-                {auditNumber}
-              </Link>
-            }
-          />
-        </TableCell>
-
-        <TableCell>
-          <ListItemText
-            primary={format(new Date(createDate), 'dd MMM yyyy')}
-            secondary={format(new Date(createDate), 'p')}
+            primary={label}
+            secondary={value}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{
               mt: 0.5,
@@ -82,35 +59,22 @@ export default function AuditSensitiveTableRow({
             }}
           />
         </TableCell>
-
-        <TableCell>
+        <TableCell>{getLabelFromValue(level, levels)}</TableCell>
+        <TableCell>{getLabelFromValue(category, categories)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap', maxWidth: '150px' }}>
           <ListItemText
-            primary={format(new Date(dueDate), 'dd MMM yyyy')}
-            secondary={format(new Date(dueDate), 'p')}
+            primary={description}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{
-              mt: 0.5,
-              component: 'span',
-              typography: 'caption',
-            }}
           />
         </TableCell>
 
-        <TableCell>{fCurrency(totalAmount)}</TableCell>
+        <TableCell>{createdUser}</TableCell>
 
-        <TableCell align="center">{sent}</TableCell>
+        <TableCell>{fDate(createdAt)}</TableCell>
 
         <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (status === 'paid' && 'success') ||
-              (status === 'pending' && 'warning') ||
-              (status === 'overdue' && 'error') ||
-              'default'
-            }
-          >
-            {status}
+          <Label variant="soft" color={(status === 'active' && 'success') || 'default'}>
+            {status === 'active' ? '激活' : '禁用'}
           </Label>
         </TableCell>
 
@@ -127,7 +91,7 @@ export default function AuditSensitiveTableRow({
         arrow="right-top"
         sx={{ width: 160 }}
       >
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             onViewRow();
             popover.onClose();
@@ -135,7 +99,7 @@ export default function AuditSensitiveTableRow({
         >
           <Iconify icon="solar:eye-bold" />
           View
-        </MenuItem>
+        </MenuItem> */}
 
         <MenuItem
           onClick={() => {
@@ -144,7 +108,7 @@ export default function AuditSensitiveTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          查看/编辑
         </MenuItem>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
@@ -157,18 +121,18 @@ export default function AuditSensitiveTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          删除
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title="删除"
+        content="你确认要删除吗?"
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            删除
           </Button>
         }
       />

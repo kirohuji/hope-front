@@ -8,7 +8,8 @@ import Stack from '@mui/material/Stack';
 // components
 import Iconify from 'src/components/iconify';
 import { shortDateLabel } from 'src/components/custom-date-range-picker';
-
+import { levels, categories } from './audit-sensitive-words-form';
+import { getLabelFromValue } from '../../utils/map';
 // ----------------------------------------------------------------------
 
 export default function AuditTableFiltersResult({
@@ -23,12 +24,12 @@ export default function AuditTableFiltersResult({
   const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
 
   const handleRemoveService = (inputValue) => {
-    const newValue = filters.service.filter((item) => item !== inputValue);
-    onFilters('service', newValue);
+    const newValue = filters.category.filter((item) => item !== inputValue);
+    onFilters('category', newValue);
   };
 
   const handleRemoveStatus = () => {
-    onFilters('status', 'all');
+    onFilters('level', 'all');
   };
 
   const handleRemoveDate = () => {
@@ -46,9 +47,9 @@ export default function AuditTableFiltersResult({
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {!!filters.service.length && (
+        {!!filters.category.length && (
           <Block label="分类:">
-            {filters.service.map((item) => (
+            {filters.category.map((item) => (
               <Chip
                 key={item}
                 label={item}
@@ -59,9 +60,13 @@ export default function AuditTableFiltersResult({
           </Block>
         )}
 
-        {filters.status !== 'all' && (
+        {filters.level !== 'all' && (
           <Block label="等级:">
-            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
+            <Chip
+              size="small"
+              label={getLabelFromValue(filters.level, levels)}
+              onDelete={handleRemoveStatus}
+            />
           </Block>
         )}
 

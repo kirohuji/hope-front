@@ -129,22 +129,12 @@ export default function AuditTableRow({
       >
         <MenuItem
           onClick={() => {
-            onViewRow();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:eye-bold" />
-          View
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
             onEditRow();
             popover.onClose();
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Edit
+          查看/编辑
         </MenuItem>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
@@ -157,18 +147,18 @@ export default function AuditTableRow({
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
+          删除
         </MenuItem>
       </CustomPopover>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
-        content="Are you sure want to delete?"
+        title="删除"
+        content="你确认要删除吗?"
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            删除
           </Button>
         }
       />
