@@ -29,7 +29,7 @@ export default function AuditTableToolbar({
 
   const handleFilterName = useCallback(
     (event) => {
-      onFilters('name', event.target.value);
+      onFilters(' label', event.target.value);
     },
     [onFilters]
   );
@@ -37,7 +37,7 @@ export default function AuditTableToolbar({
   const handleFilterService = useCallback(
     (event) => {
       onFilters(
-        'service',
+        'category',
         typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
       );
     },
@@ -78,20 +78,24 @@ export default function AuditTableToolbar({
             width: { xs: 1, md: 180 },
           }}
         >
-          <InputLabel>Service</InputLabel>
+          <InputLabel>类别</InputLabel>
 
           <Select
             multiple
-            value={filters.service}
+            value={filters.category}
             onChange={handleFilterService}
-            input={<OutlinedInput label="Service" />}
+            input={<OutlinedInput label="类别" />}
             renderValue={(selected) => selected.map((value) => value).join(', ')}
             sx={{ textTransform: 'capitalize' }}
           >
             {serviceOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                <Checkbox disableRipple size="small" checked={filters.service.includes(option)} />
-                {option}
+              <MenuItem key={option.value} value={option.label}>
+                <Checkbox
+                  disableRipple
+                  size="small"
+                  checked={filters.category.includes(option.label)}
+                />
+                {option.label}
               </MenuItem>
             ))}
           </Select>
@@ -127,7 +131,7 @@ export default function AuditTableToolbar({
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder="Search customer or audit number..."
+            placeholder="请输入..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

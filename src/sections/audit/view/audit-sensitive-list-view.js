@@ -89,7 +89,7 @@ export default function AuditSensitiveListView() {
 
   const router = useRouter();
 
-  const table = useTable({ defaultOrderBy: 'createDate' });
+  const table = useTable({ defaultCurrentPage: 0 });
 
   const [loading, setLoading] = useState(true);
 

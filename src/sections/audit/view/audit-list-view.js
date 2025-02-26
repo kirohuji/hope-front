@@ -1,5 +1,6 @@
+import _ from 'lodash';
 import sumBy from 'lodash/sumBy';
-import { useState, useCallback } from 'react';
+import { useRef, useCallback, useEffect, useState } from 'react';
 // @mui
 import { useTheme, alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -15,6 +16,8 @@ import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
+import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
 import TableContainer from '@mui/material/TableContainer';
 // routes
 import { paths } from 'src/routes/paths';
@@ -22,50 +25,59 @@ import { useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useDebounce } from 'src/hooks/use-debounce';
 // utils
 import { fTimestamp } from 'src/utils/format-time';
 // _mock
 import { _audits, INVOICE_SERVICE_OPTIONS } from 'src/_mock';
+
+// redux
+import { useSelector } from 'src/redux/store';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useSnackbar } from 'src/components/snackbar';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import AuditSensitiveWorldsForm from 'src/sections/audit/audit-sensitive-words-form';
 import {
   useTable,
   getComparator,
   emptyRows,
   TableNoData,
+  TableSkeleton,
   TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
 //
+import { auditService } from 'src/composables/context-provider';
 import AuditAnalytic from '../audit-analytic';
 import AuditTableRow from '../audit-table-row';
 import AuditTableToolbar from '../audit-table-toolbar';
 import AuditTableFiltersResult from '../audit-table-filters-result';
 import AuditSensitiveListView from './audit-sensitive-list-view';
-
+import { categories } from '../audit-new-edit-form';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'auditNumber', label: '创建人' },
-  { id: 'createDate', label: '创建时间' },
-  { id: 'dueDate', label: '大致内容' },
-  { id: 'price', label: '创建人' },
-  { id: 'sent', label: '分类', align: 'center' },
+  { id: 'createdBy', label: '创建人' },
+  { id: 'sourceUrl', label: '内容源' },
+  { id: 'description', label: '大致内容' },
+  { id: 'result', label: '审核结果' },
+  { id: 'reason', label: '审核原因' },
+  { id: 'reviewerId', label: '审核人' },
+  { id: 'category', label: '分类' },
+  { id: 'createdAt', label: '创建时间' },
   { id: 'status', label: '状态' },
   { id: '' },
 ];
 
 const defaultFilters = {
-  name: '',
-  service: [],
+  label: '',
+  category: [],
   status: 'all',
   startDate: null,
   endDate: null,
@@ -76,17 +88,25 @@ const defaultFilters = {
 export default function AuditListView() {
   const theme = useTheme();
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const settings = useSettingsContext();
 
   const router = useRouter();
 
-  const table = useTable({ defaultOrderBy: 'createDate' });
+  const table = useTable({ defaultCurrentPage: 0 });
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_audits);
+  const [tableData, setTableData] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [importLoading, setImportLoading] = useState(false);
+  const [tableDataCount, setTableDataCount] = useState(0);
 
   const [filters, setFilters] = useState(defaultFilters);
+
+  const denseHeight = table.dense ? 52 : 72;
 
   const [openForm, setOpenForm] = useState(false);
 
@@ -106,77 +126,92 @@ export default function AuditListView() {
       ? filters.startDate.getTime() > filters.endDate.getTime()
       : false;
 
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-    dateError,
-  });
+  const canReset = !_.isEqual(defaultFilters, filters);
 
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
+  const scope = useSelector((state) => state.scope);
 
-  const denseHeight = table.dense ? 56 : 76;
+  const debouncedFilters = useDebounce(filters);
 
-  const canReset =
-    !!filters.name ||
-    !!filters.service.length ||
-    filters.status !== 'all' ||
-    (!!filters.startDate && !!filters.endDate);
-
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  const notFound = (!tableDataCount && canReset) || !tableDataCount;
 
   const getAuditLength = (status) => tableData.filter((item) => item.status === status).length;
 
-  const getTotalAmount = (status) =>
-    sumBy(
-      tableData.filter((item) => item.status === status),
-      'totalAmount'
-    );
-
-  const getPercentByStatus = (status) => (getAuditLength(status) / tableData.length) * 100;
-
   const TABS = [
     { value: 'all', label: '全部', color: 'default', count: tableData.length },
-    { value: 'paid', label: '已审核', color: 'success', count: getAuditLength('paid') },
-    { value: 'pending', label: '正在审核', color: 'warning', count: getAuditLength('pending') },
-    { value: 'overdue', label: '未通过', color: 'error', count: getAuditLength('overdue') },
-    { value: 'draft', label: '已撤回', color: 'default', count: getAuditLength('draft') },
+    { value: 'approved', label: '已审核', color: 'success', count: getAuditLength('paid') },
+    { value: 'in_review', label: '正在审核', color: 'warning', count: getAuditLength('pending') },
+    { value: 'rejected', label: '未通过', color: 'error', count: getAuditLength('overdue') },
+    { value: 'withdrawn', label: '已撤回', color: 'default', count: getAuditLength('draft') },
   ];
 
   const handleFilters = useCallback(
-    (name, value) => {
+    (label, value) => {
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
-        [name]: value,
+        [label]: value,
       }));
     },
     [table]
   );
 
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
+  const getTableData = useCallback(
+    async (selector = {}, options = {}) => {
+      try {
+        setLoading(true);
+        const response = await auditService.pagination(
+          {
+            ...selector,
+            scope: scope.active._id,
+            ..._.pickBy(_.omit(debouncedFilters, ['role'])),
+          },
+          {
+            ...options,
+            skip: table.page * table.rowsPerPage,
+            limit: table.rowsPerPage,
+          }
+        );
+        setTableData(response.data);
+        setTableDataCount(response.total);
+        setLoading(false);
+      } catch (error) {
+        enqueueSnackbar(error.message);
+      }
     },
-    [dataInPage.length, table, tableData]
+    [scope.active._id, debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
+  useEffect(() => {
+    getTableData();
+  }, [getTableData]);
 
-    table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+  const handleDeleteRow = useCallback(
+    async (id) => {
+      await auditService.delete({
+        _id: id,
+      });
+      enqueueSnackbar('删除成功');
+      getTableData();
+    },
+    [getTableData, enqueueSnackbar]
+  );
+
+  const handleDeleteRows = useCallback(async () => {
+    confirm.onFalse();
+    setImportLoading(true);
+    try {
+      await auditService.deleteMany({
+        _ids: table.selected,
+      });
+      table.onUpdatePageDeleteRowsByAsync();
+      enqueueSnackbar('删除成功');
+      getTableData();
+      setImportLoading(false);
+    } catch (e) {
+      enqueueSnackbar('删除失败,请联系管理员!');
+      setImportLoading(false);
+    }
+  }, [table, confirm, enqueueSnackbar, getTableData]);
 
   const handleEditRow = useCallback(
     (id) => {
@@ -330,7 +365,7 @@ export default function AuditListView() {
             onFilters={handleFilters}
             //
             dateError={dateError}
-            serviceOptions={INVOICE_SERVICE_OPTIONS.map((option) => option.name)}
+            serviceOptions={categories}
           />
 
           {canReset && (
@@ -340,7 +375,7 @@ export default function AuditListView() {
               //
               onResetFilters={handleResetFilters}
               //
-              results={dataFiltered.length}
+              results={tableDataCount}
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
@@ -397,42 +432,46 @@ export default function AuditListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      tableData.map((row) => row.id)
+                      tableData.map((row) => row._id)
                     )
                   }
                 />
 
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <AuditTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                      />
-                    ))}
+                  {loading ? (
+                    [...Array(table.rowsPerPage)].map((i, index) => (
+                      <TableSkeleton key={index} sx={{ height: denseHeight }} />
+                    ))
+                  ) : (
+                    <>
+                      {tableData.map((row) => (
+                        <AuditTableRow
+                          key={row._id}
+                          row={row}
+                          onClose={() => getTableData()}
+                          selected={table.selected.includes(row._id)}
+                          onSelectRow={() => table.onSelectRow(row._id)}
+                          onDeleteRow={() => handleDeleteRow(row._id)}
+                          onEditRow={() => handleEditRow(row._id)}
+                        />
+                      ))}
+                      {notFound && <TableNoData notFound={notFound} />}
+                    </>
+                  )}
 
-                  <TableEmptyRows
+                  {/* <TableEmptyRows
                     height={denseHeight}
                     emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
                   />
 
-                  <TableNoData notFound={notFound} />
+                  <TableNoData notFound={notFound} /> */}
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
 
           <TablePaginationCustom
-            count={dataFiltered.length}
+            count={tableDataCount}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
@@ -442,6 +481,9 @@ export default function AuditListView() {
             onChangeDense={table.onChangeDense}
           />
         </Card>
+        <Backdrop sx={{ color: '#000', zIndex: (t) => t.zIndex.drawer + 1 }} open={importLoading}>
+          <CircularProgress color="info" />
+        </Backdrop>
       </Container>
 
       <ConfirmDialog

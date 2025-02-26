@@ -22,6 +22,19 @@ import AuditNewEditAddress from './audit-new-edit-address';
 import AuditNewEditStatusDate from './audit-new-edit-status-date';
 
 // ----------------------------------------------------------------------
+export const status = [
+  { value: 'all', label: '全部' },
+  { value: 'approved', label: '已审核' },
+  { value: 'in_review', label: '正在审核' },
+  { value: 'rejected', label: '未通过' },
+  { value: 'withdrawn', label: '已撤回' },
+];
+
+export const categories = [
+  { value: '活动通知', label: '活动通知' },
+  { value: '消息公告', label: '消息公告' },
+  { value: '社交聚会', label: '社交聚会' },
+];
 
 export default function AuditNewEditForm({ currentAudit }) {
   const router = useRouter();
