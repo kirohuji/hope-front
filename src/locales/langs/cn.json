@@ -1,5 +1,6 @@
 {
   "app": "应用",
+  "bpmn": "流程管理",
   "job": "工作",
   "openai": "chatgpt",
   "version": "版本管理",

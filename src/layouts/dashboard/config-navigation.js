@@ -229,6 +229,12 @@ export function useNavData() {
               // { title: t('edit'), path: paths.dashboard.book.demo.edit },
             ],
           },
+          {
+            title: t('bpmn'),
+            auth: ['Bpmn'],
+            path: paths.dashboard.bpmn,
+            icon: ICONS.invoice,
+          },
           // ATRICLE
           // {
           //   title: t('article'),

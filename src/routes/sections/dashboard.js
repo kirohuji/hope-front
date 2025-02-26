@@ -111,6 +111,7 @@ const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'));
 
 // Audit
 const AuditListPage = lazy(() => import('src/pages/dashboard/audit/list'));
+const BpmnPage = lazy(() => import('src/pages/dashboard/bpmn'));
 
 // ----------------------------------------------------------------------
 
@@ -272,6 +273,10 @@ export const dashboardRoutes = [
           { path: 'new', element: <BroadcastCreatePage /> },
           { path: ':id/edit', element: <BroadcastEditPage /> },
         ],
+      },
+      {
+        path: 'bpmn',
+        element: <BpmnPage />,
       },
       {
         path: 'audit',

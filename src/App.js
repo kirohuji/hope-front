@@ -46,7 +46,7 @@ import { MeteorProvider } from 'src/meteor/context';
 
 console.log(process.env.NODE_ENV);
 const connectUrl =
-  process.env.NODE_ENV === 'development'
+  process.env.NODE_ENV !== 'development'
     ? 'ws://localhost:3030/websocket'
     : 'wss://www.lourd.top/websocket';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
@@ -57,34 +57,34 @@ export default function App() {
   useScrollToTop();
   return (
     <ReduxProvider>
-        <MeteorProvider endpoint={connectUrl}>
-          <AuthProvider>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <SettingsProvider
-                defaultSettings={{
-                  themeMode: 'light', // 'light' | 'dark'
-                  themeDirection: 'ltr', //  'rtl' | 'ltr'
-                  themeContrast: 'default', // 'default' | 'bold'
-                  themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
-                  themeColorPresets: 'default', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
-                  themeStretch: false,
-                }}
-              >
-                <ThemeProvider>
-                  <MotionLazy>
-                    <SnackbarProvider>
-                      <SettingsDrawer />
-                      <ProgressBar />
-                      <AuthConsumer>
-                        <Router />
-                      </AuthConsumer>
-                    </SnackbarProvider>
-                  </MotionLazy>
-                </ThemeProvider>
-              </SettingsProvider>
-            </LocalizationProvider>
-          </AuthProvider>
-        </MeteorProvider>
+      <MeteorProvider endpoint={connectUrl}>
+        <AuthProvider>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <SettingsProvider
+              defaultSettings={{
+                themeMode: 'light', // 'light' | 'dark'
+                themeDirection: 'ltr', //  'rtl' | 'ltr'
+                themeContrast: 'default', // 'default' | 'bold'
+                themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
+                themeColorPresets: 'default', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
+                themeStretch: false,
+              }}
+            >
+              <ThemeProvider>
+                <MotionLazy>
+                  <SnackbarProvider>
+                    <SettingsDrawer />
+                    <ProgressBar />
+                    <AuthConsumer>
+                      <Router />
+                    </AuthConsumer>
+                  </SnackbarProvider>
+                </MotionLazy>
+              </ThemeProvider>
+            </SettingsProvider>
+          </LocalizationProvider>
+        </AuthProvider>
+      </MeteorProvider>
     </ReduxProvider>
   );
 }

@@ -4,7 +4,7 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
 // _mock
-import { _audits } from 'src/_mock';
+// import { _audits } from 'src/_mock';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -20,7 +20,7 @@ export default function AuditEditView() {
 
   const { id } = params;
 
-  const currentAudit = _audits.find((audit) => audit.id === id);
+  // const currentAudit = _audits.find((audit) => audit.id === id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -35,14 +35,14 @@ export default function AuditEditView() {
             name: 'Audit',
             href: paths.dashboard.audit.root,
           },
-          { name: currentAudit?.auditNumber },
+          // { name: currentAudit?.auditNumber },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <AuditNewEditForm currentAudit={currentAudit} />
+      {/* <AuditNewEditForm currentAudit={currentAudit} /> */}
     </Container>
   );
 }

@@ -3,7 +3,7 @@ import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
 // _mock
-import { _audits } from 'src/_mock';
+// import { _audits } from 'src/_mock';
 // components
 import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
@@ -20,12 +20,12 @@ export default function AuditDetailsView() {
 
   const { id } = params;
 
-  const currentAudit = _audits.filter((audit) => audit.id === id)[0];
+  // const currentAudit = _audits.filter((audit) => audit.id === id)[0];
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={currentAudit?.auditNumber}
+        // heading={currentAudit?.auditNumber}
         links={[
           {
             name: 'Dashboard',
@@ -35,12 +35,12 @@ export default function AuditDetailsView() {
             name: 'Audit',
             href: paths.dashboard.audit.root,
           },
-          { name: currentAudit?.auditNumber },
+          // { name: currentAudit?.auditNumber },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <AuditDetails audit={currentAudit} />
+      {/* <AuditDetails audit={currentAudit} /> */}
     </Container>
   );
 }
