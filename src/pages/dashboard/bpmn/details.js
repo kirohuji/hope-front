@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 // sections
-import { BpmnView } from 'src/sections/bpmn/view';
+import { BpmnDetailsView } from 'src/sections/bpmn/view';
 
 // ----------------------------------------------------------------------
 
-export default function BpmnPage() {
+export default function BpmnDetailsPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Bpmn</title>
+        <title> Dashboard: Bpmn Details</title>
       </Helmet>
 
-      <BpmnView />
+      <BpmnDetailsView />
     </>
   );
 }

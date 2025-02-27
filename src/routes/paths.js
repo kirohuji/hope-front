@@ -249,7 +249,12 @@ export const paths = {
     audit: {
       root: `${ROOTS.DASHBOARD}/audit`,
     },
-    bpmn: `${ROOTS.DASHBOARD}/bpmn`,
+    bpmn: {
+      root: `${ROOTS.DASHBOARD}/bpmn`,
+      new: `${ROOTS.DASHBOARD}/bpmn/new`,
+      edit: (id) => `${ROOTS.DASHBOARD}/bpmn/${id}/edit`,
+      details: (id) => `${ROOTS.DASHBOARD}/bpmn/${id}`,
+    },
     broadcast: {
       root: `${ROOTS.DASHBOARD}/broadcast`,
       new: `${ROOTS.DASHBOARD}/broadcast/new`,

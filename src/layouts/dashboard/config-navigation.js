@@ -231,9 +231,15 @@ export function useNavData() {
           },
           {
             title: t('bpmn'),
-            auth: ['Bpmn'],
-            path: paths.dashboard.bpmn,
+            auth: ['Bpmn', 'BpmnList', 'BpmnListAdd', 'BpmnListEdit', 'BpmnListDelete'],
+            path: paths.dashboard.bpmn.root,
             icon: ICONS.invoice,
+            children: [
+              { title: t('list'), path: paths.dashboard.bpmn.root, auth: ['BpmnList'] },
+              // { title: t('details'), path: paths.dashboard.book.demo.details },
+              // { title: t('create'), path: paths.dashboard.book.new },
+              // { title: t('edit'), path: paths.dashboard.book.demo.edit },
+            ],
           },
           // ATRICLE
           // {

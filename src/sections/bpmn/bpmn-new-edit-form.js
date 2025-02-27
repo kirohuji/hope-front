@@ -15,7 +15,6 @@ import {
 import ConnectorsExtensionModule from 'bpmn-js-connectors-extension';
 import ElementTemplateChooserModule from '@bpmn-io/element-template-chooser';
 import {
-  // CloudElementTemplatesPropertiesProviderModule,
   BpmnPropertiesPanelModule,
   BpmnPropertiesProviderModule,
   ZeebePropertiesProviderModule,
@@ -26,7 +25,9 @@ import TemplateIconRendererModule from '@bpmn-io/element-templates-icons-rendere
 import ZeebeModdle from 'zeebe-bpmn-moddle/resources/zeebe.json';
 import AddExporterModule from '@bpmn-io/add-exporter';
 import ZeebeBehaviorModule from 'camunda-bpmn-js-behaviors/lib/camunda-cloud';
-import TEMPLATES from './template.json';
+import gridModule from 'diagram-js-grid';
+import zhCN from './resources/zn';
+import TEMPLATES from './resources/template.json';
 import 'bpmn-js/dist/assets/diagram-js.css';
 import 'bpmn-js/dist/assets/bpmn-js.css';
 import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
@@ -35,10 +36,37 @@ import '@bpmn-io/element-template-chooser/dist/element-template-chooser.css';
 import '@bpmn-io/properties-panel/assets/properties-panel.css';
 import 'bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css';
 import 'bpmn-js-connectors-extension/dist/connectors-extension.css';
-import diagramXML from '../resources/pizza-collaboration.bpmn';
-import './style.css';
+import diagramXML from './resources/pizza-collaboration.bpmn';
+import './bpmn-new-edit-form.css';
 
-export default function BpmnView() {
+export const status = [
+  { value: 'all', label: '全部' },
+  { value: 'approved', label: '已审核' },
+  { value: 'in_review', label: '正在审核' },
+  { value: 'rejected', label: '未通过' },
+  { value: 'withdrawn', label: '已撤回' },
+];
+
+export const categories = [
+  { value: '活动通知', label: '活动通知' },
+  { value: '消息公告', label: '消息公告' },
+  { value: '社交聚会', label: '社交聚会' },
+];
+
+function customTranslate(template, replacements) {
+  replacements = replacements || {};
+
+  // Translate
+  template = zhCN[template] || template;
+
+  // Replace
+  return template.replace(/{([^}]+)}/g, (_, key) => replacements[key] || `{${key}}`);
+}
+
+const translate = {
+  translate: ['value', customTranslate],
+};
+export default function BpmnNewEditForm() {
   const settings = useSettingsContext();
   const bpmnModeler = useRef(null);
   const canvasRef = useRef(null);
@@ -71,11 +99,13 @@ export default function BpmnView() {
           ConnectorsExtensionModule,
           ElementTemplatesPropertiesProviderModule,
           ZeebeBehaviorModule,
-          // ElementTemplateChooserModule,
+          ElementTemplateChooserModule,
           ZeebePropertiesProviderModule,
           CloudElementTemplatesPropertiesProviderModule,
           TemplateIconRendererModule,
           TokenSimulationModule,
+          gridModule,
+          translate,
           BpmnPropertiesPanelModule,
           BpmnPropertiesProviderModule,
         ],
@@ -103,16 +133,8 @@ export default function BpmnView() {
   return (
     <Container
       maxWidth={settings.themeStretch ? false : 'xl'}
-      sx={{ height: 'calc(100vh - 220px)', pr: 0, mr: 0 }}
+      sx={{ height: 'calc(100vh - 200px)', pr: 0, mr: 0 }}
     >
-      <CustomBreadcrumbs
-        heading="流程管理"
-        links={[
-          {
-            name: '',
-          },
-        ]}
-      />
       <div className="bpmn-content" ref={containerRef}>
         <div className="canvas" ref={canvasRef} />
         <div className="properties-panel-parent" ref={propertiesRef} style={{ width: '350px' }} />
@@ -120,3 +142,5 @@ export default function BpmnView() {
     </Container>
   );
 }
+
+BpmnNewEditForm.propTypes = {};
