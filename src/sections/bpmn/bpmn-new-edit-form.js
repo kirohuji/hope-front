@@ -5,6 +5,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
+import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 // components
@@ -27,6 +28,8 @@ import {
   BpmnPropertiesProviderModule,
   ZeebePropertiesProviderModule,
 } from 'bpmn-js-properties-panel';
+import { useSelector } from 'src/redux/store';
+import _ from 'lodash';
 import MinimapModule from 'diagram-js-minimap';
 import TokenSimulationModule from 'bpmn-js-token-simulation';
 import TemplateIconRendererModule from '@bpmn-io/element-templates-icons-renderer';
@@ -70,7 +73,7 @@ function customTranslate(template, replacements) {
   template = zhCN[template] || template;
 
   // Replace
-  return template.replace(/{([^}]+)}/g, (_, key) => replacements[key] || `{${key}}`);
+  return template.replace(/{([^}]+)}/g, (i, key) => replacements[key] || `{${key}}`);
 }
 
 const translate = {
@@ -82,20 +85,25 @@ export default function BpmnNewEditForm({ backLink, currentBpmn, sx, ...other })
   const containerRef = useRef(null);
   const propertiesRef = useRef(null);
   const { enqueueSnackbar } = useSnackbar();
-  const [currnetForm, setCurrentForm] = useState({});
+  const scope = useSelector((state) => state.scope);
+  const [currentForm, setCurrentForm] = useState({});
   const [openForm, setOpenForm] = useState(false);
   const handleOpenFormModal = () => {
+    setCurrentForm(_.pick(currentBpmn, ['_id', 'id', 'label', 'value', 'description', 'scope']));
     setOpenForm(true);
   };
 
   const onSave = async (form) => {
-    setCurrentForm((prevForm) => ({
-      ...prevForm,
-      form,
-    }));
+    const updatedForm = { ...currentForm, ...form };
+    setCurrentForm(updatedForm);
     if (!currentBpmn._id) {
       try {
-        await bpmnService.post(currnetForm);
+        const { xml } = await bpmnModeler.current.saveXML({ format: true });
+        await bpmnService.post({
+          ...updatedForm,
+          content: xml,
+          scope: scope.active._id,
+        });
         enqueueSnackbar('新增成功');
       } catch (e) {
         enqueueSnackbar(e.response.data.message);
@@ -103,6 +111,25 @@ export default function BpmnNewEditForm({ backLink, currentBpmn, sx, ...other })
     }
     handleCloseFormModal();
   };
+
+  const onUpload = async () => {
+    if (currentBpmn._id) {
+      try {
+        const { xml } = await bpmnModeler.current.saveXML({ format: true });
+        await bpmnService.put({
+          ..._.pick(currentBpmn, ['_id', 'id', 'label', 'value', 'description', 'scope']),
+          ...currentForm,
+          content: xml,
+        });
+        enqueueSnackbar('修改成功');
+      } catch (e) {
+        enqueueSnackbar(e.response.data.message);
+      }
+    } else {
+      handleOpenFormModal();
+    }
+  };
+
   const handleCloseFormModal = () => {
     setOpenForm(false);
   };
@@ -113,7 +140,6 @@ export default function BpmnNewEditForm({ backLink, currentBpmn, sx, ...other })
         if (!response.ok) throw new Error('Failed to fetch BPMN file');
         const text = await response.text();
         await bpmnModeler.current.importXML(text);
-        console.log('Awesome! Ready to navigate!');
       } catch (err) {
         console.error('Failed to load diagram:', err);
       }
@@ -123,7 +149,6 @@ export default function BpmnNewEditForm({ backLink, currentBpmn, sx, ...other })
     if (bpmnModeler.current) {
       try {
         await bpmnModeler.current.importXML(text);
-        console.log('Awesome! Ready to navigate!');
       } catch (err) {
         console.error('Failed to load diagram:', err);
       }
@@ -174,18 +199,6 @@ export default function BpmnNewEditForm({ backLink, currentBpmn, sx, ...other })
     }
   }, [currentBpmn]);
 
-  const onUpload = async () => {
-    if (currentBpmn) {
-      try {
-        await bpmnService.put(currnetForm);
-        enqueueSnackbar('修改成功');
-      } catch (e) {
-        enqueueSnackbar(e.response.data.message);
-      }
-    } else {
-      handleOpenFormModal();
-    }
-  };
   useEffect(() => {
     init();
   }, [init]);
@@ -201,13 +214,25 @@ export default function BpmnNewEditForm({ backLink, currentBpmn, sx, ...other })
       }}
       {...other}
     >
-      <Button
-        component={RouterLink}
-        href={backLink}
-        startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
       >
-        返回
-      </Button>
+        <Button
+          component={RouterLink}
+          href={backLink}
+          startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
+        >
+          返回
+        </Button>
+        {currentBpmn._id && (
+          <Typography variant="h4" sx={{ ml: 1 }}>
+            标题: {currentBpmn.label}
+          </Typography>
+        )}
+      </Box>
       <Box
         sx={{
           display: 'flex',
@@ -241,7 +266,7 @@ export default function BpmnNewEditForm({ backLink, currentBpmn, sx, ...other })
       </Grid>
       <Dialog fullWidth maxWidth="xs" open={openForm} onClose={handleCloseFormModal}>
         <DialogTitle>{currentBpmn._id ? '编辑' : '新增'}</DialogTitle>
-        <BpmnForm item={currnetForm} onSubmitData={onSave} />
+        <BpmnForm item={currentForm} onCancel={handleCloseFormModal} onSubmitData={onSave} />
       </Dialog>
     </>
   );

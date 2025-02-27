@@ -10,7 +10,6 @@ import { Box, Stack, Button, DialogActions } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { useSnackbar } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
 
@@ -21,9 +20,6 @@ BpmnForm.propTypes = {
   onSubmitData: PropTypes.func,
 };
 export default function BpmnForm({ item, onDelete, onCancel, onSubmitData }) {
-  const hasData = !!item;
-  const { enqueueSnackbar } = useSnackbar();
-
   const Schema = Yup.object().shape({
     label: Yup.string().required('请输入 名称'),
     value: Yup.string().required('请输入 编码'),
@@ -53,7 +49,7 @@ export default function BpmnForm({ item, onDelete, onCancel, onSubmitData }) {
         ...item,
         ...data,
       });
-      enqueueSnackbar(!hasData ? '创建成功!' : '更新成功!');
+      // enqueueSnackbar(!hasData ? '创建成功!' : '更新成功!');
     } catch (error) {
       console.error(error);
     }
@@ -71,7 +67,7 @@ export default function BpmnForm({ item, onDelete, onCancel, onSubmitData }) {
           取消
         </Button>
         <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-          {hasData ? '更新' : '添加'}
+          保存
         </LoadingButton>
       </DialogActions>
     </FormProvider>

@@ -32,7 +32,7 @@ export default function BpmnTableRow({
   onEditRow,
   onDeleteRow,
 }) {
-  const { sent, bpmnNumber, createDate, dueDate, status, bpmnTo, totalAmount } = row;
+  const { sent, bpmnNumber, createdAt, dueDate, status, bpmnTo, totalAmount } = row;
 
   const confirm = useBoolean();
 
@@ -72,8 +72,8 @@ export default function BpmnTableRow({
 
         <TableCell>
           <ListItemText
-            primary={format(new Date(createDate), 'dd MMM yyyy')}
-            secondary={format(new Date(createDate), 'p')}
+            primary={format(new Date(createdAt), 'dd MMM yyyy')}
+            secondary={format(new Date(createdAt), 'p')}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{
               mt: 0.5,
@@ -83,7 +83,7 @@ export default function BpmnTableRow({
           />
         </TableCell>
 
-        <TableCell>
+        {/* <TableCell>
           <ListItemText
             primary={format(new Date(dueDate), 'dd MMM yyyy')}
             secondary={format(new Date(dueDate), 'p')}
@@ -94,7 +94,7 @@ export default function BpmnTableRow({
               typography: 'caption',
             }}
           />
-        </TableCell>
+        </TableCell> */}
 
         <TableCell>{fCurrency(totalAmount)}</TableCell>
 
