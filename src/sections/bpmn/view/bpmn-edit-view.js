@@ -21,7 +21,10 @@ export default function BpmnEditView() {
   // const currentBpmn = _bpmns.find((bpmn) => bpmn.id === id);
 
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container
+      maxWidth={settings.themeStretch ? false : 'lg'}
+      sx={{ height: 'calc(100% - 200px)' }}
+    >
       <CustomBreadcrumbs
         heading="Edit"
         links={[

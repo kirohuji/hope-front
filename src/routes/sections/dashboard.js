@@ -113,6 +113,8 @@ const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'));
 const AuditListPage = lazy(() => import('src/pages/dashboard/audit/list'));
 const BpmnListPage = lazy(() => import('src/pages/dashboard/bpmn/list'));
 const BpmnEditPage = lazy(() => import('src/pages/dashboard/bpmn/edit'));
+const BpmnCreatePage = lazy(() => import('src/pages/dashboard/bpmn/new'));
+const BpmnDetailPage = lazy(() => import('src/pages/dashboard/bpmn/details'));
 
 // ----------------------------------------------------------------------
 
@@ -280,8 +282,8 @@ export const dashboardRoutes = [
         children: [
           { element: <BpmnListPage />, index: true },
           { path: 'list', element: <BpmnEditPage /> },
-          { path: ':id', element: <BroadcastDetailsPage /> },
-          { path: 'new', element: <BroadcastCreatePage /> },
+          { path: ':id', element: <BpmnDetailPage /> },
+          { path: 'new', element: <BpmnCreatePage /> },
           { path: ':id/edit', element: <BpmnEditPage /> },
         ],
       },

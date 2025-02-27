@@ -2,6 +2,7 @@ export default {
   'Activate create/remove space tool': '启动创建/删除空间工具',
   General: '常规',
   Documentation: '说明',
+  'Change element': '切换元素',
   'Element documentation': '元素说明',
   'Activate global connect tool': '启动全局连接工具',
   'Activate hand tool': '启动手动工具',

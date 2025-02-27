@@ -60,12 +60,9 @@ import { categories } from '../bpmn-new-edit-form';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  { id: 'label', label: '标题' },
   { id: 'createdBy', label: '创建人' },
-  { id: 'sourceUrl', label: '内容源' },
   { id: 'description', label: '大致内容' },
-  { id: 'result', label: '审核结果' },
-  { id: 'reason', label: '审核原因' },
-  { id: 'reviewerId', label: '审核人' },
   { id: 'category', label: '分类' },
   { id: 'createdAt', label: '创建时间' },
   { id: 'status', label: '状态' },
@@ -258,75 +255,15 @@ export default function BpmnListView() {
               component={RouterLink}
               href={paths.dashboard.bpmn.new}
               variant="contained"
-              onClick={() => handleOpenFormModal()}
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              敏感词库管理
+              新增
             </Button>
           }
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
-
-        <Card
-          sx={{
-            mb: { xs: 3, md: 5 },
-          }}
-        >
-          <Scrollbar>
-            <Stack
-              direction="row"
-              divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-              sx={{ py: 2 }}
-            >
-              <BpmnAnalytic
-                title="5级(极高敏感)"
-                level={5}
-                total={100}
-                percent={100}
-                icon="solar:bell-bing-bold-duotone"
-                color={theme.palette.error.main}
-              />
-
-              <BpmnAnalytic
-                title="4级(高度敏感)"
-                level={4}
-                total={100}
-                percent={100}
-                icon="solar:sort-by-time-bold-duotone"
-                color={theme.palette.warning.main}
-              />
-
-              <BpmnAnalytic
-                title="3级(中度敏感)"
-                level={3}
-                total={100}
-                percent={100}
-                icon="solar:file-corrupted-bold-duotone"
-                color={theme.palette.text.secondary}
-              />
-
-              <BpmnAnalytic
-                title="2级(轻度敏感)"
-                level={2}
-                total={100}
-                percent={100}
-                icon="solar:bill-list-bold-duotone"
-                color={theme.palette.info.main}
-              />
-
-              {/* <BpmnAnalytic
-                title="1级(普通信息)"
-                level={1}
-                total={100}
-                percent={100}
-                icon="solar:file-check-bold-duotone"
-                color={theme.palette.success.main}
-              /> */}
-            </Stack>
-          </Scrollbar>
-        </Card>
 
         <Card>
           <Tabs

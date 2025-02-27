@@ -14,28 +14,21 @@ export default function BpmnCreateView() {
   const settings = useSettingsContext();
 
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
-        heading="Create a new bpmn"
+    <Container maxWidth={settings.themeStretch ? false : 'xl'} sx={{ height: 'calc(100% - 10px)' }}>
+      {/* <CustomBreadcrumbs
+        heading="创建一个流程图"
         links={[
           {
-            name: 'Dashboard',
+            name: '',
             href: paths.dashboard.root,
-          },
-          {
-            name: 'Bpmn',
-            href: paths.dashboard.bpmn.root,
-          },
-          {
-            name: 'New Bpmn',
           },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
-      />
+      /> */}
 
-      <BpmnNewEditForm />
+      <BpmnNewEditForm currentBpmn={{}} backLink={paths.dashboard.bpmn.root} />
     </Container>
   );
 }
