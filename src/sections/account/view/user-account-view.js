@@ -27,16 +27,16 @@ const TABS = [
     label: '基本信息',
     icon: <Iconify icon="solar:user-id-bold" width={24} />,
   },
-  // {
-  //   value: 'billing',
-  //   label: '会员管理',
-  //   icon: <Iconify icon="solar:bill-list-bold" width={24} />,
-  // },
-  // {
-  //   value: 'notifications',
-  //   label: 'Notifications',
-  //   icon: <Iconify icon="solar:bell-bing-bold" width={24} />,
-  // },
+  {
+    value: 'billing',
+    label: '会员管理',
+    icon: <Iconify icon="solar:bill-list-bold" width={24} />,
+  },
+  {
+    value: 'notifications',
+    label: 'Notifications',
+    icon: <Iconify icon="solar:bell-bing-bold" width={24} />,
+  },
   // {
   //   value: 'social',
   //   label: 'Social links',
@@ -67,9 +67,7 @@ export default function AccountView() {
       {isDesktop && (
         <CustomBreadcrumbs
           heading="个人设置 "
-          links={[
-            { name: '个人设置' },
-          ]}
+          links={[{ name: '个人设置' }]}
           sx={{
             mb: { xs: 3, md: 5 },
           }}

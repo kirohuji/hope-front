@@ -115,6 +115,7 @@ const BpmnListPage = lazy(() => import('src/pages/dashboard/bpmn/list'));
 const BpmnEditPage = lazy(() => import('src/pages/dashboard/bpmn/edit'));
 const BpmnCreatePage = lazy(() => import('src/pages/dashboard/bpmn/new'));
 const BpmnDetailPage = lazy(() => import('src/pages/dashboard/bpmn/details'));
+const BpmnInstancePage = lazy(() => import('src/pages/dashboard/bpmn/instances'));
 
 // ----------------------------------------------------------------------
 
@@ -282,6 +283,7 @@ export const dashboardRoutes = [
         children: [
           { element: <BpmnListPage />, index: true },
           { path: 'list', element: <BpmnEditPage /> },
+          { path: 'instances', element: <BpmnInstancePage /> },
           { path: ':id', element: <BpmnDetailPage /> },
           { path: 'new', element: <BpmnCreatePage /> },
           { path: ':id/edit', element: <BpmnEditPage /> },

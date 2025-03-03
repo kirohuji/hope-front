@@ -238,12 +238,7 @@ export function useNavData() {
               { title: t('bpmn_digram_list'), path: paths.dashboard.bpmn.root, auth: ['BpmnList'] },
               {
                 title: t('bpmn_instance_list'),
-                path: paths.dashboard.bpmn.root,
-                auth: ['BpmnList'],
-              },
-              {
-                title: t('api'),
-                path: paths.dashboard.bpmn.root,
+                path: paths.dashboard.bpmn.instances,
                 auth: ['BpmnList'],
               },
               // { title: t('details'), path: paths.dashboard.book.demo.details },

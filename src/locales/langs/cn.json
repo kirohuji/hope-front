@@ -1,6 +1,6 @@
 {
   "app": "应用",
-  "bpmn": "BPMN管理",
+  "bpmn": "流程中心",
   "bpmn_digram_list": "流程图管理",
   "bpmn_instance_list": "流程实例管理",
   "api": "服务调用管理",
@@ -21,7 +21,7 @@
   "chat": "聊天",
   "file": "文件",
   "tour": "导览",
-  "broadcast": "活动通知",
+  "broadcast": "通知中心",
   "dictionary": "字典管理",
   "book": "阅读本",
   "cards": "卡片",

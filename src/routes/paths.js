@@ -254,6 +254,7 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/bpmn/new`,
       edit: (id) => `${ROOTS.DASHBOARD}/bpmn/${id}/edit`,
       details: (id) => `${ROOTS.DASHBOARD}/bpmn/${id}`,
+      instances: `${ROOTS.DASHBOARD}/bpmn/instances`,
     },
     broadcast: {
       root: `${ROOTS.DASHBOARD}/broadcast`,
