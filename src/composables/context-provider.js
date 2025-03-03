@@ -19,6 +19,8 @@ import NotificationService from '../modules/notifications';
 import SensitiveWordService from '../modules/sensitiveWords';
 import AuditService from '../modules/audits';
 import BpmnService from '../modules/bpmns';
+import ServiceService from '../modules/services';
+import BpmnInstanceService from '../modules/bpmns_instances';
 
 export const authService = new AuthService({ api, model: '' });
 export const userService = new UserService({ api, model: 'users' });
@@ -42,5 +44,7 @@ export const notificationService = new NotificationService({ api, model: 'notifi
 export const auditService = new AuditService({ api, model: 'audits' });
 export const sensitiveWordService = new SensitiveWordService({ api, model: 'sensitve/words' });
 export const bpmnService = new BpmnService({ api, model: 'bpmns' });
+export const serviceService = new ServiceService({ api, model: 'services' });
+export const bpmnInstanceService = new BpmnInstanceService({ api, model: 'bpmns/instances' });
 
 export const fileService = new FlieService({ api: fileApi, model: '' });

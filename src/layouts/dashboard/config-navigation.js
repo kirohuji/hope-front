@@ -46,7 +46,7 @@ export const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
-  version: icon('ic_product'),
+  version: icon('ic_lock'),
 };
 
 // ----------------------------------------------------------------------
@@ -99,7 +99,7 @@ export function useNavData() {
               'VersionListDelete',
             ],
             path: paths.dashboard.version.root,
-            icon: ICONS.job,
+            icon: ICONS.version,
             children: [
               { title: t('list'), path: paths.dashboard.version.root, auth: ['VersionList'] },
               // { title: t('details'), path: paths.dashboard.scope.demo.details },
@@ -209,7 +209,7 @@ export function useNavData() {
             title: t('book'),
             auth: ['Book', 'BookList', 'BookListAdd', 'BookListEdit', 'BookListDelete'],
             path: paths.dashboard.book.root,
-            icon: ICONS.job,
+            icon: ICONS.menuItem,
             children: [
               { title: t('list'), path: paths.dashboard.book.root, auth: ['BookList'] },
               // { title: t('details'), path: paths.dashboard.book.demo.details },
@@ -221,7 +221,7 @@ export function useNavData() {
             title: t('audit'),
             auth: ['Audit', 'AuditList', 'AuditListAdd', 'AuditListEdit', 'AuditListDelete'],
             path: paths.dashboard.audit.root,
-            icon: ICONS.invoice,
+            icon: ICONS.ecommerce,
             children: [
               { title: t('list'), path: paths.dashboard.audit.root, auth: ['AuditList'] },
               // { title: t('details'), path: paths.dashboard.book.demo.details },
@@ -233,7 +233,7 @@ export function useNavData() {
             title: t('bpmn'),
             auth: ['Bpmn', 'BpmnList', 'BpmnListAdd', 'BpmnListEdit', 'BpmnListDelete'],
             path: paths.dashboard.bpmn.root,
-            icon: ICONS.invoice,
+            icon: ICONS.product,
             children: [
               { title: t('bpmn_digram_list'), path: paths.dashboard.bpmn.root, auth: ['BpmnList'] },
               {
