@@ -1,6 +1,9 @@
 {
   "app": "应用",
-  "bpmn": "流程管理",
+  "bpmn": "BPMN管理",
+  "bpmn_digram_list": "流程图管理",
+  "bpmn_instance_list": "流程实例管理",
+  "api": "服务调用管理",
   "job": "工作",
   "openai": "chatgpt",
   "version": "版本管理",

@@ -128,14 +128,12 @@ export default function BpmnListView() {
 
   const notFound = (!tableDataCount && canReset) || !tableDataCount;
 
-  const getBpmnLength = (status) => tableData.filter((item) => item.status === status).length;
-
   const TABS = [
     { value: 'all', label: '全部', color: 'default', count: tableData.length },
-    { value: 'approved', label: '已审核', color: 'success', count: getBpmnLength('paid') },
-    { value: 'in_review', label: '正在审核', color: 'warning', count: getBpmnLength('pending') },
-    { value: 'rejected', label: '未通过', color: 'error', count: getBpmnLength('overdue') },
-    { value: 'withdrawn', label: '已撤回', color: 'default', count: getBpmnLength('draft') },
+    // { value: 'approved', label: '已审核', color: 'success', count: getBpmnLength('paid') },
+    // { value: 'in_review', label: '正在审核', color: 'warning', count: getBpmnLength('pending') },
+    // { value: 'rejected', label: '未通过', color: 'error', count: getBpmnLength('overdue') },
+    // { value: 'withdrawn', label: '已撤回', color: 'default', count: getBpmnLength('draft') },
   ];
 
   const handleFilters = useCallback(
@@ -266,7 +264,7 @@ export default function BpmnListView() {
         />
 
         <Card>
-          <Tabs
+          {/* <Tabs
             value={filters.status}
             onChange={handleFilterStatus}
             sx={{
@@ -280,19 +278,19 @@ export default function BpmnListView() {
                 value={tab.value}
                 label={tab.label}
                 iconPosition="end"
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                    }
-                    color={tab.color}
-                  >
-                    {tab.count}
-                  </Label>
-                }
+                // icon={
+                //   <Label
+                //     variant={
+                //       ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
+                //     }
+                //     color={tab.color}
+                //   >
+                //     {tab.count}
+                //   </Label>
+                // }
               />
             ))}
-          </Tabs>
+          </Tabs> */}
 
           <BpmnTableToolbar
             filters={filters}

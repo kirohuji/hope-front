@@ -16,30 +16,27 @@ import Stack from '@mui/material/Stack';
 
 // bmpn
 import BpmnModeler from 'bpmn-js/lib/Modeler';
-import { CreateAppendAnythingModule } from 'bpmn-js-create-append-anything';
+import camundaModdle from 'camunda-bpmn-moddle/resources/camunda.json';
 import {
   ElementTemplatesPropertiesProviderModule, // Camunda 7 Element Templates
-  CloudElementTemplatesPropertiesProviderModule, // Camunda 8 Element Templates
 } from 'bpmn-js-element-templates';
-import ConnectorsExtensionModule from 'bpmn-js-connectors-extension';
-import ElementTemplateChooserModule from '@bpmn-io/element-template-chooser';
-import {
-  BpmnPropertiesPanelModule,
-  BpmnPropertiesProviderModule,
-  ZeebePropertiesProviderModule,
-} from 'bpmn-js-properties-panel';
+
+import elementTemplateChooserModule from '@bpmn-io/element-template-chooser';
+import { BpmnPropertiesPanelModule, BpmnPropertiesProviderModule } from 'bpmn-js-properties-panel';
 import { useSelector } from 'src/redux/store';
 import _ from 'lodash';
-import MinimapModule from 'diagram-js-minimap';
+import minimapModule from 'diagram-js-minimap';
 import TokenSimulationModule from 'bpmn-js-token-simulation';
-import TemplateIconRendererModule from '@bpmn-io/element-templates-icons-renderer';
-import ZeebeModdle from 'zeebe-bpmn-moddle/resources/zeebe.json';
-import AddExporterModule from '@bpmn-io/add-exporter';
-import ZeebeBehaviorModule from 'camunda-bpmn-js-behaviors/lib/camunda-cloud';
+import templateIconRendererModule from '@bpmn-io/element-templates-icons-renderer';
+import addExporterModule from '@bpmn-io/add-exporter';
 import gridModule from 'diagram-js-grid';
+// 右键菜单 & 工具栏扩展
+import contextPadModule from 'bpmn-js/lib/features/context-pad';
+import customControlsModule from 'bpmn-js/lib/features/palette';
+import modelingModule from 'bpmn-js/lib/features/modeling';
+import keyboardModule from 'diagram-js/lib/features/keyboard';
 import { bpmnService } from 'src/composables/context-provider';
 import zhCN from './resources/zn';
-import TEMPLATES from './resources/template.json';
 import 'bpmn-js/dist/assets/diagram-js.css';
 import 'bpmn-js/dist/assets/bpmn-js.css';
 import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
@@ -91,6 +88,13 @@ export default function BpmnNewEditForm({ backLink, currentBpmn, sx, ...other })
   const handleOpenFormModal = () => {
     setCurrentForm(_.pick(currentBpmn, ['_id', 'id', 'label', 'value', 'description', 'scope']));
     setOpenForm(true);
+  };
+
+  const handleExecute = () => {
+    bpmnService.execute({
+      source: currentForm.content || currentBpmn.content,
+      variables: {},
+    });
   };
 
   const onSave = async (form) => {
@@ -162,15 +166,15 @@ export default function BpmnNewEditForm({ backLink, currentBpmn, sx, ...other })
           parent: propertiesRef.current,
         },
         additionalModules: [
-          MinimapModule,
-          AddExporterModule,
-          ConnectorsExtensionModule,
+          minimapModule,
+          addExporterModule,
           ElementTemplatesPropertiesProviderModule,
-          ZeebeBehaviorModule,
-          ElementTemplateChooserModule,
-          ZeebePropertiesProviderModule,
-          CloudElementTemplatesPropertiesProviderModule,
-          TemplateIconRendererModule,
+          elementTemplateChooserModule,
+          templateIconRendererModule,
+          contextPadModule, // 右键菜单
+          customControlsModule, // 自定义工具栏
+          modelingModule, // 拖拽 & 连接增强
+          keyboardModule, // 快捷键支持
           TokenSimulationModule,
           gridModule,
           translate,
@@ -178,18 +182,13 @@ export default function BpmnNewEditForm({ backLink, currentBpmn, sx, ...other })
           BpmnPropertiesProviderModule,
         ],
         moddleExtensions: {
-          zeebe: ZeebeModdle,
+          camunda: camundaModdle,
         },
         exporter: {
           name: 'bpmn-js-token-simulation',
           version: '0.37.0',
         },
-        connectorsExtension: {
-          appendAnything: true,
-        },
       });
-      bpmnModeler.current.get('elementTemplatesLoader').setTemplates(TEMPLATES);
-      bpmnModeler.current.get('connectorsExtension').loadTemplates(TEMPLATES);
       if (currentBpmn.content && currentBpmn._id) {
         newDiagram(currentBpmn.content);
       } else {
@@ -239,15 +238,26 @@ export default function BpmnNewEditForm({ backLink, currentBpmn, sx, ...other })
         }}
       >
         {currentBpmn._id && (
-          <Button
-            variant="contained"
-            size="large"
-            sx={{ ml: 2 }}
-            color="error"
-            onClick={handleOpenFormModal}
-          >
-            修改信息
-          </Button>
+          <>
+            <Button
+              variant="contained"
+              size="large"
+              sx={{ ml: 2 }}
+              color="warning"
+              onClick={handleExecute}
+            >
+              执行流程
+            </Button>
+            <Button
+              variant="contained"
+              size="large"
+              sx={{ ml: 2 }}
+              color="error"
+              onClick={handleOpenFormModal}
+            >
+              修改信息
+            </Button>
+          </>
         )}
         <Button variant="contained" size="large" sx={{ ml: 2 }} onClick={onUpload}>
           {!currentBpmn._id ? '创建' : '保存变更'}

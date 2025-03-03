@@ -48,10 +48,7 @@ export default function BpmnEditView() {
   // const currentBpmn = _bpmns.find((bpmn) => bpmn.id === id);
 
   return (
-    <Container
-      maxWidth={settings.themeStretch ? false : 'lg'}
-      sx={{ height: 'calc(100% - 200px)' }}
-    >
+    <Container sx={{ height: 'calc(100% - 200px)', minWidth: '100%' }}>
       {/* <CustomBreadcrumbs
         heading="编辑"
         links={[

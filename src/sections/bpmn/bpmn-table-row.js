@@ -16,12 +16,14 @@ import ListItemText from '@mui/material/ListItemText';
 import { useBoolean } from 'src/hooks/use-boolean';
 // utils
 import { fCurrency } from 'src/utils/format-number';
+import { fDate } from 'src/utils/format-time';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-
+import { categories } from './bpmn-new-edit-form';
+import { getLabelFromValue } from '../../utils/map';
 // ----------------------------------------------------------------------
 
 export default function BpmnTableRow({
@@ -32,7 +34,7 @@ export default function BpmnTableRow({
   onEditRow,
   onDeleteRow,
 }) {
-  const { sent, bpmnNumber, createdAt, dueDate, status, bpmnTo, totalAmount } = row;
+  const { label, description, createdBy, category, createdAt, status, totalAmount } = row;
 
   const confirm = useBoolean();
 
@@ -45,43 +47,11 @@ export default function BpmnTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          {/* <Avatar alt={bpmnTo.name} sx={{ mr: 2 }}>
-            {bpmnTo.name.charAt(0).toUpperCase()}
-          </Avatar> */}
+        <TableCell>{label}</TableCell>
+        <TableCell>{createdBy || '未知'}</TableCell>
+        <TableCell>{description}</TableCell>
 
-          <ListItemText
-            disableTypography
-            // primary={
-            //   <Typography variant="body2" noWrap>
-            //     {bpmnTo.name}
-            //   </Typography>
-            // }
-            secondary={
-              <Link
-                noWrap
-                variant="body2"
-                onClick={onViewRow}
-                sx={{ color: 'text.disabled', cursor: 'pointer' }}
-              >
-                {bpmnNumber}
-              </Link>
-            }
-          />
-        </TableCell>
-
-        <TableCell>
-          <ListItemText
-            primary={format(new Date(createdAt), 'dd MMM yyyy')}
-            secondary={format(new Date(createdAt), 'p')}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{
-              mt: 0.5,
-              component: 'span',
-              typography: 'caption',
-            }}
-          />
-        </TableCell>
+        <TableCell>{getLabelFromValue(category, categories)}</TableCell>
 
         {/* <TableCell>
           <ListItemText
@@ -96,21 +66,11 @@ export default function BpmnTableRow({
           />
         </TableCell> */}
 
-        <TableCell>{fCurrency(totalAmount)}</TableCell>
-
-        <TableCell align="center">{sent}</TableCell>
+        <TableCell>{fDate(createdAt)}</TableCell>
 
         <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (status === 'paid' && 'success') ||
-              (status === 'pending' && 'warning') ||
-              (status === 'overdue' && 'error') ||
-              'default'
-            }
-          >
-            {status}
+          <Label variant="soft" color={(status === 'active' && 'success') || 'default'}>
+            {status === 'active' ? '激活' : '禁用'}
           </Label>
         </TableCell>
 

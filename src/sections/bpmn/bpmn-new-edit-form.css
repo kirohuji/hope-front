@@ -24,12 +24,11 @@
     min-height: 100%;
   }
 }
-div[data-group-id='group-CamundaPlatform__ExtensionProperties'],
+/* div[data-group-id='group-CamundaPlatform__ExtensionProperties'],
 div[data-group-id='group-CamundaPlatform__ExecutionListener'],
 div[data-group-id='group-CamundaPlatform__Input'],
 div[data-group-id='group-CamundaPlatform__Form'],
-/* div[data-group-id='group-CamundaPlatform__Form'], */
 div[data-group-id='group-CamundaPlatform__TaskListener'],
 div[data-group-id='group-CamundaPlatform__Output'] {
   display: none;
-}
+} */
