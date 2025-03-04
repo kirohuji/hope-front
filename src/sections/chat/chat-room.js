@@ -369,11 +369,11 @@ export default function ChatRoom({ participants, conversation, messages }) {
         }}
       >
         <div className="history-content-drawer">
-          <div style={{ mt: '14px', background: 'white' }}>
+          <Box sx={{ mt: '14px' }}>
             <IconButtonAnimate sx={{ mr: 1, color: 'text.primary' }} onClick={onCloseHistoryMobile}>
               <Iconify icon="eva:arrow-ios-back-fill" />
             </IconButtonAnimate>
-          </div>
+          </Box>
           {renderHistoryContent}
         </div>
       </Drawer>

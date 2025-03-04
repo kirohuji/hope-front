@@ -119,7 +119,7 @@ export default function ChatNavItem({
       sx={{
         width: '100%',
         boxSizing: 'border-box',
-        backgroundColor: '#fff',
+        bgcolor: 'background.default',
         // height: '100%',
         py: 1.5,
         px: 2.5,

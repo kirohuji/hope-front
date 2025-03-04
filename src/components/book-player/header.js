@@ -43,7 +43,7 @@ export default function Header({ isOffset, onClose }) {
           }),
           position: 'relative',
           justifyContent: 'center',
-          background: 'white',
+          bgcolor: 'background.default',
         }}
       >
         <div style={{ position: 'absolute', top: '14px', left: 0 }}>

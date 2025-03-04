@@ -54,8 +54,6 @@ export default function UserProfileView() {
 
   const { user } = useAuthContext();
 
-  console.log('user', user);
-
   const [searchFriends, setSearchFriends] = useState('');
 
   const [currentTab, setCurrentTab] = useState('profile');

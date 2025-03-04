@@ -45,7 +45,7 @@ export default function ProfileCover({ name, username, photoURL, role, coverUrl 
           alt={username}
           onClick={handleClickItem}
           sx={{
-            background: 'white',
+            bgcolor: 'background.default',
             mx: 'auto',
             cursor: 'pointer',
             width: { xs: 64, md: 128 },

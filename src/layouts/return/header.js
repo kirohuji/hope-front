@@ -77,10 +77,14 @@ export default function Header({ isOffset }) {
           }),
           // position: 'relative',
           justifyContent: 'center',
-          background: 'white',
+          bgcolor: 'background.default',
         }}
       >
         <div>{pathname === '/chat' && renderConversationTitle()}</div>
+        {pathname === '/system' && <div>系统设置</div>}
+        {pathname === '/account' && <div>账户设置</div>}
+        {pathname === '/training/search' && <div>全部分类</div>}
+        {pathname.includes('/reading/') && <div>今日阅读</div>}
         <div
           style={{
             position: 'absolute',
