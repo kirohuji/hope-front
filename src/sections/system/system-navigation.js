@@ -27,7 +27,7 @@ export const systemNavData = [
   // },
   {
     label: '帮助与反馈',
-    href: '#',
+    href: '/faqs',
     icon: <Iconify icon="solar:shield-keyhole-bold-duotone" />,
   },
   {

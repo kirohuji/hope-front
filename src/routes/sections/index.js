@@ -31,6 +31,8 @@ const ArticleDetailPage = lazy(() => import('src/pages/dashboard/article/details
 // System
 const SystemGeneralPage = lazy(() => import('src/pages/dashboard/system/general'));
 
+const FaqsPage = lazy(() => import('src/pages/faqs'));
+
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -77,6 +79,7 @@ export default function Router() {
     {
       element: <ReturnLayout />,
       children: [
+        { path: 'faqs', element: <FaqsPage /> },
         { path: 'chat', element: <ChatPage /> },
         { path: 'openai', element: <AiPage /> },
         { path: 'openai', element: <AiPage /> },

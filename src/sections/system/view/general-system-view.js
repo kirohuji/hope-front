@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 // @mui
 import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
@@ -72,6 +73,13 @@ export default function SystemGeneralView() {
     </div>
   );
 
+  const handleClickItem = useCallback(
+    (path) => {
+      router.push(path);
+    },
+    [router]
+  );
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -129,6 +137,7 @@ export default function SystemGeneralView() {
             {systemNavData.map((option) => (
               <MenuItem
                 key={option.label}
+                onClick={() => handleClickItem(option.href)}
                 sx={{
                   py: 1,
                   color: 'text.secondary',
