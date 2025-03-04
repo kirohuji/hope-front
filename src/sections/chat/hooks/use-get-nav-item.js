@@ -1,5 +1,7 @@
 // ----------------------------------------------------------------------
+import CryptoJS from 'crypto-js';
 
+const secretKey = 'future';
 export default function useGetNavItem({ currentUserId, conversation, user }) {
   const { messages, participants } = conversation;
 
@@ -28,8 +30,11 @@ export default function useGetNavItem({ currentUserId, conversation, user }) {
   const group = participantsInConversation.length > 2 || conversation.isGroup === 'GROUP';
 
   const displayName = group
-    ? conversation.label || participantsInConversation.map((participant) => participant.realName).join(', ')
-    : participantsInConversation[0]?.displayName || participantsInConversation[0]?.username || conversation.label;
+    ? conversation.label ||
+      participantsInConversation.map((participant) => participant.realName).join(', ')
+    : participantsInConversation[0]?.displayName ||
+      participantsInConversation[0]?.username ||
+      conversation.label;
   const realName = group
     ? // ? participantsInConversation.map((participant) => participant.realName).join(', ')
       '群聊'
@@ -44,7 +49,10 @@ export default function useGetNavItem({ currentUserId, conversation, user }) {
   if (lastMessage) {
     const sender = lastMessage.senderId === currentUserId ? ' 你: ' : '';
 
-    const message = lastMessage.contentType === 'image' ? '发送了一张照片' : lastMessage.body;
+    const message =
+      lastMessage.contentType === 'image'
+        ? '发送了一张照片'
+        : CryptoJS.AES.decrypt(lastMessage.body, secretKey).toString(CryptoJS.enc.Utf8);
 
     displayText = `${sender}${message}`;
   }

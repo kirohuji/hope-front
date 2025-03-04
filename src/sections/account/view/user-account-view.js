@@ -32,11 +32,11 @@ const TABS = [
     label: '会员管理',
     icon: <Iconify icon="solar:bill-list-bold" width={24} />,
   },
-  {
-    value: 'notifications',
-    label: 'Notifications',
-    icon: <Iconify icon="solar:bell-bing-bold" width={24} />,
-  },
+  // {
+  //   value: 'notifications',
+  //   label: 'Notifications',
+  //   icon: <Iconify icon="solar:bell-bing-bold" width={24} />,
+  // },
   // {
   //   value: 'social',
   //   label: 'Social links',

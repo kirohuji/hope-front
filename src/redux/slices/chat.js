@@ -6,9 +6,10 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 // utils
 import uuidv4 from 'src/utils/uuidv4';
 import { friendService, roleService, messagingService } from 'src/composables/context-provider';
-
+import CryptoJS from 'crypto-js';
 // ----------------------------------------------------------------------
 
+const secretKey = 'future';
 function objFromArray(array, key = '_id') {
   return array.reduce((accumulator, current) => {
     accumulator[current[key]] = current;
@@ -283,13 +284,14 @@ export function sendMessage(conversationKey, body) {
   return async (dispatch) => {
     dispatch(slice.actions.startSending());
     const uuid = uuidv4();
+    const encryptedMessage = CryptoJS.AES.encrypt(body.message, secretKey).toString();
     try {
       // 先存在本地
       dispatch(
         slice.actions.onSendMessage({
           conversationId: conversationKey,
           messageId: uuid,
-          message: body.message,
+          message: encryptedMessage,
           contentType: body.contentType,
           attachments: body.attachments,
           senderId: body.senderId,
@@ -301,7 +303,7 @@ export function sendMessage(conversationKey, body) {
       // 发送消息到后端
       const message = await messagingService.sendMessage({
         _id: conversationKey,
-        body: body.message,
+        body: encryptedMessage,
         contentType: body.contentType,
         attachments: body.attachments,
         sendingMessageId: body.sendingMessageId || uuid,

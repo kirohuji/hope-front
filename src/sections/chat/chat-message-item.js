@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
+import CryptoJS from 'crypto-js';
 import { formatDistanceToNowStrict } from 'date-fns';
 // @mui
 import Box from '@mui/material/Box';
@@ -21,8 +22,9 @@ import { zhCN } from 'date-fns/locale';
 // redux
 import { useDispatch } from 'src/redux/store';
 import { sendMessage } from 'src/redux/slices/chat';
-// hooks
 import { useGetMessage } from './hooks';
+
+const secretKey = 'future';
 
 // ----------------------------------------------------------------------
 
@@ -88,7 +90,9 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
         return (
           <div
             style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
-            dangerouslySetInnerHTML={{ __html: bodyContent }}
+            dangerouslySetInnerHTML={{
+              __html: CryptoJS.AES.decrypt(bodyContent, secretKey).toString(CryptoJS.enc.Utf8),
+            }}
           />
         );
       case 'mp3':
@@ -135,7 +139,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
                   borderRadius: 1.5,
                   width: 'calc(100% + 24px)',
                   height: 'calc(100% + 24px)',
-                  backgroundColor: 'rgba(0, 0, 0, 0.2)' // 半透明黑色遮罩
+                  backgroundColor: 'rgba(0, 0, 0, 0.2)', // 半透明黑色遮罩
                 }}
               />
             )}

@@ -101,3 +101,6 @@ body {
 .return-layout {
   overflow: hidden;
 }
+.MuiTabs-flexContainer {
+  justify-content: space-evenly;
+}

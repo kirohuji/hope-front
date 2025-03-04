@@ -27,7 +27,7 @@ export default function ProfileGallery({ gallery }) {
   return (
     <>
       <Typography variant="h4" sx={{ my: 5 }}>
-        Gallery
+        图集
       </Typography>
 
       <Box

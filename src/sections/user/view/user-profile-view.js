@@ -8,6 +8,7 @@ import Tabs, { tabsClasses } from '@mui/material/Tabs';
 import { paths } from 'src/routes/paths';
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
+import { useAuthContext } from 'src/auth/hooks';
 // _mock
 import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from 'src/_mock';
 // components
@@ -26,22 +27,22 @@ import ProfileFollowers from '../profile-followers';
 const TABS = [
   {
     value: 'profile',
-    label: 'Profile',
+    label: '基本信息',
     icon: <Iconify icon="solar:user-id-bold" width={24} />,
   },
-  {
-    value: 'followers',
-    label: 'Followers',
-    icon: <Iconify icon="solar:heart-bold" width={24} />,
-  },
-  {
-    value: 'friends',
-    label: 'Friends',
-    icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
-  },
+  // {
+  //   value: 'followers',
+  //   label: '跟随者',
+  //   icon: <Iconify icon="solar:heart-bold" width={24} />,
+  // },
+  // {
+  //   value: 'friends',
+  //   label: 'Friends',
+  //   icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
+  // },
   {
     value: 'gallery',
-    label: 'Gallery',
+    label: '图集',
     icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
   },
 ];
@@ -51,7 +52,9 @@ const TABS = [
 export default function UserProfileView() {
   const settings = useSettingsContext();
 
-  const { user } = useMockedUser();
+  const { user } = useAuthContext();
+
+  console.log('user', user);
 
   const [searchFriends, setSearchFriends] = useState('');
 
@@ -68,11 +71,11 @@ export default function UserProfileView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Profile"
+        heading="个人信息"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User', href: paths.dashboard.user.root },
-          { name: user?.displayName },
+          {},
+          // { name: 'User', href: paths.dashboard.user.root },
+          // { name: user?.displayName },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -86,15 +89,17 @@ export default function UserProfileView() {
         }}
       >
         <ProfileCover
-          role={_userAbout.role}
+          role={user.realName}
           name={user?.displayName}
-          avatarUrl={user?.photoURL}
-          coverUrl={_userAbout.coverUrl}
+          username={user?.username}
+          photoURL={user?.photoURL}
+          coverUrl={user.photoURL}
         />
 
         <Tabs
           value={currentTab}
           onChange={handleChangeTab}
+          className="profile-tab"
           sx={{
             width: 1,
             bottom: 0,
@@ -116,7 +121,7 @@ export default function UserProfileView() {
         </Tabs>
       </Card>
 
-      {currentTab === 'profile' && <ProfileHome info={_userAbout} posts={_userFeeds} />}
+      {currentTab === 'profile' && <ProfileHome info={user} posts={_userFeeds} />}
 
       {currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />}
 

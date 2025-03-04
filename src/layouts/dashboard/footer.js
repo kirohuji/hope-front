@@ -37,13 +37,18 @@ const navigations = [
   },
   {
     label: '日程',
-    icon: ICONS.user,
+    icon: ICONS.calendar,
     to: '/dashboard/calendar',
   },
   {
     label: '阅读',
     icon: ICONS.blog,
     to: '/dashboard/training/dashboard',
+  },
+  {
+    label: '账号',
+    icon: ICONS.user,
+    to: '/dashboard/user',
   },
 ];
 
@@ -98,7 +103,7 @@ export default function DashboardFooter() {
       if (chat.conversations.unreadCount === 0) {
         clearAllNotifications();
       }
-    } else if(Capacitor.getPlatform() === 'android'){
+    } else if (Capacitor.getPlatform() === 'android') {
       console.log('清空安卓 通知');
     }
   }, [chat.conversations.unreadCount]);

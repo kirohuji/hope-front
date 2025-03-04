@@ -229,23 +229,23 @@ export function useNavData() {
               // { title: t('edit'), path: paths.dashboard.book.demo.edit },
             ],
           },
-          {
-            title: t('bpmn'),
-            auth: ['Bpmn', 'BpmnList', 'BpmnListAdd', 'BpmnListEdit', 'BpmnListDelete'],
-            path: paths.dashboard.bpmn.root,
-            icon: ICONS.product,
-            children: [
-              { title: t('bpmn_digram_list'), path: paths.dashboard.bpmn.root, auth: ['BpmnList'] },
-              {
-                title: t('bpmn_instance_list'),
-                path: paths.dashboard.bpmn.instances,
-                auth: ['BpmnList'],
-              },
-              // { title: t('details'), path: paths.dashboard.book.demo.details },
-              // { title: t('create'), path: paths.dashboard.book.new },
-              // { title: t('edit'), path: paths.dashboard.book.demo.edit },
-            ],
-          },
+          // {
+          //   title: t('bpmn'),
+          //   auth: ['Bpmn', 'BpmnList', 'BpmnListAdd', 'BpmnListEdit', 'BpmnListDelete'],
+          //   path: paths.dashboard.bpmn.root,
+          //   icon: ICONS.product,
+          //   children: [
+          //     { title: t('bpmn_digram_list'), path: paths.dashboard.bpmn.root, auth: ['BpmnList'] },
+          //     {
+          //       title: t('bpmn_instance_list'),
+          //       path: paths.dashboard.bpmn.instances,
+          //       auth: ['BpmnList'],
+          //     },
+          //     // { title: t('details'), path: paths.dashboard.book.demo.details },
+          //     // { title: t('create'), path: paths.dashboard.book.new },
+          //     // { title: t('edit'), path: paths.dashboard.book.demo.edit },
+          //   ],
+          // },
           // ATRICLE
           // {
           //   title: t('article'),

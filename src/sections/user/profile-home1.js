@@ -60,27 +60,25 @@ export default function ProfileHome({ info, posts }) {
       <CardHeader title="关于我" />
 
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Box sx={{ typography: 'body2' }}>{info.about}</Box>
+        <Box sx={{ typography: 'body2' }}>{info.quote}</Box>
 
-        <Stack direction="row" spacing={2} sx={{ marginLeft: '-4px' }}>
+        <Stack direction="row" spacing={2}>
           <Iconify icon="mingcute:location-fill" width={24} />
 
-          <Box sx={{ typography: 'body2', marginTop: '4px', marginLeft: '-10px' }}>
+          <Box sx={{ typography: 'body2' }}>
             {`生活在 `}
             <Link variant="subtitle2" color="inherit">
-              {info.address}
+              {info.country}
             </Link>
           </Box>
         </Stack>
 
-        <Stack direction="row" sx={{ typography: 'body2', marginLeft: '-4px' }}>
+        <Stack direction="row" sx={{ typography: 'body2' }}>
           <Iconify icon="fluent:mail-24-filled" width={24} sx={{ mr: 2 }} />
-          <Box sx={{ typography: 'body2', marginTop: '4px', marginLeft: '-10px' }}>
-            {info.email}
-          </Box>
+          {info.email}
         </Stack>
 
-        {/* <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={2}>
           <Iconify icon="ic:round-business-center" width={24} />
 
           <Box sx={{ typography: 'body2' }}>
@@ -89,18 +87,18 @@ export default function ProfileHome({ info, posts }) {
               {info.company}
             </Link>
           </Box>
-        </Stack> */}
+        </Stack>
 
-        {/* <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={2}>
           <Iconify icon="ic:round-business-center" width={24} />
 
-          <Box sx={{ typography: 'body2', marginTop: '3px' }}>
-            {`我的职业是 `}
+          <Box sx={{ typography: 'body2' }}>
+            {`Studied at `}
             <Link variant="subtitle2" color="inherit">
               {info.school}
             </Link>
           </Box>
-        </Stack> */}
+        </Stack>
       </Stack>
     </Card>
   );
@@ -183,6 +181,7 @@ export default function ProfileHome({ info, posts }) {
           {/* {renderSocials} */}
         </Stack>
       </Grid>
+
       {/* <Grid xs={12} md={8}>
         <Stack spacing={3}>
           {renderPostInput}

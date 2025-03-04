@@ -31,11 +31,11 @@ const OPTIONS = [
   //   linkTo: '/',
   // },
   // {
-  //   label: '个人中心',
+  //   label: '个人设置',
   //   linkTo: paths.dashboard.user.profile,
   // },
   {
-    label: '设置',
+    label: '系统设置',
     linkTo: paths.user.account,
   },
 ];

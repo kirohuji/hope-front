@@ -71,7 +71,7 @@ export default function Header({ onOpenNav }) {
           <ScopePopover />
         </Restricted>
         {pathname === '/dashboard/chat' && <ChatPopover />}
-        <AccountPopover />
+        {pathname === '/dashboard/user' && <AccountPopover />}
       </Stack>
     </>
   );
