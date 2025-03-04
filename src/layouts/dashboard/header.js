@@ -7,6 +7,10 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 // theme
 import { bgBlur } from 'src/theme/css';
+
+// route
+import { paths } from 'src/routes/paths';
+import { usePathname, useRouter } from 'src/routes/hook';
 // hooks
 import { useOffSetTop } from 'src/hooks/use-off-set-top';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -16,7 +20,6 @@ import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 import Restricted from 'src/auth/guard/restricted';
 //
-import { usePathname } from 'src/routes/hook';
 import { HEADER, NAV } from '../config-layout';
 import {
   Searchbar,
@@ -24,11 +27,14 @@ import {
   ChatPopover,
   ScopePopover,
   NotificationsPopover,
+  SettingsButton,
 } from '../_common';
 
 // ----------------------------------------------------------------------
 
 export default function Header({ onOpenNav }) {
+  const router = useRouter();
+
   const pathname = usePathname();
 
   const theme = useTheme();
@@ -45,6 +51,10 @@ export default function Header({ onOpenNav }) {
 
   const offsetTop = offset && !isNavHorizontal;
 
+  const handleClick = () => {
+    router.push(paths.system.root);
+  };
+
   const renderContent = (
     <>
       {lgUp && isNavHorizontal && <Logo sx={{ mr: 2.5 }} />}
@@ -55,23 +65,25 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
       {false && <Searchbar />}
+      <Restricted to={['Scope:Admin']}>
+        <ScopePopover />
+      </Restricted>
       <Stack
         flexGrow={1}
         direction="row"
         alignItems="center"
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
+        sx={{ mr: '-12px' }}
       >
         {/* <LanguagePopover /> */}
         <NotificationsPopover />
         {/* { lgUp && <ScopePopover /> } */}
         {/* <ContactsPopover /> */}
-        {/* <SettingsButton /> */}
-        <Restricted to={['Scope:Admin']}>
-          <ScopePopover />
-        </Restricted>
         {pathname === '/dashboard/chat' && <ChatPopover />}
-        {pathname === '/dashboard/user' && <AccountPopover />}
+        {/* {pathname === '/dashboard/user' && <AccountPopover />} */}
+        {pathname === '/dashboard/user' && <SettingsButton onClick={handleClick} />}
+        {/* <SettingsButton /> */}
       </Stack>
     </>
   );

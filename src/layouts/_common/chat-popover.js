@@ -133,8 +133,9 @@ export default function ChatPopover() {
         whileHover="hover"
         variants={varHover(1.05)}
         onClick={popover.onOpen}
+        sx={{ pl: '2px' }}
       >
-        <Iconify icon="lets-icons:add-duotone" width={32} />
+        <Iconify icon="lets-icons:add-duotone" width={30} />
       </IconButton>
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
         {/* <Divider sx={{ borderStyle: 'dashed' }} /> */}

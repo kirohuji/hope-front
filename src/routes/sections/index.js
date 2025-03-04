@@ -14,13 +14,13 @@ import { componentsRoutes } from './components';
 
 const AiPage = lazy(() => import('src/pages/dashboard/openai'));
 const ChatPage = lazy(() => import('src/pages/dashboard/chat'));
-const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'))
+const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'));
 
-const TrainingSearchPage = lazy(() => import('src/pages/dashboard/training/search'))
+const TrainingSearchPage = lazy(() => import('src/pages/dashboard/training/search'));
 
-const TrainingSearchDetailPage = lazy(() => import('src/pages/dashboard/training/searchDetail'))
+const TrainingSearchDetailPage = lazy(() => import('src/pages/dashboard/training/searchDetail'));
 
-const TrainingDetailPage = lazy(() => import('src/pages/dashboard/training/detail'))
+const TrainingDetailPage = lazy(() => import('src/pages/dashboard/training/detail'));
 
 const UserProfilePage = lazy(() => import('src/pages/dashboard/user/profile'));
 
@@ -28,9 +28,12 @@ const UserAccountPage = lazy(() => import('src/pages/dashboard/user/account'));
 
 const ArticleDetailPage = lazy(() => import('src/pages/dashboard/article/details'));
 
+// System
+const SystemGeneralPage = lazy(() => import('src/pages/dashboard/system/general'));
+
 // ----------------------------------------------------------------------
 
-export default function Router () {
+export default function Router() {
   return useRoutes([
     // SET INDEX PAGE WITH SKIP HOME PAGE
     {
@@ -50,12 +53,14 @@ export default function Router () {
     //   ),
     // },
     {
-      path: 'reading', element: <ReturnLayout />,
+      path: 'reading',
+      element: <ReturnLayout />,
       children: [
         {
-          path: ':id', element: <ArticleDetailPage />
+          path: ':id',
+          element: <ArticleDetailPage />,
         },
-      ]
+      ],
     },
     // Auth routes
     ...authRoutes,
@@ -76,20 +81,25 @@ export default function Router () {
         { path: 'openai', element: <AiPage /> },
         { path: 'openai', element: <AiPage /> },
         {
-          path: 'training', element: <TrainingPage />
+          path: 'training',
+          element: <TrainingPage />,
         },
         {
-          path: 'training/detail', element: <TrainingDetailPage />
+          path: 'training/detail',
+          element: <TrainingDetailPage />,
         },
         {
-          path: 'training/search', element: <TrainingSearchPage />
+          path: 'training/search',
+          element: <TrainingSearchPage />,
         },
         {
-          path: 'training/search/detail/:id', element: <TrainingSearchDetailPage />
+          path: 'training/search/detail/:id',
+          element: <TrainingSearchDetailPage />,
         },
         { path: 'account', element: <UserAccountPage /> },
         { path: 'profile', element: <UserProfilePage /> },
-      ]
+        { path: 'system', element: <SystemGeneralPage /> },
+      ],
     },
     // No match 404
     { path: '*', element: <Navigate to="/404" replace /> },

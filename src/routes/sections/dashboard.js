@@ -111,6 +111,8 @@ const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'));
 
 // Audit
 const AuditListPage = lazy(() => import('src/pages/dashboard/audit/list'));
+
+// Bpmn
 const BpmnListPage = lazy(() => import('src/pages/dashboard/bpmn/list'));
 const BpmnEditPage = lazy(() => import('src/pages/dashboard/bpmn/edit'));
 const BpmnCreatePage = lazy(() => import('src/pages/dashboard/bpmn/new'));

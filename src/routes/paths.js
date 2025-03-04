@@ -83,6 +83,9 @@ export const paths = {
     searchDetail: (id) => `/training/search/detail/${id}`,
     detail: `/training/detail/`,
   },
+  system: {
+    root: '/system',
+  },
   user: {
     account: `/account`,
   },

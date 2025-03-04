@@ -7,15 +7,18 @@ import Badge, { badgeClasses } from '@mui/material/Badge';
 // components
 import Iconify from 'src/components/iconify';
 import { varHover } from 'src/components/animate';
+import { useSettingsContext } from 'src/components/settings';
 
 // ----------------------------------------------------------------------
 
-export default function SettingsButton({ sx, onClick }) {
+export default function SettingsButton({ sx }) {
+  const settings = useSettingsContext();
+
   return (
     <Badge
       color="error"
       variant="dot"
-      invisible
+      invisible={!settings.canReset}
       sx={{
         [`& .${badgeClasses.badge}`]: {
           top: 8,
@@ -27,7 +30,7 @@ export default function SettingsButton({ sx, onClick }) {
       <Box
         component={m.div}
         animate={{
-          rotate: 360,
+          rotate: [0, settings.open ? 0 : 360],
         }}
         transition={{
           duration: 12,
@@ -41,7 +44,7 @@ export default function SettingsButton({ sx, onClick }) {
           whileHover="hover"
           variants={varHover(1.05)}
           aria-label="settings"
-          onClick={onClick}
+          onClick={settings.onToggle}
           sx={{
             width: 40,
             height: 40,
@@ -56,5 +59,4 @@ export default function SettingsButton({ sx, onClick }) {
 
 SettingsButton.propTypes = {
   sx: PropTypes.object,
-  onClick: PropTypes.func,
 };
