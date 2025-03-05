@@ -269,11 +269,5 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/broadcast/${MOCK_ID}/edit`,
       },
     },
-    notification: {
-      root: `${ROOTS.DASHBOARD}/notification`,
-      new: `${ROOTS.DASHBOARD}/notification/new`,
-      details: (id) => `${ROOTS.DASHBOARD}/notification/${id}`,
-      edit: (id) => `${ROOTS.DASHBOARD}/notification/${id}/edit`,
-    },
   },
 };

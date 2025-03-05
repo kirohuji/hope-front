@@ -127,7 +127,7 @@ export default function AccountGeneral() {
   );
 
   return (
-    <Box className="account-general-form" style={{ height: '100%', overflowX: 'auto', paddingBottom: '80px' }}>
+    <Box className="account-general-form" style={{ height: '100%', paddingBottom: '80px' }}>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <Grid container spacing={3}>
           <Grid xs={12} md={4}>
@@ -175,7 +175,12 @@ export default function AccountGeneral() {
               />
               {false && (
                 <div>
-                  <RHFSwitch name="isPublic" labelPlacement="start" label="是否公开" sx={{ mt: 5 }} />
+                  <RHFSwitch
+                    name="isPublic"
+                    labelPlacement="start"
+                    label="是否公开"
+                    sx={{ mt: 5 }}
+                  />
 
                   <Button variant="soft" color="error" sx={{ mt: 3 }}>
                     Delete User

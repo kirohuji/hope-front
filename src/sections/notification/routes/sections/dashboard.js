@@ -90,8 +90,7 @@ const BroadcastCreatePage = lazy(() => import('src/pages/dashboard/broadcast/new
 const BroadcastEditPage = lazy(() => import('src/pages/dashboard/broadcast/edit'));
 
 // NOTIFICATION
-const NotificationListPage = lazy(() => import('src/pages/dashboard/notification/list'));
-const NotificationCreatePage = lazy(() => import('src/pages/dashboard/notification/new'));
+const NotificationPage = lazy(() => import('src/pages/dashboard/notification/list'));
 // FILE MANAGER
 const FileManagerPage = lazy(() => import('src/pages/dashboard/file-manager'));
 // APP
@@ -287,9 +286,8 @@ export const dashboardRoutes = [
       {
         path: 'notification',
         children: [
-          { element: <NotificationListPage />, index: true },
-          { path: 'list', element: <NotificationListPage /> },
-          { path: 'new', element: <NotificationCreatePage /> },
+          { element: <NotificationPage />, index: true },
+          { path: 'list', element: <NotificationPage /> },
         ],
       },
       {

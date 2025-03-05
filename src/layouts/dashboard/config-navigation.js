@@ -30,6 +30,7 @@ export const ICONS = {
   lock: icon('ic_lock'),
   tour: icon('ic_tour'),
   broadcast: icon('ic_tour'),
+  notification: icon('ic_tour'),
   order: icon('ic_order'),
   label: icon('ic_label'),
   blank: icon('ic_blank'),
@@ -58,17 +59,17 @@ export function useNavData() {
     () => [
       // OVERVIEW
       // ----------------------------------------------------------------------
-      // {
-      //   subheader: t('overview'),
-      //   items: [
-      //     // { title: t('app'), path: paths.dashboard.root, icon: ICONS.dashboard },
-      //     { title: t('ecommerce'), path: paths.dashboard.general.ecommerce, icon: ICONS.ecommerce },
-      //     { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics },
-      //     { title: t('banking'), path: paths.dashboard.general.banking, icon: ICONS.banking },
-      //     { title: t('booking'), path: paths.dashboard.general.booking, icon: ICONS.booking },
-      //     { title: t('file'), path: paths.dashboard.general.file, icon: ICONS.file },
-      //   ],
-      // },
+      {
+        subheader: t('overview'),
+        items: [
+          // { title: t('app'), path: paths.dashboard.root, icon: ICONS.dashboard },
+          { title: t('ecommerce'), path: paths.dashboard.general.ecommerce, icon: ICONS.ecommerce },
+          { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics },
+          { title: t('banking'), path: paths.dashboard.general.banking, icon: ICONS.banking },
+          { title: t('booking'), path: paths.dashboard.general.booking, icon: ICONS.booking },
+          { title: t('file'), path: paths.dashboard.general.file, icon: ICONS.file },
+        ],
+      },
 
       // MANAGEMENT
       // ----------------------------------------------------------------------
@@ -297,6 +298,28 @@ export function useNavData() {
             icon: ICONS.broadcast,
             children: [
               { title: t('list'), path: paths.dashboard.broadcast.root, auth: ['BroadcastList'] },
+              // { title: t('details'), path: paths.dashboard.broadcast.demo.details },
+              // { title: t('create'), path: paths.dashboard.broadcast.new },
+              // { title: t('edit'), path: paths.dashboard.broadcast.demo.edit },
+            ],
+          },
+          {
+            title: t('notification'),
+            path: paths.dashboard.notification.root,
+            auth: [
+              'Notification',
+              'NotificationList',
+              'NotificationListAdd',
+              'NotificationListEdit',
+              'NotificationListDelete',
+            ],
+            icon: ICONS.notification,
+            children: [
+              {
+                title: t('list'),
+                path: paths.dashboard.notification.root,
+                auth: ['NotificationList'],
+              },
               // { title: t('details'), path: paths.dashboard.broadcast.demo.details },
               // { title: t('create'), path: paths.dashboard.broadcast.new },
               // { title: t('edit'), path: paths.dashboard.broadcast.demo.edit },

@@ -16,7 +16,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
 //
-import { broadcastService } from 'src/composables/context-provider';
+import { notificationService } from 'src/composables/context-provider';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
 import {
@@ -29,14 +29,14 @@ import {
   updateDataPublishedStatus,
 } from 'src/redux/slices/broadcast';
 import { useSnackbar } from 'src/components/snackbar';
-import BroadcastContactsDialog from '../broadcast-contacts-dialog';
-import BroadcastDetailsBookers from '../broadcast-details-bookers';
-import BroadcastDetailsContent from '../broadcast-details-content';
-import BroadcastDetailsToolbar from '../broadcast-details-toolbar';
+import NotificationContactsDialog from '../notification-contacts-dialog';
+import NotificationDetailsBookers from '../notification-details-bookers';
+import NotificationDetailsContent from '../notification-details-content';
+import NotificationDetailsToolbar from '../notification-details-toolbar';
 
 export const TOUR_DETAILS_TABS = [
   { value: 'content', label: '内容' },
-  { value: 'participants', label: '参加者列表', auth: ['BroadcastListPersonSignOrDelete'] },
+  { value: 'participants', label: '参加者列表', auth: ['NotificationListPersonSignOrDelete'] },
 ];
 
 export const TOUR_PUBLISH_OPTIONS = [
@@ -51,11 +51,11 @@ export const TOUR_PUBLISH_OPTIONS = [
 ];
 // ----------------------------------------------------------------------
 
-export default function BroadcastDetailsView() {
+export default function NotificationDetailsView() {
   const { enqueueSnackbar } = useSnackbar();
   const [openContacts, setOpenContacts] = useState(false);
   const { user } = useAuthContext();
-  const { details } = useSelector((state) => state.broadcast);
+  const { details } = useSelector((state) => state.notification);
   const [loading, setLoading] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
   const dispatch = useDispatch();
@@ -72,9 +72,9 @@ export default function BroadcastDetailsView() {
 
   const { id, selectedTab } = params;
 
-  const [currentBroadcast, setCurrentBroadcast] = useState(null);
+  const [currentNotification, setCurrentNotification] = useState(null);
 
-  const [publish, setPublish] = useState(currentBroadcast?.publish);
+  const [publish, setPublish] = useState(currentNotification?.publish);
 
   const [currentTab, setCurrentTab] = useState('content');
 
@@ -155,8 +155,8 @@ export default function BroadcastDetailsView() {
   const handlePublish = useCallback(async () => {
     setButtonLoading(true);
     try {
-      await broadcastService.publish({
-        broadcast_id: id,
+      await notificationService.publish({
+        notification_id: id,
       });
       dispatch(
         updateDataPublishedStatus({
@@ -176,8 +176,8 @@ export default function BroadcastDetailsView() {
   const handleCancelPublish = useCallback(async () => {
     try {
       setButtonLoading(true);
-      await broadcastService.unpublish({
-        broadcast_id: id,
+      await notificationService.unpublish({
+        notification_id: id,
       });
       dispatch(
         updateDataPublishedStatus({
@@ -234,9 +234,9 @@ export default function BroadcastDetailsView() {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-      <BroadcastDetailsToolbar
-        backLink={paths.dashboard.broadcast.root}
-        editLink={paths.dashboard.broadcast.edit(`${details.byId[id]?._id}`)}
+      <NotificationDetailsToolbar
+        backLink={paths.dashboard.notification.root}
+        editLink={paths.dashboard.notification.edit(`${details.byId[id]?._id}`)}
         liveLink="#"
         publish={publish || ''}
         onChangePublish={handleChangePublish}
@@ -244,11 +244,11 @@ export default function BroadcastDetailsView() {
       />
       {renderTabs}
       {currentTab === 'content' && details.byId[id] && (
-        <BroadcastDetailsContent broadcast={details.byId[id]} />
+        <NotificationDetailsContent notification={details.byId[id]} />
       )}
 
       {currentTab === 'participants' && (
-        <BroadcastDetailsBookers
+        <NotificationDetailsBookers
           participants={(details.participantsBy && details.participantsBy[id]) || []}
           onRefresh={onRefresh}
         />
@@ -288,7 +288,7 @@ export default function BroadcastDetailsView() {
       </Stack>
 
       {details.byId[id] && (
-        <BroadcastContactsDialog
+        <NotificationContactsDialog
           current={details.byId[id]}
           open={openContacts}
           onUpdateRefresh={onRefresh}
