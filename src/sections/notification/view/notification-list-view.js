@@ -278,65 +278,6 @@ export default function NotificationListView() {
           }}
         />
 
-        <Card
-          sx={{
-            mb: { xs: 3, md: 5 },
-          }}
-        >
-          <Scrollbar>
-            <Stack
-              direction="row"
-              divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-              sx={{ py: 2 }}
-            >
-              <NotificationAnalytic
-                title="问题反馈"
-                level={5}
-                total={100}
-                percent={100}
-                icon="solar:bell-bing-bold-duotone"
-                color={theme.palette.error.main}
-              />
-
-              <NotificationAnalytic
-                title="系统应用"
-                level={4}
-                total={100}
-                percent={100}
-                icon="solar:sort-by-time-bold-duotone"
-                color={theme.palette.warning.main}
-              />
-
-              {/* <NotificationAnalytic
-                title="3级(中度敏感)"
-                level={3}
-                total={100}
-                percent={100}
-                icon="solar:file-corrupted-bold-duotone"
-                color={theme.palette.text.secondary}
-              /> */}
-
-              <NotificationAnalytic
-                title="运营公告"
-                level={2}
-                total={100}
-                percent={100}
-                icon="solar:bill-list-bold-duotone"
-                color={theme.palette.info.main}
-              />
-
-              {/* <NotificationAnalytic
-                title="1级(普通信息)"
-                level={1}
-                total={100}
-                percent={100}
-                icon="solar:file-check-bold-duotone"
-                color={theme.palette.success.main}
-              /> */}
-            </Stack>
-          </Scrollbar>
-        </Card>
-
         <Card>
           <Tabs
             value={filters.type}

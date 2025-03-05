@@ -269,6 +269,9 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/broadcast/${MOCK_ID}/edit`,
       },
     },
+    discovery: {
+      root: `/discovery`,
+    },
     notification: {
       root: `${ROOTS.DASHBOARD}/notification`,
       new: `${ROOTS.DASHBOARD}/notification/new`,

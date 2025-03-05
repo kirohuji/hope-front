@@ -123,6 +123,8 @@ const BpmnCreatePage = lazy(() => import('src/pages/dashboard/bpmn/new'));
 const BpmnDetailPage = lazy(() => import('src/pages/dashboard/bpmn/details'));
 const BpmnInstancePage = lazy(() => import('src/pages/dashboard/bpmn/instances'));
 
+const DiscoveryPage = lazy(() => import('src/pages/dashboard/discovery'));
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -147,6 +149,10 @@ export const dashboardRoutes = [
       {
         path: 'training/dashboard',
         element: <TrainingPage />,
+      },
+      {
+        path: 'discovery',
+        children: [{ element: <DiscoveryPage />, index: true }],
       },
       {
         path: 'user',

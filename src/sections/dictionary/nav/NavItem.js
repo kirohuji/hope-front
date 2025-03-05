@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 // @mui
-import { ListItemText, ListItemButton } from '@mui/material';
+import { ListItemText, ListItem } from '@mui/material';
 import { ICON } from 'src/config-global';
 // components
 import Iconify from 'src/components/iconify';
@@ -12,19 +12,21 @@ NavItem.propTypes = {
   onSelect: PropTypes.func,
   onDelete: PropTypes.func,
   onEdit: PropTypes.func,
-  active: PropTypes.bool
+  active: PropTypes.bool,
 };
 
-export default function NavItem ({ active, item, onSelect, onEdit, onDelete, ...other }) {
-
+export default function NavItem({ active, item, onSelect, onEdit, onDelete, ...other }) {
   return (
-    <ListItemButton
-      onClick={() => onSelect(item)}
+    <ListItem
+      onClick={(e) => {
+        onSelect(item);
+      }}
       sx={{
         px: 3,
         height: 48,
         typography: 'body2',
         color: 'text.secondary',
+        cursor: 'pointer',
         textTransform: 'capitalize',
         ...(active && {
           color: 'text.primary',
@@ -34,16 +36,19 @@ export default function NavItem ({ active, item, onSelect, onEdit, onDelete, ...
       }}
       {...other}
     >
-
       <ListItemText primary={item.label} sx={{ color: 'text.primary' }} />
       <Iconify
         icon="eva:edit-outline"
-        onClick={onEdit}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onEdit(item);
+        }}
         sx={{
           mr: 0,
           width: ICON.NAV_ITEM,
           height: ICON.NAV_ITEM,
-          color: "text.primary",
+          color: 'text.primary',
         }}
       />
       <Iconify
@@ -53,9 +58,9 @@ export default function NavItem ({ active, item, onSelect, onEdit, onDelete, ...
           mr: 0,
           width: ICON.NAV_ITEM,
           height: ICON.NAV_ITEM,
-          color: "error.main",
+          color: 'error.main',
         }}
       />
-    </ListItemButton>
+    </ListItem>
   );
 }

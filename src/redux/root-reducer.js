@@ -17,6 +17,7 @@ import broadcastReducer from './slices/broadcast';
 import bookReducer from './slices/book';
 import openaiReducer from './slices/openai';
 import notificationReducer from './slices/notification';
+import dictionaryReducer from './slices/dictionary';
 // ----------------------------------------------------------------------
 
 const trainningPersistConfig = {
@@ -86,6 +87,12 @@ export const chatPersistConfig = {
   keyPrefix: 'redux-',
 };
 
+export const dictionaryPersistConfig = {
+  key: 'dictionary',
+  storage,
+  keyPrefix: 'redux-',
+};
+
 export const rootReducer = combineReducers({
   calendar: persistReducer(calenderPersistConfig, calendarReducer),
   chat: persistReducer(chatPersistConfig, chatReducer),
@@ -93,6 +100,7 @@ export const rootReducer = combineReducers({
   trainning: persistReducer(trainningPersistConfig, trainningReducer),
   notification: notificationReducer,
   dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
+  dictionary: persistReducer(dictionaryPersistConfig, dictionaryReducer),
   // book: persistReducer(bookPersistConfig, bookReducer),
   book: bookReducer,
   openai: openaiReducer,

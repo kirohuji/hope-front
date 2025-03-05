@@ -31,9 +31,9 @@ const navigations = [
   //   auth: ['FileManager'],
   // },
   {
-    label: '活动',
+    label: '发现',
     icon: ICONS.tour,
-    to: '/dashboard/broadcast',
+    to: '/dashboard/discovery',
   },
   {
     label: '日程',

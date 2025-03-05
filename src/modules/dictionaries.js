@@ -8,4 +8,8 @@ export default class DictionaryService extends Service {
       data: target,
     });
   }
+
+  dict(target) {
+    return this.api.post(`${this.model}/dict`, target);
+  }
 }

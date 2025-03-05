@@ -20,6 +20,7 @@ import { useMeteorContext } from 'src/meteor/hooks';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import Iconify from 'src/components/iconify';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import { useDispatch, useSelector } from 'src/redux/store';
 import {
@@ -419,7 +420,18 @@ export default function ChatView() {
               >
                 {renderTabs}
               </Stack>
-              <Divider />
+              {/* <CustomBreadcrumbs
+                heading="消息聊天"
+                links={[
+                  {},
+                  // { name: 'User', href: paths.dashboard.user.root },
+                  // { name: user?.displayName },
+                ]}
+                sx={{
+                  mb: { xs: 1, md: 1 },
+                }}
+              /> */}
+              {/* <Divider /> */}
               {currentTab === 'organizations' &&
                 (loading ? (
                   <Box

@@ -297,30 +297,77 @@ export const _postTitles = [
 // ----------------------------------------------------------------------
 
 export const _productNames = [
-  'Nike Air Force 1 NDESTRUKT',
-  'Foundations Matte Flip Flop',
-  'Nike Air Zoom Pegasus 37 A.I.R. Chaz Bear',
-  'Arizona Soft Footbed Sandal',
-  'Boston Soft Footbed Sandal',
-  'Zoom Freak 2',
-  'Gazelle Vintage low-top sneakers',
-  'Jordan Delta',
+  'Nike 空军一号 NDESTRUKT（不可摧毁）',
+  // 这款鞋是Nike为纪念街头文化的坚韧精神而设计，每一步都像城市中的不屈力量
+
+  '基础款哑光人字拖',
+  // 简单却经典，就像夏日里最随性的心情，随时随地都能穿
+
+  'Nike Air Zoom飞马37 A.I.R. 查兹·贝尔联名款',
+  // 这是与艺术家Chaz Bear的联名款，将运动与艺术完美融合
+
+  '亚利桑那柔软鞋垫凉鞋',
+  // 来自德国品牌Birkenstock的经典款，舒适到让你忘记脚上有鞋
+
+  '波士顿柔软鞋垫凉鞋',
+  // 同样来自Birkenstock，是慢生活的代名词
+
+  'Zoom狂人2代',
+  // NBA球星字母哥的签名鞋，充满爆发力与动感
+
+  '加泽尔复古低帮运动鞋',
+  // Adidas经典款，曾风靡80年代街头文化
+
+  '乔丹Delta',
+  // 融合传统篮球鞋与未来科技感的创新设计
+
   'Air Jordan XXXV PF',
-  'Rod Laver low-top sneakers',
-  'Kyrie 7 EP Sisterhood',
-  'Pharrell Williams Human Race NMD sneakers',
-  'Nike Blazer Low 77 Vintage',
-  'ASMC Winter Boot Cold.Rdy',
-  'ZX 8000 Lego sneakers',
-  'Ultraboost 21 sneakers',
-  '2750 Cotu Classic Sneaker',
-  'ZX 9000 A-ZX Series sneakers',
-  'Madrid Big Buckle Sandal',
-  'Chuck 70 Hi Sneaker',
-  'Relaxed Adjustable Strap Slingback Sandal',
-  'Superturf Adventure X Atmos',
-  'Chuck Taylor All Star Lift Sneaker',
-  'Run Star Hike Platform Sneaker',
+  // 迈克尔·乔丹的传奇系列，每一代都是篮球文化的见证
+
+  '罗德·拉弗低帮网球鞋',
+  // 以网球传奇罗德·拉弗命名，致敬网球运动历史
+
+  'Kyrie 7 EP 姐妹情谊',
+  // 凯里·欧文签名鞋，致敬女性力量
+
+  '菲董·威廉姆斯 人类赛道NMD运动鞋',
+  // 音乐人菲董与Adidas的跨界联名，传递平等与包容理念
+
+  'Nike开拓者低帮77复古款',
+  // 回归70年代的经典设计，满满怀旧气息
+
+  'ASMC冬季防寒靴 Cold.Rdy',
+  // 为极寒天气设计，让运动不受温度限制
+
+  'ZX 8000乐高联名款运动鞋',
+  // Adidas与乐高的跨界合作，把童年的想象力穿在脚上
+
+  'Ultraboost 21运动鞋',
+  // 被誉为最舒适的跑步鞋，科技感十足
+
+  '2750 Cotu经典帆布鞋',
+  // 意大利品牌Superga的经典款，简约而富有意大利风情
+
+  'ZX 9000 A-ZX系列运动鞋',
+  // Adidas复古系列，致敬运动鞋的发展历程
+
+  '马德里大扣环凉鞋',
+  // 来自Birkenstock的时尚款，彰显个性
+
+  'Chuck 70高帮运动鞋',
+  // 匡威的经典款，陪伴了几代人的街头文化
+
+  '可调节舒适后带凉鞋',
+  // 为舒适而生，随心调节
+
+  'Superturf Adventure X Atmos联名款',
+  // 运动与streetwear的跨界之作
+
+  'Chuck Taylor全明星增高款运动鞋',
+  // 匡威经典款的现代诠释，为年轻人增添自信
+
+  'Run Star Hike平台运动鞋',
+  // 结合运动鞋与登山靴风格，打破传统设计边界
 ];
 
 // ----------------------------------------------------------------------
