@@ -16,7 +16,7 @@ export default function NotificationCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="创建新的活动通知"
+        heading="创建新的消息通知"
         links={[
           // {
           //   name: 'Dashboard',
@@ -26,7 +26,7 @@ export default function NotificationCreateView() {
             name: '消息通知',
             href: paths.dashboard.notification.root,
           },
-          { name: '创建新的活动通知t' },
+          { name: '创建新的消息通知' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

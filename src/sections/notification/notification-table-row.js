@@ -32,8 +32,17 @@ export default function NotificationTableRow({
   onEditRow,
   onDeleteRow,
 }) {
-  const { sent, notificationNumber, createDate, dueDate, status, notificationTo, totalAmount } =
-    row;
+  const {
+    title,
+    description,
+    direction,
+    type,
+    publisherId,
+    publishedAt,
+    category,
+    createdAt,
+    status,
+  } = row;
 
   const confirm = useBoolean();
 
@@ -65,16 +74,26 @@ export default function NotificationTableRow({
                 onClick={onViewRow}
                 sx={{ color: 'text.disabled', cursor: 'pointer' }}
               >
-                {notificationNumber}
+                {title}
               </Link>
             }
           />
         </TableCell>
 
+        <TableCell>{description}</TableCell>
+
+        <TableCell>{direction}</TableCell>
+
+        <TableCell>{type}</TableCell>
+
+        <TableCell>{publisherId}</TableCell>
+
+        <TableCell>{category}</TableCell>
+
         <TableCell>
           <ListItemText
-            primary={format(new Date(createDate), 'dd MMM yyyy')}
-            secondary={format(new Date(createDate), 'p')}
+            primary={format(new Date(createdAt), 'dd MMM yyyy')}
+            secondary={format(new Date(createdAt), 'p')}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{
               mt: 0.5,
@@ -86,8 +105,8 @@ export default function NotificationTableRow({
 
         <TableCell>
           <ListItemText
-            primary={format(new Date(dueDate), 'dd MMM yyyy')}
-            secondary={format(new Date(dueDate), 'p')}
+            primary={format(new Date(publishedAt), 'dd MMM yyyy')}
+            secondary={format(new Date(publishedAt), 'p')}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{
               mt: 0.5,
@@ -96,11 +115,6 @@ export default function NotificationTableRow({
             }}
           />
         </TableCell>
-
-        <TableCell>{fCurrency(totalAmount)}</TableCell>
-
-        <TableCell align="center">{sent}</TableCell>
-
         <TableCell>
           <Label
             variant="soft"

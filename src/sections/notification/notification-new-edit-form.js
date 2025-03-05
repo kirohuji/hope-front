@@ -62,7 +62,7 @@ export const categories = [
   { value: 'feedback', label: '问题反馈' },
 ];
 
-export const BROADCAST_SERVICE_OPTIONS = [
+export const NOTIFICATION_SERVICE_OPTIONS = [
   { value: 'Audio guide', label: 'Audio guide' },
   { value: 'Food and drinks', label: 'Food and drinks' },
   { value: 'Lunch', label: 'Lunch' },
@@ -75,12 +75,22 @@ export const BROADCAST_SERVICE_OPTIONS = [
   { value: 'Transport by air-conditioned', label: 'Transport by air-conditioned' },
 ];
 
-export const BROAECAST_TYPE_OPTIONS = [
-  { value: 'activity', label: '活动通知' },
-  { value: 'notification', label: '消息公告' },
-  { value: 'familyGathering', label: '社交聚会' },
+export const NOTIFICATION_TYPE_OPTIONS = [
+  { value: 'announcement', label: '运营公告' },
+  { value: 'system', label: '系统应用' },
   // { value: 'book', label: '阅读' },
 ];
+
+export const NOTIFICATION_DIRECTION_OPTIONS = [
+  { value: 'everyone', label: '所有人' },
+  { value: 'specific', label: '指定用户' },
+];
+
+export const NOTIFICATION_PUBLISH_OPTIONS = [
+  { value: 'immediate', label: '立即发送' },
+  { value: 'scheduled', label: '定时发送' },
+];
+
 export default function NotificationNewEditForm({ currentNotification }) {
   const loading = useBoolean(false);
 
@@ -141,39 +151,39 @@ export default function NotificationNewEditForm({ currentNotification }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const NewNotificationSchema = Yup.object().shape({
-    label: Yup.string().required('请输入标题'),
-    content: Yup.string().required('请输入内容'),
-    images: Yup.array().required('请选择资源'),
-    type: Yup.string().required('请选择类型'),
-    leaders: Yup.array().min(1, '至少选择一位负责人'),
-    durations: Yup.string().required('请选择时间程度'),
+    title: Yup.string().required('请输入标题'),
+    description: Yup.string().required('请输入内容'),
+    // images: Yup.array().required('请选择资源'),
+    // type: Yup.string().required('请选择类型'),
+    // leaders: Yup.array().min(1, '至少选择一位负责人'),
+    // durations: Yup.string().required('请选择时间程度'),
     // tags: Yup.array().min(2, 'Must have at least 2 tags'),
     // services: Yup.array().min(2, 'Must have at least 2 services'),
-    destination: Yup.string().required('目的地是必填的'),
-    published: Yup.boolean(),
-    available: Yup.object().shape({
-      startDate: Yup.mixed().nullable(),
-      endDate: Yup.mixed().nullable(),
-    }),
+    // destination: Yup.string().required('目的地是必填的'),
+    // published: Yup.boolean(),
+    // available: Yup.object().shape({
+    //   startDate: Yup.mixed().nullable(),
+    //   endDate: Yup.mixed().nullable(),
+    // }),
   });
 
   const defaultValues = useMemo(
     () => ({
-      label: currentNotification?.label || '',
-      content: currentNotification?.content || '',
-      images: currentNotification?.images || [],
-      type: currentNotification?.type || '',
-      //
-      leaders: currentNotification?.leaders || [],
-      // tags: currentNotification?.tags || [],
-      durations: currentNotification?.durations || '',
-      destination: currentNotification?.destination || '',
-      published: currentNotification?.published || false,
-      // services: currentNotification?.services || [],
-      available: {
-        startDate: currentNotification?.available.startDate || null,
-        endDate: currentNotification?.available.endDate || null,
-      },
+      title: currentNotification?.title || '',
+      description: currentNotification?.description || '',
+      // images: currentNotification?.images || [],
+      // type: currentNotification?.type || '',
+      // //
+      // leaders: currentNotification?.leaders || [],
+      // // tags: currentNotification?.tags || [],
+      // durations: currentNotification?.durations || '',
+      // destination: currentNotification?.destination || '',
+      // published: currentNotification?.published || false,
+      // // services: currentNotification?.services || [],
+      // available: {
+      //   startDate: currentNotification?.available.startDate || null,
+      //   endDate: currentNotification?.available.endDate || null,
+      // },
     }),
     [currentNotification]
   );
@@ -306,15 +316,15 @@ export default function NotificationNewEditForm({ currentNotification }) {
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">标题</Typography>
-              <RHFTextField name="label" placeholder="例如: 劳动节活动 ..." />
+              <RHFTextField name="title" placeholder="例如: 消息通知 ..." />
             </Stack>
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">内容</Typography>
-              <RHFEditor simple name="content" />
+              <RHFEditor simple name="description" />
             </Stack>
 
-            <Stack spacing={1.5}>
+            {/* <Stack spacing={1.5}>
               <Typography variant="subtitle2">资源</Typography>
               {loading.value && (
                 <Box
@@ -362,7 +372,7 @@ export default function NotificationNewEditForm({ currentNotification }) {
                   </Typography>
                 }
               />
-            </Stack>
+            </Stack> */}
           </Stack>
         </Card>
       </Grid>
@@ -389,7 +399,7 @@ export default function NotificationNewEditForm({ currentNotification }) {
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1}>
               <Typography variant="subtitle2">类型</Typography>
-              <RHFRadioGroup row spacing={4} name="type" options={BROAECAST_TYPE_OPTIONS} />
+              <RHFRadioGroup row spacing={4} name="type" options={NOTIFICATION_TYPE_OPTIONS} />
             </Stack>
 
             <Stack>
@@ -435,7 +445,27 @@ export default function NotificationNewEditForm({ currentNotification }) {
               />
             </Stack>
 
-            <Stack spacing={1.5}>
+            <Stack spacing={1}>
+              <Typography variant="subtitle2">目标人群</Typography>
+              <RHFRadioGroup
+                row
+                spacing={4}
+                name="direction"
+                options={NOTIFICATION_DIRECTION_OPTIONS}
+              />
+            </Stack>
+
+            <Stack spacing={1}>
+              <Typography variant="subtitle2">发送时机</Typography>
+              <RHFRadioGroup
+                row
+                spacing={4}
+                name="direction"
+                options={NOTIFICATION_DIRECTION_OPTIONS}
+              />
+            </Stack>
+
+            {/* <Stack spacing={1.5}>
               <Typography variant="subtitle2">有效期</Typography>
               <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
                 <Controller
@@ -475,23 +505,23 @@ export default function NotificationNewEditForm({ currentNotification }) {
                   )}
                 />
               </Stack>
-            </Stack>
+            </Stack> */}
 
-            <Stack spacing={1.5}>
+            {/* <Stack spacing={1.5}>
               <Typography variant="subtitle2">时间长度</Typography>
               <RHFTextField name="durations" placeholder="比如: 2 天, 4 天 3 夜..." />
-            </Stack>
+            </Stack> */}
 
-            <Stack spacing={1.5}>
+            {/* <Stack spacing={1.5}>
               <Typography variant="subtitle2">目的地</Typography>
               <RHFTextField name="destination" placeholder="比如: 详细地址..." />
-            </Stack>
+            </Stack> */}
             {/**
                *            <Stack spacing={1}>
               <Typography variant="subtitle2">活动提供情况</Typography>
               <RHFMultiCheckbox
                 name="services"
-                options={BROADCAST_SERVICE_OPTIONS}
+                options={NOTIFICATION_SERVICE_OPTIONS}
                 sx={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(2, 1fr)',
