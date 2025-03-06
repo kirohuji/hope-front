@@ -80,11 +80,11 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
             startIcon={<Iconify icon="eva:star-fill" />}
             sx={{ position: 'absolute', top: 8, right: 8 }}
           >
-            Current
+            当前
           </Label>
         )}
 
-        <Box sx={{ width: 48, height: 48 }}>
+        <Box sx={{ width: 48, height: 12 }}>
           {plan.subscription === 'basic' && <PlanFreeIcon />}
           {plan.subscription === 'starter' && <PlanStarterIcon />}
           {plan.subscription === 'premium' && <PlanPremiumIcon />}
@@ -95,7 +95,7 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
         </Box>
 
         <Stack direction="row" alignItems="center" sx={{ typography: 'h4' }}>
-          {plan.price || 'Free'}
+          {plan.price || '免费'}
 
           {!!plan.price && (
             <Box component="span" sx={{ typography: 'body2', color: 'text.disabled', ml: 0.5 }}>
@@ -110,23 +110,23 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
   return (
     <>
       <Card>
-        <CardHeader title="Plan" />
+        <CardHeader title="会员" />
 
-        <Grid container spacing={2} sx={{ p: 3 }}>
+        <Grid container spacing={2} sx={{ p: 2 }}>
           {renderPlans}
         </Grid>
 
-        <Stack spacing={2} sx={{ p: 3, pt: 0, typography: 'body2' }}>
+        <Stack spacing={2} sx={{ p: 2, pt: 0, typography: 'body2' }}>
           <Grid container spacing={{ xs: 0.5, md: 2 }}>
-            <Grid xs={12} md={4} sx={{ color: 'text.secondary' }}>
-              Plan
+            <Grid xs={12} md={2} sx={{ color: 'text.secondary' }}>
+              会员
             </Grid>
-            <Grid xs={12} md={8} sx={{ typography: 'subtitle2', textTransform: 'capitalize' }}>
+            <Grid xs={12} md={6} sx={{ typography: 'subtitle2', textTransform: 'capitalize' }}>
               {selectedPlan || '-'}
             </Grid>
           </Grid>
 
-          <Grid container spacing={{ xs: 0.5, md: 2 }}>
+          {/* <Grid container spacing={{ xs: 0.5, md: 2 }}>
             <Grid xs={12} md={4} sx={{ color: 'text.secondary' }}>
               Billing name
             </Grid>
@@ -172,14 +172,14 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
                 {selectedCard?.cardNumber}
               </Button>
             </Grid>
-          </Grid>
+          </Grid> */}
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3 }}>
-          <Button variant="outlined">Cancel Plan</Button>
-          <Button variant="contained">Upgrade Plan</Button>
+          <Button variant="outlined">取消 会员</Button>
+          <Button variant="contained">升级 会员</Button>
         </Stack>
       </Card>
 

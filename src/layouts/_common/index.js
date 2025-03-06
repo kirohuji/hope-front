@@ -8,6 +8,7 @@ export { default as AccountPopover } from './account-popover';
 export { default as LanguagePopover } from './language-popover';
 export { default as ContactsPopover } from './contacts-popover';
 export { default as ChatPopover } from './chat-popover';
+export { default as DiscoveryPopover } from './discovery-popover';
 export { default as NavToggleButton } from './nav-toggle-button';
 export { default as NotificationsPopover } from './notifications-popover';
 export { default as ScopePopover } from './scope-popover';

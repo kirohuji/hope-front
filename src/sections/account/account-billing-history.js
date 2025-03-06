@@ -23,7 +23,7 @@ export default function AccountBillingHistory({ invoices }) {
 
   return (
     <Card>
-      <CardHeader title="Invoice History" />
+      <CardHeader title="账单记录" />
 
       <Stack spacing={1.5} sx={{ px: 3, pt: 3 }}>
         {(showMore.value ? invoices : invoices.slice(0, 8)).map((invoice) => (
@@ -66,7 +66,7 @@ export default function AccountBillingHistory({ invoices }) {
           }
           onClick={showMore.onToggle}
         >
-          {showMore.value ? `Show Less` : `Show More`}
+          {showMore.value ? `隐藏更多` : `显示更多`}
         </Button>
       </Stack>
     </Card>

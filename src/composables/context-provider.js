@@ -21,6 +21,7 @@ import AuditService from '../modules/audits';
 import BpmnService from '../modules/bpmns';
 import ServiceService from '../modules/services';
 import BpmnInstanceService from '../modules/bpmns_instances';
+import PostService from '../modules/posts';
 
 export const authService = new AuthService({ api, model: '' });
 export const userService = new UserService({ api, model: 'users' });
@@ -46,5 +47,6 @@ export const sensitiveWordService = new SensitiveWordService({ api, model: 'sens
 export const bpmnService = new BpmnService({ api, model: 'bpmns' });
 export const serviceService = new ServiceService({ api, model: 'services' });
 export const bpmnInstanceService = new BpmnInstanceService({ api, model: 'bpmns/instances' });
+export const postService = new PostService({ api, model: 'posts' });
 
 export const fileService = new FlieService({ api: fileApi, model: '' });

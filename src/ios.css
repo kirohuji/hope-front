@@ -18,6 +18,7 @@
   .history-content-drawer,
   .notification-popover,
   .calendar-filter-drawer,
+  .post-dialog,
   .chat-room-group-drawer {
     padding-top: calc(constant(safe-area-inset-top)) !important;
     padding-top: calc(env(safe-area-inset-top)) !important;
@@ -130,7 +131,6 @@
   width: 100%;
 }
 .return-layout {
-
 }
 .return-main {
   /* height: calc(100vh - 72px); */
@@ -145,4 +145,7 @@
 }
 .chat-room-history {
   height: calc(100vh - 420px) !important;
+}
+.post-dialog {
+  padding-bottom: 70px;
 }

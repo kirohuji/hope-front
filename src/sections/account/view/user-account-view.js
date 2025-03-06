@@ -51,6 +51,24 @@ const TABS = [
 
 // ----------------------------------------------------------------------
 
+const plans = [
+  {
+    subscription: '种子会员',
+    price: 0,
+    primary: false,
+  },
+  {
+    subscription: '成长会员',
+    price: 10,
+    primary: true,
+  },
+  {
+    subscription: '赋能会员',
+    price: 15,
+    primary: false,
+  },
+];
+
 export default function AccountView() {
   const settings = useSettingsContext();
 
@@ -90,7 +108,7 @@ export default function AccountView() {
 
       {currentTab === 'billing' && (
         <AccountBilling
-          plans={_userPlans}
+          plans={plans}
           cards={_userPayment}
           invoices={_userInvoices}
           addressBook={_userAddressBook}

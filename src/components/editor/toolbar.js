@@ -31,7 +31,7 @@ export const formats = [
   'video',
 ];
 
-export default function Toolbar({ id, isSimple, ...other }) {
+export default function Toolbar({ id, isSimple, isPost, ...other }) {
   return (
     <StyledEditorToolbar {...other}>
       <div id={id}>
@@ -86,11 +86,18 @@ export default function Toolbar({ id, isSimple, ...other }) {
           <select className="ql-align" />
         </div>
 
-        <div className="ql-formats">
+        {!isPost && (
+          <div className="ql-formats">
+            <button type="button" className="ql-link" />
+            <button type="button" className="ql-image" />
+            <button type="button" className="ql-video" />
+          </div>
+        )}
+        {/* <div className="ql-formats">
           <button type="button" className="ql-link" />
           <button type="button" className="ql-image" />
           <button type="button" className="ql-video" />
-        </div>
+        </div> */}
 
         <div className="ql-formats">
           {!isSimple && <button type="button" className="ql-formula" />}
@@ -104,4 +111,5 @@ export default function Toolbar({ id, isSimple, ...other }) {
 Toolbar.propTypes = {
   id: PropTypes.string,
   isSimple: PropTypes.bool,
+  isPost: PropTypes.bool,
 };

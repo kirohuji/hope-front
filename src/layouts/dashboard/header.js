@@ -25,6 +25,7 @@ import {
   Searchbar,
   AccountPopover,
   ChatPopover,
+  DiscoveryPopover,
   ScopePopover,
   NotificationsPopover,
   SettingsButton,
@@ -81,6 +82,7 @@ export default function Header({ onOpenNav }) {
         {/* { lgUp && <ScopePopover /> } */}
         {/* <ContactsPopover /> */}
         {pathname === '/dashboard/chat' && <ChatPopover />}
+        {pathname === '/dashboard/discovery' && <DiscoveryPopover />}
         {/* {pathname === '/dashboard/user' && <AccountPopover />} */}
         {pathname === '/dashboard/user' && <SettingsButton onClick={handleClick} />}
         {/* <SettingsButton /> */}
