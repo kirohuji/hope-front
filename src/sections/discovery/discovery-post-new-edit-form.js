@@ -228,20 +228,7 @@ export default function DiscoveryPostNewEditForm({ currentPost }) {
       )}
 
       <Grid xs={12} md={8}>
-        <RHFEditor
-          simple
-          name="body"
-          isPost
-          style={{ height: '400px', borderRadius: 0 }}
-          onFocus={(e) => {
-            setTimeout(() => {
-              e.target.scrollIntoView({
-                behavior: 'smooth', // 滚动效果
-                block: 'center', // 居中显示
-              });
-            }, 1000);
-          }}
-        />
+        <RHFEditor simple name="body" isPost style={{ maxHeight: '350px', borderRadius: 0 }} />
       </Grid>
     </>
   );
@@ -261,11 +248,24 @@ export default function DiscoveryPostNewEditForm({ currentPost }) {
 
       <Grid xs={12} md={8}>
         <Stack spacing={3} sx={{ p: 3, mb: 1 }}>
+          <Stack spacing={1.5}>
+            <Typography variant="subtitle2">图集</Typography>
+            <RHFUpload
+              multiple
+              thumbnail
+              name="images"
+              maxSize={3145728}
+              onDrop={handleDrop}
+              onRemove={handleRemoveFile}
+              onRemoveAll={handleRemoveAllFiles}
+              // onUpload={() => console.info('ON UPLOAD')}
+            />
+          </Stack>
           {/* <Stack spacing={1.5}>
             <Typography variant="subtitle2">地址</Typography>
             <RHFTextField name="location" placeholder="发布地址" />
           </Stack> */}
-          <Stack spacing={1.5}>
+          {/* <Stack spacing={1.5}>
             <Typography variant="subtitle2">标签</Typography>
             <RHFAutocomplete
               name="tags"
@@ -300,7 +300,7 @@ export default function DiscoveryPostNewEditForm({ currentPost }) {
                 ))
               }
             />
-          </Stack>
+          </Stack> */}
         </Stack>
       </Grid>
     </>

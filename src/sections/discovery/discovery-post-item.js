@@ -75,126 +75,126 @@ export default function ProfilePostItem({ post }) {
     />
   );
 
-  const renderCommentList = (
-    <Stack spacing={1.5} sx={{ px: 3, pb: 2 }}>
-      {post.comments.map((comment) => (
-        <Stack key={comment.id} direction="row" spacing={2}>
-          <Avatar alt={comment.author.name} src={comment.author.avatarUrl} />
+  // const renderCommentList = (
+  //   <Stack spacing={1.5} sx={{ px: 3, pb: 2 }}>
+  //     {post.comments.map((comment) => (
+  //       <Stack key={comment.id} direction="row" spacing={2}>
+  //         <Avatar alt={comment.author.name} src={comment.author.avatarUrl} />
 
-          <Paper
-            sx={{
-              p: 1.5,
-              flexGrow: 1,
-              bgcolor: 'background.neutral',
-            }}
-          >
-            <Stack
-              sx={{ mb: 0.5 }}
-              alignItems={{ sm: 'center' }}
-              justifyContent="space-between"
-              direction={{ xs: 'column', sm: 'row' }}
-            >
-              <Box sx={{ typography: 'subtitle2' }}>{comment.author.name}</Box>
+  //         <Paper
+  //           sx={{
+  //             p: 1.5,
+  //             flexGrow: 1,
+  //             bgcolor: 'background.neutral',
+  //           }}
+  //         >
+  //           <Stack
+  //             sx={{ mb: 0.5 }}
+  //             alignItems={{ sm: 'center' }}
+  //             justifyContent="space-between"
+  //             direction={{ xs: 'column', sm: 'row' }}
+  //           >
+  //             <Box sx={{ typography: 'subtitle2' }}>{comment.author.name}</Box>
 
-              <Box sx={{ typography: 'caption', color: 'text.disabled' }}>
-                {fDate(comment.createdAt)}
-              </Box>
-            </Stack>
+  //             <Box sx={{ typography: 'caption', color: 'text.disabled' }}>
+  //               {fDate(comment.createdAt)}
+  //             </Box>
+  //           </Stack>
 
-            <Box sx={{ typography: 'body2', color: 'text.secondary' }}>{comment.message}</Box>
-          </Paper>
-        </Stack>
-      ))}
-    </Stack>
-  );
+  //           <Box sx={{ typography: 'body2', color: 'text.secondary' }}>{comment.message}</Box>
+  //         </Paper>
+  //       </Stack>
+  //     ))}
+  //   </Stack>
+  // );
 
-  const renderInput = (
-    <Stack
-      spacing={2}
-      direction="row"
-      alignItems="center"
-      sx={{
-        p: (theme) => theme.spacing(0, 3, 3, 3),
-      }}
-    >
-      <Avatar src={user?.photoURL} alt={user?.displayName} />
+  // const renderInput = (
+  //   <Stack
+  //     spacing={2}
+  //     direction="row"
+  //     alignItems="center"
+  //     sx={{
+  //       p: (theme) => theme.spacing(0, 3, 3, 3),
+  //     }}
+  //   >
+  //     <Avatar src={user?.photoURL} alt={user?.displayName} />
 
-      <InputBase
-        fullWidth
-        value={message}
-        inputRef={commentRef}
-        placeholder="Write a comment…"
-        onChange={handleChangeMessage}
-        endAdornment={
-          <InputAdornment position="end" sx={{ mr: 1 }}>
-            <IconButton size="small" onClick={handleAttach}>
-              <Iconify icon="solar:gallery-add-bold" />
-            </IconButton>
+  //     <InputBase
+  //       fullWidth
+  //       value={message}
+  //       inputRef={commentRef}
+  //       placeholder="Write a comment…"
+  //       onChange={handleChangeMessage}
+  //       endAdornment={
+  //         <InputAdornment position="end" sx={{ mr: 1 }}>
+  //           <IconButton size="small" onClick={handleAttach}>
+  //             <Iconify icon="solar:gallery-add-bold" />
+  //           </IconButton>
 
-            <IconButton size="small">
-              <Iconify icon="eva:smiling-face-fill" />
-            </IconButton>
-          </InputAdornment>
-        }
-        sx={{
-          pl: 1.5,
-          height: 40,
-          borderRadius: 1,
-          border: (theme) => `solid 1px ${alpha(theme.palette.grey[500], 0.32)}`,
-        }}
-      />
+  //           <IconButton size="small">
+  //             <Iconify icon="eva:smiling-face-fill" />
+  //           </IconButton>
+  //         </InputAdornment>
+  //       }
+  //       sx={{
+  //         pl: 1.5,
+  //         height: 40,
+  //         borderRadius: 1,
+  //         border: (theme) => `solid 1px ${alpha(theme.palette.grey[500], 0.32)}`,
+  //       }}
+  //     />
 
-      <input type="file" ref={fileRef} style={{ display: 'none' }} />
-    </Stack>
-  );
+  //     <input type="file" ref={fileRef} style={{ display: 'none' }} />
+  //   </Stack>
+  // );
 
-  const renderActions = (
-    <Stack
-      direction="row"
-      alignItems="center"
-      sx={{
-        p: (theme) => theme.spacing(2, 3, 3, 3),
-      }}
-    >
-      <FormControlLabel
-        control={
-          <Checkbox
-            defaultChecked
-            color="error"
-            icon={<Iconify icon="solar:heart-bold" />}
-            checkedIcon={<Iconify icon="solar:heart-bold" />}
-          />
-        }
-        label={fShortenNumber(post.personLikes.length)}
-        sx={{ mr: 1 }}
-      />
+  // const renderActions = (
+  //   <Stack
+  //     direction="row"
+  //     alignItems="center"
+  //     sx={{
+  //       p: (theme) => theme.spacing(2, 3, 3, 3),
+  //     }}
+  //   >
+  //     <FormControlLabel
+  //       control={
+  //         <Checkbox
+  //           defaultChecked
+  //           color="error"
+  //           icon={<Iconify icon="solar:heart-bold" />}
+  //           checkedIcon={<Iconify icon="solar:heart-bold" />}
+  //         />
+  //       }
+  //       label={fShortenNumber(post.personLikes.length)}
+  //       sx={{ mr: 1 }}
+  //     />
 
-      {!!post.personLikes.length && (
-        <AvatarGroup
-          sx={{
-            [`& .${avatarGroupClasses.avatar}`]: {
-              width: 32,
-              height: 32,
-            },
-          }}
-        >
-          {post.personLikes.map((person) => (
-            <Avatar key={person.name} alt={person.name} src={person.avatarUrl} />
-          ))}
-        </AvatarGroup>
-      )}
+  //     {!!post.personLikes.length && (
+  //       <AvatarGroup
+  //         sx={{
+  //           [`& .${avatarGroupClasses.avatar}`]: {
+  //             width: 32,
+  //             height: 32,
+  //           },
+  //         }}
+  //       >
+  //         {post.personLikes.map((person) => (
+  //           <Avatar key={person.name} alt={person.name} src={person.avatarUrl} />
+  //         ))}
+  //       </AvatarGroup>
+  //     )}
 
-      <Box sx={{ flexGrow: 1 }} />
+  //     <Box sx={{ flexGrow: 1 }} />
 
-      <IconButton onClick={handleClickComment}>
-        <Iconify icon="solar:chat-round-dots-bold" />
-      </IconButton>
+  //     <IconButton onClick={handleClickComment}>
+  //       <Iconify icon="solar:chat-round-dots-bold" />
+  //     </IconButton>
 
-      <IconButton>
-        <Iconify icon="solar:share-bold" />
-      </IconButton>
-    </Stack>
-  );
+  //     <IconButton>
+  //       <Iconify icon="solar:share-bold" />
+  //     </IconButton>
+  //   </Stack>
+  // );
 
   return (
     <Card>
@@ -213,7 +213,7 @@ export default function ProfilePostItem({ post }) {
         <Image alt={post.media} src={post.media} ratio="16/9" sx={{ borderRadius: 1.5 }} />
       </Box>
 
-      {renderActions}
+      {/* {renderActions} */}
 
       {/* {!!post.comments.length && renderCommentList} */}
 
