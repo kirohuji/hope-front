@@ -28,7 +28,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function ProfilePostItem({ post, user }) {
+export default function ProfilePostItem({ post, user, onClick }) {
   const { poster } = post;
 
   const commentRef = useRef(null);
@@ -202,32 +202,35 @@ export default function ProfilePostItem({ post, user }) {
   );
 
   return (
-    <Card>
-      {renderHead}
+    <Box onClick={onClick} sx={{ p: 0.1 }}>
+      <Card>
+        {renderHead}
 
-      <Typography
-        variant="body2"
-        sx={{
-          p: (theme) => theme.spacing(3, 3, 2, 3),
-        }}
-      >
-        {post.body}
-      </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            p: (theme) => theme.spacing(3, 3, 2, 3),
+          }}
+        >
+          {post.body}
+        </Typography>
 
-      <Box sx={{ p: 1 }}>
-        <Image alt={post.cover} src={post.cover} ratio="16/9" sx={{ borderRadius: 1.5 }} />
-      </Box>
+        <Box sx={{ p: 1 }}>
+          <Image alt={post.cover} src={post.cover} ratio="16/9" sx={{ borderRadius: 1.5 }} />
+        </Box>
 
-      {renderActions}
+        {renderActions}
 
-      {/* {!!post.comments.length && renderCommentList} */}
+        {/* {!!post.comments.length && renderCommentList} */}
 
-      {/* {renderInput} */}
-    </Card>
+        {/* {renderInput} */}
+      </Card>
+    </Box>
   );
 }
 
 ProfilePostItem.propTypes = {
   post: PropTypes.object,
   user: PropTypes.object,
+  onClick: PropTypes.func,
 };

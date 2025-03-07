@@ -27,10 +27,10 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useDebounce } from 'src/hooks/use-debounce';
 // routes
 import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hook';
 // components
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import { useRouter } from 'src/routes/hook';
 import FormProvider, {
   RHFRadioGroup,
   RHFEditor,

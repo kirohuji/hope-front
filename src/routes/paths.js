@@ -271,6 +271,7 @@ export const paths = {
     },
     discovery: {
       root: `/discovery`,
+      details: (id) => `/discovery/${id}`,
     },
     notification: {
       root: `${ROOTS.DASHBOARD}/notification`,

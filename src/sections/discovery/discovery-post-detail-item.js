@@ -11,9 +11,13 @@ import Avatar from '@mui/material/Avatar';
 import Checkbox from '@mui/material/Checkbox';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
+import Scrollbar from 'src/components/scrollbar';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
+import { useSnackbar } from 'src/components/snackbar';
+import InfiniteScroll from 'react-infinite-scroller';
+import { postService } from 'src/composables/context-provider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
 
@@ -28,14 +32,21 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function ProfilePostItem({ post, user }) {
+export default function DiscoveryPostDetailItem({ post, user }) {
   const { poster } = post;
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const commentRef = useRef(null);
 
   const fileRef = useRef(null);
 
   const [message, setMessage] = useState('');
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [hasMore, setHasMore] = useState(true); // 控制是否继续加载
+  const [total, setTotal] = useState(0);
 
   const handleChangeMessage = useCallback((event) => {
     setMessage(event.target.value);
@@ -47,15 +58,46 @@ export default function ProfilePostItem({ post, user }) {
     }
   }, []);
 
-  const handleClickComment = useCallback(() => {
-    if (commentRef.current) {
-      commentRef.current.focus();
-    }
-  }, []);
+  const refresh = useCallback(
+    async () => {
+      if (loading) return; // 防止并发加载
+
+      setLoading(true);
+
+      try {
+        const response = await postService.comments(
+          { linkedObjectId: post._id },
+          {
+            skip: page * 20,
+            limit: 20,
+          }
+        );
+
+        if (response.data.length === 0) {
+          setHasMore(false); // 没有数据了，停止加载
+        } else if (total > response.total) {
+          setHasMore(false); // 不是满页，表示没有更多数据了
+        } else {
+          setHasMore(true); // 还有数据
+        }
+
+        setComments((prev) => (page === 0 ? response.data : [...prev, ...response.data]));
+        setTotal((prev) => prev + response.data.length);
+        setPage((prev) => prev + 1);
+      } catch (e) {
+        enqueueSnackbar(e.message);
+        setHasMore(false); // 避免错误导致无限加载
+      } finally {
+        setLoading(false);
+      }
+    },
+    [enqueueSnackbar, loading, page, post._id, total] // 注意：去掉 loading 作为依赖
+  );
 
   const renderHead = (
     <CardHeader
       disableTypography
+      sx={{ p: 1 }}
       avatar={<Avatar src={poster?.photoURL} alt={poster?.displayName} />}
       title={
         <Link color="inherit" variant="subtitle1">
@@ -76,15 +118,15 @@ export default function ProfilePostItem({ post, user }) {
   );
 
   const renderCommentList = (
-    <Stack spacing={1.5} sx={{ px: 3, pb: 2 }}>
-      {post.comments &&
-        post.comments.map((comment) => (
-          <Stack key={comment._id} direction="row" spacing={2}>
+    <Stack spacing={1} sx={{ px: 1, pb: 1 }}>
+      {comments &&
+        comments.map((comment) => (
+          <Stack key={comment._id} direction="row" spacing={1}>
             <Avatar alt={comment.author.username} src={comment.author.photoURL} />
 
             <Paper
               sx={{
-                p: 1.5,
+                p: 1,
                 flexGrow: 1,
                 bgcolor: 'background.neutral',
               }}
@@ -106,46 +148,6 @@ export default function ProfilePostItem({ post, user }) {
             </Paper>
           </Stack>
         ))}
-    </Stack>
-  );
-
-  const renderInput = (
-    <Stack
-      spacing={2}
-      direction="row"
-      alignItems="center"
-      sx={{
-        p: (theme) => theme.spacing(0, 3, 3, 3),
-      }}
-    >
-      {/* <Avatar src={user?.photoURL} alt={user?.displayName} /> */}
-
-      <InputBase
-        fullWidth
-        value={message}
-        inputRef={commentRef}
-        placeholder="Write a comment…"
-        onChange={handleChangeMessage}
-        endAdornment={
-          <InputAdornment position="end" sx={{ mr: 1 }}>
-            <IconButton size="small" onClick={handleAttach}>
-              <Iconify icon="solar:gallery-add-bold" />
-            </IconButton>
-
-            <IconButton size="small">
-              <Iconify icon="eva:smiling-face-fill" />
-            </IconButton>
-          </InputAdornment>
-        }
-        sx={{
-          pl: 1.5,
-          height: 40,
-          borderRadius: 1,
-          border: (theme) => `solid 1px ${alpha(theme.palette.grey[500], 0.32)}`,
-        }}
-      />
-
-      <input type="file" ref={fileRef} style={{ display: 'none' }} />
     </Stack>
   );
 
@@ -202,7 +204,13 @@ export default function ProfilePostItem({ post, user }) {
   );
 
   return (
-    <Card>
+    <Stack
+      sx={{
+        // height: 1,
+        // overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
       {renderHead}
 
       <Typography
@@ -220,14 +228,24 @@ export default function ProfilePostItem({ post, user }) {
 
       {renderActions}
 
-      {/* {!!post.comments.length && renderCommentList} */}
-
-      {renderInput}
-    </Card>
+      <Scrollbar sx={{ p: 0, pb: 2, height: '100vh' }}>
+        <InfiniteScroll
+          loadMore={refresh}
+          hasMore={hasMore}
+          useWindow={false}
+          style={{
+            marginTop: '16px',
+          }}
+          loader={<div key={0}>加载中 ...</div>}
+        >
+          {renderCommentList}
+        </InfiniteScroll>
+      </Scrollbar>
+    </Stack>
   );
 }
 
-ProfilePostItem.propTypes = {
+DiscoveryPostDetailItem.propTypes = {
   post: PropTypes.object,
   user: PropTypes.object,
 };

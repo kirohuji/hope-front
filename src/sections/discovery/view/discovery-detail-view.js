@@ -1,12 +1,18 @@
 import { useSettingsContext } from 'src/components/settings';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
+// @mui
+import { alpha } from '@mui/material/styles';
 import { Container, Stack, Divider, Tabs, Tab } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import InputBase from '@mui/material/InputBase';
+
 import { useSelector } from 'src/redux/store';
 import { useSnackbar } from 'src/components/snackbar';
-import InfiniteScroll from 'react-infinite-scroller';
 import { postService } from 'src/composables/context-provider';
+// compoennts
 import Scrollbar from 'src/components/scrollbar';
-import { _ecommerceNewProducts } from 'src/_mock';
+import Iconify from 'src/components/iconify';
 // routes
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
@@ -32,8 +38,23 @@ export default function DiscoveryDetailView() {
 
   const { user } = useAuthContext();
 
-  const [page, setPage] = useState(0);
+  const [message, setMessage] = useState('');
+
+  const commentRef = useRef(null);
+
+  const fileRef = useRef(null);
+
   const [loading, setLoading] = useState(false);
+
+  const handleAttach = useCallback(() => {
+    if (fileRef.current) {
+      fileRef.current.click();
+    }
+  }, []);
+
+  const handleChangeMessage = useCallback((event) => {
+    setMessage(event.target.value);
+  }, []);
 
   const refresh = useCallback(
     async () => {
@@ -50,6 +71,56 @@ export default function DiscoveryDetailView() {
     [enqueueSnackbar, id, scope.active._id, setPost] // 注意：去掉 loading 作为依赖
   );
 
+  const renderInput = (
+    <Stack
+      direction="row"
+      alignItems="center"
+      sx={{
+        // p: (theme) => theme.spacing(0, 3, 3, 3),
+        p: 0,
+        pl: 1,
+        pr: 1,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        width: '100%',
+        height: '45px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      {/* <Avatar src={user?.photoURL} alt={user?.displayName} /> */}
+
+      <InputBase
+        fullWidth
+        value={message}
+        inputRef={commentRef}
+        placeholder="请输入内容"
+        onChange={handleChangeMessage}
+        endAdornment={
+          <InputAdornment position="end" sx={{ mr: 1 }}>
+            <IconButton size="small" onClick={handleAttach}>
+              <Iconify icon="solar:gallery-add-bold" />
+            </IconButton>
+
+            <IconButton size="small">
+              <Iconify icon="eva:smiling-face-fill" />
+            </IconButton>
+          </InputAdornment>
+        }
+        sx={{
+          pl: 1.5,
+          height: 40,
+          // borderRadius: 1,
+          borderTop: (theme) => `solid 1px ${alpha(theme.palette.grey[500], 0.32)}`,
+        }}
+      />
+
+      <input type="file" ref={fileRef} style={{ display: 'none' }} />
+    </Stack>
+  );
+
   useEffect(() => {
     console.log('获取');
     if (id) {
@@ -57,10 +128,11 @@ export default function DiscoveryDetailView() {
     }
   }, [refresh, id]);
   return (
-    <Container maxWidth={false}>
-      <Scrollbar sx={{ p: 0, pb: 2, height: 'calc(100vh - 120px)' }}>
+    <Container maxWidth={false} sx={{ position: 'relative' }}>
+      <Scrollbar sx={{ p: 0, height: 'calc(100vh - 120px)' }}>
         {post && <DiscoveryPostDetailItem post={post} user={user} />}
       </Scrollbar>
+      {renderInput}
     </Container>
   );
 }

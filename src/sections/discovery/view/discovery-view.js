@@ -7,6 +7,9 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { postService } from 'src/composables/context-provider';
 import Scrollbar from 'src/components/scrollbar';
 import { _ecommerceNewProducts } from 'src/_mock';
+// routes
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hook';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
 import DiscoveryPostItem from '../discovery-post-item';
@@ -20,7 +23,11 @@ const TABS = [
 
 export default function DiscoveryView() {
   const { enqueueSnackbar } = useSnackbar();
+
   const { themeStretch } = useSettingsContext();
+
+  const router = useRouter();
+
   const scope = useSelector((state) => state.scope);
 
   const { user, logout } = useAuthContext();
@@ -38,6 +45,13 @@ export default function DiscoveryView() {
     setPosts([]); // 切换 Tab 时清空数据
     setHasMore(true);
   }, []);
+
+  const handleClickPost = useCallback(
+    (post) => {
+      router.push(paths.dashboard.discovery.details(post._id));
+    },
+    [router]
+  );
 
   const refresh = useCallback(
     async () => {
@@ -96,7 +110,12 @@ export default function DiscoveryView() {
             loader={<div key={0}>加载中 ...</div>}
           >
             {posts.map((post) => (
-              <DiscoveryPostItem key={post._id} post={post} user={user} />
+              <DiscoveryPostItem
+                key={post._id}
+                post={post}
+                user={user}
+                onClick={() => handleClickPost(post)}
+              />
             ))}
           </InfiniteScroll>
         </Scrollbar>
