@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 // sections
-import { PostCreateView } from 'src/sections/post/view';
+import { PostEditView } from 'src/sections/blog/view';
 
 // ----------------------------------------------------------------------
 
-export default function PostCreatePage() {
+export default function PostEditPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Create a new post</title>
+        <title> Dashboard: Post Edit</title>
       </Helmet>
 
-      <PostCreateView />
+      <PostEditView />
     </>
   );
 }

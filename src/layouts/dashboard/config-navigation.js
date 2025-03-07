@@ -59,17 +59,17 @@ export function useNavData() {
     () => [
       // OVERVIEW
       // ----------------------------------------------------------------------
-      {
-        subheader: t('overview'),
-        items: [
-          // { title: t('app'), path: paths.dashboard.root, icon: ICONS.dashboard },
-          { title: t('ecommerce'), path: paths.dashboard.general.ecommerce, icon: ICONS.ecommerce },
-          { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics },
-          { title: t('banking'), path: paths.dashboard.general.banking, icon: ICONS.banking },
-          { title: t('booking'), path: paths.dashboard.general.booking, icon: ICONS.booking },
-          { title: t('file'), path: paths.dashboard.general.file, icon: ICONS.file },
-        ],
-      },
+      // {
+      //   subheader: t('overview'),
+      //   items: [
+      //     // { title: t('app'), path: paths.dashboard.root, icon: ICONS.dashboard },
+      //     { title: t('ecommerce'), path: paths.dashboard.general.ecommerce, icon: ICONS.ecommerce },
+      //     { title: t('analytics'), path: paths.dashboard.general.analytics, icon: ICONS.analytics },
+      //     { title: t('banking'), path: paths.dashboard.general.banking, icon: ICONS.banking },
+      //     { title: t('booking'), path: paths.dashboard.general.booking, icon: ICONS.booking },
+      //     { title: t('file'), path: paths.dashboard.general.file, icon: ICONS.file },
+      //   ],
+      // },
 
       // MANAGEMENT
       // ----------------------------------------------------------------------
@@ -192,6 +192,18 @@ export function useNavData() {
           //     { title: t('edit'), path: paths.dashboard.post.demo.edit },
           //   ],
           // },
+          // POST
+          {
+            title: t('post'),
+            path: paths.dashboard.post.root,
+            icon: ICONS.blog,
+            children: [
+              { title: t('list'), path: paths.dashboard.post.root },
+              // { title: t('details'), path: paths.dashboard.post.demo.details },
+              // { title: t('create'), path: paths.dashboard.post.new },
+              // { title: t('edit'), path: paths.dashboard.post.demo.edit },
+            ],
+          },
 
           // JOB
           // {
@@ -349,19 +361,19 @@ export function useNavData() {
           //   info: <Label color="error">+32</Label>,
           // },
           // MAIL
-          // {
-          //   title: t('mail'),
-          //   path: paths.dashboard.mail,
-          //   icon: ICONS.mail,
-          //   auth: [
-          //     'Broadcast',
-          //     'BroadcastList',
-          //     'BroadcastListAdd',
-          //     'BroadcastListEdit',
-          //     'BroadcastListDelete',
-          //   ],
-          //   info: <Label color="error">+32</Label>,
-          // },
+          {
+            title: t('mail'),
+            path: paths.dashboard.mail,
+            icon: ICONS.mail,
+            auth: [
+              'Broadcast',
+              'BroadcastList',
+              'BroadcastListAdd',
+              'BroadcastListEdit',
+              'BroadcastListDelete',
+            ],
+            info: <Label color="error">+32</Label>,
+          },
 
           // CHAT
           {

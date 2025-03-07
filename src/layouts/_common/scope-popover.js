@@ -31,8 +31,8 @@ export default function ScopePopover() {
   return (
     <>
       <Button
-        whileTap="tap"
-        whileHover="hover"
+        // whileTap="tap"
+        // whileHover="hover"
         variants={varHover(1.05)}
         onClick={popover.onOpen}
         sx={{
