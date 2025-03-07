@@ -77,34 +77,35 @@ export default function ProfilePostItem({ post }) {
 
   const renderCommentList = (
     <Stack spacing={1.5} sx={{ px: 3, pb: 2 }}>
-      {post.comments.map((comment) => (
-        <Stack key={comment.id} direction="row" spacing={2}>
-          <Avatar alt={comment.author.name} src={comment.author.avatarUrl} />
+      {post.comments &&
+        post.comments.map((comment) => (
+          <Stack key={comment.id} direction="row" spacing={2}>
+            <Avatar alt={comment.author.name} src={comment.author.avatarUrl} />
 
-          <Paper
-            sx={{
-              p: 1.5,
-              flexGrow: 1,
-              bgcolor: 'background.neutral',
-            }}
-          >
-            <Stack
-              sx={{ mb: 0.5 }}
-              alignItems={{ sm: 'center' }}
-              justifyContent="space-between"
-              direction={{ xs: 'column', sm: 'row' }}
+            <Paper
+              sx={{
+                p: 1.5,
+                flexGrow: 1,
+                bgcolor: 'background.neutral',
+              }}
             >
-              <Box sx={{ typography: 'subtitle2' }}>{comment.author.name}</Box>
+              <Stack
+                sx={{ mb: 0.5 }}
+                alignItems={{ sm: 'center' }}
+                justifyContent="space-between"
+                direction={{ xs: 'column', sm: 'row' }}
+              >
+                <Box sx={{ typography: 'subtitle2' }}>{comment.author.name}</Box>
 
-              <Box sx={{ typography: 'caption', color: 'text.disabled' }}>
-                {fDate(comment.createdAt)}
-              </Box>
-            </Stack>
+                <Box sx={{ typography: 'caption', color: 'text.disabled' }}>
+                  {fDate(comment.createdAt)}
+                </Box>
+              </Stack>
 
-            <Box sx={{ typography: 'body2', color: 'text.secondary' }}>{comment.message}</Box>
-          </Paper>
-        </Stack>
-      ))}
+              <Box sx={{ typography: 'body2', color: 'text.secondary' }}>{comment.message}</Box>
+            </Paper>
+          </Stack>
+        ))}
     </Stack>
   );
 

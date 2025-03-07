@@ -14,6 +14,7 @@ import { componentsRoutes } from './components';
 
 const AiPage = lazy(() => import('src/pages/dashboard/openai'));
 const ChatPage = lazy(() => import('src/pages/dashboard/chat'));
+const DiscoveryDetailPage = lazy(() => import('src/pages/dashboard/discovery-detail'));
 const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'));
 
 const TrainingSearchPage = lazy(() => import('src/pages/dashboard/training/search'));
@@ -81,7 +82,7 @@ export default function Router() {
       children: [
         { path: 'faqs', element: <FaqsPage /> },
         { path: 'chat', element: <ChatPage /> },
-        { path: 'openai', element: <AiPage /> },
+        { path: 'discovery', children: [{ path: ':id', element: <DiscoveryDetailPage /> }] },
         { path: 'openai', element: <AiPage /> },
         {
           path: 'training',

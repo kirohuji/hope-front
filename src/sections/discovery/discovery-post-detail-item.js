@@ -118,7 +118,7 @@ export default function ProfilePostItem({ post, user }) {
         p: (theme) => theme.spacing(0, 3, 3, 3),
       }}
     >
-      <Avatar src={user?.photoURL} alt={user?.displayName} />
+      {/* <Avatar src={user?.photoURL} alt={user?.displayName} /> */}
 
       <InputBase
         fullWidth
@@ -222,7 +222,7 @@ export default function ProfilePostItem({ post, user }) {
 
       {/* {!!post.comments.length && renderCommentList} */}
 
-      {/* {renderInput} */}
+      {renderInput}
     </Card>
   );
 }

@@ -28,6 +28,7 @@ import Iconify from 'src/components/iconify';
 import _ from 'lodash';
 import { postService } from 'src/composables/context-provider';
 import DiscoveryPostNewEditForm from 'src/sections/discovery/discovery-post-new-edit-form';
+import DiscoveryCompose from 'src/sections/discovery//discovery-compose';
 // ----------------------------------------------------------------------
 
 export default function ChatPopover() {
@@ -72,7 +73,8 @@ export default function ChatPopover() {
   return (
     <>
       {renderButton}
-      <Dialog
+      {feed.value && <DiscoveryCompose onCloseCompose={feed.onFalse} />}
+      {/* <Dialog
         fullWidth
         open={feed.value}
         onClose={handleClose}
@@ -122,7 +124,7 @@ export default function ChatPopover() {
             <DiscoveryPostNewEditForm />
           </Scrollbar>
         </Box>
-      </Dialog>
+      </Dialog> */}
     </>
   );
 }

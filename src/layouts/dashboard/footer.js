@@ -83,7 +83,6 @@ export default function DashboardFooter() {
     }
     if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
       Keyboard.addListener('keyboardWillShow', () => {
-        console.log('keyboardWillShow');
         setIsKeyboardVisible(true);
       });
 
