@@ -66,6 +66,9 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
       {false && <Searchbar />}
+      <Restricted to={['Scope:Admin']}>
+        <ScopePopover />
+      </Restricted>
       <Stack
         flexGrow={1}
         direction="row"
@@ -74,9 +77,9 @@ export default function Header({ onOpenNav }) {
         spacing={{ xs: 0.5, sm: 1 }}
         sx={{ mr: '-12px' }}
       >
-        <Restricted to={['Scope:Admin']}>
+        {/* <Restricted to={['Scope:Admin']}>
           <ScopePopover />
-        </Restricted>
+        </Restricted> */}
         {/* <LanguagePopover /> */}
         <NotificationsPopover />
         {/* { lgUp && <ScopePopover /> } */}
