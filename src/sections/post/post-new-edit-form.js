@@ -31,10 +31,13 @@ import FormProvider, {
   RHFEditor,
   RHFUpload,
   RHFTextField,
+  RHFSwitch,
   RHFAutocomplete,
 } from 'src/components/hook-form';
 
 import { postService, fileService } from 'src/composables/context-provider';
+
+import { useSelector } from 'src/redux/store';
 
 //
 import PostDetailsPreview from './post-details-preview';
@@ -42,10 +45,13 @@ import PostDetailsPreview from './post-details-preview';
 // ----------------------------------------------------------------------
 
 export const status = [
-  { value: 'system', label: '系统通知' },
-  { value: 'message', label: '消息通知' },
-  { value: 'broadcast', label: '活动通知' },
-  { value: 'book', label: '阅读通知' },
+  { value: 'draft', label: '草稿' },
+  { value: 'pending_review', label: '审核中' },
+  { value: 'published', label: '已发布' },
+  { value: 'rejected', label: '驳回' },
+  { value: 'archived', label: '归档' },
+  { value: 'deleted', label: '删除' },
+  { value: '', label: '未知' },
 ];
 
 export const categories = [
@@ -65,13 +71,15 @@ export default function PostNewEditForm({ currentPost }) {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  const scope = useSelector((state) => state.scope);
+
   const preview = useBoolean();
 
   const NewPostSchema = Yup.object().shape({
     title: Yup.string().required('请输入标题'),
     body: Yup.string().required('请输入描述'),
     content: Yup.string().required('请输入内容'),
-    coverUrl: Yup.mixed().nullable(),
+    cover: Yup.mixed().nullable(),
     category: Yup.array(),
     published: Yup.boolean(),
     commented: Yup.boolean(),
@@ -85,12 +93,12 @@ export default function PostNewEditForm({ currentPost }) {
       title: currentPost?.title || '',
       body: currentPost?.body || '',
       content: currentPost?.content || '',
-      coverUrl: currentPost?.coverUrl || null,
+      cover: currentPost?.cover || null,
       category: currentPost?.category || [],
       // metaKeywords: currentPost?.metaKeywords || [],
       metaTitle: currentPost?.metaTitle || '',
-      published: currentPost?.published || '',
-      commented: currentPost?.commented || '',
+      published: currentPost?.published || true,
+      commented: currentPost?.commented || true,
       metaDescription: currentPost?.metaDescription || '',
     }),
     [currentPost]
@@ -118,19 +126,17 @@ export default function PostNewEditForm({ currentPost }) {
   }, [currentPost, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
+    console.log('更新');
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
       preview.onFalse();
       if (!isEdit) {
         await postService.post({
-          ...values,
           ...data,
+          scope: scope.active._id,
         });
       } else {
         await postService.patch({
           _id: currentPost._id,
-          ...values,
           ...data,
         });
       }
@@ -150,7 +156,7 @@ export default function PostNewEditForm({ currentPost }) {
         formData.append('file', file);
         const { link } = await fileService.uploadToBook(formData);
         if (file) {
-          setValue('coverUrl', link, { shouldValidate: true });
+          setValue('cover', link, { shouldValidate: true });
         }
         loading.onFalse();
       } catch (e) {
@@ -162,7 +168,7 @@ export default function PostNewEditForm({ currentPost }) {
   );
 
   const handleRemoveFile = useCallback(() => {
-    setValue('coverUrl', null);
+    setValue('cover', null);
   }, [setValue]);
 
   const renderDetails = (
@@ -213,7 +219,7 @@ export default function PostNewEditForm({ currentPost }) {
                 </Box>
               )}
               <RHFUpload
-                name="coverUrl"
+                name="cover"
                 onDrop={handleDrop}
                 // maxSize={3145728}
                 onDelete={handleRemoveFile}
@@ -293,7 +299,7 @@ export default function PostNewEditForm({ currentPost }) {
             <RHFTextField name="metaDescription" label="元描述" fullWidth multiline rows={3} />
 
             <FormControlLabel
-              control={<Switch defaultChecked name="commented" />}
+              control={<RHFSwitch defaultChecked name="commented" />}
               label="允许评论"
             />
           </Stack>
@@ -307,8 +313,7 @@ export default function PostNewEditForm({ currentPost }) {
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
         <FormControlLabel
-          control={<Switch defaultChecked name="published" />}
-          label="发布"
+          control={<RHFSwitch name="published" label="是否发布" />}
           sx={{ flexGrow: 1, pl: 3 }}
         />
 
@@ -343,9 +348,7 @@ export default function PostNewEditForm({ currentPost }) {
         title={values.title}
         content={values.content}
         body={values.body}
-        coverUrl={
-          typeof values.coverUrl === 'string' ? values.coverUrl : `${values.coverUrl?.preview}`
-        }
+        cover={typeof values.cover === 'string' ? values.cover : `${values.cover?.preview}`}
         //
         open={preview.value}
         isValid={isValid}

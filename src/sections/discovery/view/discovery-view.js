@@ -7,6 +7,8 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { postService } from 'src/composables/context-provider';
 import Scrollbar from 'src/components/scrollbar';
 import { _ecommerceNewProducts } from 'src/_mock';
+// auth
+import { useAuthContext } from 'src/auth/hooks';
 import DiscoveryPostItem from '../discovery-post-item';
 import DiscoveryKanban from '../discovery-kanban';
 
@@ -20,6 +22,8 @@ export default function DiscoveryView() {
   const { enqueueSnackbar } = useSnackbar();
   const { themeStretch } = useSettingsContext();
   const scope = useSelector((state) => state.scope);
+
+  const { user, logout } = useAuthContext();
 
   const [currentTab, setCurrentTab] = useState('Offcial');
   const [page, setPage] = useState(0);
@@ -86,10 +90,13 @@ export default function DiscoveryView() {
             loadMore={refresh}
             hasMore={hasMore}
             useWindow={false}
+            style={{
+              marginTop: '16px',
+            }}
             loader={<div key={0}>加载中 ...</div>}
           >
             {posts.map((post) => (
-              <DiscoveryPostItem key={post._id} post={post} />
+              <DiscoveryPostItem key={post._id} post={post} user={user} />
             ))}
           </InfiniteScroll>
         </Scrollbar>

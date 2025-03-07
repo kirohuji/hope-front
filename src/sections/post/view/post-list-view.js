@@ -62,14 +62,12 @@ import { categories } from '../post-new-edit-form';
 const TABLE_HEAD = [
   { id: 'title', label: '标题' },
   { id: 'metaTitle', label: '元标题' },
-  { id: 'description', label: '内容' },
   { id: 'category', label: '标签' },
-  { id: 'metaKeywords', label: '源关键字' },
-  { id: 'published', label: '是否发布' },
-  { id: 'commented', label: '允许编辑' },
-  { id: 'createdBy', label: '创建人' },
+  // { id: 'published', label: '是否发布' },
+  { id: 'commented', label: '允许评论' },
+  { id: 'poster', label: '创建人' },
   { id: 'createdAt', label: '创建时间' },
-  { id: 'publishedAt', label: '创建时间' },
+  { id: 'publishedAt', label: '发布时间' },
   { id: 'status', label: '状态' },
   { id: '' },
 ];

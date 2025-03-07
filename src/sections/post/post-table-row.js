@@ -21,7 +21,8 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-
+import { getLabelFromValue } from 'src/utils/map';
+import { status as statusMap } from './post-new-edit-form';
 // ----------------------------------------------------------------------
 
 export default function PostTableRow({
@@ -37,7 +38,7 @@ export default function PostTableRow({
     body,
     metaTitle,
     metaDescription,
-    createdBy,
+    poster,
     category,
     publishedAt,
     published,
@@ -57,13 +58,20 @@ export default function PostTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          {/* <Avatar alt={coverUrl} sx={{ mr: 2 }}>
-            {coverUrl.charAt(0).toUpperCase()}
-          </Avatar> */}
-
+        <TableCell>
           <ListItemText
             disableTypography
+            sx={{
+              width: '150px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+            primary={
+              <Typography variant="body2" noWrap>
+                {title}
+              </Typography>
+            }
             secondary={
               <Link
                 noWrap
@@ -71,14 +79,21 @@ export default function PostTableRow({
                 onClick={onViewRow}
                 sx={{ color: 'text.disabled', cursor: 'pointer' }}
               >
-                {title}
+                {body}
               </Link>
             }
           />
         </TableCell>
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+
+        <TableCell>
           <ListItemText
             disableTypography
+            sx={{
+              width: '150px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
             primary={
               <Typography variant="body2" noWrap>
                 {metaTitle}
@@ -96,16 +111,72 @@ export default function PostTableRow({
             }
           />
         </TableCell>
+        <TableCell
+          sx={{
+            width: '80px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {category ? category.join(',') : '未分类'}
+        </TableCell>
 
-        <TableCell>{body}</TableCell>
+        {/* <TableCell>{published ? '已发布' : '未发布'}</TableCell> */}
 
-        <TableCell>{category}</TableCell>
+        <TableCell>{commented ? '允许' : '禁止'}</TableCell>
+
+        <TableCell>{poster ? poster.username : '未知用户'}</TableCell>
+
+        <TableCell>
+          <ListItemText
+            primary={format(new Date(createdAt), 'dd MMM yyyy')}
+            secondary={format(new Date(createdAt), 'p')}
+            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
+            secondaryTypographyProps={{
+              mt: 0.5,
+              component: 'span',
+              typography: 'caption',
+            }}
+          />
+        </TableCell>
+
+        <TableCell>
+          {publishedAt ? (
+            <ListItemText
+              primary={format(new Date(publishedAt), 'dd MMM yyyy')}
+              secondary={format(new Date(publishedAt), 'p')}
+              primaryTypographyProps={{ typography: 'body2', noWrap: true }}
+              secondaryTypographyProps={{
+                mt: 0.5,
+                component: 'span',
+                typography: 'caption',
+              }}
+            />
+          ) : (
+            '未发布'
+          )}
+        </TableCell>
+        <TableCell>
+          <Label
+            variant="soft"
+            color={
+              (status === 'published' && 'success') ||
+              (status === 'pending_review' && 'warning') ||
+              (status === 'rejected' && 'error') ||
+              'default'
+            }
+          >
+            {getLabelFromValue(status, statusMap)}
+          </Label>
+        </TableCell>
+        {/* 
 
         <TableCell>{published}</TableCell>
 
         <TableCell>{commented}</TableCell>
 
-        <TableCell>{createdBy}</TableCell>
+        <TableCell>{poster}</TableCell>
 
         <TableCell>
           <ListItemText
@@ -148,7 +219,7 @@ export default function PostTableRow({
           >
             {status}
           </Label>
-        </TableCell>
+        </TableCell> */}
 
         <TableCell align="right" sx={{ px: 1 }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
