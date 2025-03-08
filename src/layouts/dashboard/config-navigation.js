@@ -370,19 +370,19 @@ export function useNavData() {
           //   info: <Label color="error">+32</Label>,
           // },
           // MAIL
-          {
-            title: t('mail'),
-            path: paths.dashboard.mail,
-            icon: ICONS.mail,
-            auth: [
-              'Broadcast',
-              'BroadcastList',
-              'BroadcastListAdd',
-              'BroadcastListEdit',
-              'BroadcastListDelete',
-            ],
-            info: <Label color="error">+32</Label>,
-          },
+          // {
+          //   title: t('mail'),
+          //   path: paths.dashboard.mail,
+          //   icon: ICONS.mail,
+          //   auth: [
+          //     'Broadcast',
+          //     'BroadcastList',
+          //     'BroadcastListAdd',
+          //     'BroadcastListEdit',
+          //     'BroadcastListDelete',
+          //   ],
+          //   info: <Label color="error">+32</Label>,
+          // },
 
           // CHAT
           {

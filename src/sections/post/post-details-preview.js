@@ -20,7 +20,7 @@ import PostDetailsHero from './post-details-hero';
 export default function PostDetailsPreview({
   title,
   coverUrl,
-  content,
+  body,
   description,
   //
   open,
@@ -29,7 +29,7 @@ export default function PostDetailsPreview({
   onSubmit,
   isSubmitting,
 }) {
-  const hasContent = title || description || content || coverUrl;
+  const hasContent = title || description || body || coverUrl;
 
   const hasHero = title || coverUrl;
 
@@ -37,7 +37,7 @@ export default function PostDetailsPreview({
     <Dialog fullScreen open={open} onClose={onClose}>
       <DialogActions sx={{ py: 2, px: 3 }}>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Preview
+          预览
         </Typography>
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
@@ -51,7 +51,7 @@ export default function PostDetailsPreview({
           loading={isSubmitting}
           onClick={onSubmit}
         >
-          Post
+          发送
         </LoadingButton>
       </DialogActions>
 
@@ -71,8 +71,8 @@ export default function PostDetailsPreview({
               <Typography variant="h6" sx={{ mb: 5 }}>
                 {description}
               </Typography>
-
-              <Markdown children={content} />
+              内容
+              <Markdown children={body} />
             </Stack>
           </Container>
         </Scrollbar>
@@ -84,7 +84,7 @@ export default function PostDetailsPreview({
 }
 
 PostDetailsPreview.propTypes = {
-  content: PropTypes.string,
+  body: PropTypes.string,
   coverUrl: PropTypes.string,
   description: PropTypes.string,
   isSubmitting: PropTypes.bool,

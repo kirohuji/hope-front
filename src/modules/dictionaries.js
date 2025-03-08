@@ -12,4 +12,8 @@ export default class DictionaryService extends Service {
   dict(target) {
     return this.api.post(`${this.model}/dict`, target);
   }
+
+  sync(target) {
+    return this.api.post(`${this.model}/sync`, target);
+  }
 }

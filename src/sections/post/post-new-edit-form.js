@@ -76,9 +76,8 @@ export default function PostNewEditForm({ currentPost }) {
   const preview = useBoolean();
 
   const NewPostSchema = Yup.object().shape({
-    title: Yup.string().required('请输入标题'),
+    title: Yup.string(),
     body: Yup.string().required('请输入描述'),
-    content: Yup.string().required('请输入内容'),
     cover: Yup.mixed().nullable(),
     category: Yup.array(),
     published: Yup.boolean(),
@@ -92,7 +91,6 @@ export default function PostNewEditForm({ currentPost }) {
     () => ({
       title: currentPost?.title || '',
       body: currentPost?.body || '',
-      content: currentPost?.content || '',
       cover: currentPost?.cover || null,
       category: currentPost?.category || [],
       // metaKeywords: currentPost?.metaKeywords || [],
@@ -189,13 +187,13 @@ export default function PostNewEditForm({ currentPost }) {
           {!mdUp && <CardHeader title="基本信息" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
-            <RHFTextField name="title" label="标题" />
+            <RHFTextField name="title" label="标题" placeholder="标题不是必须输入" />
 
-            <RHFTextField name="body" label="描述" multiline rows={3} />
+            {/* <RHFTextField name="body" label="描述" multiline rows={3} /> */}
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">内容</Typography>
-              <RHFEditor simple name="content" />
+              <RHFEditor simple name="body" />
             </Stack>
 
             <Stack spacing={1.5}>
@@ -346,7 +344,6 @@ export default function PostNewEditForm({ currentPost }) {
 
       <PostDetailsPreview
         title={values.title}
-        content={values.content}
         body={values.body}
         cover={typeof values.cover === 'string' ? values.cover : `${values.cover?.preview}`}
         //

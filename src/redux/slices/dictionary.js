@@ -26,9 +26,14 @@ const slice = createSlice({
 
     // GET POSTS
     getDictionarySuccess(state, action) {
-      console.log('action.payload', action.payload);
+      const { updated, deleted } = action.payload;
       state.isLoading = false;
-      state.dictionary[action.payload.value] = action.payload;
+      updated.forEach((item) => {
+        state.dictionary[item.value] = item;
+      });
+      deleted.forEach((item) => {
+        delete state.dictionary[item.value];
+      });
     },
 
     getDatasSuccess(state, action) {
@@ -55,6 +60,30 @@ export function getDictionary(value) {
         value,
       });
       dispatch(slice.actions.getDictionarySuccess(response));
+    } catch (error) {
+      console.error(error);
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  };
+}
+
+export function sync() {
+  return async (dispatch, getState) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const { dictionary } = getState().dictionary;
+      const { updated, deleted } = await dictionaryService.sync(
+        Object.keys(dictionary).map((key) => ({
+          _id: dictionary[key]._id,
+          version: dictionary[key].version,
+        }))
+      );
+      dispatch(slice.actions.getDictionarySuccess({ updated, deleted }));
     } catch (error) {
       console.error(error);
       dispatch(

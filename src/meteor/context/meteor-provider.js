@@ -6,6 +6,7 @@ import { simpleDDPLogin } from 'simpleddp-plugin-login';
 import _ from 'lodash';
 import { useDispatch } from 'src/redux/store';
 import { getConversations, getSessions } from 'src/redux/slices/chat';
+import { sync } from 'src/redux/slices/dictionary';
 import { getOverview } from 'src/redux/slices/notification';
 import { MeteorContext } from './meteor-context';
 // import { useNotificationSnackbar } from 'src/components/notification-snackbar/index';
@@ -36,7 +37,7 @@ const messagesPublish = null;
 
 export const bindConnect = async (server, dispatch) => {
   server.on('connected', () => {
-    console.log('连接成功')
+    console.log('连接成功');
     dispatch({
       type: 'INITIAL',
       payload: {
@@ -47,7 +48,7 @@ export const bindConnect = async (server, dispatch) => {
     });
   });
   server.on('disconnected', () => {
-    console.log('失去连接')
+    console.log('失去连接');
     dispatch({
       type: 'INITIAL',
       payload: {
@@ -111,24 +112,27 @@ export function MeteorProvider({ endpoint, children }) {
     }
   }, 100);
 
-  const subConversations = useCallback(async (callback) => {
-    const { server } = state;
-    // 关闭上一次的监听
-    if (conversationsPublish) {
-      conversationsCollectionChange.stop();
-      conversationsPublish.stop();
-    }
-    conversationsPublish = server.subscribe('newMessagesConversations', new Date());
-    conversationsPublish.ready();
-    conversationsCollection = server.collection('socialize:conversations');
-    conversationsCollectionChange = conversationsCollection.onChange(async (target) => {
-      if (target.changed && target.changed.next) {
-        console.log('target.changed.next', target.changed);
-        updateConversationsByDebounce([target.changed.next], !!target.changed.next.sessionId);
-        callback(target.changed.next)
+  const subConversations = useCallback(
+    async (callback) => {
+      const { server } = state;
+      // 关闭上一次的监听
+      if (conversationsPublish) {
+        conversationsCollectionChange.stop();
+        conversationsPublish.stop();
       }
-    });
-  }, [state, updateConversationsByDebounce]);
+      conversationsPublish = server.subscribe('newMessagesConversations', new Date());
+      conversationsPublish.ready();
+      conversationsCollection = server.collection('socialize:conversations');
+      conversationsCollectionChange = conversationsCollection.onChange(async (target) => {
+        if (target.changed && target.changed.next) {
+          console.log('target.changed.next', target.changed);
+          updateConversationsByDebounce([target.changed.next], !!target.changed.next.sessionId);
+          callback(target.changed.next);
+        }
+      });
+    },
+    [state, updateConversationsByDebounce]
+  );
 
   const subNotifications = useCallback(async () => {
     const { server } = state;
@@ -218,7 +222,8 @@ export function MeteorProvider({ endpoint, children }) {
     };
     const server = new SimpleDDP(opts, [simpleDDPLogin]);
     await bindConnect(server, dispatch);
-  }, [endpoint]);
+    reducerDispatch(sync());
+  }, [endpoint, reducerDispatch]);
 
   useEffect(() => {
     initialize();
