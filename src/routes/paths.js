@@ -279,5 +279,11 @@ export const paths = {
       details: (id) => `${ROOTS.DASHBOARD}/notification/${id}`,
       edit: (id) => `${ROOTS.DASHBOARD}/notification/${id}/edit`,
     },
+    membership: {
+      root: `${ROOTS.DASHBOARD}/membership`,
+      // new: `${ROOTS.DASHBOARD}/membership/new`,
+      // details: (id) => `${ROOTS.DASHBOARD}/membership/${id}`,
+      // edit: (id) => `${ROOTS.DASHBOARD}/membership/${id}/edit`,
+    },
   },
 };

@@ -92,6 +92,9 @@ const BroadcastEditPage = lazy(() => import('src/pages/dashboard/broadcast/edit'
 // NOTIFICATION
 const NotificationListPage = lazy(() => import('src/pages/dashboard/notification/list'));
 const NotificationCreatePage = lazy(() => import('src/pages/dashboard/notification/new'));
+
+// MEMBERSHIP
+const MembershipListPage = lazy(() => import('src/pages/dashboard/membership/list'));
 // FILE MANAGER
 const FileManagerPage = lazy(() => import('src/pages/dashboard/file-manager'));
 // APP
@@ -296,6 +299,14 @@ export const dashboardRoutes = [
           { element: <NotificationListPage />, index: true },
           { path: 'list', element: <NotificationListPage /> },
           { path: 'new', element: <NotificationCreatePage /> },
+        ],
+      },
+      {
+        path: 'membership',
+        children: [
+          { element: <MembershipListPage />, index: true },
+          { path: 'list', element: <MembershipListPage /> },
+          // { path: 'new', element: <NotificationCreatePage /> },
         ],
       },
       {

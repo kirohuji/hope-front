@@ -22,6 +22,7 @@ import BpmnService from '../modules/bpmns';
 import ServiceService from '../modules/services';
 import BpmnInstanceService from '../modules/bpmns_instances';
 import PostService from '../modules/posts';
+import MembershipService from '../modules/memberships';
 
 export const authService = new AuthService({ api, model: '' });
 export const userService = new UserService({ api, model: 'users' });
@@ -48,5 +49,6 @@ export const bpmnService = new BpmnService({ api, model: 'bpmns' });
 export const serviceService = new ServiceService({ api, model: 'services' });
 export const bpmnInstanceService = new BpmnInstanceService({ api, model: 'bpmns/instances' });
 export const postService = new PostService({ api, model: 'posts' });
+export const membershipService = new MembershipService({ api, model: 'memberships' });
 
 export const fileService = new FlieService({ api: fileApi, model: '' });

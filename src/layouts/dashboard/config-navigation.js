@@ -157,28 +157,28 @@ export function useNavData() {
           // },
 
           // ORDER
-          // {
-          //   title: t('order'),
-          //   path: paths.dashboard.order.root,
-          //   icon: ICONS.order,
-          //   children: [
-          //     { title: t('list'), path: paths.dashboard.order.root },
-          //     { title: t('details'), path: paths.dashboard.order.demo.details },
-          //   ],
-          // },
-
-          // INVOICE
           {
-            title: t('invoice'),
-            path: paths.dashboard.invoice.root,
-            icon: ICONS.invoice,
+            title: t('order'),
+            path: paths.dashboard.order.root,
+            icon: ICONS.order,
             children: [
-              { title: t('list'), path: paths.dashboard.invoice.root },
-              // { title: t('details'), path: paths.dashboard.invoice.demo.details },
-              // { title: t('create'), path: paths.dashboard.invoice.new },
-              // { title: t('edit'), path: paths.dashboard.invoice.demo.edit },
+              { title: t('list'), path: paths.dashboard.order.root },
+              { title: t('details'), path: paths.dashboard.order.demo.details },
             ],
           },
+
+          // INVOICE
+          // {
+          //   title: t('invoice'),
+          //   path: paths.dashboard.invoice.root,
+          //   icon: ICONS.invoice,
+          //   children: [
+          //     { title: t('list'), path: paths.dashboard.invoice.root },
+          //     // { title: t('details'), path: paths.dashboard.invoice.demo.details },
+          //     // { title: t('create'), path: paths.dashboard.invoice.new },
+          //     // { title: t('edit'), path: paths.dashboard.invoice.demo.edit },
+          //   ],
+          // },
 
           // // BLOG
           // {
@@ -284,7 +284,8 @@ export function useNavData() {
             path: paths.dashboard.dictionary.root,
             icon: ICONS.mail,
           },
-          { title: t('subscription'), path: paths.dashboard.general.booking, icon: ICONS.booking },
+          // { title: t('subscription'), path: paths.dashboard.general.booking, icon: ICONS.booking },
+          // { title: t('membership'), path: paths.dashboard.membership, icon: ICONS.booking },
           // TOUR
           // {
           //   title: t('tour'),
@@ -317,6 +318,17 @@ export function useNavData() {
             ],
           },
           {
+            title: t('membership'),
+            path: paths.dashboard.membership.root,
+            icon: ICONS.booking,
+            children: [
+              {
+                title: t('list'),
+                path: paths.dashboard.membership.root,
+              },
+            ],
+          },
+          {
             title: t('notification'),
             path: paths.dashboard.notification.root,
             auth: [
@@ -333,9 +345,6 @@ export function useNavData() {
                 path: paths.dashboard.notification.root,
                 auth: ['NotificationList'],
               },
-              // { title: t('details'), path: paths.dashboard.broadcast.demo.details },
-              // { title: t('create'), path: paths.dashboard.broadcast.new },
-              // { title: t('edit'), path: paths.dashboard.broadcast.demo.edit },
             ],
           },
 
