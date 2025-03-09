@@ -19,7 +19,7 @@ export default function OrderDetailsInfo({ customer, delivery, payment, shipping
   const renderCustomer = (
     <>
       <CardHeader
-        title="Customer Info"
+        title="客户信息"
         action={
           <IconButton>
             <Iconify icon="solar:pen-bold" />
@@ -28,17 +28,24 @@ export default function OrderDetailsInfo({ customer, delivery, payment, shipping
       />
       <Stack direction="row" sx={{ p: 3 }}>
         <Avatar
-          alt={customer.name}
-          src={customer.avatarUrl}
+          alt={customer.displayName}
+          src={customer.photoURL}
           sx={{ width: 48, height: 48, mr: 2 }}
         />
 
         <Stack spacing={0.5} alignItems="flex-start" sx={{ typography: 'body2' }}>
-          <Typography variant="subtitle2">{customer.name}</Typography>
+          <Typography variant="subtitle2">{customer.displayName}</Typography>
 
           <Box sx={{ color: 'text.secondary' }}>{customer.email}</Box>
 
           <Box>
+            地址:
+            <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
+              {customer.address}
+            </Box>
+          </Box>
+
+          {/* <Box>
             IP Address:
             <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
               {customer.ipAddress}
@@ -52,7 +59,7 @@ export default function OrderDetailsInfo({ customer, delivery, payment, shipping
             sx={{ mt: 1 }}
           >
             Add to Blacklist
-          </Button>
+          </Button> */}
         </Stack>
       </Stack>
     </>

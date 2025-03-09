@@ -128,7 +128,7 @@ export default function OrderTableRow({ row, selected, onViewRow, onSelectRow, o
           <Stack component={Paper} sx={{ m: 1.5 }}>
             {items.map((item) => (
               <Stack
-                key={item.id}
+                key={item._id}
                 direction="row"
                 alignItems="center"
                 sx={{
@@ -138,15 +138,17 @@ export default function OrderTableRow({ row, selected, onViewRow, onSelectRow, o
                   },
                 }}
               >
-                <Avatar
-                  src={item.coverUrl}
-                  variant="rounded"
-                  sx={{ width: 48, height: 48, mr: 2 }}
-                />
+                {item.coverUrl && (
+                  <Avatar
+                    src={item.coverUrl}
+                    variant="rounded"
+                    sx={{ width: 48, height: 48, mr: 2 }}
+                  />
+                )}
 
                 <ListItemText
-                  primary={item.name}
-                  secondary={item.sku}
+                  primary={item.linkedObject.label}
+                  secondary={item.objectType === 'memberships_types' && '会员功能'}
                   primaryTypographyProps={{
                     typography: 'body2',
                   }}
@@ -159,7 +161,7 @@ export default function OrderTableRow({ row, selected, onViewRow, onSelectRow, o
 
                 <Box>x{item.quantity}</Box>
 
-                <Box sx={{ width: 110, textAlign: 'right' }}>{fCurrency(item.price)}</Box>
+                <Box sx={{ width: 110, textAlign: 'right' }}>{fCurrency(item.unitPrice)}</Box>
               </Stack>
             ))}
           </Stack>

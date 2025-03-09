@@ -33,19 +33,19 @@ export default function OrderDetailsHistory({ history }) {
       }}
     >
       <Stack spacing={0.5}>
-        <Box sx={{ color: 'text.disabled' }}>Order time</Box>
+        <Box sx={{ color: 'text.disabled' }}>下单时间</Box>
         {fDateTime(history.orderTime)}
       </Stack>
       <Stack spacing={0.5}>
-        <Box sx={{ color: 'text.disabled' }}>Payment time</Box>
+        <Box sx={{ color: 'text.disabled' }}>付款时间</Box>
         {fDateTime(history.orderTime)}
       </Stack>
       <Stack spacing={0.5}>
-        <Box sx={{ color: 'text.disabled' }}>Delivery time for the carrier</Box>
+        <Box sx={{ color: 'text.disabled' }}>发货时间</Box>
         {fDateTime(history.orderTime)}
       </Stack>
       <Stack spacing={0.5}>
-        <Box sx={{ color: 'text.disabled' }}>Completion time</Box>
+        <Box sx={{ color: 'text.disabled' }}>完成时间</Box>
         {fDateTime(history.orderTime)}
       </Stack>
     </Stack>
@@ -89,7 +89,7 @@ export default function OrderDetailsHistory({ history }) {
 
   return (
     <Card>
-      <CardHeader title="History" />
+      <CardHeader title="历史记录" />
       <Stack
         spacing={3}
         alignItems={{ md: 'flex-start' }}

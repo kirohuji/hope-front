@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
@@ -11,6 +11,7 @@ import { _orders, ORDER_STATUS_OPTIONS } from 'src/_mock';
 import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
 //
+import { orderService } from 'src/composables/context-provider';
 import OrderDetailsInfo from '../order-details-info';
 import OrderDetailsItems from '../order-details-item';
 import OrderDetailsToolbar from '../order-details-toolbar';
@@ -25,50 +26,71 @@ export default function OrderDetailsView() {
 
   const { id } = params;
 
-  const currentOrder = _orders.filter((order) => order.id === id)[0];
+  const [order, setOrder] = useState({});
 
-  const [status, setStatus] = useState(currentOrder.status);
+  const [status, setStatus] = useState(order.status);
 
   const handleChangeStatus = useCallback((newValue) => {
     setStatus(newValue);
   }, []);
 
+  const getData = useCallback(async () => {
+    try {
+      const response = await orderService.get({
+        _id: id,
+      });
+      setOrder(response);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      getData(id);
+    }
+  }, [getData, id]);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <OrderDetailsToolbar
-        backLink={paths.dashboard.order.root}
-        orderNumber={currentOrder.orderNumber}
-        createdAt={currentOrder.createdAt}
-        status={status}
-        onChangeStatus={handleChangeStatus}
-        statusOptions={ORDER_STATUS_OPTIONS}
-      />
-
-      <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
-          <Stack spacing={3} direction={{ xs: 'column-reverse', md: 'column' }}>
-            <OrderDetailsItems
-              items={currentOrder.items}
-              taxes={currentOrder.taxes}
-              shipping={currentOrder.shipping}
-              discount={currentOrder.discount}
-              subTotal={currentOrder.subTotal}
-              totalAmount={currentOrder.totalAmount}
-            />
-
-            <OrderDetailsHistory history={currentOrder.history} />
-          </Stack>
-        </Grid>
-
-        <Grid xs={12} md={4}>
-          <OrderDetailsInfo
-            customer={currentOrder.customer}
-            delivery={currentOrder.delivery}
-            payment={currentOrder.payment}
-            shippingAddress={currentOrder.shippingAddress}
+      {order._id && (
+        <>
+          <OrderDetailsToolbar
+            backLink={paths.dashboard.order.root}
+            orderNumber={order.orderNumber}
+            createdAt={order.createdAt}
+            status={status}
+            onChangeStatus={handleChangeStatus}
+            statusOptions={ORDER_STATUS_OPTIONS}
           />
-        </Grid>
-      </Grid>
+
+          <Grid container spacing={3}>
+            <Grid xs={12} md={8}>
+              <Stack spacing={3} direction={{ xs: 'column-reverse', md: 'column' }}>
+                <OrderDetailsItems
+                  items={order.items}
+                  taxes={order.taxes}
+                  shipping={order.shipping}
+                  discount={order.discount}
+                  subTotal={order.subTotal}
+                  totalAmount={order.totalAmount}
+                />
+
+                <OrderDetailsHistory history={order.history} />
+              </Stack>
+            </Grid>
+
+            <Grid xs={12} md={4}>
+              <OrderDetailsInfo
+                customer={order.customer}
+                delivery={order.delivery}
+                payment={order.payment}
+                shippingAddress={order.shippingAddress}
+              />
+            </Grid>
+          </Grid>
+        </>
+      )}
     </Container>
   );
 }
