@@ -13,6 +13,7 @@ import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
+import Markdown from 'src/components/markdown';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
@@ -202,18 +203,25 @@ export default function ProfilePostItem({ post, user, onClick }) {
   );
 
   return (
-    <Box onClick={onClick} sx={{ p: 0.1 }}>
+    <Box onClick={onClick} sx={{ p: 0.5, pr: 0.1, pl: 0.1 }}>
       <Card>
         {renderHead}
 
-        <Typography
+        {/* <Typography
           variant="body2"
           sx={{
             p: (theme) => theme.spacing(3, 3, 2, 3),
           }}
         >
-          {post.body}
-        </Typography>
+          <Markdown children={post.body} />
+        </Typography> */}
+
+        <Markdown
+          sx={{
+            p: (theme) => theme.spacing(3, 3, 2, 3),
+          }}
+          children={post.body}
+        />
 
         <Box sx={{ p: 1 }}>
           <Image alt={post.cover} src={post.cover} ratio="16/9" sx={{ borderRadius: 1.5 }} />

@@ -7,4 +7,8 @@ export default class PostService extends Service {
       options,
     });
   }
+
+  addComment(target) {
+    return this.api.post(`${this.model}/${target.linkedObjectId}/comments`, target);
+  }
 }

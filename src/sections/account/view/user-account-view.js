@@ -55,12 +55,12 @@ const plans = [
   {
     subscription: '种子会员',
     price: 0,
-    primary: false,
+    primary: true,
   },
   {
     subscription: '成长会员',
     price: 10,
-    primary: true,
+    primary: false,
   },
   {
     subscription: '赋能会员',

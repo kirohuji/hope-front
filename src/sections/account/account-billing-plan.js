@@ -16,6 +16,9 @@ import { PlanFreeIcon, PlanStarterIcon, PlanPremiumIcon } from 'src/assets/icons
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+
+import { useAuthContext } from 'src/auth/hooks';
+
 //
 import { AddressListDialog } from '../address';
 import PaymentCardListDialog from '../payment/payment-card-list-dialog';
@@ -23,6 +26,10 @@ import PaymentCardListDialog from '../payment/payment-card-list-dialog';
 // ----------------------------------------------------------------------
 
 export default function AccountBillingPlan({ cardList, addressBook, plans }) {
+  const { user } = useAuthContext();
+
+  const membership = user.membership;
+
   const openAddress = useBoolean();
 
   const openCards = useBoolean();
@@ -62,7 +69,7 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
         variant="outlined"
         onClick={() => handleSelectPlan(plan.subscription)}
         sx={{
-          p: 2.5,
+          p: 1.5,
           position: 'relative',
           cursor: 'pointer',
           ...(plan.primary && {
@@ -84,10 +91,10 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
           </Label>
         )}
 
-        <Box sx={{ width: 48, height: 12 }}>
-          {plan.subscription === 'basic' && <PlanFreeIcon />}
-          {plan.subscription === 'starter' && <PlanStarterIcon />}
-          {plan.subscription === 'premium' && <PlanPremiumIcon />}
+        <Box sx={{ width: 24, height: 24 }}>
+          {plan.subscription === '种子会员' && <PlanFreeIcon />}
+          {plan.subscription === '成长会员' && <PlanStarterIcon />}
+          {plan.subscription === '赋能会员' && <PlanPremiumIcon />}
         </Box>
 
         <Box sx={{ typography: 'subtitle2', mt: 2, mb: 0.5, textTransform: 'capitalize' }}>

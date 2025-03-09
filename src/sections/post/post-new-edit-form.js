@@ -77,7 +77,7 @@ export default function PostNewEditForm({ currentPost }) {
 
   const NewPostSchema = Yup.object().shape({
     title: Yup.string(),
-    body: Yup.string().required('请输入描述'),
+    body: Yup.string().required('请输入内容'),
     cover: Yup.mixed().nullable(),
     category: Yup.array(),
     published: Yup.boolean(),

@@ -102,7 +102,7 @@ export default function DiscoveryCompose({ onCloseCompose }) {
           }}
         >
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            New Message
+            新想法
           </Typography>
 
           <IconButton onClick={fullScreen.onToggle}>
@@ -114,7 +114,7 @@ export default function DiscoveryCompose({ onCloseCompose }) {
           </IconButton>
         </Stack>
 
-        <InputBase
+        {/* <InputBase
           placeholder="To"
           endAdornment={
             <Stack direction="row" spacing={0.5} sx={{ typography: 'subtitle2' }}>
@@ -136,7 +136,7 @@ export default function DiscoveryCompose({ onCloseCompose }) {
             height: 48,
             borderBottom: (theme) => `solid 1px ${alpha(theme.palette.grey[500], 0.08)}`,
           }}
-        />
+        /> */}
 
         <Stack spacing={2} flexGrow={1} sx={{ p: 2 }}>
           <Editor

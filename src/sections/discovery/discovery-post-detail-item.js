@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -8,8 +8,7 @@ import Card from '@mui/material/Card';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import Checkbox from '@mui/material/Checkbox';
-import InputBase from '@mui/material/InputBase';
+import Markdown from 'src/components/markdown';
 import IconButton from '@mui/material/IconButton';
 import Scrollbar from 'src/components/scrollbar';
 import CardHeader from '@mui/material/CardHeader';
@@ -32,7 +31,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function DiscoveryPostDetailItem({ post, user }) {
+export default function DiscoveryPostDetailItem({ post, user, notify }) {
   const { poster } = post;
 
   const { enqueueSnackbar } = useSnackbar();
@@ -57,6 +56,24 @@ export default function DiscoveryPostDetailItem({ post, user }) {
       fileRef.current.click();
     }
   }, []);
+
+  const refreshCurrent = useCallback(async () => {
+    const response = await postService.comments(
+      { linkedObjectId: post._id, userId: user._id },
+      {
+        skip: 0,
+        sort: { createdAt: -1 },
+        limit: 1,
+      }
+    );
+    setComments((prev) => [...response.data, ...prev]);
+  }, [post._id, user._id]);
+
+  useEffect(() => {
+    if (notify > 0) {
+      refreshCurrent();
+    }
+  }, [notify, refreshCurrent]);
 
   const refresh = useCallback(
     async () => {
@@ -213,14 +230,20 @@ export default function DiscoveryPostDetailItem({ post, user }) {
     >
       {renderHead}
 
-      <Typography
+      {/* <Typography
         variant="body2"
         sx={{
           p: (theme) => theme.spacing(3, 3, 2, 3),
         }}
       >
-        {post.body}
-      </Typography>
+        <Markdown children={post.body} />
+      </Typography> */}
+      <Markdown
+        sx={{
+          p: (theme) => theme.spacing(3, 3, 2, 3),
+        }}
+        children={post.body}
+      />
 
       <Box sx={{ p: 1 }}>
         <Image alt={post.cover} src={post.cover} ratio="16/9" sx={{ borderRadius: 1.5 }} />
@@ -228,7 +251,7 @@ export default function DiscoveryPostDetailItem({ post, user }) {
 
       {renderActions}
 
-      <Scrollbar sx={{ p: 0, pb: 2, height: '100vh' }}>
+      <Scrollbar sx={{ p: 0, pb: 2, maxHeight: '100vh' }}>
         <InfiniteScroll
           loadMore={refresh}
           hasMore={hasMore}
@@ -248,4 +271,5 @@ export default function DiscoveryPostDetailItem({ post, user }) {
 DiscoveryPostDetailItem.propTypes = {
   post: PropTypes.object,
   user: PropTypes.object,
+  notify: PropTypes.number,
 };

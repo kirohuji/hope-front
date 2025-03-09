@@ -33,7 +33,9 @@ export default function DiscoveryDetailView() {
   const params = useParams();
   const { id, selectedTab } = params;
   const [post, setPost] = useState(null);
+  const [notify, setNotify] = useState(0);
   const { themeStretch } = useSettingsContext();
+  const [sendingType, setSendingType] = useState('send');
   const scope = useSelector((state) => state.scope);
 
   const { user } = useAuthContext();
@@ -71,6 +73,35 @@ export default function DiscoveryDetailView() {
     [enqueueSnackbar, id, scope.active._id, setPost] // 注意：去掉 loading 作为依赖
   );
 
+  const handleSendMessage = useCallback(
+    async (event) => {
+      try {
+        if (event.key === 'Enter') {
+          if (message && message !== '\n') {
+            try {
+              await postService.addComment({
+                linkedObjectId: id,
+                body: message,
+              });
+              setNotify((prev) => prev + 1);
+              enqueueSnackbar('发送成功');
+            } catch (e) {
+              enqueueSnackbar(e.message);
+            } finally {
+              setMessage('');
+              setSendingType('send');
+            }
+          } else {
+            setMessage('');
+            setSendingType('send');
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [message, id, enqueueSnackbar]
+  );
   const renderInput = (
     <Stack
       direction="row"
@@ -95,20 +126,22 @@ export default function DiscoveryDetailView() {
       <InputBase
         fullWidth
         value={message}
+        inputProps={{ enterKeyHint: sendingType }}
         inputRef={commentRef}
         placeholder="请输入内容"
+        onKeyUp={handleSendMessage}
         onChange={handleChangeMessage}
-        endAdornment={
-          <InputAdornment position="end" sx={{ mr: 1 }}>
-            <IconButton size="small" onClick={handleAttach}>
-              <Iconify icon="solar:gallery-add-bold" />
-            </IconButton>
+        // endAdornment={
+        //   <InputAdornment position="end" sx={{ mr: 1 }}>
+        //     <IconButton size="small" onClick={handleAttach}>
+        //       <Iconify icon="solar:gallery-add-bold" />
+        //     </IconButton>
 
-            <IconButton size="small">
-              <Iconify icon="eva:smiling-face-fill" />
-            </IconButton>
-          </InputAdornment>
-        }
+        //     <IconButton size="small">
+        //       <Iconify icon="eva:smiling-face-fill" />
+        //     </IconButton>
+        //   </InputAdornment>
+        // }
         sx={{
           pl: 1.5,
           height: 40,
@@ -130,7 +163,7 @@ export default function DiscoveryDetailView() {
   return (
     <Container maxWidth={false} sx={{ position: 'relative' }}>
       <Scrollbar sx={{ p: 0, height: 'calc(100vh - 120px)' }}>
-        {post && <DiscoveryPostDetailItem post={post} user={user} />}
+        {post && <DiscoveryPostDetailItem post={post} user={user} notify={notify} />}
       </Scrollbar>
       {renderInput}
     </Container>

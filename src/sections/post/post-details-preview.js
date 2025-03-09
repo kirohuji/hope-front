@@ -19,7 +19,7 @@ import PostDetailsHero from './post-details-hero';
 
 export default function PostDetailsPreview({
   title,
-  coverUrl,
+  cover,
   body,
   description,
   //
@@ -29,9 +29,9 @@ export default function PostDetailsPreview({
   onSubmit,
   isSubmitting,
 }) {
-  const hasContent = title || description || body || coverUrl;
+  const hasContent = title || description || body || cover;
 
-  const hasHero = title || coverUrl;
+  const hasHero = title || cover;
 
   return (
     <Dialog fullScreen open={open} onClose={onClose}>
@@ -59,7 +59,7 @@ export default function PostDetailsPreview({
 
       {hasContent ? (
         <Scrollbar>
-          {hasHero && <PostDetailsHero title={title} coverUrl={coverUrl} />}
+          {hasHero && <PostDetailsHero title={title} coverUrl={cover} />}
 
           <Container sx={{ mt: 5, mb: 10 }}>
             <Stack
@@ -85,7 +85,7 @@ export default function PostDetailsPreview({
 
 PostDetailsPreview.propTypes = {
   body: PropTypes.string,
-  coverUrl: PropTypes.string,
+  cover: PropTypes.string,
   description: PropTypes.string,
   isSubmitting: PropTypes.bool,
   isValid: PropTypes.bool,
