@@ -1,31 +1,45 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
 // @mui
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
+import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
+import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Select from '@mui/material/Select';
 // components
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function OrderTableToolbar({
+export default function MembershipTypeTableToolbar({
   filters,
   onFilters,
   //
-  canReset,
-  onResetFilters,
+  dateError,
+  serviceOptions,
 }) {
   const popover = usePopover();
 
   const handleFilterName = useCallback(
     (event) => {
-      onFilters('name', event.target.value);
+      onFilters(' label', event.target.value);
+    },
+    [onFilters]
+  );
+
+  const handleFilterService = useCallback(
+    (event) => {
+      onFilters(
+        'category',
+        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
+      );
     },
     [onFilters]
   );
@@ -58,17 +72,42 @@ export default function OrderTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
+        <FormControl
+          sx={{
+            flexShrink: 0,
+            width: { xs: 1, md: 180 },
+          }}
+        >
+          <InputLabel>类别</InputLabel>
+
+          <Select
+            multiple
+            value={filters.category}
+            onChange={handleFilterService}
+            input={<OutlinedInput label="类别" />}
+            renderValue={(selected) => selected.map((value) => value).join(', ')}
+            sx={{ textTransform: 'capitalize' }}
+          >
+            {serviceOptions.map((option) => (
+              <MenuItem key={option.value} value={option.label}>
+                <Checkbox
+                  disableRipple
+                  size="small"
+                  checked={filters.category.includes(option.label)}
+                />
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
         {/* <DatePicker
           label="Start date"
           value={filters.startDate}
           onChange={handleFilterStartDate}
-          slotProps={{
-            textField: {
-              fullWidth: true,
-            },
-          }}
+          slotProps={{ textField: { fullWidth: true } }}
           sx={{
-            maxWidth: { md: 200 },
+            maxWidth: { md: 180 },
           }}
         /> */}
 
@@ -76,9 +115,14 @@ export default function OrderTableToolbar({
           label="End date"
           value={filters.endDate}
           onChange={handleFilterEndDate}
-          slotProps={{ textField: { fullWidth: true } }}
+          slotProps={{
+            textField: {
+              fullWidth: true,
+              error: dateError,
+            },
+          }}
           sx={{
-            maxWidth: { md: 200 },
+            maxWidth: { md: 180 },
           }}
         /> */}
 
@@ -87,7 +131,7 @@ export default function OrderTableToolbar({
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder="搜索用户或者订单编号..."
+            placeholder="请输入..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -101,17 +145,6 @@ export default function OrderTableToolbar({
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </Stack>
-
-        {canReset && (
-          <Button
-            color="error"
-            sx={{ flexShrink: 0 }}
-            onClick={onResetFilters}
-            startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-          >
-            Clear
-          </Button>
-        )}
       </Stack>
 
       <CustomPopover
@@ -151,9 +184,9 @@ export default function OrderTableToolbar({
   );
 }
 
-OrderTableToolbar.propTypes = {
-  canReset: PropTypes.bool,
+MembershipTypeTableToolbar.propTypes = {
+  dateError: PropTypes.bool,
   filters: PropTypes.object,
   onFilters: PropTypes.func,
-  onResetFilters: PropTypes.func,
+  serviceOptions: PropTypes.array,
 };

@@ -5,14 +5,14 @@ import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-
 // components
 import Iconify from 'src/components/iconify';
 import { shortDateLabel } from 'src/components/custom-date-range-picker';
-
+import { getLabelFromValue } from '../../utils/map';
+import { type, categories } from './membership-new-edit-form';
 // ----------------------------------------------------------------------
 
-export default function OrderTableFiltersResult({
+export default function MembershipTypeTableFiltersResult({
   filters,
   onFilters,
   //
@@ -23,8 +23,13 @@ export default function OrderTableFiltersResult({
 }) {
   const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
 
+  const handleRemoveService = (inputValue) => {
+    const newValue = filters.category.filter((item) => item !== inputValue);
+    onFilters('category', newValue);
+  };
+
   const handleRemoveStatus = () => {
-    onFilters('status', 'all');
+    onFilters('type', 'all');
   };
 
   const handleRemoveDate = () => {
@@ -37,14 +42,31 @@ export default function OrderTableFiltersResult({
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          结果被发现
+          条结果被发现
         </Box>
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
+        {!!filters.category.length && (
+          <Block label="分类:">
+            {filters.category.map((item) => (
+              <Chip
+                key={item}
+                label={item}
+                size="small"
+                onDelete={() => handleRemoveService(item)}
+              />
+            ))}
+          </Block>
+        )}
+
         {filters.status !== 'all' && (
-          <Block label="Status:">
-            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
+          <Block label="状态:">
+            <Chip
+              size="small"
+              label={getLabelFromValue(filters.type, type)}
+              onDelete={handleRemoveStatus}
+            />
           </Block>
         )}
 
@@ -59,14 +81,14 @@ export default function OrderTableFiltersResult({
           onClick={onResetFilters}
           startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
-          Clear
+          清除
         </Button>
       </Stack>
     </Stack>
   );
 }
 
-OrderTableFiltersResult.propTypes = {
+MembershipTypeTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,

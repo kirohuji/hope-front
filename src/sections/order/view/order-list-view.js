@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import _ from 'lodash';
+import { useRef, useCallback, useEffect, useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -11,19 +12,23 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
+import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // _mock
-import { _orders, ORDER_STATUS_OPTIONS } from 'src/_mock';
+import { _orders } from 'src/_mock';
 // utils
 import { fTimestamp } from 'src/utils/format-time';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useDebounce } from 'src/hooks/use-debounce';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -33,10 +38,18 @@ import {
   emptyRows,
   TableNoData,
   TableEmptyRows,
+  TableSkeleton,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
+
+// redux
+import { useSelector } from 'src/redux/store';
+
+// service
+import { fileService, orderService } from 'src/composables/context-provider';
+
 //
 import OrderTableRow from '../order-table-row';
 import OrderTableToolbar from '../order-table-toolbar';
@@ -44,15 +57,21 @@ import OrderTableFiltersResult from '../order-table-filters-result';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...ORDER_STATUS_OPTIONS];
+const ORDER_STATUS_OPTIONS = [
+  { value: 'pending', label: '处理中' },
+  { value: 'completed', label: '已完成' },
+  { value: 'cancelled', label: '已取消' },
+  { value: 'refunded', label: '已退款' },
+];
+const STATUS_OPTIONS = [{ value: 'all', label: '全部' }, ...ORDER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  { id: 'orderNumber', label: 'Order', width: 116 },
-  { id: 'name', label: 'Customer' },
-  { id: 'createdAt', label: 'Date', width: 140 },
-  { id: 'totalQuantity', label: 'Items', width: 120, align: 'center' },
-  { id: 'totalAmount', label: 'Price', width: 140 },
-  { id: 'status', label: 'Status', width: 110 },
+  { id: 'orderNumber', label: '订单编码', width: 116 },
+  { id: 'name', label: '客户' },
+  { id: 'createdAt', label: '创建日期', width: 140 },
+  { id: 'totalQuantity', label: '总数量', width: 120, align: 'center' },
+  { id: 'totalAmount', label: '总价格', width: 140 },
+  { id: 'status', label: '状态', width: 110 },
   { id: '', width: 88 },
 ];
 
@@ -66,7 +85,11 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function OrderListView() {
-  const table = useTable({ defaultOrderBy: 'orderNumber' });
+  const fileRef = useRef(null);
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const table = useTable({ defaultCurrentPage: 0 });
 
   const settings = useSettingsContext();
 
@@ -74,9 +97,23 @@ export default function OrderListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_orders);
+  const [tableData, setTableData] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [importLoading, setImportLoading] = useState(false);
+
+  const [tableDataCount, setTableDataCount] = useState(0);
 
   const [filters, setFilters] = useState(defaultFilters);
+
+  const canReset = !_.isEqual(defaultFilters, filters);
+
+  const scope = useSelector((state) => state.scope);
+
+  const debouncedFilters = useDebounce(filters);
+
+  const notFound = (!tableDataCount && canReset) || !tableDataCount;
 
   const dateError =
     filters.startDate && filters.endDate
@@ -97,10 +134,35 @@ export default function OrderListView() {
 
   const denseHeight = table.dense ? 52 : 72;
 
-  const canReset =
-    !!filters.name || filters.status !== 'all' || (!!filters.startDate && !!filters.endDate);
+  const getTableData = useCallback(
+    async (selector = {}, options = {}) => {
+      try {
+        setLoading(true);
+        const response = await orderService.pagination(
+          {
+            ...selector,
+            scope: scope.active._id,
+            ..._.pickBy(debouncedFilters, ['role']),
+          },
+          {
+            ...options,
+            skip: table.page * table.rowsPerPage,
+            limit: table.rowsPerPage,
+          }
+        );
+        setTableData(response.data);
+        setTableDataCount(response.total);
+        setLoading(false);
+      } catch (error) {
+        enqueueSnackbar(error.message);
+      }
+    },
+    [scope.active._id, debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
+  );
 
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  useEffect(() => {
+    getTableData();
+  }, [getTableData]);
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -114,25 +176,39 @@ export default function OrderListView() {
   );
 
   const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
+    async (id) => {
+      await orderService.delete({
+        _id: id,
+      });
+      enqueueSnackbar('删除成功');
+      getTableData();
     },
-    [dataInPage.length, table, tableData]
+    [getTableData, enqueueSnackbar]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
+  const handleDeleteRows = useCallback(async () => {
+    confirm.onFalse();
+    setImportLoading(true);
+    try {
+      await orderService.deleteMany({
+        _ids: table.selected,
+      });
+      table.onUpdatePageDeleteRowsByAsync();
+      enqueueSnackbar('删除成功');
+      getTableData();
+      setImportLoading(false);
+    } catch (e) {
+      enqueueSnackbar('删除失败,请联系管理员!');
+      setImportLoading(false);
+    }
+  }, [table, confirm, enqueueSnackbar, getTableData]);
 
-    table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+  const handleEditRow = useCallback(
+    (id) => {
+      router.push(paths.dashboard.order.edit(id));
+    },
+    [router]
+  );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -156,17 +232,17 @@ export default function OrderListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading="订单列表"
           links={[
-            {
-              name: 'Dashboard',
-              href: paths.dashboard.root,
-            },
-            {
-              name: 'Order',
-              href: paths.dashboard.order.root,
-            },
-            { name: 'List' },
+            // {
+            //   name: 'Dashboard',
+            //   href: paths.dashboard.root,
+            // },
+            // {
+            //   name: 'Order',
+            //   href: paths.dashboard.order.root,
+            // },
+            { name: '' },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -183,36 +259,7 @@ export default function OrderListView() {
             }}
           >
             {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition="end"
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                    }
-                    color={
-                      (tab.value === 'completed' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'cancelled' && 'error') ||
-                      'default'
-                    }
-                  >
-                    {tab.value === 'all' && _orders.length}
-                    {tab.value === 'completed' &&
-                      _orders.filter((order) => order.status === 'completed').length}
-
-                    {tab.value === 'pending' &&
-                      _orders.filter((order) => order.status === 'pending').length}
-                    {tab.value === 'cancelled' &&
-                      _orders.filter((order) => order.status === 'cancelled').length}
-                    {tab.value === 'refunded' &&
-                      _orders.filter((order) => order.status === 'refunded').length}
-                  </Label>
-                }
-              />
+              <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
             ))}
           </Tabs>
 
@@ -231,7 +278,7 @@ export default function OrderListView() {
               //
               onResetFilters={handleResetFilters}
               //
-              results={dataFiltered.length}
+              results={tableDataCount}
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
@@ -240,7 +287,7 @@ export default function OrderListView() {
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
-              rowCount={tableData.length}
+              rowCount={tableData.filter((row) => row.username !== 'admin').length}
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
@@ -248,7 +295,7 @@ export default function OrderListView() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title="删除">
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -274,35 +321,33 @@ export default function OrderListView() {
                 />
 
                 <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <OrderTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                  />
-
-                  <TableNoData notFound={notFound} />
+                  {loading ? (
+                    [...Array(table.rowsPerPage)].map((i, index) => (
+                      <TableSkeleton key={index} sx={{ height: denseHeight }} />
+                    ))
+                  ) : (
+                    <>
+                      {tableData.map((row) => (
+                        <OrderTableRow
+                          key={row._id}
+                          row={row}
+                          onClose={() => getTableData()}
+                          selected={table.selected.includes(row._id)}
+                          onSelectRow={() => table.onSelectRow(row._id)}
+                          onDeleteRow={() => handleDeleteRow(row._id)}
+                          onEditRow={() => handleEditRow(row._id)}
+                        />
+                      ))}
+                      {notFound && <TableNoData notFound={notFound} />}
+                    </>
+                  )}
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
 
           <TablePaginationCustom
-            count={dataFiltered.length}
+            count={tableDataCount}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
@@ -312,15 +357,21 @@ export default function OrderListView() {
             onChangeDense={table.onChangeDense}
           />
         </Card>
+        <Backdrop
+          sx={{ color: '#000', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={importLoading}
+        >
+          <CircularProgress color="info" />
+        </Backdrop>
       </Container>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title="删除"
         content={
           <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
+            你确定要删除 <strong> {table.selected.length} </strong> 项目?
           </>
         }
         action={
@@ -329,10 +380,10 @@ export default function OrderListView() {
             color="error"
             onClick={() => {
               handleDeleteRows();
-              confirm.onFalse();
+              // confirm.onFalse();
             }}
           >
-            Delete
+            删除
           </Button>
         }
       />

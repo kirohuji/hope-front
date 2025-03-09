@@ -268,8 +268,6 @@ export default function AuditSensitiveListView() {
           ]}
           action={
             <Button
-              component={RouterLink}
-              href={paths.dashboard.audit.new}
               variant="contained"
               onClick={() => handleOpenFormModal()}
               startIcon={<Iconify icon="mingcute:add-line" />}

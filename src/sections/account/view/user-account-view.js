@@ -8,6 +8,7 @@ import { paths } from 'src/routes/paths';
 // _mock
 import { _userAbout, _userPlans, _userPayment, _userInvoices, _userAddressBook } from 'src/_mock';
 // components
+import Scrollbar from 'src/components/scrollbar';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -103,23 +104,24 @@ export default function AccountView() {
           <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
         ))}
       </Tabs>
+      <Scrollbar sx={{ p: 0, pb: 0, height: 'calc(100% - 70px)' }}>
+        {currentTab === 'general' && <AccountGeneral />}
 
-      {currentTab === 'general' && <AccountGeneral />}
+        {currentTab === 'billing' && (
+          <AccountBilling
+            plans={plans}
+            cards={_userPayment}
+            invoices={_userInvoices}
+            addressBook={_userAddressBook}
+          />
+        )}
 
-      {currentTab === 'billing' && (
-        <AccountBilling
-          plans={plans}
-          cards={_userPayment}
-          invoices={_userInvoices}
-          addressBook={_userAddressBook}
-        />
-      )}
+        {currentTab === 'notifications' && <AccountNotifications />}
 
-      {currentTab === 'notifications' && <AccountNotifications />}
+        {currentTab === 'social' && <AccountSocialLinks socialLinks={_userAbout.socialLinks} />}
 
-      {currentTab === 'social' && <AccountSocialLinks socialLinks={_userAbout.socialLinks} />}
-
-      {currentTab === 'security' && <AccountChangePassword />}
+        {currentTab === 'security' && <AccountChangePassword />}
+      </Scrollbar>
     </Container>
   );
 }

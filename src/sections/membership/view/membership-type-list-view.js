@@ -51,27 +51,18 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 //
-import { membershipService } from 'src/composables/context-provider';
-import MembershipTableRow from '../membership-table-row';
-import MembershipTableToolbar from '../membership-table-toolbar';
-import MembershipTableFiltersResult from '../membership-table-filters-result';
-import MembershipTypeListView from './membership-type-list-view';
-import { categories } from '../membership-new-edit-form';
+import { membershipTypeService } from 'src/composables/context-provider';
+import MembershipTypeNewEditForm, { categories } from '../membership-type-new-edit-form';
+import MembershipTypeTableRow from '../membership-type-table-row';
+import MembershipTypeTableToolbar from '../membership-table-toolbar';
+import MembershipTypeTableFiltersResult from '../membership-table-filters-result';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'userId', label: '会员' },
-  { id: 'membershipType', label: '会员类型' },
-  { id: 'status', label: '状态' },
-  { id: 'startDate', label: '开始日期' },
-  { id: 'endDate', label: '到期日期' },
-  { id: 'autoRenew', label: '自动续费' },
+  { id: 'label', label: '会员' },
+  { id: 'description', label: '会员类型' },
   { id: 'price', label: '价格' },
-  { id: 'discount', label: '折扣' },
-  { id: 'points', label: '积分' },
-  { id: 'paymentMethod', label: '支付方式' },
-  { id: 'orderId', label: '订单 ID' },
-  { id: 'createdAt', label: '创建时间' },
+  // { id: 'createdAt', label: '创建时间' },
   { id: '' },
 ];
 
@@ -85,7 +76,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function MembershipListView() {
+export default function MembershipTypeListView() {
   const theme = useTheme();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -104,6 +95,8 @@ export default function MembershipListView() {
   const [importLoading, setImportLoading] = useState(false);
   const [tableDataCount, setTableDataCount] = useState(0);
 
+  const [currentMembershipType, setCurrentMembershipType] = useState(null);
+
   const [filters, setFilters] = useState(defaultFilters);
 
   const denseHeight = table.dense ? 52 : 72;
@@ -119,6 +112,7 @@ export default function MembershipListView() {
   };
 
   const onSave = async (form) => {
+    getTableData();
     handleCloseFormModal();
   };
   const dateError =
@@ -134,7 +128,8 @@ export default function MembershipListView() {
 
   const notFound = (!tableDataCount && canReset) || !tableDataCount;
 
-  const getMembershipLength = (status) => tableData.filter((item) => item.status === status).length;
+  const getMembershipTypeLength = (status) =>
+    tableData.filter((item) => item.status === status).length;
 
   const TABS = [
     { value: 'all', label: '全部', color: 'default', count: tableData.length },
@@ -149,7 +144,7 @@ export default function MembershipListView() {
     //   value: 'withdrawn',
     //   label: '已撤回',
     //   color: 'default',
-    //   count: getMembershipLength('draft'),
+    //   count: getMembershipTypeLength('draft'),
     // },
   ];
 
@@ -168,11 +163,11 @@ export default function MembershipListView() {
     async (selector = {}, options = {}) => {
       try {
         setLoading(true);
-        const response = await membershipService.pagination(
+        const response = await membershipTypeService.pagination(
           {
             ...selector,
-            scope: scope.active._id,
-            ..._.pickBy(_.omit(debouncedFilters, ['role'])),
+            // scope: scope.active._id,
+            // ..._.pickBy(_.omit(debouncedFilters, ['role'])),
           },
           {
             ...options,
@@ -187,7 +182,7 @@ export default function MembershipListView() {
         enqueueSnackbar(error.message);
       }
     },
-    [scope.active._id, debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
+    [table.page, table.rowsPerPage, enqueueSnackbar]
   );
 
   useEffect(() => {
@@ -196,7 +191,7 @@ export default function MembershipListView() {
 
   const handleDeleteRow = useCallback(
     async (id) => {
-      await membershipService.delete({
+      await membershipTypeService.delete({
         _id: id,
       });
       enqueueSnackbar('删除成功');
@@ -209,7 +204,7 @@ export default function MembershipListView() {
     confirm.onFalse();
     setImportLoading(true);
     try {
-      await membershipService.deleteMany({
+      await membershipTypeService.deleteMany({
         _ids: table.selected,
       });
       table.onUpdatePageDeleteRowsByAsync();
@@ -222,12 +217,14 @@ export default function MembershipListView() {
     }
   }, [table, confirm, enqueueSnackbar, getTableData]);
 
-  const handleEditRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.membership.edit(id));
-    },
-    [router]
-  );
+  const handleEditRow = useCallback(async (id) => {
+    const result = await membershipTypeService.get({
+      _id: id,
+    });
+    setCurrentMembershipType(result);
+    handleOpenFormModal();
+    // router.push(paths.dashboard.membership.edit(id));
+  }, []);
 
   const handleViewRow = useCallback(
     (id) => {
@@ -251,28 +248,27 @@ export default function MembershipListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="列表"
+          heading=""
           links={[
             // {
             //   name: 'Dashboard',
             //   href: paths.dashboard.root,
             // },
+            // {
+            //   name: '审核管理',
+            //   href: paths.dashboard.membership.root,
+            // },
             {
-              name: '审核管理',
-              href: paths.dashboard.membership.root,
-            },
-            {
-              name: '列表',
+              name: '',
             },
           ]}
           action={
             <Button
-              component={RouterLink}
               variant="contained"
               onClick={() => handleOpenFormModal()}
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              会员等级管理
+              新增
             </Button>
           }
           sx={{
@@ -281,7 +277,7 @@ export default function MembershipListView() {
         />
 
         <Card>
-          <Tabs
+          {/* <Tabs
             value={filters.type}
             onChange={handleFilterStatus}
             sx={{
@@ -307,18 +303,18 @@ export default function MembershipListView() {
                 // }
               />
             ))}
-          </Tabs>
+          </Tabs> */}
 
-          <MembershipTableToolbar
+          {/* <MembershipTypeTableToolbar
             filters={filters}
             onFilters={handleFilters}
             //
             dateError={dateError}
             serviceOptions={categories}
-          />
+          /> */}
 
-          {canReset && (
-            <MembershipTableFiltersResult
+          {/* {canReset && (
+            <MembershipTypeTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               //
@@ -327,7 +323,7 @@ export default function MembershipListView() {
               results={tableDataCount}
               sx={{ p: 2.5, pt: 0 }}
             />
-          )}
+          )} */}
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
@@ -394,7 +390,7 @@ export default function MembershipListView() {
                   ) : (
                     <>
                       {tableData.map((row) => (
-                        <MembershipTableRow
+                        <MembershipTypeTableRow
                           key={row._id}
                           row={row}
                           onClose={() => getTableData()}
@@ -457,12 +453,14 @@ export default function MembershipListView() {
           </Button>
         }
       />
-      <Dialog fullWidth maxWidth="lg" open={openForm} onClose={handleCloseFormModal}>
-        <DialogTitle>会员等级管理</DialogTitle>
-        <MembershipTypeListView />
+      <Dialog fullWidth maxWidth="md" open={openForm} onClose={handleCloseFormModal}>
+        <DialogTitle>新增</DialogTitle>
+        <MembershipTypeNewEditForm
+          onSubmitData={onSave}
+          onCancel={handleCloseFormModal}
+          currentMembershipType={currentMembershipType}
+        />
       </Dialog>
     </>
   );
 }
-
-// ----------------------------------------------------------------------

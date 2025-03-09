@@ -106,7 +106,7 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
 
           {!!plan.price && (
             <Box component="span" sx={{ typography: 'body2', color: 'text.disabled', ml: 0.5 }}>
-              /mo
+              /月
             </Box>
           )}
         </Stack>
@@ -185,8 +185,8 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3 }}>
-          <Button variant="outlined">取消 会员</Button>
-          <Button variant="contained">升级 会员</Button>
+          {/* <Button variant="outlined">取消 会员</Button> */}
+          <Button variant="contained">切换 会员</Button>
         </Stack>
       </Card>
 
