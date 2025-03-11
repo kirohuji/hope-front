@@ -54,10 +54,12 @@ export function pagination(query, options) {
     dispatch(slice.actions.startLoading());
     try {
       const { data, total } = await versionService.pagination(query, options);
-      dispatch(slice.actions.getDatasSuccess({ 
-        data,
-        total
-      }));
+      dispatch(
+        slice.actions.getDatasSuccess({
+          data,
+          total,
+        })
+      );
     } catch (error) {
       dispatch(
         slice.actions.hasError({
@@ -69,9 +71,9 @@ export function pagination(query, options) {
   };
 }
 
-export function getData({ id, user }) {
+export function getData({ id }) {
   return async (dispatch, getState) => {
-    const { details } = getState().broadcast;
+    const { details } = getState().version;
     if (!details.byId[id]) {
       dispatch(slice.actions.startLoading());
     }

@@ -24,34 +24,31 @@ export default function VersionEditView() {
 
   const { id } = params;
 
-  const getCurrentVersion = useCallback(
-    async (selector = {}, options = {}) => {
-      try {
-        const response = await versionService.get({
-          _id: id,
-        });
-        setCurrentVersion(response);
-      } catch (error) {
-        enqueueSnackbar(error.message);
-      }
-    },
-    [id, setCurrentVersion, enqueueSnackbar]
-  );
+  const getData = useCallback(async () => {
+    try {
+      const response = await versionService.get({
+        _id: id,
+      });
+      setCurrentVersion(response);
+    } catch (error) {
+      enqueueSnackbar(error.message);
+    }
+  }, [id, setCurrentVersion, enqueueSnackbar]);
 
   useEffect(() => {
-    getCurrentVersion();
-  }, [getCurrentVersion]);
+    getData();
+  }, [getData]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         heading="编辑"
         links={[
-          {
-            name: '作用域',
-            href: paths.dashboard.job.root,
-          },
-          { name: currentVersion?.label },
+          // {
+          //   name: '作用域',
+          //   href: paths.dashboard.job.root,
+          // },
+          { name: '' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

@@ -16,7 +16,7 @@ export default function VersionCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="创建一个新的版本"
+        heading="创建一个新主版本"
         links={[
           {
             name: '版本',
