@@ -7,31 +7,27 @@ import { useForm } from 'react-hook-form';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-
 // redux
 import { useDispatch } from 'src/redux/store';
-import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {
-  RHFUpload,
-  RHFEditor,
-  RHFSwitch,
-  RHFTextField,
-} from 'src/components/hook-form';
-import { scopeService, fileService } from 'src/composables/context-provider';
 import { getScopes } from 'src/redux/slices/scope';
+// components
+import { useSnackbar } from 'src/components/snackbar';
+import FormProvider, { RHFUpload, RHFEditor, RHFTextField } from 'src/components/hook-form';
+// services
+import { scopeService, fileService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeNewEditForm ({ currentScope }) {
+export default function ScopeNewEditForm({ currentScope }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const mdUp = useResponsive('up', 'md');
@@ -52,7 +48,6 @@ export default function ScopeNewEditForm ({ currentScope }) {
       value: currentScope?.value || '',
       description: currentScope?.description || '',
       cover: currentScope?.cover || '',
-      // published: currentScope?.published || false,
     }),
     [currentScope]
   );
@@ -64,7 +59,6 @@ export default function ScopeNewEditForm ({ currentScope }) {
 
   const {
     reset,
-    control,
     setValue,
     handleSubmit,
     formState: { isSubmitting },
@@ -81,7 +75,7 @@ export default function ScopeNewEditForm ({ currentScope }) {
       const file = acceptedFiles[0];
       const formData = new FormData();
       formData.append('file', file);
-      const { link } = await fileService.upload(formData)
+      const { link } = await fileService.upload(formData);
       if (file) {
         setValue('cover', link, { shouldValidate: true });
       }
@@ -94,7 +88,7 @@ export default function ScopeNewEditForm ({ currentScope }) {
       if (currentScope && currentScope._id) {
         await scopeService.patch({
           _id: currentScope._id,
-          ...data
+          ...data,
         });
       } else {
         await scopeService.post(data);
@@ -147,8 +141,6 @@ export default function ScopeNewEditForm ({ currentScope }) {
                 name="cover"
                 maxSize={3145728}
                 onDrop={handleDrop}
-                // onRemove={handleRemoveFile}
-                // onRemoveAll={handleRemoveAllFiles}
                 onUpload={() => console.info('ON UPLOAD')}
               />
             </Stack>
@@ -162,15 +154,14 @@ export default function ScopeNewEditForm ({ currentScope }) {
     <>
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', justifyContent: 'right' }}>
-        {
-          /**
-           <FormControlLabel
-           control={<RHFSwitch name="published" defaultChecked label="是否发布" />}
-           sx={{ flexGrow: 1, pl: 3 }}
-         />
-           */
-        }
-
+        <Button
+          color="error"
+          variant="contained"
+          onClick={() => router.push(paths.dashboard.scope.root)}
+          sx={{ mr: 1 }}
+        >
+          返回
+        </Button>
         <LoadingButton
           type="submit"
           variant="contained"

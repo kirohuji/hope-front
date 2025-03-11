@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 // @mui
 import Container from '@mui/material/Container';
-// routes
-import { paths } from 'src/routes/paths';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import { useParams } from 'src/routes/hook';
@@ -14,8 +12,9 @@ import ScopeNewEditForm from '../scope-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export default function ScopeEditView () {
+export default function ScopeEditView() {
   const { enqueueSnackbar } = useSnackbar();
+
   const settings = useSettingsContext();
 
   const params = useParams();
@@ -24,11 +23,11 @@ export default function ScopeEditView () {
 
   const { id } = params;
 
-  const getCurrentScope = useCallback(async (selector = {}, options = {}) => {
+  const getData = useCallback(async () => {
     try {
       const response = await scopeService.get({
-        _id: id
-      })
+        _id: id,
+      });
       setCurrentScope(response);
     } catch (error) {
       enqueueSnackbar(error.message);
@@ -36,18 +35,18 @@ export default function ScopeEditView () {
   }, [id, setCurrentScope, enqueueSnackbar]);
 
   useEffect(() => {
-    getCurrentScope()
-  }, [getCurrentScope]);
+    getData();
+  }, [getData]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         heading="编辑"
         links={[
-          {
-            name: '作用域',
-            href: paths.dashboard.job.root,
-          },
+          // {
+          //   name: '作用域',
+          //   href: paths.dashboard.job.root,
+          // },
           { name: currentScope?.label },
         ]}
         sx={{

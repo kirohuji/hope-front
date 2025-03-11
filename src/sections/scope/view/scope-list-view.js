@@ -1,4 +1,3 @@
-import orderBy from 'lodash/orderBy';
 import isEqual from 'lodash/isEqual';
 import { useCallback, useEffect, useState } from 'react';
 // @mui
@@ -46,7 +45,7 @@ export default function ScopeListView() {
 
   const [page, setPage] = useState(1);
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage] = useState(10);
 
   const [loading, setLoading] = useState(true);
 

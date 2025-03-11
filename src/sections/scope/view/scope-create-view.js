@@ -18,11 +18,11 @@ export default function ScopeCreateView() {
       <CustomBreadcrumbs
         heading="创建一个新的作用域"
         links={[
-          {
-            name: '作用域',
-            href: paths.dashboard.job.root,
-          },
-          { name: '新的作用域' },
+          // {
+          //   name: '作用域',
+          //   href: paths.dashboard.job.root,
+          // },
+          { name: '' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

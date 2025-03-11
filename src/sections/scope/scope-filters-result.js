@@ -1,12 +1,8 @@
 import PropTypes from 'prop-types';
 // @mui
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-// components
-import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 

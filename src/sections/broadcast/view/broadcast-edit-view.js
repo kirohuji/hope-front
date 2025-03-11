@@ -18,6 +18,7 @@ import BroadcastNewEditForm from '../broadcast-new-edit-form';
 
 export default function BroadcastEditView() {
   const [loading, setLoading] = useState(true);
+
   const settings = useSettingsContext();
 
   const params = useParams();
