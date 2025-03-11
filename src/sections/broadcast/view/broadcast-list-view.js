@@ -2,6 +2,8 @@ import orderBy from 'lodash/orderBy';
 import isEqual from 'lodash/isEqual';
 import { useState, useEffect, useCallback } from 'react';
 // @mui
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -28,9 +30,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import EmptyContent from 'src/components/empty-content';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-//
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
+// auth
 import Restricted from 'src/auth/guard/restricted';
 import BroadcastList from '../broadcast-list';
 import BroadcastFiltersResult from '../broadcast-filters-result';
@@ -173,10 +173,8 @@ export default function BroadcastListView() {
     <BroadcastFiltersResult
       filters={filters}
       onResetFilters={handleResetFilters}
-      //
       canReset={canReset}
       onFilters={handleFilters}
-      //
       results={total}
     />
   );
@@ -185,14 +183,7 @@ export default function BroadcastListView() {
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         heading="活动列表"
-        links={[
-          // { name: 'Dashboard', href: paths.dashboard.root },
-          // {
-          //   name: 'Broadcast',
-          //   href: paths.dashboard.broadcast.root,
-          // },
-          { name: '' },
-        ]}
+        links={[{ name: '' }]}
         action={
           lgUp ? (
             <Restricted to={['BroadcastListAdd']}>
@@ -202,11 +193,11 @@ export default function BroadcastListView() {
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                新建一个新的活动通知
+                新建一个活动通知
               </Button>
             </Restricted>
           ) : (
-            <div />
+            <Box />
           )
         }
         sx={{
@@ -225,7 +216,7 @@ export default function BroadcastListView() {
         {canReset && renderResults}
       </Stack>
 
-      {notFound && <EmptyContent title="No Data" filled sx={{ py: 10 }} />}
+      {notFound && <EmptyContent title="没有数据" filled sx={{ py: 10 }} />}
 
       {loading ? (
         <Box

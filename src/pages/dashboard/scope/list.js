@@ -8,7 +8,7 @@ export default function ScopeListPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Scope List</title>
+        <title> 作用域列表</title>
       </Helmet>
 
       <ScopeListView />

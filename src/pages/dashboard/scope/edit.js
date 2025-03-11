@@ -8,7 +8,7 @@ export default function ScopeEditPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Dashboard: Scope Edit</title>
+        <title> 作用域编辑</title>
       </Helmet>
 
       <ScopeEditView />

@@ -8,7 +8,7 @@ export default function ScopeDetailsPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Scope Details</title>
+        <title> 作用域详情</title>
       </Helmet>
 
       <ScopeDetailsView />

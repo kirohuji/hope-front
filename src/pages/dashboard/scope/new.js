@@ -8,7 +8,7 @@ export default function ScopeCreatePage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Create a new job</title>
+        <title> 新增一个作用域</title>
       </Helmet>
 
       <ScopeCreateView />

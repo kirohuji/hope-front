@@ -6,7 +6,6 @@ import { scopeService } from '../../composables/context-provider';
 const initialState = {
   isLoading: true,
   error: null,
-  // 右上角
   scopes: [],
   data: [],
   total: 0,
