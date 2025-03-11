@@ -63,7 +63,7 @@ export default function VersionDetailsView() {
         liveLink="#"
         publishOptions={JOB_PUBLISH_OPTIONS}
       />
-      {!details.byId[id] ? (
+      {!details.byId[id] || loading ? (
         <Box
           sx={{
             zIndex: 10,

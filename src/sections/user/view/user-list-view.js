@@ -18,8 +18,6 @@ import Backdrop from '@mui/material/Backdrop';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
-// _mock
-import { _roles } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
@@ -33,10 +31,8 @@ import Restricted from 'src/auth/guard/restricted';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
-  emptyRows,
   TableNoData,
   TableSkeleton,
-  TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
@@ -60,8 +56,7 @@ const USER_STATUS_OPTIONS = [
 const STATUS_OPTIONS = [{ value: 'all', label: '全部' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-  // { id: 'selected', label: '', width: 80 },
-  { id: 'username', label: '账户', width: 180 },
+  { id: 'username', label: '用户', width: 180 },
   { id: 'displayName', label: '用户名', width: 150 },
   { id: 'phoneNumber', label: '手机号', width: 150 },
   { id: 'address', label: '地址', width: 250 },
@@ -94,6 +89,7 @@ export default function UserListView() {
   const [tableData, setTableData] = useState([]);
 
   const [loading, setLoading] = useState(true);
+
   const [importLoading, setImportLoading] = useState(false);
 
   const [tableDataCount, setTableDataCount] = useState(0);
@@ -259,8 +255,8 @@ export default function UserListView() {
       />
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="列表"
-          links={[{ name: '用户', href: paths.dashboard.user.root }, { name: '列表' }]}
+          heading="用户列表"
+          links={[{ name: '' }]}
           action={
             <Restricted to={['UserListAdd']}>
               <Button
@@ -296,8 +292,7 @@ export default function UserListView() {
             filters={filters}
             onFilters={handleFilters}
             onUploadExcel={handleUploadExcel}
-            //
-            roleOptions={_roles}
+            roleOptions={[]}
           />
 
           {canReset && (
@@ -376,10 +371,6 @@ export default function UserListView() {
                       {notFound && <TableNoData notFound={notFound} />}
                     </>
                   )}
-                  {/* <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                  /> */}
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -391,7 +382,6 @@ export default function UserListView() {
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
@@ -410,7 +400,7 @@ export default function UserListView() {
         title="删除"
         content={
           <>
-            你确定要删除 <strong> {table.selected.length} </strong> 项目?
+            你确定要删除 <strong> {table.selected.length} </strong> 项?
           </>
         }
         action={
@@ -419,7 +409,6 @@ export default function UserListView() {
             color="error"
             onClick={() => {
               handleDeleteRows();
-              // confirm.onFalse();
             }}
           >
             删除

@@ -113,7 +113,7 @@ export default function VersionTableRow({
             }}
           >
             <Iconify icon="material-symbols:motion-sensor-active" />
-            激活
+            {isActive ? '禁用' : '激活'}
           </MenuItem>
         </Restricted>
         <Restricted to={['UserListEdit']}>

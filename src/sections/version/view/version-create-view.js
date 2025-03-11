@@ -18,11 +18,11 @@ export default function VersionCreateView() {
       <CustomBreadcrumbs
         heading="创建一个新的版本"
         links={[
-          {
-            name: '版本',
-            href: paths.dashboard.job.root,
-          },
-          { name: '新的版本' },
+          // {
+          //   name: '版本',
+          //   href: paths.dashboard.job.root,
+          // },
+          { name: '' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

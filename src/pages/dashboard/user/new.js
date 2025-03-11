@@ -8,7 +8,7 @@ export default function UserCreatePage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Create a new user</title>
+        <title> 新建一个用户</title>
       </Helmet>
 
       <UserCreateView />

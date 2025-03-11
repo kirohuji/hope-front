@@ -1,23 +1,15 @@
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { useRef, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // @mui
-import { alpha } from '@mui/material/styles';
-import Container from '@mui/material/Container';
-import { useSettingsContext } from 'src/components/settings';
 import { useSnackbar } from 'src/components/snackbar';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Tooltip from '@mui/material/Tooltip';
 import Table from '@mui/material/Table';
-import Tab from '@mui/material/Tab';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
-import CircularProgress from '@mui/material/CircularProgress';
-import Tabs from '@mui/material/Tabs';
-// _mock
-import { _roles } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
@@ -32,16 +24,14 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import {
   useTable,
-  emptyRows,
   TableNoData,
   TableSkeleton,
-  TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
-  TablePaginationCustom,
 } from 'src/components/table';
 // service
 import { versionService } from 'src/composables/context-provider';
+//
 import VersionTableRow from './version-table-row';
 import VersionTableToolbar from './version-table-toolbar';
 import VersionTableFiltersResult from './version-table-filters-result';
@@ -49,22 +39,17 @@ import VersionTableFiltersResult from './version-table-filters-result';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  // { id: 'selected', label: '', width: 80 },
   { id: 'versionNumber', label: '版本号', width: 100 },
   { id: 'description', label: '描述', width: 200 },
   { id: 'isMandatory', label: '是否自动发布', width: 200 },
   { id: 'releaseDate', label: '发布时间', width: 200 },
-  { id: ' status', label: '发布状态', width: 100 },
+  { id: 'status', label: '发布状态', width: 100 },
   { id: '', width: 88 },
 ];
 
 const defaultFilters = {
-  username: '',
-  role: [],
-  available: '',
+  minorVersion: '',
 };
-
-const STATUS_OPTIONS = [{ value: '', label: '全部' }];
 
 export default function VersionDetailsContent({ content }) {
   const { enqueueSnackbar } = useSnackbar();
@@ -87,22 +72,20 @@ export default function VersionDetailsContent({ content }) {
 
   const canReset = !_.isEqual(defaultFilters, filters);
 
-  const settings = useSettingsContext();
-
   const debouncedFilters = useDebounce(filters);
 
   const notFound = (!tableDataCount && canReset) || !tableDataCount;
 
-  const getTableData = useCallback(
+  const refresh = useCallback(
     async (selector = {}, options = {}) => {
       try {
         setLoading(true);
         const response = await versionService.pagination(
           {
             ...selector,
-            ..._.pickBy(_.omit(debouncedFilters, ['role'])),
+            ..._.pickBy(debouncedFilters),
             majorVersion: content.majorVersion,
-            isMain: false
+            isMain: false,
           },
           {
             ...options,
@@ -121,11 +104,11 @@ export default function VersionDetailsContent({ content }) {
   );
 
   const handleFilters = useCallback(
-    (username, value) => {
+    (minorVersion, value) => {
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
-        [username]: value,
+        [minorVersion]: value,
       }));
     },
     [table]
@@ -144,11 +127,10 @@ export default function VersionDetailsContent({ content }) {
         _id: id,
       });
       enqueueSnackbar('激活成功');
-      getTableData();
+      refresh();
     },
-    [enqueueSnackbar, getTableData]
+    [enqueueSnackbar, refresh]
   );
-
 
   const handleDeleteRow = useCallback(
     async (id) => {
@@ -156,33 +138,24 @@ export default function VersionDetailsContent({ content }) {
         _id: id,
       });
       enqueueSnackbar('删除成功');
-      getTableData();
+      refresh();
     },
-    [getTableData, enqueueSnackbar]
-  );
-
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('available', newValue);
-    },
-    [handleFilters]
+    [refresh, enqueueSnackbar]
   );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
 
-  const activation = useCallback(async () => {}, []);
-
   useEffect(() => {
-    getTableData();
-  }, [getTableData]);
-  
+    refresh();
+  }, [refresh]);
+
   return (
     <>
       <CustomBreadcrumbs
         heading={`主版本号: ${content.majorVersion}`}
-        links={[{ }]}
+        links={[{}]}
         action={
           <Restricted to={['VersionListAdd']}>
             <Button
@@ -191,7 +164,7 @@ export default function VersionDetailsContent({ content }) {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              新版本
+              创建一个新的子版本
             </Button>
           </Restricted>
         }
@@ -200,19 +173,7 @@ export default function VersionDetailsContent({ content }) {
         }}
       />
       <Card>
-        <Tabs
-          value={filters.available}
-          onChange={handleFilterStatus}
-          sx={{
-            px: 2.5,
-            boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-          }}
-        >
-          {STATUS_OPTIONS.map((tab) => (
-            <Tab key={tab.value} iconPosition="end" value={tab.value} label={tab.label} />
-          ))}
-        </Tabs>
-        <VersionTableToolbar filters={filters} onFilters={handleFilters} roleOptions={_roles} />
+        <VersionTableToolbar filters={filters} onFilters={handleFilters} />
         {canReset && (
           <VersionTableFiltersResult
             filters={filters}
@@ -234,18 +195,11 @@ export default function VersionDetailsContent({ content }) {
               )
             }
             action={
-              <>
-                <Tooltip title="删除">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="激活">
-                  <IconButton color="primary" onClick={() => activation()}>
-                    <Iconify icon="mdi:account-reactivate-outline" />
-                  </IconButton>
-                </Tooltip>
-              </>
+              <Tooltip title="删除">
+                <IconButton color="primary" onClick={confirm.onTrue}>
+                  <Iconify icon="solar:trash-bin-trash-bold" />
+                </IconButton>
+              </Tooltip>
             }
           />
           <Scrollbar>
@@ -260,14 +214,7 @@ export default function VersionDetailsContent({ content }) {
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    _.compact(
-                      tableData.map((row) => {
-                        if (row.username !== 'admin') {
-                          return row._id;
-                        }
-                        return null;
-                      })
-                    )
+                    tableData.map((row) => row._id)
                   )
                 }
               />
@@ -282,13 +229,9 @@ export default function VersionDetailsContent({ content }) {
                       <VersionTableRow
                         key={row._id}
                         row={row}
-                        onClose={() => getTableData()}
+                        onClose={() => refresh()}
                         selected={table.selected.includes(row._id)}
-                        onSelectRow={() => {
-                          if (row.username !== 'admin') {
-                            table.onSelectRow(row._id);
-                          }
-                        }}
+                        onSelectRow={() => table.onSelectRow(row._id)}
                         onDeleteRow={() => handleDeleteRow(row._id)}
                         onEditRow={() => handleEditRow(row._id)}
                         onActiveRow={() => handleActiveRow(row._id)}
@@ -297,10 +240,6 @@ export default function VersionDetailsContent({ content }) {
                     {notFound && <TableNoData notFound={notFound} />}
                   </>
                 )}
-                {/* <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                  /> */}
               </TableBody>
             </Table>
           </Scrollbar>

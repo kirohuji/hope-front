@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack';
 // components
 import Iconify from 'src/components/iconify';
 
-import _ from 'lodash'
+import _ from 'lodash';
 // ----------------------------------------------------------------------
 
 const USER_STATUS_OPTIONS = [
@@ -20,9 +20,7 @@ const USER_STATUS_OPTIONS = [
 export default function VersionTableFiltersResult({
   filters,
   onFilters,
-  //
   onResetFilters,
-  //
   results,
   ...other
 }) {
@@ -30,35 +28,25 @@ export default function VersionTableFiltersResult({
     onFilters('status', 'all');
   };
 
-  const handleRemoveRole = (inputValue) => {
-    const newValue = filters.role.filter((item) => item !== inputValue);
-    onFilters('role', newValue);
-  };
-
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
         <strong>{results}</strong>
         <Box component="span" sx={{ color: 'text.secondary', ml: 0.25 }}>
-          发现
+          结果被发现
         </Box>
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
         {filters.status && filters.status !== 'all' && (
           <Block label="状态:">
-            <Chip size="small" label={_.find(USER_STATUS_OPTIONS, ["value",filters.status])?.label} onDelete={handleRemoveStatus} />
+            <Chip
+              size="small"
+              label={_.find(USER_STATUS_OPTIONS, ['value', filters.status])?.label}
+              onDelete={handleRemoveStatus}
+            />
           </Block>
         )}
-
-        {!!filters.role.length && (
-          <Block label="角色:">
-            {filters.role.map((item) => (
-              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
-            ))}
-          </Block>
-        )}
-
         <Button
           color="error"
           onClick={onResetFilters}

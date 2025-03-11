@@ -8,7 +8,7 @@ export default function UserEditPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: User Edit</title>
+        <title> 编辑用户</title>
       </Helmet>
 
       <UserEditView />

@@ -17,7 +17,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar ({
+export default function UserTableToolbar({
   filters,
   onFilters,
   onUploadExcel,
@@ -57,36 +57,38 @@ export default function UserTableToolbar ({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        {
-          false && <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, md: 200 },
+        <FormControl
+          sx={{
+            flexShrink: 0,
+            width: { xs: 1, md: 200 },
+          }}
+        >
+          <InputLabel>角色</InputLabel>
+
+          <Select
+            multiple
+            value={filters.role}
+            onChange={handleFilterRole}
+            input={<OutlinedInput label="角色" />}
+            renderValue={(selected) => selected.map((value) => value).join(', ')}
+            MenuProps={{
+              PaperProps: {
+                sx: { maxHeight: 240 },
+              },
             }}
           >
-            <InputLabel>角色</InputLabel>
-
-            <Select
-              multiple
-              value={filters.role}
-              onChange={handleFilterRole}
-              input={<OutlinedInput label="Role" />}
-              renderValue={(selected) => selected.map((value) => value).join(', ')}
-              MenuProps={{
-                PaperProps: {
-                  sx: { maxHeight: 240 },
-                },
-              }}
-            >
-              {roleOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  <Checkbox disableRipple size="small" checked={filters.role && filters.role.includes(option)} />
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        }
+            {roleOptions.map((option) => (
+              <MenuItem key={option} value={option}>
+                <Checkbox
+                  disableRipple
+                  size="small"
+                  checked={filters.role && filters.role.includes(option)}
+                />
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
@@ -115,8 +117,8 @@ export default function UserTableToolbar ({
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        {
-          false && <MenuItem
+        {false && (
+          <MenuItem
             onClick={() => {
               popover.onClose();
             }}
@@ -124,19 +126,19 @@ export default function UserTableToolbar ({
             <Iconify icon="solar:printer-minimalistic-bold" />
             打印
           </MenuItem>
-        }
+        )}
 
         <MenuItem
           onClick={() => {
             popover.onClose();
-            onUploadExcel()
+            onUploadExcel();
           }}
         >
           <Iconify icon="solar:import-bold" />
           导入
         </MenuItem>
-        {
-          false && <MenuItem
+        {false && (
+          <MenuItem
             onClick={() => {
               popover.onClose();
             }}
@@ -144,7 +146,7 @@ export default function UserTableToolbar ({
             <Iconify icon="solar:export-bold" />
             导出
           </MenuItem>
-        }
+        )}
       </CustomPopover>
     </>
   );
