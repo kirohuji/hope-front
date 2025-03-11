@@ -8,7 +8,7 @@ export default function VersionEditPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Dashboard: Version Edit</title>
+        <title> 编辑 主版本号</title>
       </Helmet>
 
       <VersionMajorEditView />

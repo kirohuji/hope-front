@@ -8,7 +8,7 @@ export default function VersionCreatePage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Create a new job</title>
+        <title> 新建 版本</title>
       </Helmet>
 
       <VersionCreateView />

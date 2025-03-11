@@ -8,7 +8,7 @@ export default function VersionListPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Version List</title>
+        <title> 版本列表 </title>
       </Helmet>
 
       <VersionListView />

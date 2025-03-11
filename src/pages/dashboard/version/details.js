@@ -8,7 +8,7 @@ export default function VersionDetailsPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Book Details</title>
+        <title> 版本详情</title>
       </Helmet>
 
       <VersionDetailsView />
