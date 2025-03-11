@@ -178,7 +178,7 @@ export function AuthProvider({ children }) {
     if (Capacitor.getPlatform() === 'ios') {
       console.log('iOS!');
       import('../../../ios.css');
-      await registerNotifications();
+      // await registerNotifications();
       StatusBar.setOverlaysWebView({ overlay: true });
     } else if (Capacitor.getPlatform() === 'android') {
       console.log('Android!');

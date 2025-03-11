@@ -87,7 +87,7 @@ export default function Main({ children, sx, ...other }) {
     }
   }
   useEffect(() => {
-    updateDeviceStatus();
+    // updateDeviceStatus();
     if (!scope.active?._id) {
       dispatch(getScopes());
       dispatch(setScope(user));
