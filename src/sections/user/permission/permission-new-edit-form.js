@@ -14,16 +14,12 @@ import { fData } from 'src/utils/format-number';
 // components
 import Label from 'src/components/label';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {
-  RHFTextField,
-  RHFUploadAvatar,
-} from 'src/components/hook-form';
+import FormProvider, { RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 
 // redux
 import { useSelector } from 'src/redux/store';
 import { roleService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
-
 
 OrganNewEditForm.propTypes = {
   isEdit: PropTypes.bool,
@@ -33,25 +29,23 @@ OrganNewEditForm.propTypes = {
   type: PropTypes.any,
 };
 
-export default function OrganNewEditForm ({ type, isEdit = false, current, onClose, parent }) {
-  const { active } = useSelector((state) => state.scope);
-  // const navigate = useNavigate();
+export default function OrganNewEditForm({ type, isEdit = false, current, onClose, parent }) {
+  const scope = useSelector((state) => state.scope);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
     value: Yup.string().required('请输入名字'),
     label: Yup.string().required('请输入展示名'),
-    description: Yup.string()
+    description: Yup.string(),
   });
-
 
   const defaultValues = useMemo(
     () => ({
       value: current?.value || '',
       label: current?.label || '',
-      description: current?.description || ''
+      description: current?.description || '',
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [current]
   );
 
@@ -93,7 +87,7 @@ export default function OrganNewEditForm ({ type, isEdit = false, current, onClo
           key: uuid,
           type,
           root: false,
-          scope: active._id,
+          scope: scope?.active?._id,
         });
         if (parent) {
           await roleService.addRolesToParent({
@@ -103,8 +97,8 @@ export default function OrganNewEditForm ({ type, isEdit = false, current, onClo
         }
         onClose({
           type: 'new',
-          data: roleData
-        })
+          data: roleData,
+        });
       } else {
         await roleService.patch({
           _id: current._id,
@@ -115,8 +109,8 @@ export default function OrganNewEditForm ({ type, isEdit = false, current, onClo
           data: {
             _id: current._id,
             ...data,
-          }
-        })
+          },
+        });
       }
       enqueueSnackbar(!isEdit ? '创建成功' : '更新成功!');
     } catch (error) {
@@ -142,8 +136,8 @@ export default function OrganNewEditForm ({ type, isEdit = false, current, onClo
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
-        {
-          false && <Grid item xs={12} md={4}>
+        {false && (
+          <Grid item xs={12} md={4}>
             <Card sx={{ pt: 10, pb: 5, px: 3 }}>
               {isEdit && (
                 <Label
@@ -210,7 +204,7 @@ export default function OrganNewEditForm ({ type, isEdit = false, current, onClo
               )}
             </Card>
           </Grid>
-        }
+        )}
         <Grid item xs={12} md={12}>
           <Card sx={{ p: 3 }}>
             <Box
@@ -226,13 +220,7 @@ export default function OrganNewEditForm ({ type, isEdit = false, current, onClo
               <RHFTextField name="value" label="编码" />
             </Box>
             <Stack sx={{ pt: 3 }}>
-              <RHFTextField
-                name="description"
-                label="描述"
-                fullWidth
-                multiline
-                rows={3}
-              />
+              <RHFTextField name="description" label="描述" fullWidth multiline rows={3} />
             </Stack>
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>

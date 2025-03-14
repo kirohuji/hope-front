@@ -13,10 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-// assets
-// import { countries } from 'src/assets/data';
 // components
-// import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
@@ -40,13 +37,7 @@ export default function UserQuickEditForm ({ currentUser, open, onClose }) {
     age: Yup.string().required('请选择年龄'),
     gender: Yup.string().required('请选择性别'),
     status: Yup.string(),
-    baptized: Yup.boolean().required('请选择是否受洗'),
-    // country: Yup.string().required('Country is required'),
-    // company: Yup.string().required('Company is required'),
-    // state: Yup.string().required('State is required'),
-    // city: Yup.string().required('City is required'),
-    // role: Yup.string().required('Role is required'),
-    // photoURL: Yup.mixed().required('请选择头像'),
+    // baptized: Yup.boolean().required('请选择是否受洗'),
   });
 
   const defaultValues = useMemo(
@@ -59,7 +50,7 @@ export default function UserQuickEditForm ({ currentUser, open, onClose }) {
       age: currentUser?.age || '',
       gender: currentUser?.gender || '',
       status: currentUser?.status || '',
-      baptized: currentUser?.baptized || false,
+      // baptized: currentUser?.baptized || false,
       // country: currentUser?.country || '',
       // state: currentUser?.state || '',
       // city: currentUser?.city || '',
@@ -153,14 +144,6 @@ export default function UserQuickEditForm ({ currentUser, open, onClose }) {
             </RHFSelect>
             <RHFTextField name="email" label="电子邮件" />
             <RHFTextField name="phoneNumber" label="手机号" />
-            <RHFSelect name="baptized" label="是否受洗" placeholder="是否受洗">
-              <MenuItem value="true">
-                是
-              </MenuItem>
-              <MenuItem value="false">
-                否
-              </MenuItem>
-            </RHFSelect>
             <RHFTextField name="address" label="地址" />
           </Box>
         </DialogContent>

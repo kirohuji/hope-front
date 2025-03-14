@@ -13,8 +13,6 @@ import { alpha, styled } from '@mui/material/styles';
 import { roleService } from 'src/composables/context-provider';
 import { useSnackbar } from 'src/components/snackbar';
 import _ from 'lodash';
-// redux
-import { useDispatch, useSelector } from 'src/redux/store';
 
 const userContext = createContext({ selectedNodes: [], item: {}, setItem: null });
 
@@ -30,7 +28,7 @@ const bfsSearch = (graph, targetId) => {
       queue.push(...currNode.children);
     }
   }
-  return []; // Target node not found
+  return []; 
 };
 
 function getAllIds(node, idList = []) {
@@ -179,27 +177,18 @@ PermissionPanel.propTypes = {
 };
 
 export default function PermissionPanel({ permissions, current, onClose }) {
-  const dispatch = useDispatch();
-  const { active } = useSelector((state) => state.scope);
-  // const { permissions } = useSelector((state) => state.role);
   const { enqueueSnackbar } = useSnackbar();
+  
   const [loading, setLoading] = useState(true);
+
   const [selectedNodes, setSelectedNodes] = useState([]);
+
   const [selectedNodesNotChild, setSelectedNodesChild] = useState([]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [openForm, setOpenForm] = useState(false);
-  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
-  const [item, setItem] = useState({});
-  const [parent, setParent] = useState({});
+
   const getData = useCallback(async () => {
     setLoading(true);
-    // await dispatch(
-    //   getPermissions({
-    //     selector: {
-    //       type: 'permission',
-    //     },
-    //   })
-    // );
     const children = await roleService.getChildrenRoleNames({
       _id: current._id,
     });
@@ -261,19 +250,11 @@ export default function PermissionPanel({ permissions, current, onClose }) {
       selectedNodes,
       selectedNodesNotChild,
       handleNodeSelect,
-      setOpenForm,
-      setItem,
-      setParent,
-      setOpenDeleteConfirm,
     }),
     [
       selectedNodes,
       selectedNodesNotChild,
       handleNodeSelect,
-      setOpenForm,
-      setItem,
-      setParent,
-      setOpenDeleteConfirm,
     ]
   );
   return (

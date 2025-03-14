@@ -1,7 +1,5 @@
 // @mui
 import Container from '@mui/material/Container';
-// routes
-import { paths } from 'src/routes/paths';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -22,11 +20,11 @@ export default function UserCreateView() {
           //   name: 'Dashboard',
           //   href: paths.dashboard.root,
           // },
-          {
-            name: '用户',
-            href: paths.dashboard.user.root,
-          },
-          { name: '新用户' },
+          // {
+          //   name: '用户',
+          //   href: paths.dashboard.user.root,
+          // },
+          { name: '' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
