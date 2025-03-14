@@ -22,8 +22,9 @@ import {
   CircularProgress,
 } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
-// components
+// hooks
 import { useDebounce } from 'src/hooks/use-debounce';
+// components
 import Iconify from '../../../components/iconify';
 import Scrollbar from '../../../components/scrollbar';
 import SearchNotFound from '../../../components/search-not-found';
@@ -45,16 +46,27 @@ OrganContactsDialog.propTypes = {
 
 export default function OrganContactsDialog({ open, onClose, current }) {
   const [searchContacts, setSearchContacts] = useState('');
+
   const [openConfirm, setOpenConfirm] = useState(false);
+
   const [users, setUsers] = useState([]);
+
   const [assignee, setAssignee] = useState([]);
+
   const [user, setUser] = useState([]);
+
   const scope = useSelector((state) => state.scope);
+
   const [loading, setLoading] = useState(false);
+
   const [buttonLoading, setButtonLoading] = useState(false);
+
   const [buttonLoadingId, setButtonLoadingId] = useState(-1);
+
   const { enqueueSnackbar } = useSnackbar();
+
   const debouncedSearchContacts = useDebounce(searchContacts, 1000);
+
   const handleOpenConfirm = (contact) => {
     setUser(contact);
     setOpenConfirm(true);
@@ -63,13 +75,14 @@ export default function OrganContactsDialog({ open, onClose, current }) {
   const handleCloseConfirm = () => {
     setOpenConfirm(false);
   };
+
   const NewUserSchema = Yup.object().shape({
     searchContacts: Yup.string(),
     isShowJoinedUser: Yup.boolean(),
   });
+
   const defaultValues = useMemo(
     () => ({}),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -80,14 +93,13 @@ export default function OrganContactsDialog({ open, onClose, current }) {
   const {
     control,
     handleSubmit,
-    // formState,
   } = methods;
 
   const getData = useCallback(async () => {
     setLoading(true);
     const response = await roleService.getUsersInNotRoleOnly({
       queryOptions: {
-        username: {
+        realName: {
           $regex: debouncedSearchContacts,
           $options: 'i',
         },
@@ -95,7 +107,6 @@ export default function OrganContactsDialog({ open, onClose, current }) {
       },
       options: {
         scope: scope.active._id,
-        // anyScope: true
       },
       roles: current._id,
     });
@@ -106,7 +117,6 @@ export default function OrganContactsDialog({ open, onClose, current }) {
   const getUsersInRoleOnly = useCallback(async () => {
     const response2 = await roleService.getUsersInRoleOnly({
       queryOptions: {
-        // username: debouncedSearchContacts,
         isShowJoinedUser: 'on',
       },
       options: {
@@ -205,7 +215,6 @@ export default function OrganContactsDialog({ open, onClose, current }) {
                         checked={field.value !== 'on'}
                         onChange={(event) => {
                           field.onChange(event.target.checked ? 'on' : 'off');
-                          // handleIsShowJoinedUser(event.target.checked === "on")
                         }}
                       />
                     )}
@@ -232,7 +241,7 @@ export default function OrganContactsDialog({ open, onClose, current }) {
 
                   return (
                     <ListItem
-                      key={contact._id}
+                      key={contact._id || contact.id}
                       disableGutters
                       secondaryAction={
                         <div>
@@ -263,7 +272,7 @@ export default function OrganContactsDialog({ open, onClose, current }) {
                       sx={{ height: ITEM_HEIGHT }}
                     >
                       <ListItemAvatar>
-                        <Avatar src={contact.avatarUrl} />
+                        <Avatar src={contact.photoURL} />
                       </ListItemAvatar>
 
                       <ListItemText
@@ -316,17 +325,3 @@ export default function OrganContactsDialog({ open, onClose, current }) {
     </>
   );
 }
-
-// ----------------------------------------------------------------------
-
-// function applyFilter ({ inputData, query }) {
-//   if (query) {
-//     inputData = inputData.filter(
-//       (contact) =>
-//         contact.name.toLowerCase().indexOf(query.toLowerCase()) !== -1 ||
-//         contact.email.toLowerCase().indexOf(query.toLowerCase()) !== -1
-//     );
-//   }
-
-//   return inputData;
-// }

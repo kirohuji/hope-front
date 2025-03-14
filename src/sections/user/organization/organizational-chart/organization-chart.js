@@ -7,7 +7,6 @@ import { Button, DialogTitle, Dialog, DialogContent } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 // utils
 import { useState, createContext, useMemo } from 'react';
-import flattenArray from 'src/utils/flatten-array';
 // compoennts
 import ConfirmDialog from 'src/components/confirm-dialog';
 import { roleService } from 'src/composables/context-provider';

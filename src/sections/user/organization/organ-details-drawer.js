@@ -19,7 +19,7 @@ import {
 import { fData } from 'src/utils/format-number';
 import { fDateTime } from 'src/utils/format-time';
 import { useSelector } from 'src/redux/store';
-
+// services
 import { roleService } from 'src/composables/context-provider';
 // components
 import Iconify from 'src/components/iconify';
@@ -47,9 +47,9 @@ export default function OrganDetailsDrawer({
   onChangeLeader,
   ...other
 }) {
-  const { name, size, type, dateModified, leader } = item;
+  const { size, type, dateModified, leader } = item;
 
-  const { active } = useSelector((state) => state.scope);
+  const scope = useSelector((state) => state.scope);
 
   const [users, setUsers] = useState([]);
 
@@ -69,13 +69,14 @@ export default function OrganDetailsDrawer({
     setLoading(true);
     const response = await roleService.getUsersInRoleOnly({
       options: {
-        scope: active._id,
+        scope: scope?.active?._id,
       },
       roles: item._id,
     });
     setUsers(response.data);
     setLoading(false);
-  }, [active, item, setUsers]);
+  }, [scope, item, setUsers]);
+
   useEffect(() => {
     if (open) {
       getUsers();
@@ -98,6 +99,7 @@ export default function OrganDetailsDrawer({
     getUsers();
     setOpenContacts(false);
   };
+
   const onSelectMain = async (person) => {
     await roleService.changeLeader({
       _id: item._id,
@@ -116,7 +118,6 @@ export default function OrganDetailsDrawer({
       },
     });
     getUsers();
-    // onChangeLeader(person);
   };
 
   return (
@@ -152,49 +153,44 @@ export default function OrganDetailsDrawer({
             justifyContent="center"
             sx={{ p: 2.5, bgcolor: 'background.neutral' }}
           >
-            {/**
-           <FileThumbnail
-                    imageView
-                    file={type === 'folder' ? type : url}
-                    sx={{ width: 64, height: 64 }}
-                    imgSx={{ borderRadius: 1 }}
-                  />
-      
-               */}
             <Typography variant="h6" sx={{ wordBreak: 'break-all' }}>
               {item.label}
             </Typography>
 
             <Divider sx={{ borderStyle: 'dashed' }} />
+            {false && ( // TODO: 标签是以后增加的代码
+              <Stack spacing={1}>
+                <Panel label="标签" toggle={toggleTags} onToggle={handleToggleTags} />
 
-            <Stack spacing={1}>
-              <Panel label="标签" toggle={toggleTags} onToggle={handleToggleTags} />
-
-              {toggleTags && (
-                <Autocomplete
-                  multiple
-                  freeSolo
-                  limitTags={2}
-                  options={tags.map((option) => option)}
-                  value={tags}
-                  onChange={(event, newValue) => {
-                    setTags([...tags, ...newValue.filter((option) => tags.indexOf(option) === -1)]);
-                  }}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        size="small"
-                        variant="soft"
-                        label={option}
-                        key={option}
-                      />
-                    ))
-                  }
-                  renderInput={(params) => <TextField {...params} placeholder="#添加一个标签" />}
-                />
-              )}
-            </Stack>
+                {toggleTags && (
+                  <Autocomplete
+                    multiple
+                    freeSolo
+                    limitTags={2}
+                    options={tags.map((option) => option)}
+                    value={tags}
+                    onChange={(event, newValue) => {
+                      setTags([
+                        ...tags,
+                        ...newValue.filter((option) => tags.indexOf(option) === -1),
+                      ]);
+                    }}
+                    renderTags={(value, getTagProps) =>
+                      value.map((option, index) => (
+                        <Chip
+                          {...getTagProps({ index })}
+                          size="small"
+                          variant="soft"
+                          label={option}
+                          key={option}
+                        />
+                      ))
+                    }
+                    renderInput={(params) => <TextField {...params} placeholder="#添加一个标签" />}
+                  />
+                )}
+              </Stack>
+            )}
 
             <Stack spacing={1.5}>
               <Panel label="基本属性" toggle={toggleProperties} onToggle={handleToggleProperties} />
@@ -283,19 +279,6 @@ export default function OrganDetailsDrawer({
       </Drawer>
 
       <OrganContactsDialog current={item} open={openContacts} onClose={handleCloseContacts} />
-      {/**
-          <FileShareDialog
-        open={openShare}
-        shared={shared}
-        inviteEmail={inviteEmail}
-        onChangeInvite={handleChangeInvite}
-        onCopyLink={onCopyLink}
-        onClose={() => {
-          handleCloseShare();
-          setInviteEmail('');
-        }}
-      />
-    */}
     </>
   );
 }

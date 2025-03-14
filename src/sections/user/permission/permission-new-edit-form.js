@@ -2,7 +2,6 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { useCallback, useEffect, useMemo } from 'react';
-// import { useNavigate } from 'react-router-dom';
 // form
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -10,13 +9,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Grid, Stack, Switch, Typography, FormControlLabel } from '@mui/material';
 // utils
-// import { find } from 'lodash'
+import uuidv4 from 'src/utils/uuidv4';
 import { fData } from 'src/utils/format-number';
-// routes
-// import { PATH_DASHBOARD } from 'src/routes/paths';
-
-// assets
-// import { countries } from 'src/assets/data';
 // components
 import Label from 'src/components/label';
 import { useSnackbar } from 'src/components/snackbar';
@@ -38,15 +32,6 @@ OrganNewEditForm.propTypes = {
   parent: PropTypes.object,
   type: PropTypes.any,
 };
-
-function UUID () {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
-
 
 export default function OrganNewEditForm ({ type, isEdit = false, current, onClose, parent }) {
   const { active } = useSelector((state) => state.scope);
@@ -100,7 +85,7 @@ export default function OrganNewEditForm ({ type, isEdit = false, current, onClo
     try {
       let roleData;
       if (!isEdit) {
-        const uuid = UUID();
+        const uuid = uuidv4();
         roleData = await roleService.post({
           ...data,
           _id: uuid,

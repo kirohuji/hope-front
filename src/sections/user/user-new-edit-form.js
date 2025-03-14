@@ -15,9 +15,6 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from '@mui/material/CircularProgress';
-import Restricted from 'src/auth/guard/restricted';
-// hooks
-import { useAuthContext } from 'src/auth/hooks';
 // utils
 import { fData } from 'src/utils/format-number';
 // routes
@@ -25,10 +22,8 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-
 // redux
 import { useSelector } from 'src/redux/store';
-
 // components
 import Label from 'src/components/label';
 import { useSnackbar } from 'src/components/snackbar';
@@ -38,11 +33,13 @@ import { profileService, userService, fileService } from 'src/composables/contex
 
 export default function UserNewEditForm({ currentUser }) {
   const router = useRouter();
+
   const isEdit = !!currentUser;
+
   const scope = useSelector((state) => state.scope);
+
   const loading = useBoolean(false);
 
-  const { user } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
@@ -58,6 +55,7 @@ export default function UserNewEditForm({ currentUser }) {
     scope: Yup.string().required('请选择组织'),
     photoURL: Yup.mixed().required('请选择头像'),
   });
+
   const defaultValues = useMemo(
     () => ({
       username: currentUser?.username || '',
@@ -104,11 +102,6 @@ export default function UserNewEditForm({ currentUser }) {
           photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL,
         });
       } else {
-        // await userService.patch({
-        //   _id: currentUser._id,
-        //   ...data,
-        //   photoURL: data.photoURL instanceof Object ? data.photoURL.preview : data.photoURL,
-        // });
         await profileService.patch({
           _id: currentUser._id,
           ...data,
@@ -181,7 +174,7 @@ export default function UserNewEditForm({ currentUser }) {
               )}
               <RHFUploadAvatar
                 name="photoURL"
-                // maxSize={3145728}
+                maxSize={3145728}
                 onDrop={handleDrop}
                 onDropRejected={() => {
                   loading.onFalse();

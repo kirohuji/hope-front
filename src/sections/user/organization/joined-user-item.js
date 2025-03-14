@@ -23,7 +23,7 @@ JoinedUserItem.propTypes = {
     _id: PropTypes.any,
     displayName: PropTypes.string,
     emails: PropTypes.array,
-    avatarUrl: PropTypes.string,
+    photoURL: PropTypes.string,
     permission: PropTypes.string,
     realName: PropTypes.string,
   }),
@@ -60,7 +60,7 @@ export default function JoinedUserItem({ node, leader, person, onSelectMain, onS
           }}
         >
           <ListItemAvatar>
-            <Avatar alt={person.displayName} src={person.avatarUrl} />
+            <Avatar alt={person.displayName} src={person.photoURL} />
           </ListItemAvatar>
         </Badge>
         <ListItemText
@@ -98,44 +98,12 @@ export default function JoinedUserItem({ node, leader, person, onSelectMain, onS
 
       <MenuPopover open={openPopover} onClose={handleClosePopover} sx={{ width: 160 }}>
         <>
-          {/**
-                  <MenuItem
-                      onClick={() => {
-                        handleClosePopover();
-                        handleChangePermission('view');
-                      }}
-                      sx={{
-                        ...(permission === 'view' && {
-                          bgcolor: 'action.selected',
-                        }),
-                      }}
-                    >
-                      <Iconify icon="eva:eye-fill" />
-                      Can view
-                    </MenuItem>
-          
-                    <MenuItem
-                      onClick={() => {
-                        handleClosePopover();
-                        handleChangePermission('edit');
-                      }}
-                      sx={{
-                        ...(permission === 'edit' && {
-                          bgcolor: 'action.selected',
-                        }),
-                      }}
-                    >
-                      <Iconify icon="eva:edit-fill" />
-                      Can edit
-                    </MenuItem>
-             */}
           {node.type === 'org' && (
             <>
               <MenuItem
                 onClick={() => {
                   handleClosePopover();
                   onSelectMain();
-                  // handleChangePermission('edit');
                 }}
                 sx={{
                   ...(permission === 'edit' && {
