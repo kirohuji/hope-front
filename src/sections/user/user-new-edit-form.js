@@ -56,12 +56,6 @@ export default function UserNewEditForm({ currentUser }) {
     gender: Yup.string().required('请选择性别'),
     available: Yup.string(),
     scope: Yup.string().required('请选择组织'),
-    // baptized: Yup.boolean().required('请选择是否受洗'),
-    // country: Yup.string().required('Country is required'),
-    // company: Yup.string().required('Company is required'),
-    // state: Yup.string().required('State is required'),
-    // city: Yup.string().required('City is required'),
-    // role: Yup.string().required('Role is required'),
     photoURL: Yup.mixed().required('请选择头像'),
   });
   const defaultValues = useMemo(
@@ -76,7 +70,6 @@ export default function UserNewEditForm({ currentUser }) {
       available: currentUser?.available || '',
       scope: currentUser?.scope || '',
       realName: currentUser?.realName || '',
-      baptized: currentUser?.baptized || false,
       photoURL: currentUser?.photoURL || null,
     }),
     [currentUser]
@@ -271,12 +264,8 @@ export default function UserNewEditForm({ currentUser }) {
                 <MenuItem value="male">男</MenuItem>
                 <MenuItem value="female">女</MenuItem>
               </RHFSelect>
-              <RHFTextField name="email" label="电子邮件" disabled={currentUser} />
-              <RHFTextField name="phoneNumber" label="手机号" disabled={currentUser} />
-              <RHFSelect name="baptized" label="是否受洗" placeholder="是否受洗">
-                <MenuItem value="true">是</MenuItem>
-                <MenuItem value="false">否</MenuItem>
-              </RHFSelect>
+              <RHFTextField name="email" label="电子邮件" disabled={!!currentUser} />
+              <RHFTextField name="phoneNumber" label="手机号" disabled={!!currentUser} />
               <RHFTextField name="address" label="地址" />
               <RHFSelect name="scope" label="所属组织" placeholder="请选择组织架构">
                 {scope.scopes.map((option) => (

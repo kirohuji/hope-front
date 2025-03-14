@@ -1,22 +1,21 @@
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import { Tree, TreeNode } from 'react-organizational-chart';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import { Button, DialogTitle, Dialog, DialogContent } from '@mui/material';
-import Collapse from '@mui/material/Collapse';
 import Grid from '@mui/material/Unstable_Grid2';
 // utils
 import { useState, createContext, useMemo } from 'react';
 import flattenArray from 'src/utils/flatten-array';
 // compoennts
-import _ from 'lodash';
 import ConfirmDialog from 'src/components/confirm-dialog';
 import { roleService } from 'src/composables/context-provider';
 import { useSnackbar } from 'src/components/snackbar';
 import OrganDetailsDrawer from '../organ-details-drawer';
 import OrganNewEditForm from '../organ-new-edit-form';
 import PermissionPanel from '../../permission/permission-panel';
-import { GroupNode, StandardNode } from './node';
+import { StandardNode } from './node';
 
 // ----------------------------------------------------------------------
 
@@ -44,9 +43,13 @@ export default function OrganizationalChart({
   ...other
 }) {
   const theme = useTheme();
+
   const [openManager, setOpenManager] = useState(false);
+
   const [openPermission, setOpenPermission] = useState(false);
+
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+
   const [openForm, setOpenForm] = useState(false);
   // 当前项
   const [item, setItem] = useState({});
@@ -246,10 +249,13 @@ List.propTypes = {
 
 export function List({ data, parentNode, depth, variant, sx }) {
   const [isOpen, setIsOpen] = useState(false);
+
   const hasChild = data.children && !!data.children && _.compact(data.children).length > 0;
+
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
+  
   return (
     <userContext.Consumer>
       {({
@@ -307,11 +313,6 @@ export function List({ data, parentNode, depth, variant, sx }) {
                   setOpenDeleteConfirm(true);
                   setOpenManager(false);
                 }}
-                length={
-                  _.compact(data.children)
-                    ? flattenArray(_.compact(data.children), 'children')?.length
-                    : 0
-                }
               />
             )
           }

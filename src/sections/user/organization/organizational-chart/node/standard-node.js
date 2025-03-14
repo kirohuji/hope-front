@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 // @mui
-import { alpha, useTheme } from '@mui/material/styles';
 import { Box, Typography, IconButton, MenuItem, Card, Avatar } from '@mui/material';
-//
+// components
 import Iconify from 'src/components/iconify';
 import MenuPopover from 'src/components/menu-popover';
 import Label from 'src/components/label/label';
@@ -13,7 +12,6 @@ StandardNode.propTypes = {
   sx: PropTypes.object,
   node: PropTypes.object,
   depth: PropTypes.number,
-  length: PropTypes.number,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
   onCreate: PropTypes.func,
@@ -27,7 +25,6 @@ StandardNode.propTypes = {
 export default function StandardNode({
   node,
   depth,
-  length,
   sx,
   hasChild,
   onEdit,
@@ -39,19 +36,12 @@ export default function StandardNode({
   onClick,
 }) {
   const name = node.label;
+
   const group = node.scope;
+
   const role = node.value;
+  
   const [openPopover, setOpenPopover] = useState(null);
-
-  const theme = useTheme();
-
-  const isLight = theme.palette.mode === 'light';
-
-  const styles = (color) => ({
-    bgcolor: alpha(theme.palette[color].main, 0.08),
-    border: `solid 1px ${alpha(theme.palette[color].main, 0.24)}`,
-    color: isLight ? theme.palette[color].darker : theme.palette[color].lighter,
-  });
 
   const handleOpenPopover = (event) => {
     setOpenPopover(event.currentTarget);
@@ -63,14 +53,6 @@ export default function StandardNode({
   const isLabel = node.type === ('org' || 'role') && !node.root;
 
   const isGrRoot = group === 'root' || node.root;
-
-  const isGrProduct = group === 'product design';
-
-  const isGrDevelopment = group === 'development';
-
-  const { isMaxRole } = node;
-
-  const isGrMarketing = group === 'marketing';
 
   return (
     <>
@@ -86,13 +68,6 @@ export default function StandardNode({
           flexDirection: 'column',
           textTransform: 'capitalize',
           ...(isLabel && { py: 2 }),
-          ...(isLabel && isGrProduct && styles('primary')),
-          ...(isLabel && isGrProduct && styles('primary')),
-          ...(isLabel &&
-            isMaxRole && {
-              background: `red`,
-            }),
-          ...(isLabel && isGrMarketing && styles('warning')),
           ...sx,
         }}
       >
@@ -121,15 +96,6 @@ export default function StandardNode({
               height: 4,
               position: 'absolute',
               borderRadius: 1.5,
-              ...(isGrProduct && {
-                bgcolor: 'primary.light',
-              }),
-              ...(isGrDevelopment && {
-                bgcolor: 'info.light',
-              }),
-              ...(isGrMarketing && {
-                bgcolor: 'warning.light',
-              }),
             }}
           />
         )}
@@ -144,7 +110,7 @@ export default function StandardNode({
           {name}
           {node.count ? (
             <Label
-              color={(isGrDevelopment && 'info') || (isGrMarketing && 'warning') || 'primary'}
+              color="primary"
               sx={{ ml: 1 }}
             >
               {node.count}
@@ -206,17 +172,6 @@ export default function StandardNode({
           >
             <Iconify icon="eva:edit-fill" />
             配置权限
-          </MenuItem>
-        )}
-        {onCreate && isGrDevelopment && (
-          <MenuItem
-            onClick={() => {
-              handleClosePopover();
-              onEdit();
-            }}
-          >
-            <Iconify icon="gridicons:add-outline" />
-            新增
           </MenuItem>
         )}
         <MenuItem

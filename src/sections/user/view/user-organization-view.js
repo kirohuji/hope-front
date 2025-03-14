@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import { useState, useCallback, useEffect } from 'react';
 // @mui
 import { Stack, Container } from '@mui/material';
@@ -11,7 +12,6 @@ import { getOrganizations, getPermissions } from 'src/redux/slices/role';
 // hooks
 import { useDebounce } from 'src/hooks/use-debounce';
 // components
-import { cloneDeep } from 'lodash';
 import OrganizationalChart from 'src/sections/user/organization/organizational-chart';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -22,7 +22,7 @@ export default function UserOrganizationView() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { active } = useSelector((state) => state.scope);
+  const scope = useSelector((state) => state.scope);
 
   const { organizations, permissions } = useSelector((state) => state.role);
 
@@ -40,12 +40,12 @@ export default function UserOrganizationView() {
   };
 
   const onRefresh = useCallback(async () => {
-    if (active) {
+    if (scope.active) {
       setIsLoading(true);
       await dispatch(
         getOrganizations({
           selector: {
-            scope: active._id,
+            scope: scope?.active?._id,
             type: debouncedView,
           },
         })
@@ -61,7 +61,7 @@ export default function UserOrganizationView() {
       }
       setIsLoading(false);
     }
-  }, [active, dispatch, debouncedView]);
+  }, [scope, dispatch, debouncedView]);
 
   useEffect(() => {
     onRefresh();

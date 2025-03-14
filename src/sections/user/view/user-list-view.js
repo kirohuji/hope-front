@@ -60,7 +60,6 @@ const TABLE_HEAD = [
   { id: 'displayName', label: '用户名', width: 150 },
   { id: 'phoneNumber', label: '手机号', width: 150 },
   { id: 'address', label: '地址', width: 250 },
-  // { id: 'role', label: 'Role', width: 180 },
   { id: 'available', label: '状态', width: 100 },
   { id: '', width: 88 },
 ];
@@ -113,7 +112,7 @@ export default function UserListView() {
         const response = await userService.pagination(
           {
             ...selector,
-            scope: scope.active._id,
+            scope: scope?.active?._id,
             ..._.pickBy(_.omit(debouncedFilters, ['role'])),
           },
           {
@@ -141,7 +140,7 @@ export default function UserListView() {
         enqueueSnackbar(error.message);
       }
     },
-    [scope.active._id, debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
+    [scope.active, debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
   );
 
   useEffect(() => {
