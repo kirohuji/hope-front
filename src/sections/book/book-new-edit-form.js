@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { useMemo, useEffect, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
@@ -13,7 +13,6 @@ import Grid from '@mui/material/Unstable_Grid2';
 import CircularProgress from '@mui/material/CircularProgress';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -29,7 +28,6 @@ import FormProvider, {
   RHFMultiCheckbox,
   RHFUpload,
   RHFEditor,
-  RHFRadioGroup,
   RHFTextField,
 } from 'src/components/hook-form';
 
@@ -43,15 +41,12 @@ export const TYPE_OPTIONS = [
   { value: 'adolescent', label: '青少年' },
   { value: 'adult', label: '成人' },
   { value: 'newBelievers', label: '新人' },
-  // { value: 'book', label: '阅读' },
 ];
 
 export default function BookNewEditForm({ currentBook }) {
   const loading = useBoolean(false);
 
   const router = useRouter();
-
-  const { user } = useAuthContext();
 
   const isEdit = !!currentBook;
 
@@ -68,19 +63,6 @@ export default function BookNewEditForm({ currentBook }) {
     title: Yup.string(),
     cover: Yup.string(),
     content: Yup.string(),
-    // employmentTypes: Yup.array(),
-    // role: Yup.string(),
-    // skills: Yup.array(),
-    // workingSchedule: Yup.array(),
-    // benefits: Yup.array(),
-    // locations: Yup.array(),
-    // expiredDate: Yup.mixed().nullable(),
-    // salary: Yup.object().shape({
-    //   type: Yup.string(),
-    //   price: Yup.number(),
-    //   negotiable: Yup.boolean(),
-    // }),
-    // experience: Yup.string(),
   });
 
   const defaultValues = useMemo(
@@ -93,19 +75,6 @@ export default function BookNewEditForm({ currentBook }) {
       publishedDate: currentBook?.publishedDate || '',
       type: currentBook?.type || '',
       content: currentBook?.content || '',
-      // employmentTypes: currentBook?.employmentTypes || [],
-      // experience: currentBook?.experience || '1 year exp',
-      // role: currentBook?.role || _roles[1],
-      // skills: currentBook?.skills || [],
-      // workingSchedule: currentBook?.workingSchedule || [],
-      // locations: currentBook?.locations || [],
-      // benefits: currentBook?.benefits || [],
-      // expiredDate: moment(currentBook?.expiredDate).format("YYYYMMDD") || null,
-      // salary: currentBook?.salary || {
-      //   type: 'Hourly',
-      //   price: 0,
-      //   negotiable: false,
-      // },
     }),
     [currentBook]
   );
@@ -116,15 +85,11 @@ export default function BookNewEditForm({ currentBook }) {
   });
 
   const {
-    // watch,
     reset,
-    control,
     setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
-  // const values = watch();
 
   useEffect(() => {
     if (currentBook) {

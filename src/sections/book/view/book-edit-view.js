@@ -5,8 +5,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
 // routes
 import { paths } from 'src/routes/paths';
-// _mock
-// import { _jobs } from 'src/_mock';
 // components
 import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
@@ -22,10 +20,15 @@ import BookNewEditForm from '../book-new-edit-form';
 
 export default function BookEditView() {
   const { enqueueSnackbar } = useSnackbar();
+
   const settings = useSettingsContext();
+
   const [book, setBook] = useState(null);
+
   const params = useParams();
+
   const [loading, setLoading] = useState(true);
+  
   const { id } = params;
 
   const getData = useCallback(async () => {

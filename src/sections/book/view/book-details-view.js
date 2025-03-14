@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import { Divider, Stack, Backdrop, CircularProgress, Box } from '@mui/material';
-import Button from '@mui/material/Button';
+import { Divider, Stack, CircularProgress, Box } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Container from '@mui/material/Container';
 // routes
@@ -32,20 +31,28 @@ import BookDetailsCandidates from '../book-details-candidates';
 
 const JOB_DETAILS_TABS = [
   { value: 'content', label: '简介' },
-  // { value: 'candidates', label: '参与者' },
   { value: 'chapter', label: '内容' },
 ];
 
 export default function BookDetailsView() {
   const { enqueueSnackbar } = useSnackbar();
+
   const settings = useSettingsContext();
+
   const params = useParams();
+
   const { user } = useAuthContext();
+
   const { details } = useSelector((state) => state.book);
+
   const { id, tabId } = params;
+
   const [loading, setLoading] = useState(true);
+
   const [buttonLoading, setButtonLoading] = useState(false);
+
   const dispatch = useDispatch();
+
   const refresh = useCallback(async () => {
     try {
       setLoading(true);
@@ -148,12 +155,6 @@ export default function BookDetailsView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      {/* <Backdrop
-        sx={{ background: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop> */}
       <BookDetailsToolbar
         backLink={paths.dashboard.book.root}
         editLink={paths.dashboard.book.edit(`${details.byId[id]?._id}`)}

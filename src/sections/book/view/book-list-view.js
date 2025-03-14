@@ -63,11 +63,6 @@ export default function BookListView() {
 
   const [sortBy, setSortBy] = useState('latest');
 
-  const [search, setSearch] = useState({
-    query: '',
-    results: [],
-  });
-
   const handlePageChange = (event, value) => {
     setPage(value);
   };

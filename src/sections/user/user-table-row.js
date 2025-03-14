@@ -34,12 +34,10 @@ export default function UserTableRow({
     username,
     realName,
     displayName,
-    baptized,
     gender,
     age,
     photoURL,
     address,
-    status,
     available,
     email,
     phoneNumber,
@@ -88,7 +86,6 @@ export default function UserTableRow({
             variant="soft"
             color={
               (available === 'active' && 'success') ||
-              // (available === 'pending' && 'warning') ||
               (available === 'banned' && 'error') ||
               'default'
             }
