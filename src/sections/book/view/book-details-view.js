@@ -21,11 +21,9 @@ import { useDispatch, useSelector } from 'src/redux/store';
 import { getData, updateDataPublishedStatus } from 'src/redux/slices/book';
 // sections
 import { ArticleListView } from 'src/sections/article/view';
-import _ from 'lodash';
 import { useSnackbar } from 'src/components/snackbar';
 import BookDetailsToolbar from '../book-details-toolbar';
 import BookDetailsContent from '../book-details-content';
-import BookDetailsCandidates from '../book-details-candidates';
 
 // ----------------------------------------------------------------------
 
@@ -181,10 +179,6 @@ export default function BookDetailsView() {
       ) : (
         <>
           {currentTab === 'content' && <BookDetailsContent book={details.byId[id]} />}
-
-          {currentTab === 'candidates' && (
-            <BookDetailsCandidates candidates={details.byId[id]?.candidates} />
-          )}
           {currentTab === 'chapter' && <ArticleListView book={details.byId[id]} />}
           <Divider sx={{ m: 2 }} />
           <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>

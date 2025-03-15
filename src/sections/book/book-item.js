@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
 // @mui
-// import Box from '@mui/material/Box';
-import { alpha, useTheme } from '@mui/material/styles';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -9,11 +7,9 @@ import Image from 'src/components/image';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
-// import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 // utils
 import { fDate } from 'src/utils/format-time';
-// import { fCurrency } from 'src/utils/format-number';
 // routes
 import { paths } from 'src/routes/paths';
 // components
@@ -31,10 +27,9 @@ const TYPE_OPTIONS = new Map([
   ['newBelievers', '新人'],
 ]);
 export default function BookItem({ book, onView, onEdit, onDelete }) {
-  const theme = useTheme();
   const popover = usePopover();
 
-  const { _id, label, cover, createdAt, type, candidates } = book;
+  const { _id, label, cover, createdAt, type } = book;
 
   const renderType = (
     <Stack
@@ -74,7 +69,7 @@ export default function BookItem({ book, onView, onEdit, onDelete }) {
               height: 120,
             }}
           />
-          <Stack sx={{ pl: 2 }}>
+          <Stack sx={{ pl: 2, pr: 2 }}>
             <ListItemText
               sx={{ mb: 1 }}
               primary={
@@ -97,58 +92,10 @@ export default function BookItem({ book, onView, onEdit, onDelete }) {
                 color: 'text.disabled',
               }}
             />
-            {/**
-               * 
-               *             <Stack
-              spacing={0.5}
-              direction="row"
-              alignItems="center"
-              sx={{ color: 'primary.main', typography: 'caption' }}
-            >
-              <Iconify width={16} icon="solar:users-group-rounded-bold" />
-              {candidates ? candidates.length : '无'} 参与者
-            </Stack>
-               */}
           </Stack>
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-        {/**
-                <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
-                  {[
-                    {
-                      label: experience,
-                      icon: <Iconify width={16} icon="carbon:skill-level-basic" sx={{ flexShrink: 0 }} />,
-                    },
-                    {
-                      label: employmentTypes.join(', '),
-                      icon: <Iconify width={16} icon="solar:clock-circle-bold" sx={{ flexShrink: 0 }} />,
-                    },
-                    {
-                      label: salary.negotiable ? 'Negotiable' : fCurrency(salary.price),
-                      icon: <Iconify width={16} icon="solar:wad-of-money-bold" sx={{ flexShrink: 0 }} />,
-                    },
-                    {
-                      label: role,
-                      icon: <Iconify width={16} icon="solar:user-rounded-bold" sx={{ flexShrink: 0 }} />,
-                    },
-                  ].map((item) => (
-                    <Stack
-                      key={item.label}
-                      spacing={0.5}
-                      flexShrink={0}
-                      direction="row"
-                      alignItems="center"
-                      sx={{ color: 'text.disabled', minWidth: 0 }}
-                    >
-                      {item.icon}
-                      <Typography variant="caption" noWrap>
-                        {item.label}
-                      </Typography>
-                    </Stack>
-                  ))}
-                </Box>
-           */}
       </Card>
 
       <CustomPopover
