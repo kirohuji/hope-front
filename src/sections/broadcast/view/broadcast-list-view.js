@@ -1,4 +1,3 @@
-import orderBy from 'lodash/orderBy';
 import isEqual from 'lodash/isEqual';
 import { useState, useEffect, useCallback } from 'react';
 // @mui
@@ -15,10 +14,6 @@ import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useDebounce } from 'src/hooks/use-debounce';
-// utils
-import { fTimestamp } from 'src/utils/format-time';
-// _mock
-import { _tours } from 'src/_mock';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -59,20 +54,13 @@ export default function BroadcastListView() {
 
   const [page, setPage] = useState(1);
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage] = useState(10);
 
   const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
 
   const scope = useSelector((state) => state.scope);
-
-  const [sortBy, setSortBy] = useState('latest');
-
-  const [search, setSearch] = useState({
-    query: '',
-    results: [],
-  });
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -116,20 +104,9 @@ export default function BroadcastListView() {
     onRefresh();
   }, [onRefresh]);
 
-  const dateError =
-    filters.startDate && filters.endDate
-      ? filters.startDate.getTime() > filters.endDate.getTime()
-      : false;
-
-  const dataFiltered = applyFilter({
-    inputData: _tours,
-    filters,
-    sortBy,
-    dateError,
-  });
   const canReset = !isEqual(defaultFilters, filters);
 
-  const notFound = !dataFiltered.length && canReset;
+  const notFound = !data.length && canReset;
 
   const handleFilters = useCallback((name, value) => {
     setFilters((prevState) => ({
@@ -255,53 +232,3 @@ export default function BroadcastListView() {
     </Container>
   );
 }
-
-// ----------------------------------------------------------------------
-
-const applyFilter = ({ inputData, filters, sortBy, dateError }) => {
-  const { services, destination, startDate, endDate, tourGuides } = filters;
-
-  const tourGuideIds = tourGuides.map((tourGuide) => tourGuide.id);
-
-  // SORT BY
-  if (sortBy === 'latest') {
-    inputData = orderBy(inputData, ['createdAt'], ['desc']);
-  }
-
-  if (sortBy === 'oldest') {
-    inputData = orderBy(inputData, ['createdAt'], ['asc']);
-  }
-
-  if (sortBy === 'popular') {
-    inputData = orderBy(inputData, ['totalViews'], ['desc']);
-  }
-
-  // FILTERS
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter(
-        (broadcast) =>
-          fTimestamp(broadcast.available.startDate) >= fTimestamp(startDate) &&
-          fTimestamp(broadcast.available.endDate) <= fTimestamp(endDate)
-      );
-    }
-  }
-
-  if (destination.length) {
-    inputData = inputData.filter((broadcast) => destination.includes(broadcast.destination));
-  }
-
-  if (tourGuideIds.length) {
-    inputData = inputData.filter((broadcast) =>
-      broadcast.tourGuides.some((filterItem) => tourGuideIds.includes(filterItem.id))
-    );
-  }
-
-  if (services.length) {
-    inputData = inputData.filter((broadcast) =>
-      broadcast.services.some((item) => services.includes(item))
-    );
-  }
-
-  return inputData;
-};
