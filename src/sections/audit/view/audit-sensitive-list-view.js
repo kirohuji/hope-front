@@ -1,4 +1,3 @@
-import sumBy from 'lodash/sumBy';
 import _ from 'lodash';
 import { useState, useCallback, useEffect } from 'react';
 // @mui
@@ -11,7 +10,6 @@ import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
@@ -22,14 +20,9 @@ import Backdrop from '@mui/material/Backdrop';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
-// utils
-import { fTimestamp } from 'src/utils/format-time';
-// _mock
-import { _audits, INVOICE_SERVICE_OPTIONS } from 'src/_mock';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -38,16 +31,13 @@ import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import AuditSensitiveWorldsForm, {
+import AuditSensitiveWordsForm, {
   categories,
 } from 'src/sections/audit/audit-sensitive-words-form';
 import {
   useTable,
-  getComparator,
-  emptyRows,
   TableNoData,
   TableSkeleton,
-  TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
@@ -90,6 +80,8 @@ export default function AuditSensitiveListView() {
   const router = useRouter();
 
   const table = useTable({ defaultCurrentPage: 0 });
+  
+  const [currentItem, setCurrentItem] = useState(null);
 
   const [loading, setLoading] = useState(true);
 
@@ -146,6 +138,7 @@ export default function AuditSensitiveListView() {
   };
 
   const handleOpenFormModal = () => {
+    setCurrentItem(null);
     setOpenForm(true);
   };
 
@@ -224,17 +217,13 @@ export default function AuditSensitiveListView() {
   }, [confirm, enqueueSnackbar, getTableData, table]);
 
   const handleEditRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.audit.edit(id));
+   async (id) => {
+    const item = await sensitiveWordService.get({ _id: id });
+    setCurrentItem(item);
+    setOpenForm(true);
+      // router.push(paths.dashboard.audit.edit(id));
     },
-    [router]
-  );
-
-  const handleViewRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.audit.details(id));
-    },
-    [router]
+    []
   );
 
   const handleFilterStatus = useCallback(
@@ -406,12 +395,6 @@ export default function AuditSensitiveListView() {
                       {notFound && <TableNoData notFound={notFound} />}
                     </>
                   )}
-                  {/* <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                  />
-
-                  <TableNoData notFound={notFound} /> */}
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -456,55 +439,9 @@ export default function AuditSensitiveListView() {
         }
       />
       <Dialog fullWidth maxWidth="md" open={openForm} onClose={handleCloseFormModal}>
-        <DialogTitle>新增</DialogTitle>
-        <AuditSensitiveWorldsForm onSubmitData={onSave} onCancel={handleCloseFormModal} />
+        <DialogTitle>{currentItem._id ? '编辑' : '新增'}</DialogTitle>
+        <AuditSensitiveWordsForm onSubmitData={onSave} onCancel={handleCloseFormModal} item={currentItem}/>
       </Dialog>
     </>
   );
-}
-
-// ----------------------------------------------------------------------
-
-function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, status, service, startDate, endDate } = filters;
-
-  const stabilizedThis = inputData.map((el, index) => [el, index]);
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  inputData = stabilizedThis.map((el) => el[0]);
-
-  if (name) {
-    inputData = inputData.filter(
-      (audit) =>
-        audit.auditNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        audit.auditTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
-  }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((audit) => audit.status === status);
-  }
-
-  if (service.length) {
-    inputData = inputData.filter((audit) =>
-      audit.items.some((filterItem) => service.includes(filterItem.service))
-    );
-  }
-
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter(
-        (audit) =>
-          fTimestamp(audit.createDate) >= fTimestamp(startDate) &&
-          fTimestamp(audit.createDate) <= fTimestamp(endDate)
-      );
-    }
-  }
-
-  return inputData;
 }

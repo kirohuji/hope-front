@@ -8,7 +8,7 @@ export default function AuditListPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Audit List</title>
+        <title> 审核列表</title>
       </Helmet>
 
       <AuditListView />

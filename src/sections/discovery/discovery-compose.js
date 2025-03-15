@@ -1,24 +1,27 @@
 import PropTypes from 'prop-types';
 import { useState, useCallback, useEffect } from 'react';
 // @mui
-import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Portal from '@mui/material/Portal';
 import Backdrop from '@mui/material/Backdrop';
-import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+// redux
+import { useSelector } from 'src/redux/store';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { Capacitor } from '@capacitor/core';
+import { useSnackbar } from 'src/components/snackbar';
 import { Keyboard } from '@capacitor/keyboard';
 // components
 import Iconify from 'src/components/iconify';
 import Editor from 'src/components/editor';
+import { postService } from 'src/composables/context-provider';
+//
+import moment from 'moment';
 
 // ----------------------------------------------------------------------
 
@@ -27,8 +30,13 @@ const ZINDEX = 1998;
 const POSITION = 24;
 
 export default function DiscoveryCompose({ onCloseCompose }) {
+  const { enqueueSnackbar } = useSnackbar();
+
   const smUp = useResponsive('up', 'sm');
+
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  const scope = useSelector((state) => state.scope);
 
   const [message, setMessage] = useState('');
 
@@ -45,6 +53,21 @@ export default function DiscoveryCompose({ onCloseCompose }) {
       });
     }
   }, []);
+
+  const onSend = useCallback (async ()=>{
+    try{
+      await postService.post({
+        body: message,
+        scope: scope.active._id,
+        modifiedDate: moment(new Date()).format('YYYY/MM/DD'),
+      });
+      onCloseCompose();
+      enqueueSnackbar('创建成功!');
+    } catch(e){
+      enqueueSnackbar('创建失败!');
+      console.error(e);
+    }
+  },[enqueueSnackbar, message, onCloseCompose, scope.active._id])
   useEffect(() => {
     console.log('setResizeMode为 none');
     setResizeMode('none');
@@ -174,6 +197,7 @@ export default function DiscoveryCompose({ onCloseCompose }) {
             <Button
               variant="contained"
               color="primary"
+              onClick={()=> onSend()}
               endIcon={<Iconify icon="iconamoon:send-fill" />}
             >
               发送

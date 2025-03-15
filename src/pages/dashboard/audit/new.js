@@ -8,7 +8,7 @@ export default function AuditCreatePage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Create a new invoice</title>
+        <title> 新增审核</title>
       </Helmet>
 
       <AuditCreateView />

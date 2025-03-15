@@ -123,7 +123,7 @@ export default function DiscoveryPostDetailItem({ post, user, notify }) {
       }
       subheader={
         <Box sx={{ color: 'text.disabled', typography: 'caption', mt: 0.5 }}>
-          {fDate(post.publishedAt)}
+          {fDate(post.publishedAt || post.createdAt)}
         </Box>
       }
       action={

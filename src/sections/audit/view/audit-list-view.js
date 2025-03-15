@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import sumBy from 'lodash/sumBy';
 import { useRef, useCallback, useEffect, useState } from 'react';
 // @mui
 import { useTheme, alpha } from '@mui/material/styles';
@@ -28,8 +27,6 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
 // utils
 import { fTimestamp } from 'src/utils/format-time';
-// _mock
-import { _audits, INVOICE_SERVICE_OPTIONS } from 'src/_mock';
 
 // redux
 import { useSelector } from 'src/redux/store';
@@ -43,11 +40,8 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
-  getComparator,
-  emptyRows,
   TableNoData,
   TableSkeleton,
-  TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
@@ -101,7 +95,9 @@ export default function AuditListView() {
   const [tableData, setTableData] = useState([]);
 
   const [loading, setLoading] = useState(true);
+
   const [importLoading, setImportLoading] = useState(false);
+
   const [tableDataCount, setTableDataCount] = useState(0);
 
   const [filters, setFilters] = useState(defaultFilters);
@@ -458,13 +454,6 @@ export default function AuditListView() {
                       {notFound && <TableNoData notFound={notFound} />}
                     </>
                   )}
-
-                  {/* <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                  />
-
-                  <TableNoData notFound={notFound} /> */}
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -476,7 +465,6 @@ export default function AuditListView() {
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />

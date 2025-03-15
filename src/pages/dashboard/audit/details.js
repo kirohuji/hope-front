@@ -8,7 +8,7 @@ export default function AuditDetailsPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Audit Details</title>
+        <title> 审核详情</title>
       </Helmet>
 
       <AuditDetailsView />

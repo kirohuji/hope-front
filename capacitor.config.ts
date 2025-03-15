@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'lourd.hope.app',
-  appName: '希望之家',
+  appName: '佳麦',
   plugins: {
     CapacitorUpdater: {
       autoUpdate: false,
