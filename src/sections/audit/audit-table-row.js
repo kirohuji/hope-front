@@ -32,7 +32,7 @@ export default function AuditTableRow({
   onEditRow,
   onDeleteRow,
 }) {
-  const { sent, auditNumber, createDate, dueDate, status, auditTo, totalAmount } = row;
+  const { sent, auditNumber, createdAt	, updatedAt	, status, totalAmount } = row;
 
   const confirm = useBoolean();
 
@@ -72,8 +72,8 @@ export default function AuditTableRow({
 
         <TableCell>
           <ListItemText
-            primary={format(new Date(createDate), 'dd MMM yyyy')}
-            secondary={format(new Date(createDate), 'p')}
+            primary={format(new Date(createdAt	), 'dd MMM yyyy')}
+            secondary={format(new Date(createdAt	), 'p')}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{
               mt: 0.5,
@@ -85,8 +85,8 @@ export default function AuditTableRow({
 
         <TableCell>
           <ListItemText
-            primary={format(new Date(dueDate), 'dd MMM yyyy')}
-            secondary={format(new Date(dueDate), 'p')}
+            primary={format(new Date(updatedAt	), 'dd MMM yyyy')}
+            secondary={format(new Date(updatedAt	), 'p')}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{
               mt: 0.5,

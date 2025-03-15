@@ -34,6 +34,7 @@ export const categories = [
   { value: '活动通知', label: '活动通知' },
   { value: '消息公告', label: '消息公告' },
   { value: '社交聚会', label: '社交聚会' },
+  { value: '内容分享', label: '内容分享' },
 ];
 
 export default function AuditNewEditForm({ currentAudit }) {

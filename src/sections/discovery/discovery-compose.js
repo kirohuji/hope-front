@@ -60,6 +60,7 @@ export default function DiscoveryCompose({ onCloseCompose }) {
         body: message,
         scope: scope.active._id,
         modifiedDate: moment(new Date()).format('YYYY/MM/DD'),
+        published: true
       });
       onCloseCompose();
       enqueueSnackbar('创建成功!');

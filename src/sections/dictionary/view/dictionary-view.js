@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 // section
 import Nav from 'src/sections/dictionary/nav/Nav';
-import Header from 'src/sections/dictionary/header/Header';
 import DictionaryForm from 'src/sections/dictionary/DictionaryForm';
 // setting
 import { useSettingsContext } from 'src/components/settings';
@@ -26,9 +25,6 @@ import MenuPopover from 'src/components/menu-popover';
 import ConfirmDialog from 'src/components/confirm-dialog';
 // composables
 import { dictionaryService, dictionaryOptionService } from 'src/composables/context-provider';
-
-// redux
-// import { useSelector } from 'src/redux/store';
 
 const columns = [
   {
@@ -81,18 +77,31 @@ const columns = [
 export default function DictionaryView() {
   // const scope = useSelector((state) => state.scope);
   const { themeStretch } = useSettingsContext();
+
   const [openNav, setOpenNav] = useState(false);
+
   const { enqueueSnackbar } = useSnackbar();
+
   const [current, setCurrent] = useState(null);
+
   const [parent, setParent] = useState([]);
+
   const [menus, setMenus] = useState([]);
+
   const [levels, setLevels] = useState([]);
+
   const [openPopover, setOpenPopover] = useState(null);
+
   const [openConfirm, setOpenConfirm] = useState(false);
+
   const [openVersionConfirm, setOpenVersionConfirm] = useState(false);
+
   const [openForm, setOpenForm] = useState(false);
+
   const [row, setRow] = useState({});
+  
   const dataTableEl = useRef(null);
+
   const handleOpenConfirm = () => {
     setOpenConfirm(true);
   };
