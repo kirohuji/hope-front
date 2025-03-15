@@ -1,4 +1,3 @@
-import orderBy from 'lodash/orderBy';
 import isEqual from 'lodash/isEqual';
 import { useState, useEffect, useCallback } from 'react';
 // @mui
@@ -13,8 +12,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 // hooks
 import { useDebounce } from 'src/hooks/use-debounce';
-// _mock
-import { _jobs } from 'src/_mock';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
 import { pagination } from 'src/redux/slices/book';
@@ -26,7 +23,6 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-//
 import Restricted from 'src/auth/guard/restricted';
 import BookList from '../book-list';
 import BookFiltersResult from '../book-filters-result';
@@ -59,9 +55,7 @@ export default function BookListView() {
 
   const scope = useSelector((state) => state.scope);
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const [sortBy, setSortBy] = useState('latest');
+  const [rowsPerPage] = useState(10);
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -105,15 +99,9 @@ export default function BookListView() {
     onRefresh();
   }, [onRefresh]);
 
-  const dataFiltered = applyFilter({
-    inputData: _jobs,
-    filters,
-    sortBy,
-  });
-
   const canReset = !isEqual(defaultFilters, filters);
 
-  const notFound = !dataFiltered.length && canReset;
+  const notFound = !data.length && canReset;
 
   const handleFilters = useCallback((name, value) => {
     setFilters((prevState) => ({
@@ -157,10 +145,8 @@ export default function BookListView() {
     <BookFiltersResult
       filters={filters}
       onResetFilters={handleResetFilters}
-      //
       canReset={canReset}
       onFilters={handleFilters}
-      //
       results={total}
     />
   );
@@ -168,14 +154,14 @@ export default function BookListView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="列表"
+        heading="阅读本列表"
         links={[
           // { name: 'Dashboard', href: paths.dashboard.root },
-          {
-            name: '阅读本',
-            href: paths.dashboard.book.root,
-          },
-          { name: '列表' },
+          // {
+          //   name: '阅读本',
+          //   href: paths.dashboard.book.root,
+          // },
+          { name: '' },
         ]}
         action={
           <Restricted to={['BookListAdd']}>
@@ -185,7 +171,7 @@ export default function BookListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              新建
+              新建阅读本
             </Button>
           </Restricted>
         }
@@ -243,47 +229,3 @@ export default function BookListView() {
     </Container>
   );
 }
-
-// ----------------------------------------------------------------------
-
-const applyFilter = ({ inputData, filters, sortBy }) => {
-  const { employmentTypes, experience, roles, locations, benefits } = filters;
-
-  // SORT BY
-  if (sortBy === 'latest') {
-    inputData = orderBy(inputData, ['createdAt'], ['desc']);
-  }
-
-  if (sortBy === 'oldest') {
-    inputData = orderBy(inputData, ['createdAt'], ['asc']);
-  }
-
-  if (sortBy === 'popular') {
-    inputData = orderBy(inputData, ['totalViews'], ['desc']);
-  }
-
-  // FILTERS
-  if (employmentTypes.length) {
-    inputData = inputData.filter((book) =>
-      book.employmentTypes.some((item) => employmentTypes.includes(item))
-    );
-  }
-
-  if (experience !== 'all') {
-    inputData = inputData.filter((book) => book.experience === experience);
-  }
-
-  if (roles.length) {
-    inputData = inputData.filter((book) => roles.includes(book.role));
-  }
-
-  if (locations.length) {
-    inputData = inputData.filter((book) => book.locations.some((item) => locations.includes(item)));
-  }
-
-  if (benefits.length) {
-    inputData = inputData.filter((book) => book.benefits.some((item) => benefits.includes(item)));
-  }
-
-  return inputData;
-};

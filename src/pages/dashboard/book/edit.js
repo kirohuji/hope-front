@@ -8,7 +8,7 @@ export default function BookEditPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Dashboard: Book Edit</title>
+        <title> 阅读本编辑</title>
       </Helmet>
 
       <BookEditView />

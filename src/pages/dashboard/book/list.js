@@ -8,7 +8,7 @@ export default function BookListPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Book List</title>
+        <title> 阅读本列表</title>
       </Helmet>
 
       <BookListView />

@@ -8,7 +8,7 @@ export default function BookCreatePage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Create a new job</title>
+        <title> 创建新的阅读本</title>
       </Helmet>
 
       <BookCreateView />
