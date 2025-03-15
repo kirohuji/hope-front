@@ -5,27 +5,17 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Container from '@mui/material/Container';
-import SpeedDial from '@mui/material/SpeedDial';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
-import SpeedDialAction from '@mui/material/SpeedDialAction';
-// _mock
-import { _socials } from 'src/_mock';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
 // utils
 import { fDate } from 'src/utils/format-time';
 // theme
 import { bgGradient } from 'src/theme/css';
-// components
-import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
 export default function ArticleDetailsHero({ title, author, coverUrl, createdAt }) {
   const theme = useTheme();
-
-  const smUp = useResponsive('up', 'sm');
 
   const titleShow = title.replace(/\|\|\|/g, '\n');
   return (
@@ -90,30 +80,6 @@ export default function ArticleDetailsHero({ title, author, coverUrl, createdAt 
                 secondaryTypographyProps={{ color: 'inherit', sx: { opacity: 0.64 } }}
               />
             </Stack>
-          )}
-
-          {false && (
-            <SpeedDial
-              direction={smUp ? 'left' : 'up'}
-              ariaLabel="Share article"
-              icon={<Iconify icon="solar:share-bold" />}
-              FabProps={{ size: 'medium' }}
-              sx={{
-                position: 'absolute',
-                bottom: { xs: 32, md: 64 },
-                right: { xs: 16, md: 24 },
-              }}
-            >
-              {_socials.map((action) => (
-                <SpeedDialAction
-                  key={action.name}
-                  icon={<Iconify icon={action.icon} sx={{ color: action.color }} />}
-                  tooltipTitle={action.name}
-                  tooltipPlacement="top"
-                  FabProps={{ color: 'default' }}
-                />
-              ))}
-            </SpeedDial>
           )}
         </Stack>
       </Container>

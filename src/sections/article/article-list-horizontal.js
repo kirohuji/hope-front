@@ -53,7 +53,6 @@ export default function ArticleListHorizontal({
         {loading ? renderSkeleton : renderList}
       </Box>
 
-      {/* {articles.length > 8 && ( */}
       <Pagination
         count={Math.ceil(total / rowsPerPage)}
         shape="rounded"
@@ -68,7 +67,6 @@ export default function ArticleListHorizontal({
           },
         }}
       />
-      {/* )} */}
     </>
   );
 }

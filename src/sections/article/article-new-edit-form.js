@@ -11,12 +11,10 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-// import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
-// import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
@@ -31,14 +29,11 @@ import { useRouter } from 'src/routes/hook';
 import { useSnackbar } from 'src/components/snackbar';
 import { StaticDatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { fData } from 'src/utils/format-number';
 import FormProvider, {
   RHFEditor,
   RHFUpload,
   RHFTextField,
-  RHFSwitch,
-  // RHFAutocomplete,
 } from 'src/components/hook-form';
 //
 import { articleService, bookService, fileService } from 'src/composables/context-provider';
@@ -76,6 +71,7 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
   const router = useRouter();
 
   const isEdit = !!currentArticle;
+
   const mdUp = useResponsive('up', 'md');
 
   const { enqueueSnackbar } = useSnackbar();
@@ -85,6 +81,7 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
   const formDialog = useBoolean();
 
   const [question, setQuestion] = useState(null);
+
   const [questions, setQuestions] = useState(currentArticle?.questions || []);
 
   const NewBlogSchema = Yup.object().shape({
@@ -486,7 +483,6 @@ export default function ArticleNewEditForm({ book, currentDates, currentArticle 
           coverUrl={
             typeof values.coverUrl === 'string' ? values.coverUrl : `${values.coverUrl?.preview}`
           }
-          //
           open={preview.value}
           isValid={isValid}
           isSubmitting={isSubmitting}

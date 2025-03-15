@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 // @mui
-import LoadingButton from '@mui/lab/LoadingButton';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -37,13 +36,13 @@ export default function ArticleDetailsPreview({
     <Dialog fullScreen open={open} onClose={onClose}>
       <DialogActions sx={{ py: 2, px: 3 }}>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Preview
+          预览
         </Typography>
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          取消
         </Button>
-
+{/* 
         <LoadingButton
           type="submit"
           variant="contained"
@@ -52,7 +51,7 @@ export default function ArticleDetailsPreview({
           onClick={onSubmit}
         >
           Article
-        </LoadingButton>
+        </LoadingButton> */}
       </DialogActions>
 
       <Divider />

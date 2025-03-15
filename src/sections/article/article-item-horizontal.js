@@ -15,9 +15,7 @@ import { RouterLink } from 'src/routes/components';
 import { useResponsive } from 'src/hooks/use-responsive';
 // utils
 import { fDate } from 'src/utils/format-time';
-import { fShortenNumber } from 'src/utils/format-number';
 // components
-import Label from 'src/components/label';
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import TextMaxLine from 'src/components/text-max-line';
@@ -38,9 +36,6 @@ export default function ArticleItemHorizontal({ onRefresh, article, book }) {
     author,
     coverUrl,
     date,
-    totalViews,
-    totalShares,
-    totalComments,
     description,
     _id,
   } = article;
@@ -55,9 +50,6 @@ export default function ArticleItemHorizontal({ onRefresh, article, book }) {
           }}
         >
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-            {/* <Label variant="soft" color={article.public ? 'info' : 'default'}>
-              {article.public ? '已发布' : '未发布'}
-            </Label> */}
 
             <Box component="span" sx={{ typography: 'caption', color: 'text.disabled' }}>
               {fDate(date)}
@@ -84,34 +76,6 @@ export default function ArticleItemHorizontal({ onRefresh, article, book }) {
             <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
               <Iconify icon="eva:more-horizontal-fill" />
             </IconButton>
-
-            {false && (
-              <Stack
-                spacing={1.5}
-                flexGrow={1}
-                direction="row"
-                justifyContent="flex-end"
-                sx={{
-                  typography: 'caption',
-                  color: 'text.disabled',
-                }}
-              >
-                <Stack direction="row" alignItems="center">
-                  <Iconify icon="eva:message-circle-fill" width={16} sx={{ mr: 0.5 }} />
-                  {fShortenNumber(totalComments)}
-                </Stack>
-
-                <Stack direction="row" alignItems="center">
-                  <Iconify icon="solar:eye-bold" width={16} sx={{ mr: 0.5 }} />
-                  {fShortenNumber(totalViews)}
-                </Stack>
-
-                <Stack direction="row" alignItems="center">
-                  <Iconify icon="solar:share-bold" width={16} sx={{ mr: 0.5 }} />
-                  {fShortenNumber(totalShares)}
-                </Stack>
-              </Stack>
-            )}
           </Stack>
         </Stack>
 

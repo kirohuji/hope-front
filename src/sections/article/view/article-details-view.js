@@ -9,7 +9,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 // routes
 import { paths } from 'src/routes/paths';
-import { useParams } from 'src/routes/hook';
+import { useRouter, useParams } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
 // components
 import Iconify from 'src/components/iconify';
@@ -31,6 +31,8 @@ ArticleDetailsView.propTypes = {
 
 export default function ArticleDetailsView({ onClose, articleId }) {
   const { themeStretch } = useSettingsContext();
+
+  const router = useRouter();
 
   const params = useParams();
 
@@ -164,6 +166,23 @@ export default function ArticleDetailsView({ onClose, articleId }) {
 
   return (
     <Container maxWidth={themeStretch ? false : 'lg'} sx={{ overflow: 'auto', pb: '48px'}}>
+           <Stack
+        spacing={1.5}
+        direction="row"
+        sx={{
+          mb: { xs: 3, md: 5 },
+        }}
+      >
+        <Button
+          onClick={() => {
+            router.back();
+          }}
+          startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
+        >
+          返回
+        </Button>
+
+      </Stack>
       {loadingPost && renderSkeleton}
 
       {errorMsg && renderError}
