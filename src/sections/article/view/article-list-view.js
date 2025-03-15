@@ -19,12 +19,10 @@ import { useSnackbar } from 'src/components/snackbar';
 // redux
 import { useDispatch, useSelector } from 'src/redux/store';
 import { pagination } from 'src/redux/slices/article';
-// import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
-import { articleService } from 'src/composables/context-provider';
 import ArticleListHorizontal from '../article-list-horizontal';
 
 // ----------------------------------------------------------------------
@@ -66,15 +64,11 @@ export default function ArticleListView({ book }) {
 
   const [loading, setLoading] = useState(false);
 
-  const [sortBy, setSortBy] = useState('latest');
-
   const [filters, setFilters] = useState(defaultFilters);
 
   const [page, setPage] = useState(1);
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const [searchQuery, setSearchQuery] = useState('');
+  const [rowsPerPage] = useState(10);
 
   const debouncedFilters = useDebounce(filters);
 
@@ -132,19 +126,11 @@ export default function ArticleListView({ book }) {
     onRefresh();
   }, [onRefresh]);
 
-  const handleSortBy = useCallback((newValue) => {
-    setSortBy(newValue);
-  }, []);
-
   const handleFilters = useCallback((name, value) => {
     setFilters((prevState) => ({
       ...prevState,
       [name]: value,
     }));
-  }, []);
-
-  const handleSearch = useCallback((inputValue) => {
-    setSearchQuery(inputValue);
   }, []);
 
   const handleFilterPublish = useCallback(
@@ -160,16 +146,16 @@ export default function ArticleListView({ book }) {
         <CustomBreadcrumbs
           heading="文章列表"
           links={[
+            // {
+            //   name: 'Dashboard',
+            //   href: paths.dashboard.root,
+            // },
+            // {
+            //   name: 'Blog',
+            //   href: paths.dashboard.article.root,
+            // },
             {
-              name: 'Dashboard',
-              href: paths.dashboard.root,
-            },
-            {
-              name: 'Blog',
-              href: paths.dashboard.article.root,
-            },
-            {
-              name: 'List',
+              name: '',
             },
           ]}
           action={
@@ -233,17 +219,6 @@ export default function ArticleListView({ book }) {
             }}
           />
         </Stack>
-        {/**
-          <ArticleSearch
-            query={debouncedQuery}
-            results={searchResults}
-            onSearch={handleSearch}
-            loading={searchLoading}
-            // hrefItem={(title) => paths.dashboard.article.details(title)}
-          />
-           */}
-
-        {/**  <ArticleSort sort={sortBy} onSort={handleSortBy} sortOptions={POST_SORT_OPTIONS} /> */}
       </Stack>
 
       <Tabs
@@ -259,18 +234,6 @@ export default function ArticleListView({ book }) {
             iconPosition="end"
             value={tab.value}
             label={tab.label}
-            // icon={
-            //   <Label
-            //     variant={((tab.value === 'all' || tab.value === filters.publish) && 'filled') || 'soft'}
-            //     color={(tab.value === 'published' && 'info') || 'default'}
-            //   >
-            //     {tab.value === 'all' && articles.length}
-
-            //     {tab.value === 'published' && articles.filter((article) => article.publish === 'published').length}
-
-            //     {tab.value === 'draft' && articles.filter((article) => article.publish === 'draft').length}
-            //   </Label>
-            // }
             sx={{ textTransform: 'capitalize' }}
           />
         ))}
@@ -291,26 +254,3 @@ export default function ArticleListView({ book }) {
   );
 }
 
-// ----------------------------------------------------------------------
-
-// const applyFilter = ({ inputData, filters, sortBy }) => {
-//   const { publish } = filters;
-
-//   if (sortBy === 'latest') {
-//     inputData = orderBy(inputData, ['createdAt'], ['desc']);
-//   }
-
-//   if (sortBy === 'oldest') {
-//     inputData = orderBy(inputData, ['createdAt'], ['asc']);
-//   }
-
-//   if (sortBy === 'popular') {
-//     inputData = orderBy(inputData, ['totalViews'], ['desc']);
-//   }
-
-//   if (publish !== 'all') {
-//     inputData = inputData.filter((article) => article.publish === publish);
-//   }
-
-//   return inputData;
-// };

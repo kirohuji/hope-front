@@ -162,7 +162,7 @@ export default function BookDetailsView() {
         publishOptions={JOB_PUBLISH_OPTIONS}
       />
       {renderTabs}
-      {!details.byId[id] ? (
+      {(!details.byId[id] || loading) ? (
         <Box
           sx={{
             zIndex: 10,

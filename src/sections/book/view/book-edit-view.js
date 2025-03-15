@@ -3,8 +3,6 @@ import { useState, useEffect, useCallback } from 'react';
 import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
-// routes
-import { paths } from 'src/routes/paths';
 // components
 import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';

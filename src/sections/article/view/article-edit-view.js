@@ -18,12 +18,19 @@ import ArticleNewEditForm from '../article-new-edit-form';
 
 export default function ArticleEditView() {
   const { enqueueSnackbar } = useSnackbar();
+
   const settings = useSettingsContext();
+
   const [article, setArticle] = useState(null);
+
   const params = useParams();
+
   const [book, setBook] = useState(null);
+
   const [dates, setDates] = useState([]);
+
   const { id, articleId } = params;
+
   const [loading, setLoading] = useState(true);
 
   const getData = useCallback(async () => {
@@ -66,16 +73,16 @@ export default function ArticleEditView() {
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <BookArticlesDetailsToolbar backLink={paths.dashboard.book.details.tab(id, 'chapter')} />
       <CustomBreadcrumbs
-        heading="编辑"
+        heading="编辑阅读本"
         links={[
           // {
           //   name: 'Dashboard',
           //   href: paths.dashboard.root,
           // },
-          {
-            name: '阅读本',
-            href: paths.dashboard.article.root,
-          },
+          // {
+          //   name: '阅读本',
+          //   href: paths.dashboard.article.root,
+          // },
           {
             name: article?.title,
           },

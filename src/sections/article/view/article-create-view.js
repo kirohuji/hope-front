@@ -18,12 +18,19 @@ import ArticleNewEditForm from '../article-new-edit-form';
 
 export default function ArticleCreateView() {
   const { enqueueSnackbar } = useSnackbar();
+
   const settings = useSettingsContext();
+
   const params = useParams();
+
   const [book, setBook] = useState(null);
+
   const { id } = params;
+
   const [dates, setDates] = useState([]);
+
   const [loading, setLoading] = useState(true);
+  
   const getData = useCallback(async () => {
     try {
       setLoading(true);
@@ -49,27 +56,13 @@ export default function ArticleCreateView() {
   }, [getData, id]);
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      {/* <Backdrop
-        sx={{ background: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop> */}
       <BookArticlesDetailsToolbar backLink={paths.dashboard.book.details.tab(id, 'chapter')} />
       {!id ? (
         <CustomBreadcrumbs
-          heading="新建"
+          heading="新建文章"
           links={[
             {
-              name: 'Dashboard',
-              href: paths.dashboard.root,
-            },
-            {
-              name: 'Blog',
-              href: paths.dashboard.article.root,
-            },
-            {
-              name: 'Create',
+              name: '',
             },
           ]}
           sx={{
