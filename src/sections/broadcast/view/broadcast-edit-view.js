@@ -3,8 +3,6 @@ import { useState, useEffect, useCallback } from 'react';
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
-// _mock
-import { _tours } from 'src/_mock';
 // components
 import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
@@ -71,10 +69,10 @@ export default function BroadcastEditView() {
           //   name: 'Dashboard',
           //   href: paths.dashboard.root,
           // },
-          {
-            name: '活动通知',
-            href: paths.dashboard.broadcast.root,
-          },
+          // {
+          //   name: '活动通知',
+          //   href: paths.dashboard.broadcast.root,
+          // },
           { name: currentBroadcast?.label },
         ]}
         sx={{

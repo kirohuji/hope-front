@@ -17,9 +17,6 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
-// routes
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hook';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
@@ -76,8 +73,6 @@ export default function AuditSensitiveListView() {
   const theme = useTheme();
 
   const settings = useSettingsContext();
-
-  const router = useRouter();
 
   const table = useTable({ defaultCurrentPage: 0 });
   
@@ -439,7 +434,7 @@ export default function AuditSensitiveListView() {
         }
       />
       <Dialog fullWidth maxWidth="md" open={openForm} onClose={handleCloseFormModal}>
-        <DialogTitle>{currentItem._id ? '编辑' : '新增'}</DialogTitle>
+        <DialogTitle>{currentItem?._id ? '编辑' : '新增'}</DialogTitle>
         <AuditSensitiveWordsForm onSubmitData={onSave} onCancel={handleCloseFormModal} item={currentItem}/>
       </Dialog>
     </>

@@ -10,17 +10,19 @@ import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
+import { paths } from 'src/routes/paths';
 import ListItemText from '@mui/material/ListItemText';
+// routes
+import { useRouter } from 'src/routes/hook';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-// utils
-import { fCurrency } from 'src/utils/format-number';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { getLabelFromValue } from 'src/utils/map';
+import { status as statusMap } from './audit-new-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -32,11 +34,19 @@ export default function AuditTableRow({
   onEditRow,
   onDeleteRow,
 }) {
-  const { sent, auditNumber, createdAt	, updatedAt	, status, totalAmount } = row;
+  const router = useRouter();
+
+  const { sourceId, reason, createdUser, createdAt, reviewerId, category, status } = row;
 
   const confirm = useBoolean();
 
   const popover = usePopover();
+
+  const handleSourceId = () => {
+    if (category === '内容分享') {
+      router.push(paths.dashboard.post.details(sourceId));
+    }
+  };
 
   return (
     <>
@@ -45,35 +55,48 @@ export default function AuditTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          {/* <Avatar alt={auditTo.name} sx={{ mr: 2 }}>
-            {auditTo.name.charAt(0).toUpperCase()}
-          </Avatar> */}
+        <TableCell
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            maxWidth: '210px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden' /* 隐藏溢出的文本 */,
+            textOverflow: 'ellipsis' /* 显示省略号 */,
+          }}
+        >
+          <Avatar alt={createdUser.username} src={createdUser.photoURL} sx={{ mr: 2 }} />
 
           <ListItemText
-            disableTypography
-            // primary={
-            //   <Typography variant="body2" noWrap>
-            //     {auditTo.name}
-            //   </Typography>
-            // }
-            secondary={
-              <Link
-                noWrap
-                variant="body2"
-                onClick={onViewRow}
-                sx={{ color: 'text.disabled', cursor: 'pointer' }}
-              >
-                {auditNumber}
-              </Link>
-            }
+            primary={`${createdUser.username}${
+              createdUser.realName ? `(${createdUser.realName})` : ''
+            }`}
+            secondary={createdUser.email}
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
           />
         </TableCell>
-
+        <TableCell
+          sx={{
+            maxWidth: '100px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden' /* 隐藏溢出的文本 */,
+            textOverflow: 'ellipsis' /* 显示省略号 */,
+          }}
+        >
+          <Link color="primary" onClick={handleSourceId} sx={{ cursor: 'pointer' }}>
+            查看
+          </Link>
+        </TableCell>
+        {/* <TableCell>{description}</TableCell> */}
+        {/* <TableCell>{result}</TableCell> */}
+        <TableCell>{reason}</TableCell>
+        <TableCell>{reviewerId}</TableCell>
+        <TableCell>{category}</TableCell>
         <TableCell>
           <ListItemText
-            primary={format(new Date(createdAt	), 'dd MMM yyyy')}
-            secondary={format(new Date(createdAt	), 'p')}
+            primary={format(new Date(createdAt), 'dd MMM yyyy')}
+            secondary={format(new Date(createdAt), 'p')}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{
               mt: 0.5,
@@ -82,24 +105,6 @@ export default function AuditTableRow({
             }}
           />
         </TableCell>
-
-        <TableCell>
-          <ListItemText
-            primary={format(new Date(updatedAt	), 'dd MMM yyyy')}
-            secondary={format(new Date(updatedAt	), 'p')}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{
-              mt: 0.5,
-              component: 'span',
-              typography: 'caption',
-            }}
-          />
-        </TableCell>
-
-        <TableCell>{fCurrency(totalAmount)}</TableCell>
-
-        <TableCell align="center">{sent}</TableCell>
-
         <TableCell>
           <Label
             variant="soft"
@@ -110,7 +115,7 @@ export default function AuditTableRow({
               'default'
             }
           >
-            {status}
+            {getLabelFromValue(status, statusMap)}
           </Label>
         </TableCell>
 

@@ -8,7 +8,7 @@ export default function BroadcastEditPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Broadcast Edit</title>
+        <title> 活动通知编辑</title>
       </Helmet>
 
       <BroadcastEditView />

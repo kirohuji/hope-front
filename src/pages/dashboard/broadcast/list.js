@@ -8,7 +8,7 @@ export default function BroadcastListPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Broadcast List</title>
+        <title> 活动通知列表</title>
       </Helmet>
 
       <BroadcastListView />

@@ -17,25 +17,20 @@ import Lightbox, { useLightBox } from 'src/components/lightbox';
 
 // ----------------------------------------------------------------------
 
-function isAssetTypeAnImage(ext) {
-  return /\.(jpg|jpeg|png|gif)$/i.test(ext.toLowerCase());
-}
+// function isAssetTypeAnImage(ext) {
+//   return /\.(jpg|jpeg|png|gif)$/i.test(ext.toLowerCase());
+// }
 export default function BroadcastDetailsContent({ broadcast }) {
   const {
     label,
     images,
     content,
-    services,
     leaders,
     available,
     durations,
     destination,
-    ratingNumber,
   } = broadcast;
 
-  // const slides = images ? images.filter(img => isAssetTypeAnImage(img.path)).map((slide) => ({
-  //   src: slide.preview,
-  // })) : [];
   const slides = images
     ? images.map((slide) => ({
         src: slide.preview,
@@ -116,31 +111,9 @@ export default function BroadcastDetailsContent({ broadcast }) {
         <Typography variant="h4" sx={{ flexGrow: 1 }}>
           {label}
         </Typography>
-
-        {/** 
-           <IconButton>
-           <Iconify icon="solar:share-bold" />
-         </IconButton>
- 
-         <Checkbox
-           defaultChecked
-           color="error"
-           icon={<Iconify icon="solar:heart-outline" />}
-           checkedIcon={<Iconify icon="solar:heart-bold" />}
-         />
-           * */}
       </Stack>
 
       <Stack spacing={3} direction="row" flexWrap="wrap" alignItems="center">
-        {/**
-         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'body2' }}>
-         <Iconify icon="eva:star-fill" sx={{ color: 'warning.main' }} />
-         <Box component="span" sx={{ typography: 'subtitle2' }}>
-           {ratingNumber}
-         </Box>
-         <Link sx={{ color: 'text.secondary' }}>(234 reviews)</Link>
-       </Stack>
-         * */}
 
         <Stack direction="row" alignItems="center" spacing={0.5} sx={{ typography: 'body2' }}>
           <Iconify icon="mingcute:location-fill" sx={{ color: 'error.main' }} />
@@ -211,48 +184,7 @@ export default function BroadcastDetailsContent({ broadcast }) {
   );
 
   const renderContent = (
-    <>
-      <Markdown children={content} />
-      {/** 
-         <Stack spacing={2}>
-         <Typography variant="h6"> Services</Typography>
- 
-         <Box
-           rowGap={2}
-           display="grid"
-           gridTemplateColumns={{
-             xs: 'repeat(1, 1fr)',
-             md: 'repeat(2, 1fr)',
-           }}
-         >
-           {services && TOUR_SERVICE_OPTIONS.map((benefit) => (
-             <Stack
-               key={benefit.label}
-               spacing={1}
-               direction="row"
-               alignItems="center"
-               sx={{
-                 ...(services.includes(benefit.label) && {
-                   color: 'text.disabled',
-                 }),
-               }}
-             >
-               <Iconify
-                 icon="eva:checkmark-circle-2-outline"
-                 sx={{
-                   color: 'primary.main',
-                   ...(services.includes(benefit.label) && {
-                     color: 'text.disabled',
-                   }),
-                 }}
-               />
-               {benefit.label}
-             </Stack>
-           ))}
-         </Box>
-       </Stack>
-         */}
-    </>
+    <Markdown children={content} />
   );
 
   return (

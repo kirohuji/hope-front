@@ -1,7 +1,5 @@
 // @mui
 import Container from '@mui/material/Container';
-// routes
-import { paths } from 'src/routes/paths';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -22,11 +20,11 @@ export default function BroadcastCreateView() {
           //   name: 'Dashboard',
           //   href: paths.dashboard.root,
           // },
-          {
-            name: '消息通知',
-            href: paths.dashboard.broadcast.root,
-          },
-          { name: '创建新的活动通知t' },
+          // {
+          //   name: '',
+          //   href: paths.dashboard.broadcast.root,
+          // },
+          { name: '' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

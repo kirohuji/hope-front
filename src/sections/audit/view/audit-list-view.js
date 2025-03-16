@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { useRef, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // @mui
 import { useTheme, alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -25,8 +25,6 @@ import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
-// utils
-import { fTimestamp } from 'src/utils/format-time';
 
 // redux
 import { useSelector } from 'src/redux/store';
@@ -58,9 +56,7 @@ import { categories } from '../audit-new-edit-form';
 
 const TABLE_HEAD = [
   { id: 'createdBy', label: '创建人' },
-  { id: 'sourceUrl', label: '内容源' },
-  { id: 'description', label: '大致内容' },
-  { id: 'result', label: '审核结果' },
+  { id: 'sourceUrl', label: '内容源', width: '50' },
   { id: 'reason', label: '审核原因' },
   { id: 'reviewerId', label: '审核人' },
   { id: 'category', label: '分类' },
@@ -114,9 +110,9 @@ export default function AuditListView() {
     setOpenForm(true);
   };
 
-  const onSave = async (form) => {
-    handleCloseFormModal();
-  };
+  // const onSave = async (form) => {
+  //   handleCloseFormModal();
+  // };
   const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
@@ -216,12 +212,12 @@ export default function AuditListView() {
     [router]
   );
 
-  const handleViewRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.audit.details(id));
-    },
-    [router]
-  );
+  // const handleViewRow = useCallback(
+  //   (id) => {
+  //     router.push(paths.dashboard.audit.details(id));
+  //   },
+  //   [router]
+  // );
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
@@ -502,50 +498,4 @@ export default function AuditListView() {
       </Dialog>
     </>
   );
-}
-
-// ----------------------------------------------------------------------
-
-function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, status, service, startDate, endDate } = filters;
-
-  const stabilizedThis = inputData.map((el, index) => [el, index]);
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  inputData = stabilizedThis.map((el) => el[0]);
-
-  if (name) {
-    inputData = inputData.filter(
-      (audit) =>
-        audit.auditNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        audit.auditTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
-  }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((audit) => audit.status === status);
-  }
-
-  if (service.length) {
-    inputData = inputData.filter((audit) =>
-      audit.items.some((filterItem) => service.includes(filterItem.service))
-    );
-  }
-
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter(
-        (audit) =>
-          fTimestamp(audit.createDate) >= fTimestamp(startDate) &&
-          fTimestamp(audit.createDate) <= fTimestamp(endDate)
-      );
-    }
-  }
-
-  return inputData;
 }

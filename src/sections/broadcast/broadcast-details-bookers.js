@@ -1,16 +1,13 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useAuthContext } from 'src/auth/hooks';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
-import CircularProgress from '@mui/material/CircularProgress';
 import ListItemText from '@mui/material/ListItemText';
 import ConfirmDialog from 'src/components/confirm-dialog';
 import { useSnackbar } from 'src/components/snackbar';
@@ -18,11 +15,9 @@ import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
 import Restricted from 'src/auth/guard/restricted';
 
-// routes
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 
-import { broadcastService, messagingService } from 'src/composables/context-provider';
+import { broadcastService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
@@ -34,8 +29,6 @@ export default function BroadcastDetailsBookers({ onRefresh, participants }) {
   const [currentIndex, setCurrentIndex] = useState(-1);
 
   const { user } = useAuthContext();
-
-  const router = useRouter();
 
   const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -99,10 +92,6 @@ export default function BroadcastDetailsBookers({ onRefresh, participants }) {
 
   const handleChat = async (target) => {
     enqueueSnackbar('功能待开发!');
-    // const newConversation = await messagingService.room({
-    //   participants: [user._id, target.user_id],
-    // });
-    // router.push(`${paths.chat}?id=${newConversation._id}`);
   };
 
   return (

@@ -8,7 +8,7 @@ export default function BroadcastCreatePage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Create a new tour</title>
+        <title> 创建一个活动通知</title>
       </Helmet>
 
       <BroadcastCreateView />

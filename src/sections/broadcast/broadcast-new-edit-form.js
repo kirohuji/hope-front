@@ -5,14 +5,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
 // @mui
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Autocomplete from '@mui/material/Autocomplete';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
-import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
@@ -28,7 +26,6 @@ import { useDebounce } from 'src/hooks/use-debounce';
 // routes
 import { paths } from 'src/routes/paths';
 // components
-import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { useRouter } from 'src/routes/hook';
 import FormProvider, {
@@ -79,8 +76,6 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
 
   const [users, setUsers] = useState([]);
 
-  const { user } = useAuthContext();
-
   const scope = useSelector((state) => state.scope);
 
   const [searchLeaders, setSearchLeaders] = useState('');
@@ -109,22 +104,6 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
     handleSearchLeaders();
   }, [debouncedFilters, handleSearchLeaders]);
 
-  // const getTableData = useCallback(async (selector = {}, options = {}) => {
-  //   try {
-  //     const response = await userService.pagination(
-  //       {
-  //         ...selector,
-  //         ..._.pickBy(_.omit(debouncedFilters, ["role"]))
-  //       },
-  //       options
-  //     )
-  //     setTableData(response.data);
-  //     setTableDataCount(response.total);
-  //   } catch (error) {
-  //     enqueueSnackbar(error.message)
-  //   }
-  // }, [debouncedFilters, setTableData, setTableDataCount, enqueueSnackbar]);
-
   const { enqueueSnackbar } = useSnackbar();
 
   const NewBroadcastSchema = Yup.object().shape({
@@ -134,8 +113,6 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
     type: Yup.string().required('请选择类型'),
     leaders: Yup.array().min(1, '至少选择一位负责人'),
     durations: Yup.string().required('请选择时间程度'),
-    // tags: Yup.array().min(2, 'Must have at least 2 tags'),
-    // services: Yup.array().min(2, 'Must have at least 2 services'),
     destination: Yup.string().required('目的地是必填的'),
     published: Yup.boolean(),
     available: Yup.object().shape({
@@ -150,13 +127,10 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
       content: currentBroadcast?.content || '',
       images: currentBroadcast?.images || [],
       type: currentBroadcast?.type || '',
-      //
       leaders: currentBroadcast?.leaders || [],
-      // tags: currentBroadcast?.tags || [],
       durations: currentBroadcast?.durations || '',
       destination: currentBroadcast?.destination || '',
       published: currentBroadcast?.published || false,
-      // services: currentBroadcast?.services || [],
       available: {
         startDate: currentBroadcast?.available.startDate || null,
         endDate: currentBroadcast?.available.endDate || null,
@@ -473,50 +447,6 @@ export default function BroadcastNewEditForm({ currentBroadcast }) {
               <Typography variant="subtitle2">目的地</Typography>
               <RHFTextField name="destination" placeholder="比如: 详细地址..." />
             </Stack>
-            {/**
-               *            <Stack spacing={1}>
-              <Typography variant="subtitle2">活动提供情况</Typography>
-              <RHFMultiCheckbox
-                name="services"
-                options={BROADCAST_SERVICE_OPTIONS}
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                }}
-              />
-            </Stack>
-               * */}
-            {/**
-               
-            <Stack spacing={1.5}>
-            <Typography variant="subtitle2">标签</Typography>
-            <RHFAutocomplete
-              name="tags"
-              placeholder="+ 标签"
-              multiple
-              freeSolo
-              options={_tags.map((option) => option)}
-              getOptionLabel={(option) => option}
-              renderOption={(props, option) => (
-                <li {...props} key={option}>
-                  {option}
-                </li>
-              )}
-              renderTags={(selected, getTagProps) =>
-                selected.map((option, index) => (
-                  <Chip
-                    {...getTagProps({ index })}
-                    key={option}
-                    label={option}
-                    size="small"
-                    color="info"
-                    variant="soft"
-                  />
-                ))
-              }
-            />
-          </Stack>
-               * */}
           </Stack>
         </Card>
       </Grid>

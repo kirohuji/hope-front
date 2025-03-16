@@ -8,7 +8,7 @@ export default function BroadcastDetailsPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Analytics</title>
+        <title> 活动通知详情</title>
       </Helmet>
 
       <BroadcastDetailsView />

@@ -44,25 +44,6 @@ export default function BroadcastItem({ broadcast, onView, onEdit, onDelete }) {
   const imageSet = images.filter((img) => isAssetTypeAnImage(img.path));
   const shortLabel = shortDateLabel(new Date(available.startDate), new Date(available.endDate));
 
-  // const renderRating = (
-  //   <Stack
-  //     direction="row"
-  //     alignItems="center"
-  //     sx={{
-  //       top: 8,
-  //       right: 8,
-  //       zIndex: 9,
-  //       borderRadius: 1,
-  //       position: 'absolute',
-  //       p: '2px 6px 2px 4px',
-  //       typography: 'subtitle2',
-  //       bgcolor: 'warning.lighter',
-  //     }}
-  //   >
-  //     <Iconify icon="eva:star-fill" sx={{ color: 'warning.main', mr: 0.25 }} /> {ratingNumber}
-  //   </Stack>
-  // );
-
   const renderType = (
     <Stack
       direction="row"
@@ -78,7 +59,6 @@ export default function BroadcastItem({ broadcast, onView, onEdit, onDelete }) {
         bgcolor: 'warning.lighter',
       }}
     >
-      {/* {type === "activity" ? '活动通知' : "消息通告"} */}
       {_.find(BROAECAST_TYPE_OPTIONS, ['value', type]).label}
     </Stack>
   );
