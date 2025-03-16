@@ -1,8 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import {
   Box,
@@ -90,7 +87,7 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
 
   const [levels, setLevels] = useState([]);
 
-  const [searchContacts, setSearchContacts] = useState('');
+  const [searchContacts] = useState('');
 
   const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -112,13 +109,6 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
   const handleCloseConfirm = () => {
     setOpenConfirm(false);
   };
-
-  const NewUserSchema = Yup.object().shape({
-    searchContacts: Yup.string(),
-    isShowJoinedUser: Yup.boolean(),
-  });
-
-  const defaultValues = useMemo(() => ({}), []);
 
   const onChildren = (organization) => {
     if (organization.children || organization.users) {
@@ -171,17 +161,6 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
       await setCurrentOrganization(currentOrganizations);
     }
     setLevels(levels2);
-  };
-
-  const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
-    defaultValues,
-  });
-
-  const { control, handleSubmit } = methods;
-
-  const handleSearchContacts = (event) => {
-    setSearchContacts(event.target.value);
   };
 
   const handleDelete = async () => {

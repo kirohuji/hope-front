@@ -76,7 +76,7 @@ export default function BroadcastDetailsView() {
 
   const { id } = params;
 
-  const [currentBroadcast, setCurrentBroadcast] = useState(null);
+  const [currentBroadcast] = useState(null);
 
   const [publish, setPublish] = useState(currentBroadcast?.publish);
 

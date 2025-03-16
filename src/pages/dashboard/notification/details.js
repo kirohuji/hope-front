@@ -8,7 +8,7 @@ export default function NotificationDetailsPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Analytics</title>
+        <title> 消息通知详情</title>
       </Helmet>
 
       <NotificationDetailsView />

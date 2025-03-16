@@ -21,7 +21,6 @@ import Box from '@mui/material/Box';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useAuthContext } from 'src/auth/hooks';
 import { useDebounce } from 'src/hooks/use-debounce';
 // routes
 import { paths } from 'src/routes/paths';

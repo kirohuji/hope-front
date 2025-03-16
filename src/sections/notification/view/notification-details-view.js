@@ -2,15 +2,13 @@ import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Divider, Stack, Backdrop, CircularProgress } from '@mui/material';
 // routes
 import { paths } from 'src/routes/paths';
+// hooks
 import { useParams } from 'src/routes/hook';
-// _mock
-import { Divider, Stack, Backdrop, CircularProgress } from '@mui/material';
-import Button from '@mui/material/Button';
 import { useAuthContext } from 'src/auth/hooks';
 // components
 import Label from 'src/components/label';
@@ -53,12 +51,19 @@ export const TOUR_PUBLISH_OPTIONS = [
 
 export default function NotificationDetailsView() {
   const { enqueueSnackbar } = useSnackbar();
+  
   const [openContacts, setOpenContacts] = useState(false);
+
   const { user } = useAuthContext();
+
   const { details } = useSelector((state) => state.notification);
+
   const [loading, setLoading] = useState(true);
+
   const [buttonLoading, setButtonLoading] = useState(false);
+  
   const dispatch = useDispatch();
+
   const handleOpenContacts = () => {
     setOpenContacts(true);
   };
@@ -70,9 +75,9 @@ export default function NotificationDetailsView() {
 
   const params = useParams();
 
-  const { id, selectedTab } = params;
+  const { id } = params;
 
-  const [currentNotification, setCurrentNotification] = useState(null);
+  const [currentNotification] = useState(null);
 
   const [publish, setPublish] = useState(currentNotification?.publish);
 

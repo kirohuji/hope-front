@@ -3,19 +3,15 @@ import { format } from 'date-fns';
 // @mui
 import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-// utils
-import { fCurrency } from 'src/utils/format-number';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -56,17 +52,8 @@ export default function NotificationTableRow({
         </TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          {/* <Avatar alt={notificationTo.name} sx={{ mr: 2 }}>
-            {notificationTo.name.charAt(0).toUpperCase()}
-          </Avatar> */}
-
           <ListItemText
             disableTypography
-            // primary={
-            //   <Typography variant="body2" noWrap>
-            //     {notificationTo.name}
-            //   </Typography>
-            // }
             secondary={
               <Link
                 noWrap

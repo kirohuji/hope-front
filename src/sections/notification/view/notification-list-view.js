@@ -1,6 +1,5 @@
 import _ from 'lodash';
-import sumBy from 'lodash/sumBy';
-import { useRef, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // @mui
 import { useTheme, alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -8,10 +7,7 @@ import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
@@ -26,13 +22,10 @@ import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
-// utils
-import { fTimestamp } from 'src/utils/format-time';
 
 // redux
 import { useSelector } from 'src/redux/store';
 // components
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -41,18 +34,14 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
-  getComparator,
-  emptyRows,
   TableNoData,
   TableSkeleton,
-  TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
 //
 import { notificationService } from 'src/composables/context-provider';
-import NotificationAnalytic from '../notification-analytic';
 import NotificationTableRow from '../notification-table-row';
 import NotificationTableToolbar from '../notification-table-toolbar';
 import NotificationTableFiltersResult from '../notification-table-filters-result';
@@ -105,19 +94,6 @@ export default function NotificationListView() {
 
   const denseHeight = table.dense ? 52 : 72;
 
-  const [openForm, setOpenForm] = useState(false);
-
-  const handleCloseFormModal = () => {
-    setOpenForm(false);
-  };
-
-  const handleOpenFormModal = () => {
-    setOpenForm(true);
-  };
-
-  const onSave = async (form) => {
-    handleCloseFormModal();
-  };
   const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
@@ -131,24 +107,8 @@ export default function NotificationListView() {
 
   const notFound = (!tableDataCount && canReset) || !tableDataCount;
 
-  const getNotificationLength = (status) =>
-    tableData.filter((item) => item.status === status).length;
-
   const TABS = [
     { value: 'all', label: '全部', color: 'default', count: tableData.length },
-    // { value: 'system', label: '系统通知', color: 'success' },
-    // {
-    //   value: 'message',
-    //   label: '消息通知',
-    //   color: 'warning',
-    // },
-    // { value: 'broadcast', label: '活动通知', color: 'error' },
-    // {
-    //   value: 'withdrawn',
-    //   label: '已撤回',
-    //   color: 'default',
-    //   count: getNotificationLength('draft'),
-    // },
   ];
 
   const handleFilters = useCallback(
@@ -227,13 +187,6 @@ export default function NotificationListView() {
     [router]
   );
 
-  const handleViewRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.notification.details(id));
-    },
-    [router]
-  );
-
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('status', newValue);
@@ -249,18 +202,18 @@ export default function NotificationListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="列表"
+          heading="消息通知列表"
           links={[
             // {
             //   name: 'Dashboard',
             //   href: paths.dashboard.root,
             // },
+            // {
+            //   name: '审核管理',
+            //   href: paths.dashboard.notification.root,
+            // },
             {
-              name: '审核管理',
-              href: paths.dashboard.notification.root,
-            },
-            {
-              name: '列表',
+              name: '',
             },
           ]}
           action={
@@ -405,13 +358,6 @@ export default function NotificationListView() {
                       {notFound && <TableNoData notFound={notFound} />}
                     </>
                   )}
-
-                  {/* <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                  />
-
-                  <TableNoData notFound={notFound} /> */}
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -457,50 +403,4 @@ export default function NotificationListView() {
       />
     </>
   );
-}
-
-// ----------------------------------------------------------------------
-
-function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, status, service, startDate, endDate } = filters;
-
-  const stabilizedThis = inputData.map((el, index) => [el, index]);
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  inputData = stabilizedThis.map((el) => el[0]);
-
-  if (name) {
-    inputData = inputData.filter(
-      (notification) =>
-        notification.notificationNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        notification.notificationTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
-  }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((notification) => notification.status === status);
-  }
-
-  if (service.length) {
-    inputData = inputData.filter((notification) =>
-      notification.items.some((filterItem) => service.includes(filterItem.service))
-    );
-  }
-
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter(
-        (notification) =>
-          fTimestamp(notification.createDate) >= fTimestamp(startDate) &&
-          fTimestamp(notification.createDate) <= fTimestamp(endDate)
-      );
-    }
-  }
-
-  return inputData;
 }

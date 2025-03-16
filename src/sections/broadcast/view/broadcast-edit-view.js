@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 // @mui
 import Container from '@mui/material/Container';
-// routes
-import { paths } from 'src/routes/paths';
 // components
 import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';

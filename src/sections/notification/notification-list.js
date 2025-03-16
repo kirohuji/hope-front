@@ -2,9 +2,7 @@ import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
 // @mui
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
-import Pagination, { paginationClasses } from '@mui/material/Pagination';
 // routes
 import { paths } from 'src/routes/paths';
 // hooks
@@ -20,10 +18,15 @@ import NotificationItem from './notification-item';
 
 export default function NotificationList({ notifications, refresh }) {
   const router = useRouter();
+
   const confirm = useBoolean();
+
   const loading = useBoolean();
+
   const [current, setCurrent] = useState({});
+
   const { enqueueSnackbar } = useSnackbar();
+
   const handleView = useCallback(
     (_id) => {
       router.push(paths.dashboard.notification.details(_id));
@@ -78,18 +81,6 @@ export default function NotificationList({ notifications, refresh }) {
           />
         ))}
       </Box>
-
-      {/* {notifications.length > 8 && (
-        <Pagination
-          count={8}
-          sx={{
-            mt: 8,
-            [`& .${paginationClasses.ul}`]: {
-              justifyContent: 'center',
-            },
-          }}
-        />
-      )} */}
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}

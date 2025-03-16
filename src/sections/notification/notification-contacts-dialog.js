@@ -1,8 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import {
   Box,
@@ -10,14 +7,10 @@ import {
   Dialog,
   Button,
   ListItem,
-  Typography,
   ListItemText,
   ListItemAvatar,
-  InputAdornment,
   DialogTitle,
   DialogContent,
-  FormControlLabel,
-  Switch,
   Divider,
   Stack,
   Link,
@@ -35,12 +28,11 @@ import { getOrganizations } from 'src/redux/slices/chat';
 import { notificationService } from 'src/composables/context-provider';
 import { useSnackbar } from 'src/components/snackbar';
 import ConfirmDialog from 'src/components/confirm-dialog';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 const ITEM_HEIGHT = 64;
 
-BroadCastContactsDialog.propTypes = {
+NotificationContactsDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
   onUpdateRefresh: PropTypes.func,
@@ -82,7 +74,7 @@ function traverseUser(node, data) {
   }
 }
 
-export default function BroadCastContactsDialog({ open, onClose, current, onUpdateRefresh }) {
+export default function NotificationContactsDialog({ open, onClose, current, onUpdateRefresh }) {
   const dispatch = useDispatch();
 
   const { active } = useSelector((state) => state.scope);
@@ -95,7 +87,7 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
 
   const [levels, setLevels] = useState([]);
 
-  const [searchContacts, setSearchContacts] = useState('');
+  const [searchContacts] = useState('');
 
   const [openConfirm, setOpenConfirm] = useState(false);
 
@@ -117,14 +109,6 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
   const handleCloseConfirm = () => {
     setOpenConfirm(false);
   };
-
-  const NewUserSchema = Yup.object().shape({
-    searchContacts: Yup.string(),
-    isShowJoinedUser: Yup.boolean(),
-  });
-
-  const defaultValues = useMemo(() => ({}), []);
-
   const onChildren = (organization) => {
     if (organization.children || organization.users) {
       const level = {
@@ -176,17 +160,6 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
       await setCurrentOrganization(currentOrganizations);
     }
     setLevels(levels2);
-  };
-
-  const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
-    defaultValues,
-  });
-
-  const { control, handleSubmit } = methods;
-
-  const handleSearchContacts = (event) => {
-    setSearchContacts(event.target.value);
   };
 
   const handleDelete = async () => {
@@ -251,10 +224,6 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
       setLoading(true);
       const data = await dispatch(getOrganizations(active._id));
       const currentData = _.cloneDeep(data);
-      // const assignee = details.participantsBy[current._id].map(item => ({ ...item, _id: item.user_id }))
-      // for (let i = 0; i < currentData.length; i += 1) {
-      //   traverse(currentData[i], assignee)
-      // }
       setCurrentFirstOrganization(currentData);
       setCurrentOrganization(currentData);
       setLoading(false);
@@ -270,10 +239,6 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
       setCurrentOrganization([]);
       setCurrentFirstOrganization([]);
     }
-    // return () => {
-    //   setLevels([])
-    //   setCurrentOrganization([])
-    // }
   }, [onRefresh, open]);
 
   const isNotFound = !!searchContacts;
@@ -367,26 +332,6 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
           }
           return renderOrganizationsItem(contact, id, isChecked);
         })}
-      {/* {levels && levels.length > 0 ?
-        currentOrganization.filter(contact => !!contact).map((contact, id) => {
-          let checked = false;
-          if(contact.type === 'org'){
-            console.log('contact.users',id)
-            // checked = _.intersectionBy((contact.users || []),assignee.map(item=> ({ ...item,  _id: item._id})), "_id").length === (contact.users || []).length
-          } else {
-            checked = assignee.filter((person) => person.user_id === contact._id).length > 0;
-          }
-          return renderOrganizationsItem(contact, id, checked)
-        }) : organizations.map((contact, id) => {
-          let checked = false;
-          if(contact.type === 'org'){
-            console.log('contact.users2',id)
-            // checked = _.intersectionBy((contact.users || []),assignee.map(item=> ({ ...item, _id: item.user_id})), "_id").length === (contact.users || []).length
-          } else {
-            checked = assignee.filter((person) => person.user_id === contact._id).length > 0;
-          }
-          return renderOrganizationsItem(contact, id, checked)
-        })} */}
     </Scrollbar>
   );
   return (
@@ -394,52 +339,8 @@ export default function BroadCastContactsDialog({ open, onClose, current, onUpda
       <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
         <DialogTitle sx={{ pb: 1 }}>
           用户列表
-          {/** <Typography component="span">({_contacts.length})</Typography> */}
         </DialogTitle>
         <DialogContent sx={{ p: 0 }}>
-          {/**
-            <Box sx={{ px: 3, py: 0.5 }}>
-              <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-                <RHFTextField
-                  fullWidth
-                  name="searchContacts"
-                  onChange={handleSearchContacts}
-                  placeholder="搜索..."
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <FormControlLabel
-                  labelPlacement="start"
-                  control={
-                    <Controller
-                      name="isShowJoinedUser"
-                      control={control}
-                      render={({ field }) => (
-                        <Switch
-                          {...field}
-                          checked={field.value !== 'on'}
-                          onChange={(event) => {
-                            field.onChange(event.target.checked ? 'on' : 'off');
-                          }}
-                        />
-                      )}
-                    />
-                  }
-                  label={
-                    <Typography variant="subtitle2" >
-                      显示已添加用户
-                    </Typography>
-                  }
-                  sx={{ mx: 0.5, mb: 0, width: 1, justifyContent: 'space-between' }}
-                />
-              </FormProvider>
-            </Box>
-             */}
           <Divider />
           {!loading ? (
             <div>

@@ -8,7 +8,7 @@ export default function NotificationCreatePage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Create a new tour</title>
+        <title> 创建一条消息通知</title>
       </Helmet>
 
       <NotificationCreateView />

@@ -15,8 +15,6 @@ import { useSnackbar } from 'src/components/snackbar';
 import Iconify from 'src/components/iconify';
 import Restricted from 'src/auth/guard/restricted';
 
-import { useRouter } from 'src/routes/hook';
-
 import { broadcastService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------

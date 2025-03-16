@@ -8,7 +8,7 @@ export default function NotificationEditPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Notification Edit</title>
+        <title> 消息通知编辑</title>
       </Helmet>
 
       <NotificationEditView />

@@ -37,31 +37,15 @@ const BROAECAST_TYPE_OPTIONS = [
 
 export default function NotificationItem({ notification, onView, onEdit, onDelete }) {
   const popover = usePopover();
+  
   const lgUp = useResponsive('up', 'lg');
+
   const { _id, label, price, images, createdAt, available, priceSale, destination, leaders, type } =
     notification;
 
   const imageSet = images.filter((img) => isAssetTypeAnImage(img.path));
-  const shortLabel = shortDateLabel(new Date(available.startDate), new Date(available.endDate));
 
-  // const renderRating = (
-  //   <Stack
-  //     direction="row"
-  //     alignItems="center"
-  //     sx={{
-  //       top: 8,
-  //       right: 8,
-  //       zIndex: 9,
-  //       borderRadius: 1,
-  //       position: 'absolute',
-  //       p: '2px 6px 2px 4px',
-  //       typography: 'subtitle2',
-  //       bgcolor: 'warning.lighter',
-  //     }}
-  //   >
-  //     <Iconify icon="eva:star-fill" sx={{ color: 'warning.main', mr: 0.25 }} /> {ratingNumber}
-  //   </Stack>
-  // );
+  const shortLabel = shortDateLabel(new Date(available.startDate), new Date(available.endDate));
 
   const renderType = (
     <Stack

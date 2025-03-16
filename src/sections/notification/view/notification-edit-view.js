@@ -3,8 +3,6 @@ import { useState, useEffect, useCallback } from 'react';
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
-// _mock
-import { _tours } from 'src/_mock';
 // components
 import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
@@ -64,7 +62,7 @@ export default function NotificationEditView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="编辑"
+        heading="编辑消息通知"
         links={[
           // {
           //   name: 'Dashboard',

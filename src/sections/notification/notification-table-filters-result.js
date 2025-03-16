@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack';
 import Iconify from 'src/components/iconify';
 import { shortDateLabel } from 'src/components/custom-date-range-picker';
 import { getLabelFromValue } from '../../utils/map';
-import { type, categories } from './notification-new-edit-form';
+import { type } from './notification-new-edit-form';
 // ----------------------------------------------------------------------
 
 export default function NotificationTableFiltersResult({

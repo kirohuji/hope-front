@@ -2,48 +2,35 @@ import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 // @mui
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Autocomplete from '@mui/material/Autocomplete';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import TextField from '@mui/material/TextField';
-import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { useAuthContext } from 'src/auth/hooks';
 import { useDebounce } from 'src/hooks/use-debounce';
 // routes
 import { paths } from 'src/routes/paths';
 // components
-import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { useRouter } from 'src/routes/hook';
 import FormProvider, {
   RHFRadioGroup,
   RHFEditor,
-  RHFUpload,
   RHFTextField,
   RHFAutocomplete,
   RHFSwitch,
 } from 'src/components/hook-form';
 
-// utils
-import { fData } from 'src/utils/format-number';
-
-import { notificationService, userService, fileService } from 'src/composables/context-provider';
+import { notificationService, userService } from 'src/composables/context-provider';
 import { useSelector } from 'src/redux/store';
 import moment from 'moment';
 
@@ -78,7 +65,6 @@ export const NOTIFICATION_SERVICE_OPTIONS = [
 export const NOTIFICATION_TYPE_OPTIONS = [
   { value: 'announcement', label: '运营公告' },
   { value: 'system', label: '系统应用' },
-  // { value: 'book', label: '阅读' },
 ];
 
 export const NOTIFICATION_DIRECTION_OPTIONS = [
@@ -92,7 +78,6 @@ export const NOTIFICATION_PUBLISH_OPTIONS = [
 ];
 
 export default function NotificationNewEditForm({ currentNotification }) {
-  const loading = useBoolean(false);
 
   const router = useRouter();
 
@@ -101,8 +86,6 @@ export default function NotificationNewEditForm({ currentNotification }) {
   const mdUp = useResponsive('up', 'md');
 
   const [users, setUsers] = useState([]);
-
-  const { user } = useAuthContext();
 
   const scope = useSelector((state) => state.scope);
 
@@ -132,58 +115,17 @@ export default function NotificationNewEditForm({ currentNotification }) {
     handleSearchLeaders();
   }, [debouncedFilters, handleSearchLeaders]);
 
-  // const getTableData = useCallback(async (selector = {}, options = {}) => {
-  //   try {
-  //     const response = await userService.pagination(
-  //       {
-  //         ...selector,
-  //         ..._.pickBy(_.omit(debouncedFilters, ["role"]))
-  //       },
-  //       options
-  //     )
-  //     setTableData(response.data);
-  //     setTableDataCount(response.total);
-  //   } catch (error) {
-  //     enqueueSnackbar(error.message)
-  //   }
-  // }, [debouncedFilters, setTableData, setTableDataCount, enqueueSnackbar]);
-
   const { enqueueSnackbar } = useSnackbar();
 
   const NewNotificationSchema = Yup.object().shape({
     title: Yup.string().required('请输入标题'),
     description: Yup.string().required('请输入内容'),
-    // images: Yup.array().required('请选择资源'),
-    // type: Yup.string().required('请选择类型'),
-    // leaders: Yup.array().min(1, '至少选择一位负责人'),
-    // durations: Yup.string().required('请选择时间程度'),
-    // tags: Yup.array().min(2, 'Must have at least 2 tags'),
-    // services: Yup.array().min(2, 'Must have at least 2 services'),
-    // destination: Yup.string().required('目的地是必填的'),
-    // published: Yup.boolean(),
-    // available: Yup.object().shape({
-    //   startDate: Yup.mixed().nullable(),
-    //   endDate: Yup.mixed().nullable(),
-    // }),
   });
 
   const defaultValues = useMemo(
     () => ({
       title: currentNotification?.title || '',
       description: currentNotification?.description || '',
-      // images: currentNotification?.images || [],
-      // type: currentNotification?.type || '',
-      // //
-      // leaders: currentNotification?.leaders || [],
-      // // tags: currentNotification?.tags || [],
-      // durations: currentNotification?.durations || '',
-      // destination: currentNotification?.destination || '',
-      // published: currentNotification?.published || false,
-      // // services: currentNotification?.services || [],
-      // available: {
-      //   startDate: currentNotification?.available.startDate || null,
-      //   endDate: currentNotification?.available.endDate || null,
-      // },
     }),
     [currentNotification]
   );
@@ -196,8 +138,6 @@ export default function NotificationNewEditForm({ currentNotification }) {
   const {
     watch,
     reset,
-    control,
-    setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
@@ -240,62 +180,6 @@ export default function NotificationNewEditForm({ currentNotification }) {
     }
   });
 
-  const handleDrop = useCallback(
-    (acceptedFiles) => {
-      const files = values.images || [];
-      const newFiles = acceptedFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-          isLoacl: true,
-        })
-      );
-
-      setValue('images', [...files, ...newFiles], { shouldValidate: true });
-    },
-    [setValue, values.images]
-  );
-
-  const handleRemoveFile = useCallback(
-    (inputFile) => {
-      console.log('inputFile', inputFile);
-      console.log('values.images', values.images);
-      const filtered =
-        values.images &&
-        values.images?.filter((file) => {
-          if (file.preview) {
-            return file.preview !== inputFile.preview;
-          }
-          return file !== inputFile;
-        });
-      setValue('images', filtered);
-    },
-    [setValue, values.images]
-  );
-
-  const handleRemoveAllFiles = useCallback(() => {
-    setValue('images', []);
-  }, [setValue]);
-
-  const onUpload = () => {
-    loading.onTrue();
-    try {
-      values.images.map(async (file) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        const { link } = await fileService.upload(formData);
-        Object.assign(file, {
-          preview: link,
-          isLoacl: false,
-        });
-      });
-      enqueueSnackbar('资源上传成功');
-      loading.onFalse();
-    } catch (e) {
-      enqueueSnackbar('资源上传失败');
-      loading.onFalse();
-    }
-  };
-
   const renderDetails = (
     <>
       {mdUp && (
@@ -323,56 +207,6 @@ export default function NotificationNewEditForm({ currentNotification }) {
               <Typography variant="subtitle2">内容</Typography>
               <RHFEditor simple name="description" />
             </Stack>
-
-            {/* <Stack spacing={1.5}>
-              <Typography variant="subtitle2">资源</Typography>
-              {loading.value && (
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    zIndex: 10,
-                    backgroundColor: '#ffffffc4',
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                >
-                  <CircularProgress />
-                </Box>
-              )}
-              <RHFUpload
-                multiple
-                thumbnail
-                name="images"
-                // maxSize={31457280}
-                onDrop={handleDrop}
-                onDropRejected={() => {
-                  loading.onFalse();
-                }}
-                onRemove={handleRemoveFile}
-                onRemoveAll={handleRemoveAllFiles}
-                onUpload={(files) => onUpload(files)}
-                helperText={
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      mt: 3,
-                      mx: 'auto',
-                      display: 'block',
-                      textAlign: 'center',
-                      color: 'text.disabled',
-                    }}
-                  >
-                    允许 *.jpeg, *.jpg, *.png, *.gif
-                    <br /> max size of {fData(3145728)}
-                  </Typography>
-                }
-              />
-            </Stack> */}
           </Stack>
         </Card>
       </Grid>
@@ -464,102 +298,6 @@ export default function NotificationNewEditForm({ currentNotification }) {
                 options={NOTIFICATION_DIRECTION_OPTIONS}
               />
             </Stack>
-
-            {/* <Stack spacing={1.5}>
-              <Typography variant="subtitle2">有效期</Typography>
-              <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
-                <Controller
-                  name="available.startDate"
-                  control={control}
-                  render={({ field, fieldState: { error } }) => (
-                    <DatePicker
-                      {...field}
-                      format="dd/MM/yyyy"
-                      renderInput={(params) => <TextField {...params} />}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: !!error,
-                          helperText: error?.message,
-                        },
-                      }}
-                    />
-                  )}
-                />
-                <Controller
-                  name="available.endDate"
-                  control={control}
-                  render={({ field, fieldState: { error } }) => (
-                    <DatePicker
-                      {...field}
-                      format="dd/MM/yyyy"
-                      renderInput={(params) => <TextField {...params} />}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: !!error,
-                          helperText: error?.message,
-                        },
-                      }}
-                    />
-                  )}
-                />
-              </Stack>
-            </Stack> */}
-
-            {/* <Stack spacing={1.5}>
-              <Typography variant="subtitle2">时间长度</Typography>
-              <RHFTextField name="durations" placeholder="比如: 2 天, 4 天 3 夜..." />
-            </Stack> */}
-
-            {/* <Stack spacing={1.5}>
-              <Typography variant="subtitle2">目的地</Typography>
-              <RHFTextField name="destination" placeholder="比如: 详细地址..." />
-            </Stack> */}
-            {/**
-               *            <Stack spacing={1}>
-              <Typography variant="subtitle2">活动提供情况</Typography>
-              <RHFMultiCheckbox
-                name="services"
-                options={NOTIFICATION_SERVICE_OPTIONS}
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                }}
-              />
-            </Stack>
-               * */}
-            {/**
-               
-            <Stack spacing={1.5}>
-            <Typography variant="subtitle2">标签</Typography>
-            <RHFAutocomplete
-              name="tags"
-              placeholder="+ 标签"
-              multiple
-              freeSolo
-              options={_tags.map((option) => option)}
-              getOptionLabel={(option) => option}
-              renderOption={(props, option) => (
-                <li {...props} key={option}>
-                  {option}
-                </li>
-              )}
-              renderTags={(selected, getTagProps) =>
-                selected.map((option, index) => (
-                  <Chip
-                    {...getTagProps({ index })}
-                    key={option}
-                    label={option}
-                    size="small"
-                    color="info"
-                    variant="soft"
-                  />
-                ))
-              }
-            />
-          </Stack>
-               * */}
           </Stack>
         </Card>
       </Grid>
