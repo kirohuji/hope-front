@@ -52,6 +52,7 @@ import AuditTableToolbar from '../audit-table-toolbar';
 import AuditTableFiltersResult from '../audit-table-filters-result';
 import AuditSensitiveListView from './audit-sensitive-list-view';
 import { categories } from '../audit-new-edit-form';
+import AuditOperationForm from '../audit-operation-form';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -102,12 +103,25 @@ export default function AuditListView() {
 
   const [openForm, setOpenForm] = useState(false);
 
+  const [openAudit, setOpenAudit] = useState(false);
+
+  const [currentRow, setCurrentRow] = useState(false);
+
   const handleCloseFormModal = () => {
     setOpenForm(false);
   };
 
   const handleOpenFormModal = () => {
     setOpenForm(true);
+  };
+
+  const handleCloseAuditModal = () => {
+    setOpenAudit(false);
+    getTableData();
+  };
+
+  const handleOpenAuditModal = (row) => {
+    setOpenAudit(true);
   };
 
   // const onSave = async (form) => {
@@ -206,10 +220,12 @@ export default function AuditListView() {
   }, [table, confirm, enqueueSnackbar, getTableData]);
 
   const handleEditRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.audit.edit(id));
+    (row) => {
+      // router.push(paths.dashboard.audit.edit(id));
+      setCurrentRow(row)
+      handleOpenAuditModal();
     },
-    [router]
+    []
   );
 
   // const handleViewRow = useCallback(
@@ -444,7 +460,7 @@ export default function AuditListView() {
                           selected={table.selected.includes(row._id)}
                           onSelectRow={() => table.onSelectRow(row._id)}
                           onDeleteRow={() => handleDeleteRow(row._id)}
-                          onEditRow={() => handleEditRow(row._id)}
+                          onEditRow={() => handleEditRow(row)}
                         />
                       ))}
                       {notFound && <TableNoData notFound={notFound} />}
@@ -495,6 +511,11 @@ export default function AuditListView() {
       <Dialog fullWidth maxWidth="lg" open={openForm} onClose={handleCloseFormModal}>
         <DialogTitle>敏感词管理</DialogTitle>
         <AuditSensitiveListView />
+      </Dialog>
+
+      <Dialog maxWidth="lg" open={openAudit} onClose={handleCloseAuditModal}>
+        <DialogTitle>审核操作页面</DialogTitle>
+        <AuditOperationForm item={currentRow} onCancel={handleCloseAuditModal} onClose={handleCloseAuditModal}/>
       </Dialog>
     </>
   );

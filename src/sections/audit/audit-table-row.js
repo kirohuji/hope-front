@@ -36,7 +36,7 @@ export default function AuditTableRow({
 }) {
   const router = useRouter();
 
-  const { sourceId, reason, createdUser, createdAt, reviewerId, category, status } = row;
+  const { sourceId, reason, createdUser, createdAt, reviewer, category, status } = row;
 
   const confirm = useBoolean();
 
@@ -91,7 +91,7 @@ export default function AuditTableRow({
         {/* <TableCell>{description}</TableCell> */}
         {/* <TableCell>{result}</TableCell> */}
         <TableCell>{reason}</TableCell>
-        <TableCell>{reviewerId}</TableCell>
+        <TableCell>{reviewer?.displayName || ''}</TableCell>
         <TableCell>{category}</TableCell>
         <TableCell>
           <ListItemText
@@ -109,9 +109,9 @@ export default function AuditTableRow({
           <Label
             variant="soft"
             color={
-              (status === 'paid' && 'success') ||
-              (status === 'pending' && 'warning') ||
-              (status === 'overdue' && 'error') ||
+              (status === 'approved' && 'success') ||
+              (status === 'in_review' && 'warning') ||
+              (status === 'rejected' && 'error') ||
               'default'
             }
           >
@@ -139,7 +139,7 @@ export default function AuditTableRow({
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          查看/编辑
+          审核
         </MenuItem>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
