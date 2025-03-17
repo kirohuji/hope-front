@@ -8,7 +8,7 @@ export default function PostEditPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Post Edit</title>
+        <title> 文章编辑</title>
       </Helmet>
 
       <PostEditView />

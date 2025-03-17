@@ -8,7 +8,7 @@ export default function PostCreatePage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Create a new post</title>
+        <title> 新增一篇文章</title>
       </Helmet>
 
       <PostCreateView />

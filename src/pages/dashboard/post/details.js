@@ -8,7 +8,7 @@ export default function PostDetailsPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Post Details</title>
+        <title> 文章详情</title>
       </Helmet>
 
       <PostDetailsView />

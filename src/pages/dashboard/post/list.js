@@ -8,7 +8,7 @@ export default function PostListPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Post List</title>
+        <title> 文章列表</title>
       </Helmet>
 
       <PostListView />

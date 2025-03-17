@@ -1,300 +1,200 @@
-import { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import { useEffect, useCallback, useState } from 'react';
 // @mui
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
+import Divider from '@mui/material/Divider';
+import Checkbox from '@mui/material/Checkbox';
 import Container from '@mui/material/Container';
-import LoadingButton from '@mui/lab/LoadingButton';
+import Typography from '@mui/material/Typography';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
 // routes
 import { paths } from 'src/routes/paths';
-import { useParams } from 'src/routes/hook';
-// _mock
-import { Divider, Stack, Backdrop, CircularProgress } from '@mui/material';
-import Button from '@mui/material/Button';
-import { useAuthContext } from 'src/auth/hooks';
+import { useRouter, useParams } from 'src/routes/hook';
+import { RouterLink } from 'src/routes/components';
+// utils
+import { fShortenNumber } from 'src/utils/format-number';
 // components
-import Label from 'src/components/label';
-import { useSettingsContext } from 'src/components/settings';
+import Iconify from 'src/components/iconify';
+import Markdown from 'src/components/markdown';
+import EmptyContent from 'src/components/empty-content';
+import { useSnackbar } from 'src/components/snackbar';
 //
 import { postService } from 'src/composables/context-provider';
-// redux
-import { useDispatch, useSelector } from 'src/redux/store';
-import {
-  getData,
-  getParticipants,
-  deleteParticipant,
-  updateParticipantStatus,
-  getParticipantsCount,
-  addParticipants,
-  updateDataPublishedStatus,
-} from 'src/redux/slices/broadcast';
-import { useSnackbar } from 'src/components/snackbar';
-import PostContactsDialog from '../post-contacts-dialog';
-import PostDetailsBookers from '../post-details-bookers';
-import PostDetailsContent from '../post-details-content';
-import PostDetailsToolbar from '../post-details-toolbar';
+import PostDetailsHero from '../post-details-hero';
+import PostCommentList from '../post-comment-list';
+import PostCommentForm from '../post-comment-form';
+import { PostDetailsSkeleton } from '../post-skeleton';
 
-export const TOUR_DETAILS_TABS = [
-  { value: 'content', label: '内容' },
-  { value: 'participants', label: '参加者列表', auth: ['PostListPersonSignOrDelete'] },
-];
-
-export const TOUR_PUBLISH_OPTIONS = [
-  {
-    value: 'published',
-    label: 'Published',
-  },
-  {
-    value: 'draft',
-    label: 'Draft',
-  },
-];
 // ----------------------------------------------------------------------
 
-export default function PostDetailsView() {
-  const { enqueueSnackbar } = useSnackbar();
-  const [openContacts, setOpenContacts] = useState(false);
-  const { user } = useAuthContext();
-  const { details } = useSelector((state) => state.post);
-  const [loading, setLoading] = useState(true);
-  const [buttonLoading, setButtonLoading] = useState(false);
-  const dispatch = useDispatch();
-  const handleOpenContacts = () => {
-    setOpenContacts(true);
-  };
+PostDetailsView.propTypes = {
+  postId: PropTypes.string,
+};
 
-  const handleCloseContacts = () => {
-    setOpenContacts(false);
-  };
-  const settings = useSettingsContext();
+export default function PostDetailsView({ postId }) {
+  const router = useRouter();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const params = useParams();
 
-  const { id, selectedTab } = params;
+  const { id } = params;
 
-  const [currentPost, setCurrentPost] = useState(null);
+  const [post, setPost] = useState(null);
 
-  const [publish, setPublish] = useState(currentPost?.publish);
+  const [errorMsg, setErrorMsg] = useState(null);
 
-  const [currentTab, setCurrentTab] = useState('content');
+  const [loadingPost, setLoadingPost] = useState(true);
 
-  const handleChangePublish = useCallback((newValue) => {
-    setPublish(newValue);
-  }, []);
-
-  const onRefresh = useCallback(
-    async (target) => {
-      if (!target) {
-        dispatch(getParticipants(id));
-        dispatch(getParticipantsCount(id));
-        return;
-      }
-      switch (target.type) {
-        case 'delete':
-          dispatch(
-            deleteParticipant({
-              data: target.data,
-              id,
-            })
-          );
-          break;
-        case 'add':
-          dispatch(
-            addParticipants({
-              datas: target.datas,
-              id,
-            })
-          );
-          dispatch(getParticipantsCount(id));
-          break;
-        case 'signIn':
-        case 'signOut':
-          dispatch(
-            updateParticipantStatus({
-              data: target.data,
-              id,
-              status: target.type,
-            })
-          );
-          break;
-        default:
-          dispatch(getParticipants(id));
-          dispatch(getParticipantsCount(id));
-          break;
-      }
-    },
-    [dispatch, id]
-  );
-
-  const refresh = useCallback(async () => {
-    setLoading(true);
+  const getPost = useCallback(async (_id) => {
     try {
-      if (currentTab === 'content') {
-        dispatch(
-          getData({
-            id,
-            user,
-          })
-        );
-      } else {
-        dispatch(getParticipants(id));
-      }
-      dispatch(getParticipantsCount(id));
-      setLoading(false);
+      const response = await postService.get({
+        _id,
+      });
+
+      setPost(response);
+      setLoadingPost(false);
     } catch (error) {
-      setLoading(false);
-      enqueueSnackbar('获取数据失败,请重试');
+      setLoadingPost(false);
+      setErrorMsg(error.message);
     }
-  }, [currentTab, dispatch, id, user, enqueueSnackbar]);
-
-  const handleChangeTab = useCallback((event, newValue) => {
-    setLoading(true);
-    setCurrentTab(newValue);
   }, []);
-
-  const handlePublish = useCallback(async () => {
-    setButtonLoading(true);
-    try {
-      await postService.publish({
-        post_id: id,
-      });
-      dispatch(
-        updateDataPublishedStatus({
-          id,
-          published: true,
-        })
-      );
-      // refresh(id);
-      setButtonLoading(false);
-      enqueueSnackbar('发布成功');
-    } catch (e) {
-      setButtonLoading(false);
-      enqueueSnackbar('发布失败');
-    }
-  }, [dispatch, enqueueSnackbar, id]);
-
-  const handleCancelPublish = useCallback(async () => {
-    try {
-      setButtonLoading(true);
-      await postService.unpublish({
-        post_id: id,
-      });
-      dispatch(
-        updateDataPublishedStatus({
-          id,
-          published: false,
-        })
-      );
-      enqueueSnackbar('取消发布成功');
-      setButtonLoading(false);
-    } catch (e) {
-      enqueueSnackbar('取消发布失败');
-      setButtonLoading(false);
-    }
-  }, [dispatch, enqueueSnackbar, id]);
 
   useEffect(() => {
-    console.log('获取');
     if (id) {
-      refresh(id);
+      getPost(id);
+    } else if (postId) {
+      getPost(postId);
     }
-  }, [refresh, id]);
+  }, [getPost, postId, id]);
 
-  const renderTabs = (
-    <Tabs
-      value={currentTab}
-      onChange={handleChangeTab}
+  const renderSkeleton = <PostDetailsSkeleton />;
+
+  const renderError = (
+    <EmptyContent
+      filled
+      title={`${errorMsg}`}
+      action={
+        <Button
+          component={RouterLink}
+          href={paths.dashboard.post.root}
+          startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
+          sx={{ mt: 3 }}
+        >
+          Back to List
+        </Button>
+      }
       sx={{
-        mb: { xs: 3, md: 5 },
+        py: 20,
       }}
-    >
-      {TOUR_DETAILS_TABS.map((tab) => (
-        <Tab
-          key={tab.value}
-          iconPosition="end"
-          value={tab.value}
-          label={tab.label}
-          icon={
-            tab.value === 'participants' ? (
-              <Label variant="filled">{details.count[id] || 0}</Label>
-            ) : (
-              ''
-            )
-          }
-        />
-      ))}
-    </Tabs>
+    />
+  );
+
+  const renderPost = post && (
+    <>
+      <PostDetailsHero title={post.title} coverUrl={post.coverUrl || post.cover} />
+
+      <Stack
+        sx={{
+          maxWidth: 720,
+          mx: 'auto',
+          mt: { xs: 5, md: 10 },
+        }}
+      >
+        <Typography variant="subtitle1" sx={{ mb: 5 }}>
+          {post.description}
+        </Typography>
+
+        <Markdown children={post.body} />
+
+        <Stack
+          spacing={3}
+          sx={{
+            py: 3,
+            borderTop: (theme) => `dashed 1px ${theme.palette.divider}`,
+            borderBottom: (theme) => `dashed 1px ${theme.palette.divider}`,
+          }}
+        >
+          {/* <Stack direction="row" flexWrap="wrap" spacing={1}>
+            {post.tags.map((tag) => (
+              <Chip key={tag} label={tag} variant="soft" />
+            ))}
+          </Stack> */}
+
+          {/* <Stack direction="row" alignItems="center">
+            <FormControlLabel
+              control={
+                <Checkbox
+                  defaultChecked
+                  size="small"
+                  color="error"
+                  icon={<Iconify icon="solar:heart-bold" />}
+                  checkedIcon={<Iconify icon="solar:heart-bold" />}
+                />
+              }
+              label={fShortenNumber(post.totalFavorites)}
+              sx={{ mr: 1 }}
+            />
+
+            <AvatarGroup
+              sx={{
+                [`& .${avatarGroupClasses.avatar}`]: {
+                  width: 32,
+                  height: 32,
+                },
+              }}
+            >
+              {post.favoritePerson.map((person) => (
+                <Avatar key={person.name} alt={person.name} src={person.avatarUrl} />
+              ))}
+            </AvatarGroup>
+          </Stack> */}
+        </Stack>
+
+        {/* <Stack direction="row" sx={{ mb: 3, mt: 5 }}>
+          <Typography variant="h4">Comments</Typography>
+
+          <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
+            ({post.comments.length})
+          </Typography>
+        </Stack>
+
+        <PostCommentForm />
+
+        <Divider sx={{ mt: 5, mb: 2 }} />
+
+        <PostCommentList comments={post.comments} /> */}
+      </Stack>
+    </>
   );
 
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <Backdrop
-        sx={{ background: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
+    <Container maxWidth={false}>
+      <Stack
+        spacing={1.5}
+        direction="row"
+        sx={{
+          mb: { xs: 3, md: 5 },
+        }}
       >
-        <CircularProgress color="inherit" />
-      </Backdrop>
-      <PostDetailsToolbar
-        backLink={paths.dashboard.post.root}
-        editLink={paths.dashboard.post.edit(`${details.byId[id]?._id}`)}
-        liveLink="#"
-        publish={publish || ''}
-        onChangePublish={handleChangePublish}
-        publishOptions={TOUR_PUBLISH_OPTIONS}
-      />
-      {renderTabs}
-      {currentTab === 'content' && details.byId[id] && (
-        <PostDetailsContent post={details.byId[id]} />
-      )}
-
-      {currentTab === 'participants' && (
-        <PostDetailsBookers
-          participants={(details.participantsBy && details.participantsBy[id]) || []}
-          onRefresh={onRefresh}
-        />
-      )}
-      <Divider sx={{ m: 2 }} />
-      <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
-        {details.byId[id]?.isAdmin && (
-          <LoadingButton
-            variant="contained"
-            color="secondary"
-            onClick={() => handleOpenContacts()}
-            loading={loading}
-          >
-            添加参加者
-          </LoadingButton>
-        )}
-        {details.byId[id]?.isAdmin && !details.byId[id]?.published && (
-          <LoadingButton
-            variant="contained"
-            color="success"
-            onClick={() => handlePublish()}
-            loading={buttonLoading}
-          >
-            发布公告
-          </LoadingButton>
-        )}
-        {details.byId[id]?.isAdmin && details.byId[id]?.published && (
-          <LoadingButton
-            variant="contained"
-            color="error"
-            onClick={() => handleCancelPublish()}
-            loading={buttonLoading}
-          >
-            取消发布
-          </LoadingButton>
-        )}
+        <Button
+          onClick={() => {
+            router.back();
+          }}
+          startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
+        >
+          返回
+        </Button>
       </Stack>
+      {loadingPost && renderSkeleton}
 
-      {details.byId[id] && (
-        <PostContactsDialog
-          current={details.byId[id]}
-          open={openContacts}
-          onUpdateRefresh={onRefresh}
-          onClose={handleCloseContacts}
-        />
-      )}
+      {errorMsg && renderError}
+
+      {post && renderPost}
     </Container>
   );
 }

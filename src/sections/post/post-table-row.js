@@ -57,9 +57,7 @@ export default function PostTableRow({
 
 
   const handleSourceId = () => {
-    if (category === '内容分享') {
-      router.push(paths.dashboard.post.details(_id));
-    }
+    router.push(paths.dashboard.post.details(_id));
   };
 
   return (
