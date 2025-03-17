@@ -10,10 +10,10 @@ import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import { paths } from 'src/routes/paths';
 import ListItemText from '@mui/material/ListItemText';
 // routes
 import { useRouter } from 'src/routes/hook';
+import { paths } from 'src/routes/paths';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components

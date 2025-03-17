@@ -1,6 +1,5 @@
 import _ from 'lodash';
-import sumBy from 'lodash/sumBy';
-import { useRef, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 // @mui
 import { useTheme, alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -8,10 +7,7 @@ import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
@@ -26,13 +22,10 @@ import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useDebounce } from 'src/hooks/use-debounce';
-// utils
-import { fTimestamp } from 'src/utils/format-time';
 
 // redux
 import { useSelector } from 'src/redux/store';
 // components
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -41,18 +34,14 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
-  getComparator,
-  emptyRows,
   TableNoData,
   TableSkeleton,
-  TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
 } from 'src/components/table';
 //
 import { postService } from 'src/composables/context-provider';
-import PostAnalytic from '../post-analytic';
 import PostTableRow from '../post-table-row';
 import PostTableToolbar from '../post-table-toolbar';
 import PostTableFiltersResult from '../post-table-filters-result';
@@ -60,12 +49,13 @@ import { categories } from '../post-new-edit-form';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'title', label: '标题' },
+  { id: 'poster', label: '创建人' },
+  // { id: 'title', label: '标题' },
   { id: 'metaTitle', label: '元标题' },
-  { id: 'category', label: '标签' },
+  { id: 'sourceUrl', label: '内容', width: '50' },
+  { id: 'category', label: '分类' },
   // { id: 'published', label: '是否发布' },
   { id: 'commented', label: '允许评论' },
-  { id: 'poster', label: '创建人' },
   { id: 'createdAt', label: '创建时间' },
   { id: 'publishedAt', label: '发布时间' },
   { id: 'status', label: '状态' },

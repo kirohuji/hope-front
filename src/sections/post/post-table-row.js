@@ -14,8 +14,9 @@ import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-// utils
-import { fCurrency } from 'src/utils/format-number';
+// routes
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hook';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -45,11 +46,21 @@ export default function PostTableRow({
     commented,
     createdAt,
     status,
+    _id,
   } = row;
+
+  const router = useRouter();
 
   const confirm = useBoolean();
 
   const popover = usePopover();
+
+
+  const handleSourceId = () => {
+    if (category === '内容分享') {
+      router.push(paths.dashboard.post.details(_id));
+    }
+  };
 
   return (
     <>
@@ -58,30 +69,25 @@ export default function PostTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell>
+        <TableCell
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            maxWidth: '210px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden' /* 隐藏溢出的文本 */,
+            textOverflow: 'ellipsis' /* 显示省略号 */,
+          }}
+        >
+          <Avatar alt={poster.username} src={poster.photoURL} sx={{ mr: 2 }} />
+
           <ListItemText
-            disableTypography
-            sx={{
-              width: '150px',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-            primary={
-              <Typography variant="body2" noWrap>
-                {title}
-              </Typography>
-            }
-            secondary={
-              <Link
-                noWrap
-                variant="body2"
-                onClick={onViewRow}
-                sx={{ color: 'text.disabled', cursor: 'pointer' }}
-              >
-                {body}
-              </Link>
-            }
+            primary={`${poster.username}${
+              poster.realName ? `(${poster.realName})` : ''
+            }`}
+            secondary={poster.email}
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
           />
         </TableCell>
 
@@ -89,7 +95,7 @@ export default function PostTableRow({
           <ListItemText
             disableTypography
             sx={{
-              width: '150px',
+              width: '120px',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -113,6 +119,18 @@ export default function PostTableRow({
         </TableCell>
         <TableCell
           sx={{
+            maxWidth: '100px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden' /* 隐藏溢出的文本 */,
+            textOverflow: 'ellipsis' /* 显示省略号 */,
+          }}
+        >
+          <Link color="primary" onClick={handleSourceId} sx={{ cursor: 'pointer' }}>
+            查看
+          </Link>
+        </TableCell>
+        <TableCell
+          sx={{
             width: '80px',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -125,8 +143,6 @@ export default function PostTableRow({
         {/* <TableCell>{published ? '已发布' : '未发布'}</TableCell> */}
 
         <TableCell>{commented ? '允许' : '禁止'}</TableCell>
-
-        <TableCell>{poster ? poster.username : '未知用户'}</TableCell>
 
         <TableCell>
           <ListItemText
