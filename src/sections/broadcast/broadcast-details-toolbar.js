@@ -11,6 +11,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 // components
 import Iconify from 'src/components/iconify';
 import { RouterLink } from 'src/routes/components';
+import { useRouter } from 'src/routes/hook';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
@@ -27,6 +28,8 @@ export default function BroadcastDetailsToolbar({
 }) {
   const popover = usePopover();
 
+  const router = useRouter();
+
   const lgUp = useResponsive('up', 'lg');
 
   return (
@@ -41,8 +44,9 @@ export default function BroadcastDetailsToolbar({
         {...other}
       >
         <Button
-          component={RouterLink}
-          href={backLink}
+          // component={RouterLink}
+          // href={backLink}
+          onClick={()=> router.back()}
           startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
         >
           返回

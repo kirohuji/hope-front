@@ -4,7 +4,7 @@ import { Container, Stack, Divider, Tabs, Tab } from '@mui/material';
 import { useSelector } from 'src/redux/store';
 import { useSnackbar } from 'src/components/snackbar';
 import InfiniteScroll from 'react-infinite-scroller';
-import { postService } from 'src/composables/context-provider';
+import { postService, broadcastService } from 'src/composables/context-provider';
 import Scrollbar from 'src/components/scrollbar';
 import { _ecommerceNewProducts } from 'src/_mock';
 // routes
@@ -32,6 +32,7 @@ export default function DiscoveryView() {
 
   const { user, logout } = useAuthContext();
 
+  const [broadcasts, setBroadcasts] = useState([]);
   const [currentTab, setCurrentTab] = useState('Offcial');
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -89,6 +90,18 @@ export default function DiscoveryView() {
     [enqueueSnackbar, loading, page, scope.active._id, total] // 注意：去掉 loading 作为依赖
   );
 
+  const getBroadcasts = useCallback(async () => {
+    try {
+      const response = await broadcastService.recent();
+      setBroadcasts(response);
+    } catch (e) {
+      enqueueSnackbar(e.message);
+    }
+  }, [enqueueSnackbar]);
+
+  useEffect(() => {
+    getBroadcasts();
+  }, [getBroadcasts]);
   return (
     <Container maxWidth={themeStretch ? false : 'xl'}>
       <Tabs value={currentTab} onChange={handleChangeTab}>
@@ -99,7 +112,7 @@ export default function DiscoveryView() {
       <Divider />
       <Stack spacing={3} sx={{ mt: 1 }}>
         <Scrollbar sx={{ p: 0, pb: 2, height: 'calc(100vh - 120px)' }}>
-          {currentTab === 'Offcial' && <DiscoveryKanban list={_ecommerceNewProducts} />}
+          {currentTab === 'Offcial' && <DiscoveryKanban list={broadcasts} />}
           <InfiniteScroll
             loadMore={refresh}
             hasMore={hasMore}

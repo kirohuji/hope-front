@@ -48,4 +48,8 @@ export default class BroadcastService extends Service {
     unpublish(target) {
         return this.api.post(`${this.model}/${target.broadcast_id}/unpublish`)
     }
+
+    recent(target) {
+        return this.api.post(`${this.model}/recent`, target)
+    }
 }
