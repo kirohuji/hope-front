@@ -17,6 +17,7 @@ import Markdown from 'src/components/markdown';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
+import CryptoJS from 'crypto-js';
 
 // hooks
 import { useMockedUser } from 'src/hooks/use-mocked-user';
@@ -26,6 +27,8 @@ import { fShortenNumber } from 'src/utils/format-number';
 // components
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
+
+const secretKey = 'future';
 
 // ----------------------------------------------------------------------
 
@@ -124,7 +127,7 @@ export default function ProfilePostItem({ post, user, onClick }) {
           sx={{
             p: (theme) => theme.spacing(3, 3, 2, 3),
           }}
-          children={post.body}
+          children={CryptoJS.AES.decrypt(post.body, secretKey).toString(CryptoJS.enc.Utf8)}
         />
         {post.cover && (
           <Box sx={{ p: 1 }}>

@@ -105,7 +105,7 @@ export default function AuditListView() {
 
   const [openAudit, setOpenAudit] = useState(false);
 
-  const [currentRow, setCurrentRow] = useState(false);
+  const [currentRow, setCurrentRow] = useState({});
 
   const handleCloseFormModal = () => {
     setOpenForm(false);
@@ -354,16 +354,16 @@ export default function AuditListView() {
                 value={tab.value}
                 label={tab.label}
                 iconPosition="end"
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                    }
-                    color={tab.color}
-                  >
-                    {tab.count}
-                  </Label>
-                }
+                // icon={
+                //   <Label
+                //     variant={
+                //       ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
+                //     }
+                //     color={tab.color}
+                //   >
+                //     {tab.count}
+                //   </Label>
+                // }
               />
             ))}
           </Tabs>

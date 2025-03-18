@@ -84,6 +84,8 @@ export default function AuditOperationForm({ item, onClose, onCancel, onSubmitDa
           _id: item._id,
           status: 'approved',
           reviewerId: user._id,
+          sourceId: item.sourceId,
+          category: item.category
         });
       } else {
         await auditService.moderation({
@@ -91,6 +93,8 @@ export default function AuditOperationForm({ item, onClose, onCancel, onSubmitDa
           status: 'rejected',
           reason: data.reason,
           reviewerId: user._id,
+          sourceId: item.sourceId,
+          category: item.category
         });
       }
       reset();
