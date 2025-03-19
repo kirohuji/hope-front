@@ -78,7 +78,6 @@ export const NOTIFICATION_PUBLISH_OPTIONS = [
 ];
 
 export default function NotificationNewEditForm({ currentNotification }) {
-
   const router = useRouter();
 
   const isEdit = !!currentNotification;
@@ -126,6 +125,9 @@ export default function NotificationNewEditForm({ currentNotification }) {
     () => ({
       title: currentNotification?.title || '',
       description: currentNotification?.description || '',
+      targetAudienceType: currentNotification?.targetAudienceType || '',
+      sendingTimingType: currentNotification?.sendingTimingType || '',
+      audiences: currentNotification?.audiences || '',
     }),
     [currentNotification]
   );
@@ -284,20 +286,62 @@ export default function NotificationNewEditForm({ currentNotification }) {
               <RHFRadioGroup
                 row
                 spacing={4}
-                name="direction"
+                name="targetAudienceType"
                 options={NOTIFICATION_DIRECTION_OPTIONS}
               />
             </Stack>
 
-            <Stack spacing={1}>
+            {values.targetAudienceType === 'specific' && (
+              <Stack>
+                <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
+                  用户群体
+                </Typography>
+
+                <RHFAutocomplete
+                  multiple
+                  name="audiences"
+                  placeholder="+ 用户群体"
+                  disableCloseOnSelect
+                  options={users}
+                  getOptionLabel={(option) => option.username}
+                  isOptionEqualToValue={(option, value) => option._id === value._id}
+                  renderOption={(props, currentUser) => (
+                    <li {...props} key={currentUser._id}>
+                      <Avatar
+                        key={currentUser._id}
+                        alt={currentUser?.photoURL}
+                        src={currentUser?.photoURL}
+                        sx={{ width: 24, height: 24, flexShrink: 0, mr: 1 }}
+                      />
+
+                      {currentUser.username}
+                    </li>
+                  )}
+                  renderTags={(selected, getTagProps) =>
+                    selected.map((currentUser, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={currentUser._id}
+                        size="small"
+                        variant="soft"
+                        label={currentUser.username}
+                        avatar={<Avatar alt={currentUser.username} src={currentUser?.photoURL} />}
+                      />
+                    ))
+                  }
+                />
+              </Stack>
+            )}
+
+            {/* <Stack spacing={1}>
               <Typography variant="subtitle2">发送时机</Typography>
               <RHFRadioGroup
                 row
                 spacing={4}
-                name="direction"
-                options={NOTIFICATION_DIRECTION_OPTIONS}
+                name="sendingTimingType"
+                options={NOTIFICATION_PUBLISH_OPTIONS}
               />
-            </Stack>
+            </Stack> */}
           </Stack>
         </Card>
       </Grid>
