@@ -127,7 +127,8 @@ export default function NotificationNewEditForm({ currentNotification }) {
     () => ({
       title: currentNotification?.title || '',
       description: currentNotification?.description || '',
-      sendingTiming: currentNotification?.sendingTiming || '',
+      sendingTiming: currentNotification?.sendingTiming || new Date(),
+      category: currentNotification?.category || ''
     }),
     [currentNotification]
   );
@@ -236,7 +237,7 @@ export default function NotificationNewEditForm({ currentNotification }) {
           <Stack spacing={3} sx={{ p: 3 }}>
             <Stack spacing={1}>
               <Typography variant="subtitle2">类型</Typography>
-              <RHFRadioGroup row spacing={4} name="type" options={NOTIFICATION_TYPE_OPTIONS} />
+              <RHFRadioGroup row spacing={4} name="category" options={NOTIFICATION_TYPE_OPTIONS} />
             </Stack>
 
             <Stack>

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 // @mui
-import Link from '@mui/material/Link';
+import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
@@ -17,7 +17,8 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-
+import { getLabelFromValue } from 'src/utils/map';
+import { categories } from './notification-new-edit-form';
 // ----------------------------------------------------------------------
 
 export default function NotificationTableRow({
@@ -33,7 +34,7 @@ export default function NotificationTableRow({
     description,
     direction,
     type,
-    publisherId,
+    createdUser,
     sendingTiming,
     category,
     createdAt,
@@ -50,32 +51,30 @@ export default function NotificationTableRow({
         <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
+        <TableCell
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            maxWidth: '210px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden' /* 隐藏溢出的文本 */,
+            textOverflow: 'ellipsis' /* 显示省略号 */,
+          }}
+        >
+          <Avatar alt={createdUser.username} src={createdUser.photoURL} sx={{ mr: 2 }} />
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <ListItemText
-            disableTypography
-            secondary={
-              <Link
-                noWrap
-                variant="body2"
-                onClick={onViewRow}
-                sx={{ color: 'text.disabled', cursor: 'pointer' }}
-              >
-                {title}
-              </Link>
-            }
+            primary={`${createdUser.username}${
+              createdUser.realName ? `(${createdUser.realName})` : ''
+            }`}
+            secondary={createdUser.email}
+            primaryTypographyProps={{ typography: 'body2' }}
+            secondaryTypographyProps={{ component: 'span', color: 'text.disabled' }}
           />
         </TableCell>
+        <TableCell>{title}</TableCell>
 
-        <TableCell>{description}</TableCell>
-
-        <TableCell>{direction}</TableCell>
-
-        <TableCell>{type}</TableCell>
-
-        <TableCell>{publisherId}</TableCell>
-
-        <TableCell>{category}</TableCell>
+        <TableCell>{getLabelFromValue(category, categories)}</TableCell>
 
         <TableCell>
           <ListItemText
@@ -106,13 +105,13 @@ export default function NotificationTableRow({
           <Label
             variant="soft"
             color={
-              (status === 'paid' && 'success') ||
+              (status === 'published' && 'success') ||
               (status === 'pending' && 'warning') ||
               (status === 'overdue' && 'error') ||
               'default'
             }
           >
-            {status}
+            {status === 'pending' ? '待发布' : '已发布'}
           </Label>
         </TableCell>
 

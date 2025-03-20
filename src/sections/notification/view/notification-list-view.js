@@ -49,11 +49,11 @@ import { categories } from '../notification-new-edit-form';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
+  { id: 'createdUser', label: '发送人' },
   { id: 'title', label: '通知标题' },
-  { id: 'description', label: '通知内容' },
-  { id: 'direction', label: '发送目标' },
+  // { id: 'description', label: '通知内容' },
+  // { id: 'direction', label: '发送目标' },
   // { id: 'type', label: '通知类型' },
-  { id: 'publisherId', label: '发送人' },
   { id: 'category', label: '通知分类' },
   { id: 'publishedAt', label: '发送日期' },
   { id: 'createdAt', label: '创建时间' },
@@ -107,9 +107,7 @@ export default function NotificationListView() {
 
   const notFound = (!tableDataCount && canReset) || !tableDataCount;
 
-  const TABS = [
-    { value: 'all', label: '全部', color: 'default', count: tableData.length },
-  ];
+  const TABS = [{ value: 'all', label: '全部', color: 'default', count: tableData.length }];
 
   const handleFilters = useCallback(
     (label, value) => {
