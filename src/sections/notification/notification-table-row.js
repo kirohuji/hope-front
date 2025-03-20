@@ -34,7 +34,7 @@ export default function NotificationTableRow({
     direction,
     type,
     publisherId,
-    publishedAt,
+    sendingTiming,
     category,
     createdAt,
     status,
@@ -92,8 +92,8 @@ export default function NotificationTableRow({
 
         <TableCell>
           <ListItemText
-            primary={format(new Date(publishedAt), 'dd MMM yyyy')}
-            secondary={format(new Date(publishedAt), 'p')}
+            primary={format(new Date(sendingTiming), 'dd MMM yyyy')}
+            secondary={format(new Date(sendingTiming), 'p')}
             primaryTypographyProps={{ typography: 'body2', noWrap: true }}
             secondaryTypographyProps={{
               mt: 0.5,

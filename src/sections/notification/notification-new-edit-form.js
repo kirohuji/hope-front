@@ -2,13 +2,15 @@ import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 // @mui
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
+import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
@@ -125,9 +127,7 @@ export default function NotificationNewEditForm({ currentNotification }) {
     () => ({
       title: currentNotification?.title || '',
       description: currentNotification?.description || '',
-      targetAudienceType: currentNotification?.targetAudienceType || '',
-      sendingTimingType: currentNotification?.sendingTimingType || '',
-      audiences: currentNotification?.audiences || '',
+      sendingTiming: currentNotification?.sendingTiming || '',
     }),
     [currentNotification]
   );
@@ -140,6 +140,7 @@ export default function NotificationNewEditForm({ currentNotification }) {
   const {
     watch,
     reset,
+    control,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
@@ -153,10 +154,10 @@ export default function NotificationNewEditForm({ currentNotification }) {
   }, [currentNotification, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
-    if (values.images.filter((file) => file.isLoacl).length > 0) {
-      enqueueSnackbar('资源集有资源未上传,请先上传');
-      return;
-    }
+    // if (values.images.filter((file) => file.isLoacl).length > 0) {
+    //   enqueueSnackbar('资源集有资源未上传,请先上传');
+    //   return;
+    // }
     try {
       if (!isEdit) {
         await notificationService.post({
@@ -281,67 +282,42 @@ export default function NotificationNewEditForm({ currentNotification }) {
               />
             </Stack>
 
-            <Stack spacing={1}>
+            {/* <Stack spacing={1}>
               <Typography variant="subtitle2">目标人群</Typography>
               <RHFRadioGroup
                 row
                 spacing={4}
-                name="targetAudienceType"
+                name="targetType"
                 options={NOTIFICATION_DIRECTION_OPTIONS}
               />
-            </Stack>
-
-            {values.targetAudienceType === 'specific' && (
-              <Stack>
-                <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-                  用户群体
-                </Typography>
-
-                <RHFAutocomplete
-                  multiple
-                  name="audiences"
-                  placeholder="+ 用户群体"
-                  disableCloseOnSelect
-                  options={users}
-                  getOptionLabel={(option) => option.username}
-                  isOptionEqualToValue={(option, value) => option._id === value._id}
-                  renderOption={(props, currentUser) => (
-                    <li {...props} key={currentUser._id}>
-                      <Avatar
-                        key={currentUser._id}
-                        alt={currentUser?.photoURL}
-                        src={currentUser?.photoURL}
-                        sx={{ width: 24, height: 24, flexShrink: 0, mr: 1 }}
-                      />
-
-                      {currentUser.username}
-                    </li>
-                  )}
-                  renderTags={(selected, getTagProps) =>
-                    selected.map((currentUser, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={currentUser._id}
-                        size="small"
-                        variant="soft"
-                        label={currentUser.username}
-                        avatar={<Avatar alt={currentUser.username} src={currentUser?.photoURL} />}
-                      />
-                    ))
-                  }
-                />
-              </Stack>
-            )}
-
-            {/* <Stack spacing={1}>
+            </Stack> */}
+            <Stack spacing={1}>
               <Typography variant="subtitle2">发送时机</Typography>
-              <RHFRadioGroup
+              <Controller
+                  name="sendingTiming"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <DateTimePicker
+                      {...field}
+                      // format="dd/MM/yyyy"
+                      renderInput={(params) => <TextField {...params} />}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!error,
+                          helperText: error?.message,
+                        },
+                      }}
+                    />
+                  )}
+                />
+              {/* <RHFRadioGroup
                 row
                 spacing={4}
-                name="sendingTimingType"
+                name="sendingTiming"
                 options={NOTIFICATION_PUBLISH_OPTIONS}
-              />
-            </Stack> */}
+              /> */}
+            </Stack>
           </Stack>
         </Card>
       </Grid>
