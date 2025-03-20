@@ -139,14 +139,11 @@ export default function NotificationNewEditForm({ currentNotification }) {
   });
 
   const {
-    watch,
     reset,
     control,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
-  const values = watch();
 
   useEffect(() => {
     if (currentNotification) {
@@ -155,10 +152,6 @@ export default function NotificationNewEditForm({ currentNotification }) {
   }, [currentNotification, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
-    // if (values.images.filter((file) => file.isLoacl).length > 0) {
-    //   enqueueSnackbar('资源集有资源未上传,请先上传');
-    //   return;
-    // }
     try {
       if (!isEdit) {
         await notificationService.post({

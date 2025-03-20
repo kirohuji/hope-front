@@ -31,9 +31,6 @@ export default function NotificationTableRow({
 }) {
   const {
     title,
-    description,
-    direction,
-    type,
     createdUser,
     sendingTiming,
     category,

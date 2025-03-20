@@ -40,6 +40,8 @@ export default function DiscoveryDetailView() {
 
   const { user } = useAuthContext();
 
+  const [isLike, setLike] = useState(false);
+
   const [message, setMessage] = useState('');
 
   const commentRef = useRef(null);
@@ -58,12 +60,33 @@ export default function DiscoveryDetailView() {
     setMessage(event.target.value);
   }, []);
 
+  const handleLike = useCallback(
+    async (like) => {
+      try {
+        if (like) {
+          await postService.like(post);
+          setLike(true);
+          setPost((prev) => ({ ...prev, likeCount: prev.likeCount + 1 }));
+        } else {
+          await postService.unLike(post);
+          setLike(false);
+          setPost((prev) => ({ ...prev, likeCount: prev.likeCount - 1 }));
+        }
+      } catch (e) {
+        enqueueSnackbar(e.message);
+      }
+    },
+    [enqueueSnackbar, post]
+  );
+
   const refresh = useCallback(
     async () => {
       setLoading(true);
       try {
         const response = await postService.get({ scope: scope.active._id, _id: id });
+        const like = await postService.isLike({ _id: response._id });
         setPost(response);
+        setLike(!!like);
       } catch (e) {
         enqueueSnackbar(e.message);
       } finally {
@@ -84,6 +107,7 @@ export default function DiscoveryDetailView() {
                 body: message,
               });
               setNotify((prev) => prev + 1);
+              setPost((prev) => ({ ...prev, commentCount: prev.commentCount + 1 }));
               enqueueSnackbar('发送成功');
             } catch (e) {
               enqueueSnackbar(e.message);
@@ -102,6 +126,7 @@ export default function DiscoveryDetailView() {
     },
     [message, id, enqueueSnackbar]
   );
+
   const renderInput = (
     <Stack
       direction="row"
@@ -155,7 +180,6 @@ export default function DiscoveryDetailView() {
   );
 
   useEffect(() => {
-    console.log('获取');
     if (id) {
       refresh();
     }
@@ -163,7 +187,15 @@ export default function DiscoveryDetailView() {
   return (
     <Container maxWidth={false} sx={{ position: 'relative' }}>
       <Scrollbar sx={{ p: 0, height: 'calc(100vh - 120px)' }}>
-        {post && <DiscoveryPostDetailItem post={post} user={user} notify={notify} />}
+        {post && (
+          <DiscoveryPostDetailItem
+            post={post}
+            user={user}
+            notify={notify}
+            isLike={isLike}
+            onLike={handleLike}
+          />
+        )}
       </Scrollbar>
       {renderInput}
     </Container>

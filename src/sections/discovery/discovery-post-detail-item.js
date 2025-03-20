@@ -5,6 +5,8 @@ import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
+import Checkbox from '@mui/material/Checkbox';
+import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -20,18 +22,19 @@ import { postService } from 'src/composables/context-provider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
 
-// hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
 // utils
-import { fDate } from 'src/utils/format-time';
+import { fDateTime } from 'src/utils/format-time';
 import { fShortenNumber } from 'src/utils/format-number';
 // components
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
+import CryptoJS from 'crypto-js';
 
 // ----------------------------------------------------------------------
 
-export default function DiscoveryPostDetailItem({ post, user, notify }) {
+const secretKey = 'future';
+
+export default function DiscoveryPostDetailItem({ post, user, notify, isLike, onLike }) {
   const { poster } = post;
 
   const { enqueueSnackbar } = useSnackbar();
@@ -123,7 +126,7 @@ export default function DiscoveryPostDetailItem({ post, user, notify }) {
       }
       subheader={
         <Box sx={{ color: 'text.disabled', typography: 'caption', mt: 0.5 }}>
-          {fDate(post.publishedAt || post.createdAt)}
+          {fDateTime(post.publishedAt || post.createdAt)}
         </Box>
       }
       action={
@@ -157,7 +160,7 @@ export default function DiscoveryPostDetailItem({ post, user, notify }) {
                 <Box sx={{ typography: 'subtitle2' }}>{comment.author.username}</Box>
 
                 <Box sx={{ typography: 'caption', color: 'text.disabled' }}>
-                  {fDate(comment.createdAt)}
+                  {fDateTime(comment.createdAt)}
                 </Box>
               </Stack>
 
@@ -173,21 +176,16 @@ export default function DiscoveryPostDetailItem({ post, user, notify }) {
       direction="row"
       alignItems="center"
       sx={{
-        p: (theme) => theme.spacing(2, 3, 3, 3),
+        p: (theme) => theme.spacing(1, 1, 1, 1),
       }}
     >
-      {/* <FormControlLabel
-        control={
-          <Checkbox
-            defaultChecked
-            color="error"
-            icon={<Iconify icon="solar:heart-bold" />}
-            checkedIcon={<Iconify icon="solar:heart-bold" />}
-          />
-        }
-        label={fShortenNumber(post.likeCount)}
-        sx={{ mr: 1 }}
-      /> */}
+      <Checkbox
+        color="error"
+        checked={isLike}
+        onClick={() => onLike(!isLike)}
+        icon={<Iconify icon="solar:heart-bold" />}
+        checkedIcon={<Iconify icon="solar:heart-bold" />}
+      />
       <Stack direction="row" sx={{ fontSize: '12px', color: 'text.secondary' }}>
         <Box sx={{ mr: 2 }}>{post.likeCount} 赞同</Box>
         <Box>{post.commentCount} 评论</Box>
@@ -242,12 +240,16 @@ export default function DiscoveryPostDetailItem({ post, user, notify }) {
         sx={{
           p: (theme) => theme.spacing(3, 3, 2, 3),
         }}
-        children={post.body}
+        children={CryptoJS.AES.decrypt(post.body, secretKey).toString(CryptoJS.enc.Utf8)}
       />
 
-      <Box sx={{ p: 1 }}>
-        <Image alt={post.cover} src={post.cover} ratio="16/9" sx={{ borderRadius: 1.5 }} />
-      </Box>
+      {post.cover && (
+        <Box sx={{ p: 1 }}>
+          <Image alt={post.cover} src={post.cover} ratio="16/9" sx={{ borderRadius: 1.5 }} />
+        </Box>
+      )}
+
+      <Divider />
 
       {renderActions}
 
@@ -270,6 +272,8 @@ export default function DiscoveryPostDetailItem({ post, user, notify }) {
 
 DiscoveryPostDetailItem.propTypes = {
   post: PropTypes.object,
+  onLike: PropTypes.func,
   user: PropTypes.object,
   notify: PropTypes.number,
+  isLike: PropTypes.bool,
 };

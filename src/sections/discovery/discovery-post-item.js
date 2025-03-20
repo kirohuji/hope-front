@@ -19,11 +19,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
 import CryptoJS from 'crypto-js';
 
-// hooks
-import { useMockedUser } from 'src/hooks/use-mocked-user';
 // utils
 import { fDate } from 'src/utils/format-time';
-import { fShortenNumber } from 'src/utils/format-number';
 // components
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
