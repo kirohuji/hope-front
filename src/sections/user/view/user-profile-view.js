@@ -37,11 +37,11 @@ const TABS = [
   //   label: 'Friends',
   //   icon: <Iconify icon="solar:users-group-rounded-bold" width={24} />,
   // },
-  {
-    value: 'gallery',
-    label: '图集',
-    icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
-  },
+  // {
+  //   value: 'gallery',
+  //   label: '图集',
+  //   icon: <Iconify icon="solar:gallery-wide-bold" width={24} />,
+  // },
 ];
 
 // ----------------------------------------------------------------------
