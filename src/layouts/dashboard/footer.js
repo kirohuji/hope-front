@@ -30,16 +30,16 @@ const navigations = [
   //   to: '/dashboard/file-manager',
   //   auth: ['FileManager'],
   // },
-  {
-    label: '发现',
-    icon: ICONS.tour,
-    to: '/dashboard/discovery',
-  },
-  {
-    label: '日程',
-    icon: ICONS.calendar,
-    to: '/dashboard/calendar',
-  },
+  // {
+  //   label: '发现',
+  //   icon: ICONS.tour,
+  //   to: '/dashboard/discovery',
+  // },
+  // {
+  //   label: '日程',
+  //   icon: ICONS.calendar,
+  //   to: '/dashboard/calendar',
+  // },
   {
     label: '阅读',
     icon: ICONS.blog,
