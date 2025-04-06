@@ -3,8 +3,6 @@ import { useState, useEffect, useCallback } from 'react';
 import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
-// _mock
-import { _tours } from 'src/_mock';
 // components
 import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
@@ -13,8 +11,11 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { postService, userService } from 'src/composables/context-provider';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
+import CryptoJS from 'crypto-js';
 import PostNewEditForm from '../post-new-edit-form';
 // ----------------------------------------------------------------------
+
+const secretKey = 'future';
 
 export default function PostEditView() {
   const [loading, setLoading] = useState(true);
@@ -48,7 +49,10 @@ export default function PostEditView() {
         );
         response.leaders = leaders.data;
       }
-      setCurrentPost(response);
+      setCurrentPost({
+        ...response,
+        body: CryptoJS.AES.decrypt(response.body, secretKey).toString(CryptoJS.enc.Utf8)
+      });
       setLoading(false);
     } catch (error) {
       console.log(error);

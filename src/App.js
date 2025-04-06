@@ -48,7 +48,7 @@ console.log(process.env.NODE_ENV);
 const connectUrl =
   process.env.NODE_ENV === 'development'
     ? 'ws://localhost:3030/websocket'
-    : 'wss://www.lourd.top/websocket';
+    : 'wss://hope.lourd.top/websocket';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/amplify';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/firebase';

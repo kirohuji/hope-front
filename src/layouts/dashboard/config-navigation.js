@@ -4,7 +4,7 @@ import { paths } from 'src/routes/paths';
 // locales
 import { useLocales } from 'src/locales';
 // components
-// import Label from 'src/components/label';
+import Label from 'src/components/label';
 // import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 
@@ -356,19 +356,19 @@ export function useNavData() {
             auth: ['FileManager'],
           },
           // AI
-          // {
-          //   title: t('openai'),
-          //   path: paths.dashboard.openai,
-          //   icon: ICONS.openai,
-          //   auth: [
-          //     'Broadcast',
-          //     'BroadcastList',
-          //     'BroadcastListAdd',
-          //     'BroadcastListEdit',
-          //     'BroadcastListDelete',
-          //   ],
-          //   info: <Label color="error">+32</Label>,
-          // },
+          {
+            title: t('openai'),
+            path: paths.dashboard.openai,
+            icon: ICONS.openai,
+            auth: [
+              'Broadcast',
+              'BroadcastList',
+              'BroadcastListAdd',
+              'BroadcastListEdit',
+              'BroadcastListDelete',
+            ],
+            info: <Label color="error">+32</Label>,
+          },
           // MAIL
           // {
           //   title: t('mail'),
