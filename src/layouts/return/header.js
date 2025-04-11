@@ -13,7 +13,6 @@ import { useSelector } from 'src/redux/store';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useAuthContext } from 'src/auth/hooks';
 // components
-import Logo from '../../components/logo';
 import Iconify from '../../components/iconify';
 // ----------------------------------------------------------------------
 

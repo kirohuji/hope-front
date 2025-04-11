@@ -1,16 +1,12 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 import { lazy } from 'react';
-// layouts
-import MainLayout from 'src/layouts/main';
 // config
 import { PATH_AFTER_LOGIN } from 'src/config-global';
 //
 import ReturnLayout from 'src/layouts/return';
-import { mainRoutes, HomePage } from './main';
+import { mainRoutes } from './main';
 import { authRoutes } from './auth';
-import { authDemoRoutes } from './auth-demo';
 import { dashboardRoutes } from './dashboard';
-import { componentsRoutes } from './components';
 
 const AiPage = lazy(() => import('src/pages/dashboard/openai'));
 const ChatPage = lazy(() => import('src/pages/dashboard/chat'));
@@ -67,16 +63,12 @@ export default function Router() {
     },
     // Auth routes
     ...authRoutes,
-    ...authDemoRoutes,
 
     // Dashboard routes
     ...dashboardRoutes,
 
     // Main routes
     ...mainRoutes,
-
-    // Components routes
-    ...componentsRoutes,
     {
       element: <ReturnLayout />,
       children: [

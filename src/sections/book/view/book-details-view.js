@@ -8,8 +8,6 @@ import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
-// _mock
-import { JOB_PUBLISH_OPTIONS } from 'src/_mock';
 import { useAuthContext } from 'src/auth/hooks';
 // components
 import Label from 'src/components/label';
@@ -26,6 +24,17 @@ import BookDetailsToolbar from '../book-details-toolbar';
 import BookDetailsContent from '../book-details-content';
 
 // ----------------------------------------------------------------------
+
+const JOB_PUBLISH_OPTIONS = [
+  {
+    value: 'published',
+    label: 'Published',
+  },
+  {
+    value: 'draft',
+    label: 'Draft',
+  },
+];
 
 const JOB_DETAILS_TABS = [
   { value: 'content', label: '简介' },

@@ -20,7 +20,6 @@ export const paths = {
   comingSoon: '/coming-soon',
   maintenance: '/maintenance',
   reading: (id) => `/reading/${id}`,
-  pricing: '/pricing',
   payment: '/payment',
   about: '/about-us',
   contact: '/contact-us',
@@ -28,14 +27,6 @@ export const paths = {
   page403: '/403',
   page404: '/404',
   page500: '/500',
-  components: '/components',
-  docs: 'https://docs.minimals.cc',
-  changelog: 'https://docs.minimals.cc/changelog',
-  zoneUI: 'https://mui.com/store/items/zone-landing-page/',
-  minimalUI: 'https://mui.com/store/items/minimal-dashboard/',
-  freeUI: 'https://mui.com/store/items/minimal-dashboard-free/',
-  figma:
-    'https://www.figma.com/file/kAYnYYdib0aQPNKZpgJT6J/%5BPreview%5D-Minimal-Web.v5.0.0?type=design&node-id=0%3A1&t=Al4jScQq97Aly0Mn-1',
   product: {
     root: `/product`,
     checkout: `/product/checkout`,
@@ -88,22 +79,6 @@ export const paths = {
   },
   user: {
     account: `/account`,
-  },
-  authDemo: {
-    classic: {
-      login: `${ROOTS.AUTH_DEMO}/classic/login`,
-      register: `${ROOTS.AUTH_DEMO}/classic/register`,
-      forgotPassword: `${ROOTS.AUTH_DEMO}/classic/forgot-password`,
-      newPassword: `${ROOTS.AUTH_DEMO}/classic/new-password`,
-      verify: `${ROOTS.AUTH_DEMO}/classic/verify`,
-    },
-    modern: {
-      login: `${ROOTS.AUTH_DEMO}/modern/login`,
-      register: `${ROOTS.AUTH_DEMO}/modern/register`,
-      forgotPassword: `${ROOTS.AUTH_DEMO}/modern/forgot-password`,
-      newPassword: `${ROOTS.AUTH_DEMO}/modern/new-password`,
-      verify: `${ROOTS.AUTH_DEMO}/modern/verify`,
-    },
   },
   // DASHBOARD
   dashboard: {
