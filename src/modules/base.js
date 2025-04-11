@@ -30,6 +30,13 @@ export class Service {
     return this.api.post(`${this.model}/active`, target)
   }
 
+  deactive(target) {
+    return this.api.post(`${this.model}/active`, {
+      ...target,
+      isActive: false,
+    })
+  }
+
   getActive(target) {
     return this.api.get(`${this.model}/active`, target)
   }

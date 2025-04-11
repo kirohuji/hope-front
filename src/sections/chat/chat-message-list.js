@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import CryptoJS from 'crypto-js';
 // @mui
 import Box from '@mui/material/Box';
 // components
@@ -9,7 +10,7 @@ import Lightbox, { useLightBox } from 'src/components/lightbox';
 import { useMessagesScroll } from './hooks';
 import ChatMessageItem from './chat-message-item';
 // ----------------------------------------------------------------------
-
+const secretKey = 'future';
 export default function ChatMessageList({
   onRefresh,
   sendingMessages = [],
@@ -22,7 +23,7 @@ export default function ChatMessageList({
 
   const slides = messages
     .filter((message) => message.contentType === 'image' || message.contentType === 'jpg')
-    .map((message) => ({ src: message.body }));
+    .map((message) => ({ src: CryptoJS.AES.decrypt(message.body, secretKey).toString(CryptoJS.enc.Utf8) }));
 
   const lightbox = useLightBox(slides);
 
@@ -58,7 +59,7 @@ export default function ChatMessageList({
               key={index}
               message={message}
               participants={participants}
-              onOpenLightbox={() => lightbox.onOpen(message.body)}
+              onOpenLightbox={() => lightbox.onOpen(CryptoJS.AES.decrypt(message.body, secretKey).toString(CryptoJS.enc.Utf8))}
             />
           ))}
           {sendingMessages.map((message, index) => (
@@ -67,7 +68,7 @@ export default function ChatMessageList({
               key={index}
               message={message}
               participants={participants}
-              onOpenLightbox={() => lightbox.onOpen(message.body)}
+              onOpenLightbox={() => lightbox.onOpen(CryptoJS.AES.decrypt(message.body, secretKey).toString(CryptoJS.enc.Utf8))}
             />
           ))}
           {/* {

@@ -170,7 +170,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
         <Box
           component="img"
           alt="attachment"
-          src={body}
+          src={CryptoJS.AES.decrypt(body, secretKey).toString(CryptoJS.enc.Utf8)}
           onClick={() => onOpenLightbox(body)}
           sx={{
             minHeight: 220,
