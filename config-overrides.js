@@ -35,5 +35,16 @@ module.exports = function override (config) {
       fullySpecified: false,
     },
   });
+  
+  // Add markdown file support
+  config.module.rules.push({
+    test: /\.md$/,
+    use: [
+      {
+        loader: 'raw-loader',
+      },
+    ],
+  });
+  
   return config;
 };

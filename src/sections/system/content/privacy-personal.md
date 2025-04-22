@@ -1,12 +1,3 @@
-import { Container, Card } from '@mui/material';
-import { useSettingsContext } from 'src/components/settings';
-import Scrollbar from 'src/components/scrollbar';
-import Markdown from 'src/components/markdown';
-
-export default function PrivacyPersonalView() {
-  const settings = useSettingsContext();
-
-  const markdown = `
 # 个人信息保护政策
 
 本个人信息保护政策旨在向您说明我们如何收集、使用、存储和保护您的个人信息，以及您享有的相关权利。
@@ -40,16 +31,4 @@ export default function PrivacyPersonalView() {
 - 更正不准确的信息
 - 删除您的信息
 - 限制信息处理
-- 数据可携性
-`;
-
-  return (
-    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-      <Scrollbar sx={{ height: '100%' }}>
-        <Card sx={{ p: 3 }}>
-          <Markdown>{markdown}</Markdown>
-        </Card>
-      </Scrollbar>
-    </Container>
-  );
-}
+- 数据可携性 
