@@ -77,6 +77,16 @@ export const paths = {
   system: {
     root: '/system',
   },
+  privacy: {
+    personal: '/privacy/personal',
+    children: '/privacy/children',
+    thirdParty: '/privacy/third-party',
+  },
+  legal: {
+    terms: '/legal/terms',
+    permissions: '/legal/permissions',
+    icp: '/legal/icp',
+  },
   user: {
     account: `/account`,
   },

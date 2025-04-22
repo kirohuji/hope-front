@@ -28,6 +28,16 @@ const ArticleDetailPage = lazy(() => import('src/pages/dashboard/article/details
 // System
 const SystemGeneralPage = lazy(() => import('src/pages/dashboard/system/general'));
 
+// Privacy
+const PrivacyPersonalPage = lazy(() => import('src/sections/system/view/privacy-personal'));
+const PrivacyChildrenPage = lazy(() => import('src/sections/system/view/privacy-children'));
+const PrivacyThirdPartyPage = lazy(() => import('src/sections/system/view/privacy-third-party'));
+
+// Legal
+const LegalTermsPage = lazy(() => import('src/sections/system/view/legal-terms'));
+const LegalPermissionsPage = lazy(() => import('src/sections/system/view/legal-permissions'));
+const LegalICPPage = lazy(() => import('src/sections/system/view/legal-icp'));
+
 const FaqsPage = lazy(() => import('src/pages/faqs'));
 
 // ----------------------------------------------------------------------
@@ -80,6 +90,32 @@ export default function Router() {
           path: 'training',
           element: <TrainingPage />,
         },
+        // Privacy routes
+        {
+          path: 'privacy/personal',
+          element: <PrivacyPersonalPage />
+        },
+        {
+          path: 'privacy/children',
+          element: <PrivacyChildrenPage />
+        },
+        {
+          path: 'privacy/third-party',
+          element: <PrivacyThirdPartyPage />
+        },
+        // Legal routes
+        {
+          path: 'legal/terms',
+          element: <LegalTermsPage />
+        },
+        {
+          path: 'legal/permissions',
+          element: <LegalPermissionsPage />
+        },
+        {
+          path: 'legal/icp',
+          element: <LegalICPPage />
+        },
         {
           path: 'training/detail',
           element: <TrainingDetailPage />,
@@ -101,3 +137,4 @@ export default function Router() {
     { path: '*', element: <Navigate to="/404" replace /> },
   ]);
 }
+

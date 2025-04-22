@@ -88,6 +88,12 @@ export default function Header({ isOffset }) {
         {pathname === '/account' && <div>账户设置</div>}
         {pathname === '/training/search' && <div>全部分类</div>}
         {pathname.includes('/reading/') && <div>今日阅读</div>}
+        {pathname === '/privacy/personal' && <div>个人信息保护政策</div>}
+        {pathname === '/privacy/children' && <div>儿童信息保护政策</div>}
+        {pathname === '/privacy/third-party' && <div>第三方数据共享说明</div>}
+        {pathname === '/legal/terms' && <div>服务条款</div>}
+        {pathname === '/legal/permissions' && <div>应用权限说明</div>}
+        {pathname === '/legal/icp' && <div>ICP备案信息</div>}
         <div
           style={{
             position: 'absolute',
