@@ -68,7 +68,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
       await dispatch(
         sendMessage(conversationId, {
           ...message,
-          message: message.body,
+          message: CryptoJS.AES.decrypt(message.body, secretKey).toString(CryptoJS.enc.Utf8),
         })
       );
     } catch (e) {

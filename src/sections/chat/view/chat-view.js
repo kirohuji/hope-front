@@ -73,26 +73,6 @@ const TABS = [
     label: '聊天会话',
     count: 0,
   },
-  // {
-  //   value: 'contacts',
-  //   label: ' 联系人',
-  //   count: 0,
-  // },
-  // {
-  //   value: 'organizations',
-  //   label: '组织架构',
-  //   count: 0,
-  // },
-  // {
-  //   value: 'organizations',
-  //   label: '组织架构',
-  //   count: 0,
-  // },
-  // {
-  //   value: 'contacts',
-  //   label: '我的小组',
-  //   count: 0,
-  // },
 ];
 
 let reactiveCollection = null;
@@ -100,7 +80,6 @@ let reactiveCollectionChange = null;
 let getMessage = null;
 
 export default function ChatView() {
-  // const { addMessageToQueue } = useMessageQueue();
 
   const router = useRouter();
 

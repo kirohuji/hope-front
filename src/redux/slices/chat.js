@@ -149,8 +149,16 @@ const slice = createSlice({
       }
       state.sendingMessage.byId[conversationId].push(newMessage);
     },
+    onClearMessage(state, action) {
+      const conversation = action.payload;
+      const { conversationId } = conversation;
+      state.sendingMessage.byId[conversationId] = [];
+    },
     pushMessageSuccess(state, action) {
       const { message } = action.payload;
+      if (!state.sendingMessage.byId[message.conversationId]) {
+        state.sendingMessage.byId[message.conversationId] = [];
+      }
       if (
         state.sendingMessage.byId[message.conversationId].filter(
           (m) => m.sendingMessageId === message.sendingMessageId
@@ -283,6 +291,10 @@ export const { addRecipients, onSendMessage, resetActiveConversation } = slice.a
 export function sendMessage(conversationKey, body) {
   return async (dispatch) => {
     dispatch(slice.actions.startSending());
+    console.log(body);
+    if (body.sendingMessageId) {
+      dispatch(slice.actions.onClearMessage({ conversationId: conversationKey }));
+    }
     const uuid = uuidv4();
     const encryptedMessage = CryptoJS.AES.encrypt(body.message, secretKey).toString();
     try {

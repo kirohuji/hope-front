@@ -168,7 +168,7 @@ export default function AuditListView() {
         const response = await auditService.pagination(
           {
             ...selector,
-            scope: scope.active._id,
+            scope: scope?.active?._id,
             ..._.pickBy(_.omit(debouncedFilters, ['role'])),
           },
           {
@@ -184,7 +184,7 @@ export default function AuditListView() {
         enqueueSnackbar(error.message);
       }
     },
-    [scope.active._id, debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
+    [scope, debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
   );
 
   useEffect(() => {

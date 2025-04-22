@@ -62,10 +62,14 @@ export default function ChatRoom({ participants, conversation, messages }) {
   const { openSettingsMobile, onOpenSettingsMobile, onCloseSettingsMobile } = useCollapseSettings();
 
   const fetchAttachments = useCallback(async () => {
-    const response = await messagingService.getConversationMessagesAttachmentsById({
-      _id: conversation._id,
-    });
-    setAttachments(uniq(flatten(response)));
+    try {
+      const response = await messagingService.getConversationMessagesAttachmentsById({
+        _id: conversation._id,
+      });
+      setAttachments(uniq(flatten(response)));
+    } catch (error) {
+      console.error(error);
+    }
   }, [conversation._id]);
 
   useEffect(() => {
