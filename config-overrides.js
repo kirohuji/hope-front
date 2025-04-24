@@ -39,11 +39,7 @@ module.exports = function override (config) {
   // Add markdown file support
   config.module.rules.push({
     test: /\.md$/,
-    use: [
-      {
-        loader: 'raw-loader',
-      },
-    ],
+    type: 'asset/source'
   });
   
   return config;

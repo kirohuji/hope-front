@@ -109,6 +109,11 @@ export function useNavData() {
             ],
           },
           {
+            title: t('dictionary'),
+            path: paths.dashboard.dictionary.root,
+            icon: ICONS.mail,
+          },
+          {
             title: t('book'),
             auth: ['Book', 'BookList', 'BookListAdd', 'BookListEdit', 'BookListDelete'],
             path: paths.dashboard.book.root,
