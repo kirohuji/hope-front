@@ -45,7 +45,7 @@ import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 import { MeteorProvider } from 'src/meteor/context';
 
 const connectUrl =
-  process.env.NODE_ENV !== 'development'
+  process.env.NODE_ENV === 'development'
     ? 'ws://localhost:3030/websocket'
     : 'wss://hope.lourd.top/websocket';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
