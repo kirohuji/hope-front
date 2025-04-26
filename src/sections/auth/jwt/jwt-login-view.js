@@ -92,10 +92,10 @@ export default function JwtLoginView() {
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">登录到希望之家</Typography>
+      <Typography variant="h4">登录到佳麦</Typography>
 
       <Stack direction="row" spacing={0.5}>
-        <Typography variant="body2">欢迎加入大家庭</Typography>
+        <Typography variant="body2">欢迎加入社区</Typography>
 
         {/* <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
           Create an account

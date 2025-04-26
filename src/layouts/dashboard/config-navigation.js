@@ -114,6 +114,24 @@ export function useNavData() {
             icon: ICONS.mail,
           },
           {
+            title: t('broadcast'),
+            path: paths.dashboard.broadcast.root,
+            auth: [
+              'Broadcast',
+              'BroadcastList',
+              'BroadcastListAdd',
+              'BroadcastListEdit',
+              'BroadcastListDelete',
+            ],
+            icon: ICONS.broadcast,
+            children: [
+              { title: t('list'), path: paths.dashboard.broadcast.root, auth: ['BroadcastList'] },
+              // { title: t('details'), path: paths.dashboard.broadcast.demo.details },
+              // { title: t('create'), path: paths.dashboard.broadcast.new },
+              // { title: t('edit'), path: paths.dashboard.broadcast.demo.edit },
+            ],
+          },
+          {
             title: t('book'),
             auth: ['Book', 'BookList', 'BookListAdd', 'BookListEdit', 'BookListDelete'],
             path: paths.dashboard.book.root,

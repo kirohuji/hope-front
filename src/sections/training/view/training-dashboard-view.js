@@ -63,7 +63,7 @@ export default function TrainingDashboardView() {
   return (
     <>
       <Helmet>
-        <title>TrainingDashboard: | 希望之家</title>
+        <title>TrainingDashboard: | 佳麦</title>
       </Helmet>
       <Stack
         direction="row"

@@ -140,9 +140,9 @@ export default function AuthClassicLayout({ children, image, title }) {
         color: theme.palette.text.secondary,
       }}
     >
-      <Typography variant="body2">
+      {/* <Typography variant="body2">
         © 2024 lourd.top | 浙ICP备2023041140号-2A
-      </Typography>
+      </Typography> */}
     </Box>
   );
 
