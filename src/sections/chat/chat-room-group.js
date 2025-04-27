@@ -39,6 +39,8 @@ export default function ChatRoomGroup({ conversation, participants }) {
 
   const [selected, setSelected] = useState(null);
 
+  const [isAll, setIsAll] = useState(false);
+
   const [selectedItem, setSelectedItem] = useState(null);
 
   const collapse = useBoolean(true);
@@ -129,35 +131,46 @@ export default function ChatRoomGroup({ conversation, participants }) {
               typography: 'caption',
             }}
           />
-          {conversation.createdBy === user._id && participant._id !== user._id && (
-            <IconButton
-              color={popover.open ? 'inherit' : 'default'}
-              onClick={(e) => {
-                setSelectedItem(participant);
-                e.stopPropagation();
-                popover.onOpen(e);
-              }}
-            >
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          )}
+          {conversation.createdBy === user._id &&
+            participant._id !== user._id &&
+            totalParticipants > 3 && (
+              <IconButton
+                color={popover.open ? 'inherit' : 'default'}
+                onClick={(e) => {
+                  setSelectedItem(participant);
+                  e.stopPropagation();
+                  popover.onOpen(e);
+                }}
+              >
+                <Iconify icon="eva:more-vertical-fill" />
+              </IconButton>
+            )}
         </ListItem>
       ))}
     </Scrollbar>
   );
 
-  const handleDelete = useCallback(async () => {
-    try {
-      await messagingService.removeParticipant({
-        _id: conversation._id,
-        participant: selectedItem,
-      });
-      enqueueSnackbar('删除成功');
-      confirm.onFalse();
-    } catch (e) {
-      enqueueSnackbar('删除失败');
-    }
-  }, [confirm, conversation._id, enqueueSnackbar, selectedItem]);
+  const handleDelete = useCallback(
+    async () => {
+      try {
+        if (isAll) {
+          await messagingService.deleteConversation({
+            _id: conversation._id,
+          });
+        } else {
+          await messagingService.removeParticipant({
+            _id: conversation._id,
+            participant: selectedItem,
+          });
+        }
+        enqueueSnackbar('删除成功');
+        confirm.onFalse();
+      } catch (e) {
+        enqueueSnackbar('删除失败');
+      }
+    },
+    [confirm, conversation._id, enqueueSnackbar, selectedItem, isAll]
+  );
 
   return (
     <>
@@ -165,6 +178,21 @@ export default function ChatRoomGroup({ conversation, participants }) {
 
       <div>
         <Collapse in={collapse.value}>{renderContent}</Collapse>
+        {conversation.createdBy === user._id && (
+          <Button
+            variant="contained"
+            fullWidth
+            color="error"
+            sx={{ borderRadius: 0 }}
+            onClick={() => {
+              setIsAll(true);
+              confirm.onTrue();
+              popover.onClose();
+            }}
+          >
+            删除群聊
+          </Button>
+        )}
       </div>
 
       {selected && (
@@ -191,6 +219,7 @@ export default function ChatRoomGroup({ conversation, participants }) {
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
+            setIsAll(false);
           }}
           sx={{ color: 'error.main' }}
         >
@@ -204,7 +233,7 @@ export default function ChatRoomGroup({ conversation, participants }) {
         title="删除"
         content="确认要删除吗?"
         action={
-          <Button variant="contained" color="error" onClick={handleDelete}>
+          <Button variant="contained" color="error" onClick={() => handleDelete()}>
             删除
           </Button>
         }

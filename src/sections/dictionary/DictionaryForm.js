@@ -32,7 +32,7 @@ export default function DictionaryForm ({
   const Schema = Yup.object().shape({
     label: Yup.string().required('请输入 名称'),
     value: Yup.string().required('请输入 编码'),
-    description: Yup.string().max(5000),
+    description: Yup.string().max(10000),
   });
   const defaultValues = useMemo(
     () => ({

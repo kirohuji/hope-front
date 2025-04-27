@@ -2,7 +2,6 @@
 import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
 import { Device } from '@capacitor/device';
-import _ from 'lodash';
 
 import { userService, versionService, messagingService } from 'src/composables/context-provider';
 import { Capacitor } from '@capacitor/core';
@@ -178,7 +177,12 @@ export function AuthProvider({ children }) {
     if (Capacitor.getPlatform() === 'ios') {
       console.log('iOS!');
       import('../../../ios.css');
-      // await registerNotifications();
+      const deviceId = await Device.getId();
+      messagingService.updateDeviceStatus({
+        deviceId,
+        status: 'active',
+      });
+      await registerNotifications();
       StatusBar.setOverlaysWebView({ overlay: true });
     } else if (Capacitor.getPlatform() === 'android') {
       console.log('Android!');

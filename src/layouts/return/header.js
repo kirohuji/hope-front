@@ -11,9 +11,8 @@ import { IconButtonAnimate } from 'src/components/animate';
 import { useRouter, usePathname } from 'src/routes/hook';
 import { useSelector } from 'src/redux/store';
 import { useResponsive } from 'src/hooks/use-responsive';
-
+import { useAuthContext } from 'src/auth/hooks';
 // components
-import Logo from '../../components/logo';
 import Iconify from '../../components/iconify';
 // ----------------------------------------------------------------------
 
@@ -35,6 +34,7 @@ const CircleText = styled('div')(({ theme }) => ({
   color: '#333',
 }));
 export default function Header({ isOffset }) {
+  const { user } = useAuthContext();
   const theme = useTheme();
   const router = useRouter();
   const mdUp = useResponsive('up', 'md');
@@ -53,7 +53,10 @@ export default function Header({ isOffset }) {
           .map((participant) => participant.realName)
           .join(', ')}(群聊)`;
       }
-      return activeConversation.participants[0].realName;
+      const otherParticipant = activeConversation.participants.find(
+        (participant) => participant._id !== user._id
+      );
+      return otherParticipant?.realName || '';
     }
     return '';
   };
@@ -85,6 +88,12 @@ export default function Header({ isOffset }) {
         {pathname === '/account' && <div>账户设置</div>}
         {pathname === '/training/search' && <div>全部分类</div>}
         {pathname.includes('/reading/') && <div>今日阅读</div>}
+        {pathname === '/privacy/personal' && <div>个人信息保护政策</div>}
+        {pathname === '/privacy/children' && <div>儿童信息保护政策</div>}
+        {pathname === '/privacy/third-party' && <div>第三方数据共享说明</div>}
+        {pathname === '/legal/terms' && <div>佳麦服务使用条款</div>}
+        {pathname === '/legal/permissions' && <div>应用权限说明</div>}
+        {pathname === '/legal/icp' && <div>ICP备案信息</div>}
         <div
           style={{
             position: 'absolute',

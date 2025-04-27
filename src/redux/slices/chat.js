@@ -149,8 +149,16 @@ const slice = createSlice({
       }
       state.sendingMessage.byId[conversationId].push(newMessage);
     },
+    onClearMessage(state, action) {
+      const conversation = action.payload;
+      const { conversationId } = conversation;
+      state.sendingMessage.byId[conversationId] = [];
+    },
     pushMessageSuccess(state, action) {
       const { message } = action.payload;
+      if (!state.sendingMessage.byId[message.conversationId]) {
+        state.sendingMessage.byId[message.conversationId] = [];
+      }
       if (
         state.sendingMessage.byId[message.conversationId].filter(
           (m) => m.sendingMessageId === message.sendingMessageId
@@ -227,6 +235,10 @@ const slice = createSlice({
       );
     },
 
+    clearActiveConversation(state) {
+      state.activeConversationId = null;
+      state.activeConversation = {};
+    },
     markConversationAsReadSuccess(state, action) {
       const { conversationId } = action.payload;
       const conversation = state.conversations.byId[conversationId];
@@ -283,6 +295,10 @@ export const { addRecipients, onSendMessage, resetActiveConversation } = slice.a
 export function sendMessage(conversationKey, body) {
   return async (dispatch) => {
     dispatch(slice.actions.startSending());
+    console.log(body);
+    if (body.sendingMessageId) {
+      dispatch(slice.actions.onClearMessage({ conversationId: conversationKey }));
+    }
     const uuid = uuidv4();
     const encryptedMessage = CryptoJS.AES.encrypt(body.message, secretKey).toString();
     try {
@@ -574,9 +590,9 @@ export function getConversationByConversationKey(conversationKey) {
           slice.actions.getConversationByConversationSuccess(conversations.byId[conversationKey])
         );
       } else {
-        const data = await messagingService.getConversationById(
-          conversations.byId[conversationKey]
-        );
+        const data = await messagingService.getConversationById({
+          _id: conversationKey
+        });
         dispatch(slice.actions.getConversationSuccess(data));
       }
     } catch (error) {
@@ -661,6 +677,21 @@ export function mergeConversations(newData) {
           newData,
         })
       );
+    } catch (error) {
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  };
+}
+export function clearActiveConversation() {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      await dispatch(slice.actions.clearActiveConversation());
     } catch (error) {
       dispatch(
         slice.actions.hasError({

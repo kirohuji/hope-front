@@ -90,7 +90,7 @@ export default function UserProfileView() {
           photoURL={user?.photoURL}
           coverUrl={user.photoURL}
         />
-
+{/* 
         <Tabs
           value={currentTab}
           onChange={handleChangeTab}
@@ -113,7 +113,7 @@ export default function UserProfileView() {
           {TABS.map((tab) => (
             <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
           ))}
-        </Tabs>
+        </Tabs> */}
       </Card>
 
       {currentTab === 'profile' && <ProfileHome info={user} posts={_userFeeds} />}

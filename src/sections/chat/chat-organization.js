@@ -37,7 +37,7 @@ export default function ChatOrganization({
 
   const [levels, setLevels] = useState([
     {
-      name: '希望之家',
+      name: '佳麦',
       to: active?._id,
     },
   ]);

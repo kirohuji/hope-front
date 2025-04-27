@@ -5,8 +5,7 @@ import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
-// _mock
-import { JOB_PUBLISH_OPTIONS } from 'src/_mock';
+
 // components
 import { useSettingsContext } from 'src/components/settings';
 // redux
@@ -18,6 +17,17 @@ import VersionDetailsToolbar from '../version-details-toolbar';
 import VersionDetailsContent from '../version-details-content';
 
 // ----------------------------------------------------------------------
+
+const JOB_PUBLISH_OPTIONS = [
+  {
+    value: 'published',
+    label: 'Published',
+  },
+  {
+    value: 'draft',
+    label: 'Draft',
+  },
+];
 
 export default function VersionDetailsView() {
   const { enqueueSnackbar } = useSnackbar();

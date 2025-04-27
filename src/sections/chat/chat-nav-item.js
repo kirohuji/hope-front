@@ -64,7 +64,7 @@ export default function ChatNavItem({
     currentUserId: user?._id,
   });
 
-  const singleParticipant = participants[0];
+  const singleParticipant = participants[0] || {};
 
   const { username, photoURL, status } = singleParticipant;
 

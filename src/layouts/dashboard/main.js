@@ -9,8 +9,9 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { useSettingsContext } from 'src/components/settings';
 
 // capacitor
-import { Capacitor } from '@capacitor/core';
-import { Device } from '@capacitor/device';
+// import { Capacitor } from '@capacitor/core';
+// import { Device } from '@capacitor/device';
+import CryptoJS from 'crypto-js';
 //
 import { paths } from 'src/routes/paths';
 import { useDispatch, useSelector } from 'src/redux/store';
@@ -26,6 +27,8 @@ import {
   conversationsPublish,
 } from 'src/meteor/context/meteor-provider';
 import { HEADER, NAV } from '../config-layout';
+
+const secretKey = 'future';
 // ----------------------------------------------------------------------
 
 const SPACING = 8;
@@ -53,16 +56,16 @@ const CustomSnackbar = ({ message, name, avatarUrl, onGoto }) => (
     </Box>
   </Box>
 );
-async function updateDeviceStatus() {
-  if (Capacitor.isNativePlatform()) {
-    console.log('updateDeviceStatus');
-    const deviceId = await Device.getId();
-    messagingService.updateDeviceStatus({
-      deviceId,
-      status: 'active',
-    });
-  }
-}
+// async function updateDeviceStatus() {
+//   if (Capacitor.isNativePlatform()) {
+//     console.log('updateDeviceStatus');
+//     const deviceId = await Device.getId();
+//     messagingService.updateDeviceStatus({
+//       deviceId,
+//       status: 'active',
+//     });
+//   }
+// }
 export default function Main({ children, sx, ...other }) {
   const { isConnected, subConversations } = useMeteorContext();
   const settings = useSettingsContext();
@@ -79,11 +82,11 @@ export default function Main({ children, sx, ...other }) {
   function handleMessage(message) {
     switch (message.contentType) {
       case 'text':
-        return message.body;
+        return CryptoJS.AES.decrypt(message.body, secretKey).toString(CryptoJS.enc.Utf8);
       case 'image':
         return '对方发送了一张图片给你';
       default:
-        return message.body;
+        return CryptoJS.AES.decrypt(message.body, secretKey).toString(CryptoJS.enc.Utf8);
     }
   }
   useEffect(() => {
@@ -98,6 +101,8 @@ export default function Main({ children, sx, ...other }) {
           const message = await messagingService.getLastMessage({
             _id: conversation.id,
           });
+          console.log('conversation',conversation)
+          console.log('message',message)
           const key = enqueueSnackbar(
             <CustomSnackbar
               name={message.user.displayName}

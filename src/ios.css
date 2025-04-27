@@ -42,6 +42,7 @@
   .account-general-form {
     padding-bottom: calc(constant(safe-area-inset-bottom) * 2.5) !important;
     padding-bottom: calc(env(safe-area-inset-bottom) * 2.5) !important;
+    overflow-x: hidden;
   }
   .bottom-navigation {
     background-color: white;

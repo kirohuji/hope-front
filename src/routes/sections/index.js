@@ -1,16 +1,12 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 import { lazy } from 'react';
-// layouts
-import MainLayout from 'src/layouts/main';
 // config
 import { PATH_AFTER_LOGIN } from 'src/config-global';
 //
 import ReturnLayout from 'src/layouts/return';
-import { mainRoutes, HomePage } from './main';
+import { mainRoutes } from './main';
 import { authRoutes } from './auth';
-import { authDemoRoutes } from './auth-demo';
 import { dashboardRoutes } from './dashboard';
-import { componentsRoutes } from './components';
 
 const AiPage = lazy(() => import('src/pages/dashboard/openai'));
 const ChatPage = lazy(() => import('src/pages/dashboard/chat'));
@@ -31,6 +27,21 @@ const ArticleDetailPage = lazy(() => import('src/pages/dashboard/article/details
 
 // System
 const SystemGeneralPage = lazy(() => import('src/pages/dashboard/system/general'));
+
+// Privacy
+const PrivacyPersonalPage = lazy(() => import('src/sections/system/view/privacy-personal'));
+const PrivacyChildrenPage = lazy(() => import('src/sections/system/view/privacy-children'));
+const PrivacyThirdPartyPage = lazy(() => import('src/sections/system/view/privacy-third-party'));
+const PrivacyConcisePage = lazy(() => import('src/sections/system/view/privacy-concise'));
+
+// Legal
+const LegalTermsPage = lazy(() => import('src/sections/system/view/legal-terms'));
+const LegalPermissionsPage = lazy(() => import('src/sections/system/view/legal-permissions'));
+const LegalICPPage = lazy(() => import('src/sections/system/view/legal-icp'));
+
+// System Info
+const SDKListPage = lazy(() => import('src/sections/system/view/sdk-list'));
+const CollectInfoListPage = lazy(() => import('src/sections/system/view/collect-info-list'));
 
 const FaqsPage = lazy(() => import('src/pages/faqs'));
 
@@ -67,16 +78,12 @@ export default function Router() {
     },
     // Auth routes
     ...authRoutes,
-    ...authDemoRoutes,
 
     // Dashboard routes
     ...dashboardRoutes,
 
     // Main routes
     ...mainRoutes,
-
-    // Components routes
-    ...componentsRoutes,
     {
       element: <ReturnLayout />,
       children: [
@@ -87,6 +94,45 @@ export default function Router() {
         {
           path: 'training',
           element: <TrainingPage />,
+        },
+        // Privacy routes
+        {
+          path: 'privacy/personal',
+          element: <PrivacyPersonalPage />
+        },
+        {
+          path: 'privacy/children',
+          element: <PrivacyChildrenPage />
+        },
+        {
+          path: 'privacy/third-party',
+          element: <PrivacyThirdPartyPage />
+        },
+        {
+          path: 'privacy/concise',
+          element: <PrivacyConcisePage />
+        },
+        // Legal routes
+        {
+          path: 'legal/terms',
+          element: <LegalTermsPage />
+        },
+        {
+          path: 'legal/permissions',
+          element: <LegalPermissionsPage />
+        },
+        {
+          path: 'legal/icp',
+          element: <LegalICPPage />
+        },
+        // System Info routes
+        {
+          path: 'system/sdk-list',
+          element: <SDKListPage />
+        },
+        {
+          path: 'system/collect-info-list',
+          element: <CollectInfoListPage />
         },
         {
           path: 'training/detail',
@@ -109,3 +155,4 @@ export default function Router() {
     { path: '*', element: <Navigate to="/404" replace /> },
   ]);
 }
+

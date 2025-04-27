@@ -35,11 +35,16 @@ const navigations = [
   //   icon: ICONS.tour,
   //   to: '/dashboard/discovery',
   // },
-  // {
-  //   label: '日程',
-  //   icon: ICONS.calendar,
-  //   to: '/dashboard/calendar',
-  // },
+  {
+    label: '活动',
+    icon: ICONS.tour,
+    to: '/dashboard/broadcast',
+  },
+  {
+    label: '日程',
+    icon: ICONS.calendar,
+    to: '/dashboard/calendar',
+  },
   {
     label: '阅读',
     icon: ICONS.blog,
