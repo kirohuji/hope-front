@@ -155,6 +155,7 @@ export default function ChatView() {
       router.replace(`${paths.chat}?id=${selectedConversationId}`);
     } else {
       getDetails();
+      console.log('开始监听')
       if (ddpclient?.connected && user) {
         const date = new Date();
         date.setMinutes(date.getMinutes() - 1);

@@ -39,6 +39,8 @@ export default function ChatRoomGroup({ conversation, participants }) {
 
   const [selected, setSelected] = useState(null);
 
+  const [isAll, setIsAll] = useState(false);
+
   const [selectedItem, setSelectedItem] = useState(null);
 
   const collapse = useBoolean(true);
@@ -149,7 +151,7 @@ export default function ChatRoomGroup({ conversation, participants }) {
   );
 
   const handleDelete = useCallback(
-    async (isAll) => {
+    async () => {
       try {
         if (isAll) {
           await messagingService.deleteConversation({
@@ -167,7 +169,7 @@ export default function ChatRoomGroup({ conversation, participants }) {
         enqueueSnackbar('删除失败');
       }
     },
-    [confirm, conversation._id, enqueueSnackbar, selectedItem]
+    [confirm, conversation._id, enqueueSnackbar, selectedItem, isAll]
   );
 
   return (
@@ -183,7 +185,9 @@ export default function ChatRoomGroup({ conversation, participants }) {
             color="error"
             sx={{ borderRadius: 0 }}
             onClick={() => {
-              handleDelete(true);
+              setIsAll(true);
+              confirm.onTrue();
+              popover.onClose();
             }}
           >
             删除群聊
@@ -215,6 +219,7 @@ export default function ChatRoomGroup({ conversation, participants }) {
           onClick={() => {
             confirm.onTrue();
             popover.onClose();
+            setIsAll(false);
           }}
           sx={{ color: 'error.main' }}
         >
@@ -228,7 +233,7 @@ export default function ChatRoomGroup({ conversation, participants }) {
         title="删除"
         content="确认要删除吗?"
         action={
-          <Button variant="contained" color="error" onClick={handleDelete}>
+          <Button variant="contained" color="error" onClick={() => handleDelete()}>
             删除
           </Button>
         }

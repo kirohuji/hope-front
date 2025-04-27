@@ -11,7 +11,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Dialog, { dialogClasses } from '@mui/material/Dialog';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { useSelector } from 'src/redux/store';
+import { useSelector, useDispatch } from 'src/redux/store';
+import { clearActiveConversation, getConversationByConversationKey } from 'src/redux/slices/chat';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -34,6 +35,8 @@ export default function ChatPopover() {
   const { enqueueSnackbar } = useSnackbar();
 
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
 
   const { contacts } = useSelector((state) => state.chat);
 
@@ -174,13 +177,16 @@ export default function ChatPopover() {
         console.log('newConversation', newConversation);
         conversationKey = newConversation._id;
       }
+      await dispatch(clearActiveConversation());
+      console.log('clearActiveConversation',conversationKey);
+      await dispatch(getConversationByConversationKey(conversationKey));
       router.push(`${paths.chat}?id=${conversationKey}`);
       setLoading(false);
     } catch (e) {
       enqueueSnackbar('添加失败,请联系管理员!');
       setLoading(false);
     }
-  }, [enqueueSnackbar, router, selectedContacts]);
+  }, [dispatch, enqueueSnackbar, router, selectedContacts]);
 
   return (
     <>

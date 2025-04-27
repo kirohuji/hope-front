@@ -235,6 +235,10 @@ const slice = createSlice({
       );
     },
 
+    clearActiveConversation(state) {
+      state.activeConversationId = null;
+      state.activeConversation = {};
+    },
     markConversationAsReadSuccess(state, action) {
       const { conversationId } = action.payload;
       const conversation = state.conversations.byId[conversationId];
@@ -586,9 +590,9 @@ export function getConversationByConversationKey(conversationKey) {
           slice.actions.getConversationByConversationSuccess(conversations.byId[conversationKey])
         );
       } else {
-        const data = await messagingService.getConversationById(
-          conversations.byId[conversationKey]
-        );
+        const data = await messagingService.getConversationById({
+          _id: conversationKey
+        });
         dispatch(slice.actions.getConversationSuccess(data));
       }
     } catch (error) {
@@ -673,6 +677,21 @@ export function mergeConversations(newData) {
           newData,
         })
       );
+    } catch (error) {
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  };
+}
+export function clearActiveConversation() {
+  return async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      await dispatch(slice.actions.clearActiveConversation());
     } catch (error) {
       dispatch(
         slice.actions.hasError({
