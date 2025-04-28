@@ -282,6 +282,9 @@ const slice = createSlice({
         state.generate.byId[conversationId][state.generate.currentMessageId] += message;
       }
     },
+    resetState(state) {
+      return initialState;
+    },
   },
 });
 

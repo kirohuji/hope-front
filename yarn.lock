@@ -5906,11 +5906,6 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001464, caniuse-lite@^1.0.30001503:
   resolved "https://registry.npmmirror.com/caniuse-lite/-/caniuse-lite-1.0.30001507.tgz"
   integrity sha512-SFpUDoSLCaE5XYL2jfqe9ova/pbQHEmbheDf5r4diNwbAgR3qxM9NQtfsiSscjqoya5K7kFcHPUQ+VsUkIJR4A==
 
-capacitor-plugin-jpush@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.npmmirror.com/capacitor-plugin-jpush/-/capacitor-plugin-jpush-1.0.7.tgz"
-  integrity sha512-WUri5Bqf3fBE/OhyNbSrh1xqKOKBbovr9ef2Y19VKzKrJ/i1V2+tWz24L18IuCRw3Mc5wf7ZxFPStqfM6RUVZQ==
-
 case-sensitive-paths-webpack-plugin@^2.4.0:
   version "2.4.0"
   resolved "https://registry.npmmirror.com/case-sensitive-paths-webpack-plugin/-/case-sensitive-paths-webpack-plugin-2.4.0.tgz"

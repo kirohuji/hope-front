@@ -7,11 +7,11 @@ const config: CapacitorConfig = {
     CapacitorUpdater: {
       autoUpdate: false,
     },
-    JPush: {
-      // your application appKey on JPush
-      appKey: 'd6d9cce02a95b530d76d076e',
-      channel: 'developer-default',
-    },
+    // JPush: {
+    //   // your application appKey on JPush
+    //   appKey: 'd6d9cce02a95b530d76d076e',
+    //   channel: 'developer-default',
+    // },
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"],
     },

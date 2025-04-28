@@ -42,6 +42,9 @@ const slice = createSlice({
       state.data = data;
       state.total = total;
     },
+    resetState(state) {
+      return initialState;
+    },
   },
 });
 

@@ -17,7 +17,7 @@ import { paths } from 'src/routes/paths';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { getScopes, setScope } from 'src/redux/slices/scope';
 import { useMeteorContext } from 'src/meteor/hooks';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useSnackbar } from 'src/components/snackbar';
 import { useRouter, usePathname } from 'src/routes/hook';
 import { useAuthContext } from 'src/auth/hooks';
@@ -89,11 +89,14 @@ export default function Main({ children, sx, ...other }) {
         return CryptoJS.AES.decrypt(message.body, secretKey).toString(CryptoJS.enc.Utf8);
     }
   }
+  const handleScope = useCallback(async () => {
+    await dispatch(getScopes());
+    dispatch(setScope(user));
+  }, [dispatch, user]);
+
   useEffect(() => {
-    // updateDeviceStatus();
     if (!scope.active?._id) {
-      dispatch(getScopes());
-      dispatch(setScope(user));
+      handleScope();
     }
     if (isConnected) {
       subConversations(async (conversation) => {

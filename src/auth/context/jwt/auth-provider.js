@@ -7,7 +7,7 @@ import { userService, versionService, messagingService } from 'src/composables/c
 import { Capacitor } from '@capacitor/core';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { registerNotifications } from 'src/cap/push-notification';
-import { registerNotificationsByHuawei } from 'src/huawei/push-notification';
+// import { registerNotificationsByHuawei } from 'src/huawei/push-notification';
 import { App } from '@capacitor/app';
 import { useMeteorContext } from 'src/meteor/hooks';
 import { StatusBar } from '@capacitor/status-bar';
@@ -187,7 +187,7 @@ export function AuthProvider({ children }) {
     } else if (Capacitor.getPlatform() === 'android') {
       console.log('Android!');
       import('../../../android.css');
-      await registerNotificationsByHuawei();
+      // await registerNotificationsByHuawei();
       StatusBar.setOverlaysWebView({ overlay: false });
     } else {
       console.log('Web!');
@@ -295,6 +295,7 @@ export function AuthProvider({ children }) {
     setSession(null);
     setInfo(null);
     localStorage.clear();
+    // 重置 Redux store
     dispatch({
       type: 'LOGOUT',
     });
@@ -384,7 +385,7 @@ App.addListener('appStateChange', async (state) => {
       const config = await versionService.getActive();
       const version = `${config.majorVersion}.${config.minorVersion}.${config.patchVersion}`;
       // 当前版本不是最新版本时获取最新的版本
-      if (current.bundle.version !== version) {
+      if (current.bundle.version !== version && config.majorVersion) {
         console.log('从后台拿到的安装包URL开始下载', config);
         if (config.file) {
           data = await CapacitorUpdater.download({

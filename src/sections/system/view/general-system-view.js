@@ -17,12 +17,15 @@ import BaseOptions from 'src/components/settings/drawer/base-option';
 import PresetsOptions from 'src/components/settings/drawer/presets-options';
 import { useAuthContext } from 'src/auth/hooks';
 import { useSnackbar } from 'src/components/snackbar';
+import { useDispatch } from 'src/redux/store';
 import { systemNavData } from '../system-navigation';
 
 export default function SystemGeneralView() {
   const { logout } = useAuthContext();
 
   const router = useRouter();
+
+  const dispatch = useDispatch();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -82,6 +85,13 @@ export default function SystemGeneralView() {
 
   const handleLogout = async () => {
     try {
+      // 重置其他 Redux slices
+      await dispatch({
+        type: 'chat/resetState',
+      });
+      await dispatch({
+        type: 'scope/resetState',
+      });
       await logout();
       await router.replace('/auth/jwt/login');
     } catch (error) {
