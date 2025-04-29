@@ -8,7 +8,7 @@
   height: 56px !important;
 }
 .bottom-chat {
-  height: calc(100vh - 10px) !important;
+  height: calc(100vh - 72px) !important;
 }
 
 .MuiBottomNavigationAction-label {
@@ -19,7 +19,8 @@
   width: 100%;
 }
 .return-main {
-  /* height: calc(100vh - 72px); */
+  height: 100vh;
+  padding-top: 72px;
 }
 .message-list {
   margin-bottom: 10px;

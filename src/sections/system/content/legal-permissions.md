@@ -149,14 +149,9 @@
 <th style="width: 300px; overflow: hidden; text-overflow: ellipsis;">使用场景及目的</th>
 </tr>
 <tr>
-<td style="overflow: hidden; text-overflow: ellipsis;">NSCalendarsUsageDescription</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">访问系统中的日历活动</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">用于帮助您设置、完成或修改活动预约提醒功能</td>
-</tr>
-<tr>
-<td style="overflow: hidden; text-overflow: ellipsis;">NSPhotoLibraryAddUsageDescription</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">向相册中添加内容</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">允许App写入/下载/保存/修改/删除图片、文件、崩溃日志</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">NSCameraUsageDescription</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">使用摄像头</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">需要访问您的相机以进行视频通话和拍摄照片</td>
 </tr>
 <tr>
 <td style="overflow: hidden; text-overflow: ellipsis;">NSPhotoLibraryUsageDescription</td>
@@ -164,14 +159,29 @@
 <td style="overflow: hidden; text-overflow: ellipsis;">允许 App 读取存储中的图片、文件内容，主要用于帮助您发布信息、上传头像</td>
 </tr>
 <tr>
-<td style="overflow: hidden; text-overflow: ellipsis;">NSCameraUsageDescription</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">使用摄像头</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">是为了使您可以使用摄像头进行扫码、拍摄，用于实现登录、图片反馈及上传头像的功能</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">NSPhotoLibraryAddUsageDescription</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">向相册中添加内容</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">允许App写入/下载/保存/修改/删除图片、文件、崩溃日志</td>
 </tr>
 <tr>
 <td style="overflow: hidden; text-overflow: ellipsis;">NSMicrophoneUsageDescription</td>
 <td style="overflow: hidden; text-overflow: ellipsis;">使用麦克风</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">用于帮助您实现跟读发音、录音反馈意见建议的功能</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">需要访问您的麦克风以进行视频通话和语音通话</td>
+</tr>
+<tr>
+<td style="overflow: hidden; text-overflow: ellipsis;">NSLocalNetworkUsageDescription</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">访问本地网络</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">需要访问本地网络以进行视频通话</td>
+</tr>
+<tr>
+<td style="overflow: hidden; text-overflow: ellipsis;">NSUserNotificationUsageDescription</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">发送通知</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">需要发送通知以提醒您新的消息和重要更新</td>
+</tr>
+<tr>
+<td style="overflow: hidden; text-overflow: ellipsis;">UIBackgroundModes</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">后台运行模式</td>
+<td style="overflow: hidden; text-overflow: ellipsis;">支持远程通知、音频播放、网络通话、后台获取和处理任务</td>
 </tr>
 </table>
 
