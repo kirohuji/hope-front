@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -9,6 +9,9 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
+// routes
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hook';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // assets
@@ -28,11 +31,13 @@ import PaymentCardListDialog from '../payment/payment-card-list-dialog';
 export default function AccountBillingPlan({ cardList, addressBook, plans }) {
   const { user } = useAuthContext();
 
-  const membership = user.membership;
+  const router = useRouter();
 
   const openAddress = useBoolean();
 
   const openCards = useBoolean();
+
+  const [currentUserPlan, setCurrentUserPlan] = useState({});
 
   const primaryAddress = addressBook.filter((address) => address.primary)[0];
 
@@ -46,12 +51,12 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
 
   const handleSelectPlan = useCallback(
     (newValue) => {
-      const currentPlan = plans.filter((plan) => plan.primary)[0].subscription;
-      if (currentPlan !== newValue) {
+      const currentPlan = plans.find((plan) => plan.label === selectedPlan);
+      if (currentPlan.label !== newValue) {
         setSelectedPlan(newValue);
       }
     },
-    [plans]
+    [plans, selectedPlan]
   );
 
   const handleSelectAddress = useCallback((newValue) => {
@@ -62,12 +67,16 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
     setSelectedCard(newValue);
   }, []);
 
+  const handleChangePlan = useCallback(() => {
+    router.push(`${paths.payment}`);
+  }, [router]);
+
   const renderPlans = plans.map((plan) => (
-    <Grid xs={12} md={4} key={plan.subscription}>
+    <Grid xs={12} md={4} key={plan.label}>
       <Stack
         component={Paper}
         variant="outlined"
-        onClick={() => handleSelectPlan(plan.subscription)}
+        onClick={() => handleSelectPlan(plan.label)}
         sx={{
           p: 1.5,
           position: 'relative',
@@ -76,7 +85,7 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
             opacity: 0.48,
             cursor: 'default',
           }),
-          ...(plan.subscription === selectedPlan && {
+          ...(plan.label === selectedPlan && {
             boxShadow: (theme) => `0 0 0 2px ${theme.palette.text.primary}`,
           }),
         }}
@@ -92,13 +101,13 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
         )}
 
         <Box sx={{ width: 24, height: 24 }}>
-          {plan.subscription === '种子会员' && <PlanFreeIcon />}
-          {plan.subscription === '成长会员' && <PlanStarterIcon />}
-          {plan.subscription === '赋能会员' && <PlanPremiumIcon />}
+          {plan.label === '种子会员' && <PlanFreeIcon />}
+          {plan.label === '成长会员' && <PlanStarterIcon />}
+          {plan.label === '赋能会员' && <PlanPremiumIcon />}
         </Box>
 
         <Box sx={{ typography: 'subtitle2', mt: 2, mb: 0.5, textTransform: 'capitalize' }}>
-          {plan.subscription}
+          {plan.label}
         </Box>
 
         <Stack direction="row" alignItems="center" sx={{ typography: 'h4' }}>
@@ -113,6 +122,15 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
       </Stack>
     </Grid>
   ));
+
+  useEffect(() => {
+    if (plans.length > 0) {
+      const currentPlan = plans.find((plan) => plan._id === user.membership.membershipTypeId) || {};
+      setCurrentUserPlan(currentPlan);
+      setSelectedPlan(currentPlan.label);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plans]);
 
   return (
     <>
@@ -186,7 +204,13 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
 
         <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3 }}>
           {/* <Button variant="outlined">取消 会员</Button> */}
-          <Button variant="contained">切换 会员</Button>
+          <Button
+            variant="contained"
+            onClick={() => handleChangePlan()}
+            disabled={currentUserPlan.label === selectedPlan}
+          >
+            切换 会员
+          </Button>
         </Stack>
       </Card>
 

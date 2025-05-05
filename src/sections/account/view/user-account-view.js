@@ -1,10 +1,8 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Container from '@mui/material/Container';
-// routes
-import { paths } from 'src/routes/paths';
 // _mock
 import { _userAbout, _userPlans, _userPayment, _userInvoices, _userAddressBook } from 'src/_mock';
 // components
@@ -14,6 +12,10 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import { useResponsive } from 'src/hooks/use-responsive';
+import { membershipTypeService, orderService } from 'src/composables/context-provider';
+import { useSnackbar } from 'src/components/snackbar';
+import { useRouter, useSearchParams } from 'src/routes/hook';
+//
 import AccountGeneral from '../account-general';
 import AccountBilling from '../account-billing';
 import AccountSocialLinks from '../account-social-links';
@@ -28,11 +30,11 @@ const TABS = [
     label: '基本信息',
     icon: <Iconify icon="solar:user-id-bold" width={24} />,
   },
-  // {
-  //   value: 'billing',
-  //   label: '会员管理',
-  //   icon: <Iconify icon="solar:bill-list-bold" width={24} />,
-  // },
+  {
+    value: 'billing',
+    label: '会员管理',
+    icon: <Iconify icon="solar:bill-list-bold" width={24} />,
+  },
   // {
   //   value: 'notifications',
   //   label: 'Notifications',
@@ -52,34 +54,62 @@ const TABS = [
 
 // ----------------------------------------------------------------------
 
-const plans = [
-  {
-    subscription: '种子会员',
-    price: 0,
-    primary: true,
-  },
-  {
-    subscription: '成长会员',
-    price: 10,
-    primary: false,
-  },
-  {
-    subscription: '赋能会员',
-    price: 15,
-    primary: false,
-  },
-];
-
 export default function AccountView() {
   const settings = useSettingsContext();
+  
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [plans, setPlans] = useState([]);
+
+  const [orders, setOrders] = useState([]);
 
   const isDesktop = useResponsive('up', 'sm');
 
-  const [currentTab, setCurrentTab] = useState('general');
+  const [loading, setLoading] = useState(true);
+  
+  const [currentTab, setCurrentTab] = useState(() => {
+    const tabFromUrl = searchParams.get('tab');
+    return tabFromUrl && TABS.some(tab => tab.value === tabFromUrl) ? tabFromUrl : 'general';
+  });
 
   const handleChangeTab = useCallback((event, newValue) => {
     setCurrentTab(newValue);
-  }, []);
+    router.replace({
+      pathname: router.pathname,
+      search: `?tab=${newValue}`,
+    });
+  }, [router]);
+
+  const getPlans = useCallback(async () => {
+    try {
+      const response = await membershipTypeService.getAll();
+      setPlans(response);
+    } catch (error) {
+      enqueueSnackbar(error.message);
+    }
+  }, [enqueueSnackbar]);
+
+  const getOrders = useCallback(async () => {
+    try {
+      const response = await orderService.getInfo();
+      setOrders(response);
+    } catch (error) {
+      enqueueSnackbar(error.message);
+    }
+  }, [enqueueSnackbar]);
+
+  useEffect(() => {
+    if (currentTab === 'billing') {
+      setLoading(true);
+      getPlans();
+      getOrders();
+      setLoading(false);
+    }
+  }, [getPlans, getOrders, currentTab]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -107,11 +137,11 @@ export default function AccountView() {
       <Scrollbar sx={{ p: 0, pb: 0, height: 'calc(100% - 70px)' }}>
         {currentTab === 'general' && <AccountGeneral />}
 
-        {currentTab === 'billing' && (
+        {currentTab === 'billing' && loading === false && (
           <AccountBilling
             plans={plans}
             cards={_userPayment}
-            invoices={_userInvoices}
+            invoices={orders}
             addressBook={_userAddressBook}
           />
         )}

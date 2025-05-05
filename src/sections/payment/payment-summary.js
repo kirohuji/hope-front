@@ -39,21 +39,21 @@ export default function PaymentSummary({ sx, ...other }) {
       {...other}
     >
       <Typography variant="h6" sx={{ mb: 5 }}>
-        Summary
+        订单摘要
       </Typography>
 
       <Stack spacing={2.5}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Subscription
+            订阅类型
           </Typography>
 
-          <Label color="error">PREMIUM</Label>
+          <Label color="error">高级版</Label>
         </Stack>
 
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Billed Monthly
+            按月计费
           </Typography>
           <Switch defaultChecked />
         </Stack>
@@ -63,30 +63,30 @@ export default function PaymentSummary({ sx, ...other }) {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography variant="subtitle1">Total Billed</Typography>
+          <Typography variant="subtitle1">总计</Typography>
 
-          <Typography variant="subtitle1">$9.99*</Typography>
+          <Typography variant="subtitle1">$9.99</Typography>
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
       </Stack>
 
-      <Typography component="div" variant="caption" sx={{ color: 'text.secondary', mt: 1 }}>
-        * Plus applicable taxes
-      </Typography>
+      {/* <Typography component="div" variant="caption" sx={{ color: 'text.secondary', mt: 1 }}>
+        * 不含适用税费
+      </Typography> */}
 
       <Button fullWidth size="large" variant="contained" sx={{ mt: 5, mb: 3 }}>
-        Upgrade My Plan
+        升级我的计划
       </Button>
 
       <Stack alignItems="center" spacing={1}>
         <Stack direction="row" alignItems="center" spacing={1}>
           <Iconify icon="solar:shield-check-bold" sx={{ color: 'success.main' }} />
-          <Typography variant="subtitle2">Secure credit card payment</Typography>
+          <Typography variant="subtitle2">安全支付</Typography>
         </Stack>
 
         <Typography variant="caption" sx={{ color: 'text.disabled', textAlign: 'center' }}>
-          This is a secure 128-bit SSL encrypted payment
+          这是128位SSL加密的安全支付
         </Typography>
       </Stack>
     </Box>

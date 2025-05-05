@@ -27,9 +27,9 @@ export default function AccountBillingHistory({ invoices }) {
 
       <Stack spacing={1.5} sx={{ px: 3, pt: 3 }}>
         {(showMore.value ? invoices : invoices.slice(0, 8)).map((invoice) => (
-          <Stack key={invoice.id} direction="row" alignItems="center">
+          <Stack key={invoice._id} direction="row" alignItems="center">
             <ListItemText
-              primary={invoice.invoiceNumber}
+              primary={invoice.invoiceNumber || invoice.orderNumber}
               secondary={fDate(invoice.createdAt)}
               primaryTypographyProps={{
                 typography: 'body2',
@@ -43,12 +43,12 @@ export default function AccountBillingHistory({ invoices }) {
             />
 
             <Typography variant="body2" sx={{ textAlign: 'right', mr: 5 }}>
-              {fCurrency(invoice.price)}
+              {fCurrency(invoice.items?.reduce((total, item) => total + (Number(item.unitPrice) * item.quantity), 0) || 0)}
             </Typography>
 
-            <Link color="inherit" underline="always" variant="body2" href="#">
+            {/* <Link color="inherit" underline="always" variant="body2" href="#">
               PDF
-            </Link>
+            </Link> */}
           </Stack>
         ))}
 
@@ -56,7 +56,7 @@ export default function AccountBillingHistory({ invoices }) {
       </Stack>
 
       <Stack alignItems="flex-start" sx={{ p: 2 }}>
-        <Button
+        {/* <Button
           size="small"
           color="inherit"
           startIcon={
@@ -67,7 +67,7 @@ export default function AccountBillingHistory({ invoices }) {
           onClick={showMore.onToggle}
         >
           {showMore.value ? `隐藏更多` : `显示更多`}
-        </Button>
+        </Button> */}
       </Stack>
     </Card>
   );

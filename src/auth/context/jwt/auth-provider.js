@@ -85,12 +85,13 @@ export function AuthProvider({ children }) {
   const meteor = useMeteorContext();
 
   const refresh = useCallback(async () => {
-    const { user, profile, roles, permissions } = await userService.info();
+    const { user, profile, roles, permissions, membership } = await userService.info();
     setInfo({
       user,
       profile,
       roles,
       permissions,
+      membership,
     });
     dispatch({
       type: 'INITIAL',
@@ -101,6 +102,7 @@ export function AuthProvider({ children }) {
           ...profile,
           permissions,
           roles,
+          membership,
         },
       },
     });
@@ -119,7 +121,7 @@ export function AuthProvider({ children }) {
         const localInfo = localStorage.getItem('info');
 
         if (localInfo) {
-          const { user, profile, roles, permissions } = JSON.parse(localInfo);
+          const { user, profile, roles, permissions, membership } = JSON.parse(localInfo);
           dispatch({
             type: 'INITIAL',
             payload: {
@@ -129,12 +131,13 @@ export function AuthProvider({ children }) {
                 ...profile,
                 permissions,
                 roles,
+                membership,
               },
             },
           });
         } else {
           // 获取用户信息
-          const { user, profile, roles, permissions } = await userService.info();
+          const { user, profile, roles, permissions, membership } = await userService.info();
           dispatch({
             type: 'INITIAL',
             payload: {
@@ -144,6 +147,7 @@ export function AuthProvider({ children }) {
                 ...profile,
                 permissions,
                 roles,
+                membership,
               },
             },
           });
@@ -222,13 +226,14 @@ export function AuthProvider({ children }) {
 
       setSession(accessToken);
 
-      const { user, profile, roles, permissions } = await userService.info();
+      const { user, profile, roles, permissions, membership } = await userService.info();
 
       setInfo({
         user,
         profile,
         roles,
         permissions,
+        membership,
       });
       subNotifications();
       // subConversations();
@@ -240,6 +245,7 @@ export function AuthProvider({ children }) {
             ...profile,
             permissions,
             roles,
+            membership,
           },
         },
       });
@@ -265,13 +271,14 @@ export function AuthProvider({ children }) {
 
       localStorage.setItem(STORAGE_KEY, accessToken);
 
-      const { user, profile, roles, permissions } = await userService.info();
+      const { user, profile, roles, permissions, membership } = await userService.info();
 
       setInfo({
         user,
         profile,
         roles,
         permissions,
+        membership,
       });
 
       dispatch({
@@ -282,6 +289,7 @@ export function AuthProvider({ children }) {
             ...profile,
             permissions,
             roles,
+            membership,
           },
         },
       });

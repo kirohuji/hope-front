@@ -20,7 +20,6 @@ export const paths = {
   comingSoon: '/coming-soon',
   maintenance: '/maintenance',
   reading: (id) => `/reading/${id}`,
-  payment: '/payment',
   about: '/about-us',
   contact: '/contact-us',
   faqs: '/faqs',
@@ -42,6 +41,7 @@ export const paths = {
       details: `/post/${paramCase(MOCK_TITLE)}`,
     },
   },
+  payment: '/payment',
   // AUTH
   auth: {
     amplify: {

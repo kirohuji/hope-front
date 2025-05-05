@@ -45,6 +45,8 @@ const CollectInfoListPage = lazy(() => import('src/sections/system/view/collect-
 
 const FaqsPage = lazy(() => import('src/pages/faqs'));
 
+const PaymentPage = lazy(() => import('src/pages/payment'));
+
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -87,6 +89,7 @@ export default function Router() {
     {
       element: <ReturnLayout />,
       children: [
+        { path: 'payment', element: <PaymentPage /> },
         { path: 'faqs', element: <FaqsPage /> },
         { path: 'chat', element: <ChatPage /> },
         { path: 'discovery', children: [{ path: ':id', element: <DiscoveryDetailPage /> }] },
