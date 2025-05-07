@@ -6489,6 +6489,11 @@ cookie@^0.4.0:
   resolved "https://registry.npmmirror.com/cookie/-/cookie-0.4.2.tgz"
   integrity sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==
 
+cordova-plugin-purchase@^13.12.1:
+  version "13.12.1"
+  resolved "https://registry.npmmirror.com/cordova-plugin-purchase/-/cordova-plugin-purchase-13.12.1.tgz#2ff8e96ee1d60af1e36ca2aaa2a6b979b9f06bc9"
+  integrity sha512-IRYOLqv8iEn/i+JnTXZI6yITphiwO8Bn6qm0f6+5t0the9Wb/jYdk7Q6rB7l3AO21Is5AcBLptQAwLTY3tY1Rg==
+
 core-js-compat@^3.30.1, core-js-compat@^3.30.2:
   version "3.31.0"
   resolved "https://registry.npmmirror.com/core-js-compat/-/core-js-compat-3.31.0.tgz"

@@ -7,6 +7,7 @@ import { userService, versionService, messagingService } from 'src/composables/c
 import { Capacitor } from '@capacitor/core';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { registerNotifications } from 'src/cap/push-notification';
+import { getSubscriptions } from 'src/purchases/subscription';
 // import { registerNotificationsByHuawei } from 'src/huawei/push-notification';
 import { App } from '@capacitor/app';
 import { useMeteorContext } from 'src/meteor/hooks';
@@ -187,6 +188,13 @@ export function AuthProvider({ children }) {
         status: 'active',
       });
       await registerNotifications();
+      const products = await getSubscriptions();
+      if (products.length > 0) {
+        // 显示订阅产品列表
+        products.forEach(product => {
+          console.log(`产品: ${product.id}, 价格: ${product.price}`);
+        });
+      }
       StatusBar.setOverlaysWebView({ overlay: true });
     } else if (Capacitor.getPlatform() === 'android') {
       console.log('Android!');

@@ -9,24 +9,39 @@ import Typography from '@mui/material/Typography';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+import { useState, useEffect } from 'react';
 
 // ----------------------------------------------------------------------
 
-export default function PaymentSummary({ sx, ...other }) {
+export default function PaymentSummary({ sx, plan, ...other }) {
+  const [isYearly, setIsYearly] = useState(false);
+  const [monthlyPrice, setMonthlyPrice] = useState(0);
+  const yearlyDiscount = 0.15; // 10% discount for yearly plan
+  const yearlyPrice = monthlyPrice * 12 * (1 - yearlyDiscount);
+
   const renderPrice = (
     <Stack direction="row" justifyContent="flex-end">
-      <Typography variant="h4">$</Typography>
+      <Typography variant="h4" sx={{ lineHeight: 2 }}>¥</Typography>
 
-      <Typography variant="h2">9.99</Typography>
+      <Typography variant="h2">
+        {isYearly ? yearlyPrice.toFixed(2) : monthlyPrice.toFixed(2)}
+      </Typography>
 
       <Typography
         component="span"
         sx={{ alignSelf: 'center', color: 'text.disabled', ml: 1, typography: 'body2' }}
       >
-        / mo
+        / {isYearly ? 'year' : 'mo'}
       </Typography>
     </Stack>
   );
+
+  useEffect(() => {
+    if (plan) {
+      console.log(plan);
+      setMonthlyPrice(Number(plan.price));
+    }
+  }, [plan]);
 
   return (
     <Box
@@ -48,14 +63,17 @@ export default function PaymentSummary({ sx, ...other }) {
             订阅类型
           </Typography>
 
-          <Label color="error">高级版</Label>
+          <Label color="error">{plan.label}</Label>
         </Stack>
 
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            按月计费
+            按年计费
           </Typography>
-          <Switch defaultChecked />
+          <Switch 
+            checked={isYearly}
+            onChange={(e) => setIsYearly(e.target.checked)}
+          />
         </Stack>
 
         {renderPrice}
@@ -65,7 +83,9 @@ export default function PaymentSummary({ sx, ...other }) {
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Typography variant="subtitle1">总计</Typography>
 
-          <Typography variant="subtitle1">$9.99</Typography>
+          <Typography variant="subtitle1">
+            ¥{isYearly ? yearlyPrice.toFixed(2) : monthlyPrice.toFixed(2)}
+          </Typography>
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
@@ -95,4 +115,5 @@ export default function PaymentSummary({ sx, ...other }) {
 
 PaymentSummary.propTypes = {
   sx: PropTypes.object,
+  plan: PropTypes.object,
 };

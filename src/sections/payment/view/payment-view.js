@@ -1,16 +1,35 @@
+import { useEffect, useCallback, useState } from 'react';
 // @mui
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-//
+// router
+import { useSearchParams } from 'src/routes/hook';
+// 
+import { membershipTypeService } from 'src/composables/context-provider';
 import PaymentSummary from '../payment-summary';
 import PaymentMethods from '../payment-methods';
 import PaymentBillingAddress from '../payment-billing-address';
-
 // ----------------------------------------------------------------------
 
 export default function PaymentView() {
+  const searchParams = useSearchParams();
+  const planId = searchParams.get('plan');
+  const [plan, setPlan] = useState({});
+  const getPlan = useCallback(async () => {
+    const response = await membershipTypeService.get({
+      _id: planId,
+    });
+    setPlan(response);
+  }, [planId]);
+
+  useEffect(() => {
+    if (planId) {
+      getPlan();
+    }
+  }, [getPlan, planId]);
+
   return (
     <Container
       sx={{
@@ -51,7 +70,7 @@ export default function PaymentView() {
         </Grid> */}
 
         <Grid xs={12} md={4}>
-          <PaymentSummary />
+          <PaymentSummary plan={plan} />
         </Grid>
       </Grid>
     </Container>

@@ -68,8 +68,9 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
   }, []);
 
   const handleChangePlan = useCallback(() => {
-    router.push(`${paths.payment}`);
-  }, [router]);
+    const currentPlan = plans.find((plan) => plan.label === selectedPlan);
+    router.push(`${paths.payment}?plan=${currentPlan._id}`);
+  }, [router, selectedPlan, plans]);
 
   const renderPlans = plans.map((plan) => (
     <Grid xs={12} md={4} key={plan.label}>

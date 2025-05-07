@@ -104,3 +104,8 @@ body {
 /* .MuiTabs-flexContainer {
   justify-content: space-evenly;
 } */
+
+.MuiBottomNavigationAction-root {
+  padding: 0 8px !important;
+  min-width: 65px !important;
+}
