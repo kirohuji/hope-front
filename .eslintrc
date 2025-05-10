@@ -108,6 +108,7 @@
         "args": "after-used",
         "argsIgnorePattern": "^_"
       }
-    ]
+    ],
+    "import/no-unresolved": ["error", { "ignore": ["@revenuecat/purchases-capacitor"] }]
   }
 }
