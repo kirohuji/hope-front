@@ -24,27 +24,27 @@ const navigations = [
     to: '/dashboard/chat',
     auth: ['Chat'],
   },
-  {
-    label: '文件',
-    icon: ICONS.file,
-    to: '/dashboard/file-manager',
-    // auth: ['FileManager'],
-  },
+  // {
+  //   label: '文件',
+  //   icon: ICONS.file,
+  //   to: '/dashboard/file-manager',
+  //   // auth: ['FileManager'],
+  // },
   // {
   //   label: '发现',
   //   icon: ICONS.tour,
   //   to: '/dashboard/discovery',
   // },
-  {
-    label: '活动',
-    icon: ICONS.tour,
-    to: '/dashboard/broadcast',
-  },
-  {
-    label: '日程',
-    icon: ICONS.calendar,
-    to: '/dashboard/calendar',
-  },
+  // {
+  //   label: '活动',
+  //   icon: ICONS.tour,
+  //   to: '/dashboard/broadcast',
+  // },
+  // {
+  //   label: '日程',
+  //   icon: ICONS.calendar,
+  //   to: '/dashboard/calendar',
+  // },
   {
     label: '阅读',
     icon: ICONS.blog,

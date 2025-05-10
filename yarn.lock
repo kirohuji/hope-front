@@ -3776,6 +3776,18 @@
   resolved "https://registry.npmmirror.com/@remix-run/router/-/router-1.7.0.tgz"
   integrity sha512-Eu1V3kz3mV0wUpVTiFHuaT8UD1gj/0VnoFHQYX35xlslQUpe8CuYoKFn9d4WZFHm3yDywz6ALZuGdnUPKrNeAw==
 
+"@revenuecat/purchases-capacitor@^13.0.0":
+  version "10.2.3"
+  resolved "https://registry.npmmirror.com/@revenuecat/purchases-capacitor/-/purchases-capacitor-10.2.3.tgz#9fc09bf47606c3eb660c48fd0ae46d2c49595f74"
+  integrity sha512-NLdZ9/mtRbpIvqbm1hme2W9kUkFroQbDah54YGDH3RtNAF8gFFIlGimus0Lk7wD89sEvQI6UdwHDaAJUun0X9w==
+  dependencies:
+    "@revenuecat/purchases-typescript-internal-esm" "13.28.0"
+
+"@revenuecat/purchases-typescript-internal-esm@13.28.0":
+  version "13.28.0"
+  resolved "https://registry.npmmirror.com/@revenuecat/purchases-typescript-internal-esm/-/purchases-typescript-internal-esm-13.28.0.tgz#3b711a715b815204de674554fadc8747156df033"
+  integrity sha512-W80jeLX8678SgFsf9NwILBfUS7GgKgYZSev4/Ry3L+d0jVAZ9HvCdfp9AiBbIVzsKGW9ZYfk9lPhlmv5SoYTtQ==
+
 "@rollup/plugin-babel@^5.2.0":
   version "5.3.1"
   resolved "https://registry.npmmirror.com/@rollup/plugin-babel/-/plugin-babel-5.3.1.tgz"
@@ -6488,11 +6500,6 @@ cookie@^0.4.0:
   version "0.4.2"
   resolved "https://registry.npmmirror.com/cookie/-/cookie-0.4.2.tgz"
   integrity sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==
-
-cordova-plugin-purchase@^13.12.1:
-  version "13.12.1"
-  resolved "https://registry.npmmirror.com/cordova-plugin-purchase/-/cordova-plugin-purchase-13.12.1.tgz#2ff8e96ee1d60af1e36ca2aaa2a6b979b9f06bc9"
-  integrity sha512-IRYOLqv8iEn/i+JnTXZI6yITphiwO8Bn6qm0f6+5t0the9Wb/jYdk7Q6rB7l3AO21Is5AcBLptQAwLTY3tY1Rg==
 
 core-js-compat@^3.30.1, core-js-compat@^3.30.2:
   version "3.31.0"

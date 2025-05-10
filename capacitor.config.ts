@@ -7,9 +7,9 @@ const config: CapacitorConfig = {
     CapacitorUpdater: {
       autoUpdate: false,
     },
-    CordovaPlugins: [
-      "cordova-plugin-purchase"
-    ],
+    // CordovaPlugins: [
+    //   "cordova-plugin-purchase"
+    // ],
     // JPush: {
     //   // your application appKey on JPush
     //   appKey: 'd6d9cce02a95b530d76d076e',
