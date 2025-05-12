@@ -113,7 +113,7 @@ export function AuthProvider({ children }) {
       const accessToken = localStorage.getItem(STORAGE_KEY);
 
       if (accessToken) {
-        await callWithMeteor('login', {
+        callWithMeteor('login', {
           resume: accessToken,
         });
         setSession(accessToken);
