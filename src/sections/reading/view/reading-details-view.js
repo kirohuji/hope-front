@@ -19,13 +19,13 @@ import { useDispatch, useSelector } from 'src/redux/store';
 import QuestionnaireCard from 'src/sections/article/questionnaire/cards/index';
 import ArticleRendering from '../ArticleRendering';
 
-const STEPS = ['阅读环节', '问答环节'];
 export default function ReadingPage () {
     const { themeStretch } = useSettingsContext();
     const dispatch = useDispatch();
 
     const [errorMsg, setErrorMsg] = useState(null);
 
+    console.log('ReadingPage')
 
     const { id } = useParams();
     const { article, isLoading, activeStep } = useSelector((state) => state.article);

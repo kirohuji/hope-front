@@ -1,14 +1,18 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 // @mui
 import { useTheme, styled } from '@mui/material/styles';
 import { AppBar, Toolbar, Box } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 // config
 import { HEADER } from 'src/config-global';
 // utils
 import { bgBlur } from 'src/theme/css';
 // routes
 import { IconButtonAnimate } from 'src/components/animate';
-import { useRouter, usePathname } from 'src/routes/hook';
+import { useRouter, usePathname, useSearchParams } from 'src/routes/hook';
 import { useSelector } from 'src/redux/store';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useAuthContext } from 'src/auth/hooks';
@@ -40,6 +44,8 @@ export default function Header({ isOffset }) {
   const mdUp = useResponsive('up', 'md');
   const chat = useSelector((state) => state.chat);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [type, setType] = useState(searchParams.get('type') || 'listening');
 
   const renderConversationTitle = () => {
     const { activeConversation } = chat;
@@ -60,6 +66,29 @@ export default function Header({ isOffset }) {
     }
     return '';
   };
+  const alignContent = [
+    <ToggleButton value="listening" key="listening">
+      <Typography variant="caption" fontWeight="bold">听力</Typography>
+    </ToggleButton>,
+    <ToggleButton value="reading" key="reading">
+      <Typography variant="caption" fontWeight="bold">阅读</Typography>
+    </ToggleButton>,
+  ];
+
+  const renderToggleButtons = (
+    <ToggleButtonGroup
+      exclusive
+      size="small"
+      value={type}
+      onChange={(event, value) => {
+        setType(value);
+        const currentPath = pathname;
+        router.replace(`${currentPath}?type=${value}`);
+      }}
+    >
+      {alignContent}
+    </ToggleButtonGroup>
+  );
   return (
     <AppBar color="transparent" sx={{ boxShadow: 0 }} position={mdUp ? 'static' : 'absolute'}>
       <Toolbar
@@ -87,7 +116,7 @@ export default function Header({ isOffset }) {
         {pathname === '/system' && <div>系统设置</div>}
         {pathname === '/account' && <div>账户设置</div>}
         {pathname === '/training/search' && <div>全部分类</div>}
-        {pathname.includes('/reading/') && <div>今日阅读</div>}
+        {pathname.includes('/reading/') && <div>{renderToggleButtons}</div>}
         {pathname === '/privacy/personal' && <div>个人信息保护政策</div>}
         {pathname === '/privacy/children' && <div>儿童信息保护政策</div>}
         {pathname === '/privacy/third-party' && <div>第三方数据共享说明</div>}

@@ -22,4 +22,8 @@ export default class ArticleService extends Service {
     getArticleCurrentUser (target) {
         return this.api.get(`${this.model}/users/current/${target._id}`, target)
     }
+
+    getAudio(url) {
+        return this.api.get(url, {}, { responseType: 'blob' })
+    }
 }
