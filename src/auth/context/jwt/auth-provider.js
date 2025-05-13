@@ -188,6 +188,13 @@ export function AuthProvider({ children }) {
       });
       await registerNotifications();
       StatusBar.setOverlaysWebView({ overlay: true });
+
+      // 检测是否为 iPad
+      const info = await Device.getInfo();
+      if (info.model.includes('iPad')) {
+        console.log('iPad detected!');
+        import('../../../styles/ipad.css');
+      }
     } else if (Capacitor.getPlatform() === 'android') {
       console.log('Android!');
       import('../../../android.css');

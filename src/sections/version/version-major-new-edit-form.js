@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useMemo, useEffect, useCallback } from 'react';
+import { useMemo, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 // @mui
@@ -17,20 +17,16 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-
 // redux
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFEditor, RHFTextField } from 'src/components/hook-form';
-import { versionService, fileService } from 'src/composables/context-provider';
+import { versionService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
 export default function VersionMajorNewEditForm({ current }) {
   const router = useRouter();
   const mdUp = useResponsive('up', 'md');
-  const loading = useBoolean(false);
   const { enqueueSnackbar } = useSnackbar();
 
   const NewScopeSchema = Yup.object().shape({
@@ -62,8 +58,6 @@ export default function VersionMajorNewEditForm({ current }) {
 
   const {
     reset,
-    control,
-    setValue,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
@@ -73,26 +67,6 @@ export default function VersionMajorNewEditForm({ current }) {
       reset(defaultValues);
     }
   }, [current, defaultValues, reset]);
-
-  const handleDrop = useCallback(
-    async (acceptedFiles) => {
-      try {
-        const file = acceptedFiles[0];
-        const formData = new FormData();
-        formData.append('file', file);
-        loading.onTrue();
-        const { link } = await fileService.upload(formData);
-        if (file) {
-          setValue('file', link, { shouldValidate: true });
-          loading.onFalse();
-          enqueueSnackbar('上传成功!');
-        }
-      } catch (e) {
-        loading.onFalse();
-      }
-    },
-    [setValue, enqueueSnackbar, loading]
-  );
 
   const onSubmit = handleSubmit(async (data) => {
     try {

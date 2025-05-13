@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 // @mui
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
@@ -11,8 +10,7 @@ import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-// utils
-import { fDate } from 'src/utils/format-time';
+
 // components
 import Restricted from 'src/auth/guard/restricted';
 import Label from 'src/components/label';
@@ -36,7 +34,6 @@ export default function VersionTableRow({
     minorVersion,
     patchVersion,
     isMandatory,
-    createdAt,
     releaseDate,
     description,
     isActive,
