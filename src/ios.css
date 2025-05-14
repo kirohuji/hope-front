@@ -28,14 +28,7 @@
     padding-top: calc(constant(safe-area-inset-top)) !important;
     padding-top: calc(env(safe-area-inset-top)) !important;
   }
-
-  /* 主内容区域 */
-  main,
-  .main {
-    padding-top: calc(constant(safe-area-inset-top) * 2.5) !important;
-    padding-top: calc(env(safe-area-inset-top) * 2.5) !important;
-  }
-
+  
   /* 滚动区域 */
   .book-scrollbar {
     height: calc(100% - 24px) !important;

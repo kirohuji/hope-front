@@ -26,7 +26,8 @@ import {
   conversationsCollectionChange,
   conversationsPublish,
 } from 'src/meteor/context/meteor-provider';
-import { HEADER, NAV } from '../config-layout';
+import { useSafeArea } from 'src/hooks/use-safe-area';
+import { HEADER, NAV, SAFE_AREA } from '../config-layout';
 
 const secretKey = 'future';
 // ----------------------------------------------------------------------
@@ -78,6 +79,14 @@ export default function Main({ children, sx, ...other }) {
   const isNavMini = settings.themeLayout === 'mini';
   const pathname = usePathname();
   const { user } = useAuthContext();
+  const { constant, env } = useSafeArea();
+
+  // 根据设备支持情况选择合适的安全区域值
+  const getSafeAreaTop = () => {
+    if (constant) return SAFE_AREA.TOP[0];
+    if (env) return SAFE_AREA.TOP[1];
+    return '0px'; // 默认值
+  };
 
   function handleMessage(message) {
     switch (message.contentType) {
@@ -104,8 +113,8 @@ export default function Main({ children, sx, ...other }) {
           const message = await messagingService.getLastMessage({
             _id: conversation.id,
           });
-          console.log('conversation',conversation)
-          console.log('message',message)
+          console.log('conversation', conversation);
+          console.log('message', message);
           const key = enqueueSnackbar(
             <CustomSnackbar
               name={message.user.displayName}
@@ -165,10 +174,10 @@ export default function Main({ children, sx, ...other }) {
         minHeight: 1,
         display: 'flex',
         flexDirection: 'column',
-        py: `${HEADER.H_MOBILE + SPACING}px`,
+        py: `calc(${HEADER.H_MOBILE + SPACING}px + ${getSafeAreaTop()})`,
         ...(lgUp && {
           px: 2,
-          py: `${HEADER.H_DESKTOP + SPACING}px`,
+          py:  `calc(${HEADER.H_DESKTOP + SPACING}px + ${getSafeAreaTop()})`,
           width: `calc(100% - ${NAV.W_VERTICAL}px)`,
           ...(isNavMini && {
             width: `calc(100% - ${NAV.W_MINI}px)`,
