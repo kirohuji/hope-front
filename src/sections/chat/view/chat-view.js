@@ -273,6 +273,7 @@ export default function ChatView() {
         height: 1,
         overflow: 'hidden',
       }}
+      className="chat-message-list"
     >
       <ChatMessageList
         conversationId={selectedConversationId}

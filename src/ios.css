@@ -28,7 +28,7 @@
     padding-top: calc(constant(safe-area-inset-top)) !important;
     padding-top: calc(env(safe-area-inset-top)) !important;
   }
-  
+
   /* 滚动区域 */
   .book-scrollbar {
     height: calc(100% - 24px) !important;
@@ -37,6 +37,8 @@
   /* 播放器 */
   .book-player {
     background-color: none !important;
+    bottom: calc(constant(safe-area-inset-bottom) + 56px) !important;
+    bottom: calc(env(safe-area-inset-bottom) + 56px) !important;
   }
 
   /* 表单区域 */
@@ -49,11 +51,8 @@
   /* 底部导航 */
   .bottom-navigation {
     background-color: white;
-  }
-
-  .bottom-navigation > div {
-    padding-bottom: calc(constant(safe-area-inset-bottom) * 2.5) !important;
-    padding-bottom: calc(env(safe-area-inset-bottom) * 2.5) !important;
+    padding-bottom: constant(safe-area-inset-bottom) !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
   }
 
   .bottom-navigation div a {
@@ -83,8 +82,9 @@
     width: 100%;
   }
 
-  /* 布局相关 */
-  .return-layout {
+  .sign-out-card {
+    margin-bottom: constant(safe-area-inset-bottom) !important;
+    margin-bottom: env(safe-area-inset-bottom) !important;
   }
 
   .return-main {
@@ -99,5 +99,13 @@
   /* 对话框 */
   .post-dialog {
     padding-bottom: 35px;
+  }
+}
+
+/* iPad 设备特定样式 */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  .chat-message-list {
+    padding-bottom: calc(constant(safe-area-inset-bottom) + 81px) !important;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 81px) !important;
   }
 }

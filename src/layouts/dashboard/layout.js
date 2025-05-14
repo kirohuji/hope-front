@@ -42,21 +42,22 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!lgUp && pathname === '/dashboard/training/dashboard') {
-      const bookPlayerElement = bookPlayerRef.current;
-      if (bookPlayerElement) {
-        const navigationElement = document.getElementById('bottom-navigation');
-        if (navigationElement) {
-          if (navigationElement.clientHeight > 56) {
-            bookPlayerElement.style.bottom = `${navigationElement.clientHeight}px`;
-          } else {
-            bookPlayerElement.style.bottom = `${56}px`;
-          }
-        } else {
-          bookPlayerElement.style.bottom = `${56}px`;
-        }
-      }
-    } else if (!lgUp && pathname === '/dashboard/file-manager') {
+    // if (!lgUp && pathname === '/dashboard/training/dashboard') {
+    //   const bookPlayerElement = bookPlayerRef.current;
+    //   if (bookPlayerElement) {
+    //     const navigationElement = document.getElementById('bottom-navigation');
+    //     if (navigationElement) {
+    //       if (navigationElement.clientHeight > 56) {
+    //         bookPlayerElement.style.bottom = `${navigationElement.clientHeight}px`;
+    //       } else {
+    //         bookPlayerElement.style.bottom = `${56}px`;
+    //       }
+    //     } else {
+    //       bookPlayerElement.style.bottom = `${56}px`;
+    //     }
+    //   }
+    // } else
+     if (!lgUp && pathname === '/dashboard/file-manager') {
       const musicPlayerElement = musicPlayerRef.current;
       if (musicPlayerRef) {
         const navigationElement = document.getElementById('bottom-navigation');
