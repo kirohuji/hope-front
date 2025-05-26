@@ -170,6 +170,7 @@ export default function SystemGeneralView() {
           </Stack>
         </Card>
         <Card
+          className="sign-out-card"
           sx={{
             m: 1,
             mb: 2,

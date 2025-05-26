@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 // @mui
 import Container from '@mui/material/Container';
-// routes
-import { paths } from 'src/routes/paths';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import { useParams } from 'src/routes/hook';

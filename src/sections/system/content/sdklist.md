@@ -27,13 +27,6 @@
 <td style="overflow: hidden; text-overflow: ellipsis;">支付宝客户端 SDK 隐私说明</td>
 </tr>
 <tr>
-<td style="overflow: hidden; text-overflow: ellipsis;">Bugly SDK</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">腾讯科技（深圳）有限公司</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">进行APP性能监测和崩溃问题分析</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">设备信息（IMEI/MAC/Android ID/IDFA/OAID/OpenUDID/GUID/SIM卡IMSI/ICCID）、位置信息、网络信息</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">Bugly SDK个人信息保护规则</td>
-</tr>
-<tr>
 <td style="overflow: hidden; text-overflow: ellipsis;">极光推送SDK</td>
 <td style="overflow: hidden; text-overflow: ellipsis;">深圳市和讯华谷信息技术有限公司</td>
 <td style="overflow: hidden; text-overflow: ellipsis;">进行APP消息推送</td>
@@ -137,33 +130,6 @@
 ##### 其他SDK
 <br>
 <br>
-<div style="width: 100%; overflow-x: auto;">
-<small>
-
-<table style="width: 100%; table-layout: fixed; word-wrap: break-word;">
-<tr>
-<th style="width: 200px; overflow: hidden; text-overflow: ellipsis;">合作目的</th>
-<th style="width: 150px; overflow: hidden; text-overflow: ellipsis;">合作SDK名称</th>
-<th style="width: 150px; overflow: hidden; text-overflow: ellipsis;">SDK厂商</th>
-<th style="width: 300px; overflow: hidden; text-overflow: ellipsis;">收集个人信息字段及目的</th>
-<th style="width: 150px; overflow: hidden; text-overflow: ellipsis;">SDK隐私政策链接</th>
-</tr>
-<tr>
-<td style="overflow: hidden; text-overflow: ellipsis;">提供反劫持技术，解决域名异常与域名劫持问题</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">阿里云反劫持SDK</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">阿里云计算有限公司</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">无，纯技术组件，仅在本地获取网络状态判断域名情况</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">阿里云官网法律声明及隐私权政策</td>
-</tr>
-</table>
-
-</small>
-</div>
-<br>
-
-##### 其他SDK
-<br>
-<br>
 
 <div style="width: 100%; overflow-x: auto;">
 <small>
@@ -175,20 +141,6 @@
 <th style="width: 250px; overflow: hidden; text-overflow: ellipsis;">个人信息类型</th>
 <th style="width: 200px; overflow: hidden; text-overflow: ellipsis;">所属机构</th>
 <th style="width: 150px; overflow: hidden; text-overflow: ellipsis;">隐私政策链接</th>
-</tr>
-<tr>
-<td style="overflow: hidden; text-overflow: ellipsis;">梆梆安全</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">给 Android 提供应用加固服务</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">无</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">北京梆梆安全科技有限公司</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">https://dev.bangcle.com/home/introduction?type=0</td>
-</tr>
-<tr>
-<td style="overflow: hidden; text-overflow: ellipsis;">爱加密</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">给 Android 提供应用加固服务</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">无</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">北京智游网安科技有限公司</td>
-<td style="overflow: hidden; text-overflow: ellipsis;">https://www.ijiami.cn/privacypolicy/privacypolicy.html</td>
 </tr>
 <tr>
 <td style="overflow: hidden; text-overflow: ellipsis;">谷歌</td>

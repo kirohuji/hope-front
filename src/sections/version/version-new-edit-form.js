@@ -26,9 +26,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFUpload,
   RHFEditor,
-  RHFSwitch,
   RHFTextField,
-  RHFRadioGroup,
 } from 'src/components/hook-form';
 import { versionService, fileService } from 'src/composables/context-provider';
 
@@ -72,7 +70,6 @@ export default function ScopeNewEditForm({ current }) {
 
   const {
     reset,
-    control,
     setValue,
     handleSubmit,
     formState: { isSubmitting },
