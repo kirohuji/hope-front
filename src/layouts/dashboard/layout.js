@@ -11,6 +11,7 @@ import MusicPlayer from 'src/components/music-player';
 import BookPlayer from 'src/sections/training/book-player';
 //
 import { usePathname } from 'src/routes/hook';
+import { Capacitor } from '@capacitor/core';
 import Main from './main';
 import Header from './header';
 import NavMini from './nav-mini';
@@ -42,21 +43,23 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // if (!lgUp && pathname === '/dashboard/training/dashboard') {
-    //   const bookPlayerElement = bookPlayerRef.current;
-    //   if (bookPlayerElement) {
-    //     const navigationElement = document.getElementById('bottom-navigation');
-    //     if (navigationElement) {
-    //       if (navigationElement.clientHeight > 56) {
-    //         bookPlayerElement.style.bottom = `${navigationElement.clientHeight}px`;
-    //       } else {
-    //         bookPlayerElement.style.bottom = `${56}px`;
-    //       }
-    //     } else {
-    //       bookPlayerElement.style.bottom = `${56}px`;
-    //     }
-    //   }
-    // } else
+    if (!lgUp && pathname === '/dashboard/training/dashboard') {
+      if(Capacitor.getPlatform() === 'web'){
+        const bookPlayerElement = bookPlayerRef.current;
+        if (bookPlayerElement) {
+          const navigationElement = document.getElementById('bottom-navigation');
+          if (navigationElement) {
+            if (navigationElement.clientHeight > 56) {
+              bookPlayerElement.style.bottom = `${navigationElement.clientHeight}px`;
+            } else {
+              bookPlayerElement.style.bottom = `${56}px`;
+            }
+          } else {
+            bookPlayerElement.style.bottom = `${56}px`;
+          }
+        } 
+      }
+    } else
      if (!lgUp && pathname === '/dashboard/file-manager') {
       const musicPlayerElement = musicPlayerRef.current;
       if (musicPlayerRef) {
@@ -115,7 +118,8 @@ export default function DashboardLayout({ children }) {
         <Main className="main">{children}</Main>
         {!lgUp &&
           !pathname.includes('/dashboard/broadcast/') &&
-          !pathname.includes('/dashboard/article/') && <DashboardFooter />}
+          !pathname.includes('/dashboard/article/') &&
+          !pathname.includes('/dashboard/order/') && <DashboardFooter />}
         {!lgUp && pathname === '/dashboard/file-manager' && (
           <Box
             ref={musicPlayerRef}

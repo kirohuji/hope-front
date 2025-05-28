@@ -51,8 +51,12 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
 
   const handleSelectPlan = useCallback(
     (newValue) => {
-      const currentPlan = plans.find((plan) => plan.label === selectedPlan);
-      if (currentPlan.label !== newValue) {
+      if(selectedPlan){
+        const currentPlan = plans.find((plan) => plan.label === selectedPlan);
+        if (currentPlan && currentPlan.label !== newValue) {
+          setSelectedPlan(newValue);
+        }
+      } else {
         setSelectedPlan(newValue);
       }
     },

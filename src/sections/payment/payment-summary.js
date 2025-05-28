@@ -6,15 +6,19 @@ import Switch from '@mui/material/Switch';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { useRouter } from 'src/routes/hook';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useState, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { Purchases, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
+import { orderService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
 export default function PaymentSummary({ sx, plan, ...other }) {
+  const router = useRouter();
   const [isYearly, setIsYearly] = useState(false);
   const [monthlyPrice, setMonthlyPrice] = useState(0);
   const yearlyDiscount = 0.15; // 10% discount for yearly plan
@@ -25,20 +29,41 @@ export default function PaymentSummary({ sx, plan, ...other }) {
   }, []);
 
   const initPurchases = async () => {
-    await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
-    await Purchases.configure({
-      apiKey: process.env.REACT_APP_REVENUECAT_API_KEY,
-    });
+    if (Capacitor.getPlatform() === 'ios') {
+      await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
+      await Purchases.configure({
+        apiKey: process.env.REACT_APP_REVENUECAT_API_KEY,
+      });
+    }
   }
   const handleUpgrade = async () => {
+    if (Capacitor.getPlatform() === 'ios') {
+      await handleUpgradeByIos();
+    }
+    await handleUpgradeByBackend();
+  }
+
+  const handleUpgradeByBackend = async () => {
+    try {
+      const response = await orderService.changeMembership({
+        planId: plan.id || plan._id,
+        isYearly,
+      });
+      router.back();
+    } catch (error) {
+      console.error('Purchase failed:', error);
+      // Handle purchase error (show error message to user)
+    }
+  }
+  const handleUpgradeByIos = async () => {
     try {
       // Get available packages
       const offerings = await Purchases.getOfferings();
-      
+
       // Select the appropriate package based on the plan and billing period
       const packageId = isYearly ? 'yearly_package' : 'monthly_package';
       const selectedPackage = offerings.current.availablePackages.find(p => p.identifier === packageId);
-      
+
       if (!selectedPackage) {
         console.error('Package not found');
         return;
@@ -46,12 +71,12 @@ export default function PaymentSummary({ sx, plan, ...other }) {
 
       // Make the purchase
       const { customerInfo } = await Purchases.purchasePackage({ selectedPackage });
-      
+
       // Handle successful purchase
       console.log('Purchase successful:', customerInfo);
-      
+
       // You might want to update your UI or show a success message here
-      
+
     } catch (error) {
       console.error('Purchase failed:', error);
       // Handle purchase error (show error message to user)
@@ -108,7 +133,7 @@ export default function PaymentSummary({ sx, plan, ...other }) {
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             按年计费
           </Typography>
-          <Switch 
+          <Switch
             checked={isYearly}
             onChange={(e) => setIsYearly(e.target.checked)}
           />
@@ -134,7 +159,7 @@ export default function PaymentSummary({ sx, plan, ...other }) {
       </Typography> */}
 
       <Button fullWidth size="large" variant="contained" sx={{ mt: 5, mb: 3 }} onClick={handleUpgrade}>
-        升级我的计划
+        更新我的计划
       </Button>
 
       <Stack alignItems="center" spacing={1}>

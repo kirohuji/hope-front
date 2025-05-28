@@ -13,6 +13,7 @@ import { fDateTime } from 'src/utils/format-time';
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { orderService } from 'src/composables/context-provider';
 
 // ----------------------------------------------------------------------
 
@@ -23,8 +24,15 @@ export default function OrderDetailsToolbar({
   orderNumber,
   statusOptions,
   onChangeStatus,
+  _id,
 }) {
   const popover = usePopover();
+
+  const getStatusLabel = (currentStatus) => {
+    const option = statusOptions.find((opt) => opt.value === currentStatus);
+    console.log('option', option);
+    return option ? option.label : '已退款';
+  };
 
   return (
     <>
@@ -52,7 +60,7 @@ export default function OrderDetailsToolbar({
                   'default'
                 }
               >
-                {status}
+                {getStatusLabel(status)}
               </Label>
             </Stack>
 
@@ -76,13 +84,16 @@ export default function OrderDetailsToolbar({
             onClick={popover.onOpen}
             sx={{ textTransform: 'capitalize' }}
           >
-            {status}
+            {getStatusLabel(status)}
           </Button>
 
           <Button
             color="inherit"
             variant="outlined"
             startIcon={<Iconify icon="solar:printer-minimalistic-bold" />}
+            onClick={() => {
+              orderService.getPDF(_id);
+            }}
           >
             打印
           </Button>
@@ -118,9 +129,10 @@ export default function OrderDetailsToolbar({
 
 OrderDetailsToolbar.propTypes = {
   backLink: PropTypes.string,
-  createdAt: PropTypes.instanceOf(Date),
+  createdAt: PropTypes.string,
   onChangeStatus: PropTypes.func,
   orderNumber: PropTypes.string,
   status: PropTypes.string,
   statusOptions: PropTypes.array,
+  _id: PropTypes.string,
 };

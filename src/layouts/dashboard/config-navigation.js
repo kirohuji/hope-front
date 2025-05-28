@@ -114,6 +114,11 @@ export function useNavData() {
             icon: ICONS.mail,
           },
           {
+            title: t('order'),
+            path: paths.dashboard.order.root,
+            icon: ICONS.order,
+          },
+          {
             title: t('broadcast'),
             path: paths.dashboard.broadcast.root,
             auth: [
