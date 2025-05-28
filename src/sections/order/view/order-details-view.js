@@ -9,6 +9,8 @@ import { paths } from 'src/routes/paths';
 // components
 import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
+// hooks
+import { useResponsive } from 'src/hooks/use-responsive';
 //
 import { orderService } from 'src/composables/context-provider';
 import OrderDetailsInfo from '../order-details-info';
@@ -27,7 +29,7 @@ const ORDER_STATUS_OPTIONS = [
 
 export default function OrderDetailsView() {
   const settings = useSettingsContext();
-
+  const lgUp = useResponsive('up', 'lg');
   const params = useParams();
 
   const { id } = params;
@@ -38,9 +40,13 @@ export default function OrderDetailsView() {
 
   const handleChangeStatus = useCallback((newValue) => {
     if(newValue === 'completed'){
-      orderService.completeMembershipChange(order._id);
+      orderService.completeMembershipChange({
+        orderId: order._id,
+      });
     } else if(newValue === 'cancelled'){
-      orderService.cancelOrder(order._id);
+      orderService.cancelOrder({
+        _id: order._id,
+      });
     }
     setStatus(newValue);
   }, [order._id]);

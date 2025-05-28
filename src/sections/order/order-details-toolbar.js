@@ -14,6 +14,7 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { orderService } from 'src/composables/context-provider';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 // ----------------------------------------------------------------------
 
@@ -27,7 +28,7 @@ export default function OrderDetailsToolbar({
   _id,
 }) {
   const popover = usePopover();
-
+  const lgUp = useResponsive('up', 'lg');
   const getStatusLabel = (currentStatus) => {
     const option = statusOptions.find((opt) => opt.value === currentStatus);
     console.log('option', option);
@@ -44,9 +45,11 @@ export default function OrderDetailsToolbar({
         }}
       >
         <Stack spacing={1} direction="row" alignItems="flex-start">
-          <IconButton component={RouterLink} href={backLink}>
-            <Iconify icon="eva:arrow-ios-back-fill" />
-          </IconButton>
+          {lgUp && (
+            <IconButton component={RouterLink} href={backLink}>
+              <Iconify icon="eva:arrow-ios-back-fill" />
+            </IconButton>
+          )}
 
           <Stack spacing={0.5}>
             <Stack spacing={1} direction="row" alignItems="center">
@@ -70,6 +73,7 @@ export default function OrderDetailsToolbar({
           </Stack>
         </Stack>
 
+        {lgUp && (
         <Stack
           flexGrow={1}
           spacing={1.5}
@@ -102,6 +106,7 @@ export default function OrderDetailsToolbar({
             编辑
           </Button>
         </Stack>
+        )}
       </Stack>
 
       <CustomPopover

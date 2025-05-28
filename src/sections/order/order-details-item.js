@@ -27,7 +27,7 @@ export default function OrderDetailsItems({
       alignItems="flex-end"
       sx={{ my: 3, textAlign: 'right', typography: 'body2' }}
     >
-      <Stack direction="row">
+      {/* <Stack direction="row">
         <Box sx={{ color: 'text.secondary' }}>小计</Box>
         <Box sx={{ width: 160, typography: 'subtitle2' }}>{fCurrency(subTotal) || '-'}</Box>
       </Stack>
@@ -54,12 +54,12 @@ export default function OrderDetailsItems({
         >
           {discount ? `- ${fCurrency(discount)}` : '-'}
         </Box>
-      </Stack>
+      </Stack> */}
 
-      <Stack direction="row">
+      {/* <Stack direction="row">
         <Box sx={{ color: 'text.secondary' }}>税率</Box>
         <Box sx={{ width: 160 }}>{taxes ? fCurrency(taxes) : '-'}</Box>
-      </Stack>
+      </Stack> */}
 
       <Stack direction="row" sx={{ typography: 'subtitle1' }}>
         <Box>总计</Box>
