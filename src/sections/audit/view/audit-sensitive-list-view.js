@@ -54,6 +54,7 @@ const TABLE_HEAD = [
   { id: 'word', label: '敏感词' },
   { id: 'level', label: '敏感词等级' },
   { id: 'category', label: '分类' },
+  { id: 'count', label: '统计次数' },
   { id: 'description', label: '描述' },
   { id: 'createdBy', label: '创建人' },
   { id: 'createdAt', label: '创建时间' },
@@ -277,17 +278,17 @@ export default function AuditSensitiveListView() {
                 key={tab.value}
                 value={tab.value}
                 label={tab.label}
-                iconPosition="end"
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === filters.level) && 'filled') || 'soft'
-                    }
-                    color={tab.color}
-                  >
-                    {tab.count}
-                  </Label>
-                }
+                // iconPosition="end"
+                // icon={
+                //   <Label
+                //     variant={
+                //       ((tab.value === 'all' || tab.value === filters.level) && 'filled') || 'soft'
+                //     }
+                //     color={tab.color}
+                //   >
+                //     {tab.count}
+                //   </Label>
+                // }
               />
             ))}
           </Tabs>

@@ -51,7 +51,7 @@ export default function AuditSensitiveWorldsForm({ item, onDelete, onCancel, onS
 
   const Schema = Yup.object().shape({
     label: Yup.string().required('请输入 敏感词'),
-    value: Yup.string().required('请输入 敏感值'),
+    value: Yup.string(),
     category: Yup.string().required('请选择 类别'),
     level: Yup.string().required('请选择 等级'),
     description: Yup.string().max(5000),
@@ -84,6 +84,7 @@ export default function AuditSensitiveWorldsForm({ item, onDelete, onCancel, onS
       if (!hasData) {
         await sensitiveWordService.post({
           ...data,
+          value: data.value || data.label,
           scope: data.scope || scope.active._id,
         });
       } else {
@@ -115,7 +116,7 @@ export default function AuditSensitiveWorldsForm({ item, onDelete, onCancel, onS
               }}
             >
               <RHFTextField name="label" label="敏感词" />
-              <RHFTextField name="value" label="敏感值" />
+              {/* <RHFTextField name="value" label="敏感值" /> */}
               <RHFTextField name="replacement" label="替换词(通过||分割)" />
               <RHFSelect name="status" label="状态" placeholder="请选择状态">
                 <MenuItem value="active">启动</MenuItem>

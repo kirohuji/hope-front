@@ -34,7 +34,7 @@ export default function AuditSensitiveTableRow({
   onEditRow,
   onDeleteRow,
 }) {
-  const { label, value, level, category, description, status, createdAt, createdUser } = row;
+  const { label, value, level, count, category, description, status, createdAt, createdUser } = row;
 
   const confirm = useBoolean();
 
@@ -61,6 +61,7 @@ export default function AuditSensitiveTableRow({
         </TableCell>
         <TableCell>{getLabelFromValue(level, levels)}</TableCell>
         <TableCell>{getLabelFromValue(category, categories)}</TableCell>
+        <TableCell>{count}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap', maxWidth: '150px' }}>
           <ListItemText
             primary={description}
