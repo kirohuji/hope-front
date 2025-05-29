@@ -3943,17 +3943,26 @@
   resolved "https://registry.npmmirror.com/@remix-run/router/-/router-1.7.0.tgz"
   integrity sha512-Eu1V3kz3mV0wUpVTiFHuaT8UD1gj/0VnoFHQYX35xlslQUpe8CuYoKFn9d4WZFHm3yDywz6ALZuGdnUPKrNeAw==
 
-"@revenuecat/purchases-capacitor@^10.2.3":
-  version "10.2.3"
-  resolved "https://registry.npmmirror.com/@revenuecat/purchases-capacitor/-/purchases-capacitor-10.2.3.tgz"
-  integrity sha512-NLdZ9/mtRbpIvqbm1hme2W9kUkFroQbDah54YGDH3RtNAF8gFFIlGimus0Lk7wD89sEvQI6UdwHDaAJUun0X9w==
+"@revenuecat/purchases-capacitor-ui@^10.3.0":
+  version "10.3.0"
+  resolved "https://registry.npmmirror.com/@revenuecat/purchases-capacitor-ui/-/purchases-capacitor-ui-10.3.0.tgz#88d150e092df7d372725b105639ca99e1a286c7c"
+  integrity sha512-tT6e9RcZeMTThtRbb/1YVIQ/djN9IETujJbNhMmpdPlpFM3rcjUi/Uls79yVBYYfXDNNeQGSYXLJjva8D6kePA==
   dependencies:
-    "@revenuecat/purchases-typescript-internal-esm" "13.28.0"
+    "@capacitor/core" "^7.0.0"
+    "@revenuecat/purchases-capacitor" "^10.2.4"
+    "@revenuecat/purchases-typescript-internal-esm" "13.32.0"
 
-"@revenuecat/purchases-typescript-internal-esm@13.28.0":
-  version "13.28.0"
-  resolved "https://registry.npmmirror.com/@revenuecat/purchases-typescript-internal-esm/-/purchases-typescript-internal-esm-13.28.0.tgz"
-  integrity sha512-W80jeLX8678SgFsf9NwILBfUS7GgKgYZSev4/Ry3L+d0jVAZ9HvCdfp9AiBbIVzsKGW9ZYfk9lPhlmv5SoYTtQ==
+"@revenuecat/purchases-capacitor@^10.2.4", "@revenuecat/purchases-capacitor@^10.3.0":
+  version "10.3.0"
+  resolved "https://registry.npmmirror.com/@revenuecat/purchases-capacitor/-/purchases-capacitor-10.3.0.tgz#793be4315c3162ec07407a05fbbcf6c0a22a0565"
+  integrity sha512-gJblBlaz5r2BgvAg3O7xBEQG+WU1QbH7jBNglAe9hHVTGiPF4hepGnKMaTMfDj1M+VMkCM80vul5oUtZLDJENg==
+  dependencies:
+    "@revenuecat/purchases-typescript-internal-esm" "13.32.0"
+
+"@revenuecat/purchases-typescript-internal-esm@13.32.0":
+  version "13.32.0"
+  resolved "https://registry.npmmirror.com/@revenuecat/purchases-typescript-internal-esm/-/purchases-typescript-internal-esm-13.32.0.tgz#2a8225179efeb34881534970c90a00be16ffb1ed"
+  integrity sha512-14ru8Kj2uI9xHtsCutnNH6P8JhZ8mgEOiFTfGMLesL8lvfrFim2qdnCBvuCBmdbtcOecUGV6308mWgbLADy8SQ==
 
 "@rollup/plugin-babel@^5.2.0":
   version "5.3.1"
