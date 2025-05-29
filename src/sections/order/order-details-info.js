@@ -154,7 +154,7 @@ export default function OrderDetailsInfo({ customer, delivery, payment, shipping
 
       <Divider sx={{ borderStyle: 'dashed' }} />
 
-      {renderDelivery}
+      {/* {renderDelivery}
 
       <Divider sx={{ borderStyle: 'dashed' }} />
 
@@ -162,7 +162,7 @@ export default function OrderDetailsInfo({ customer, delivery, payment, shipping
 
       <Divider sx={{ borderStyle: 'dashed' }} />
 
-      {renderPayment}
+      {renderPayment} */}
     </Card>
   );
 }

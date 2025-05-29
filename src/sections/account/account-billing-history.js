@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 // @mui
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
@@ -13,13 +14,95 @@ import { fDate } from 'src/utils/format-time';
 import { fCurrency } from 'src/utils/format-number';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-// components
-import Iconify from 'src/components/iconify';
+import { orderService } from 'src/composables/context-provider';
+import { useSnackbar } from 'src/components/snackbar';
+import ConfirmDialog from 'src/components/confirm-dialog';
+import { useRouter } from 'src/routes/hook';
 
 // ----------------------------------------------------------------------
 
 export default function AccountBillingHistory({ invoices }) {
+  const router = useRouter();
   const showMore = useBoolean();
+  const { enqueueSnackbar } = useSnackbar();
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [currentInvoice, setCurrentInvoice] = useState(null);
+  const [buttonLoading, setButtonLoading] = useState(false);
+
+  const handleOpenConfirm = (invoice) => {
+    setCurrentInvoice(invoice);
+    setOpenConfirm(true);
+  };
+
+  const handleCloseConfirm = () => {
+    setOpenConfirm(false);
+    setCurrentInvoice(null);
+  };
+
+  const handleCancelPayment = async () => {
+    try {
+      setButtonLoading(true);
+      await orderService.cancelOrder({
+        _id: currentInvoice._id,
+      });
+      enqueueSnackbar('撤销成功');
+      handleCloseConfirm();
+    } catch (error) {
+      console.error('Failed to cancel payment:', error);
+      enqueueSnackbar('撤销失败');
+    } finally {
+      setButtonLoading(false);
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'completed':
+        return '已完成';
+      case 'pending':
+        return '处理中';
+      default:
+        return '已取消';
+    }
+  };
+
+  const renderStatusAction = (invoice) => {
+    if (invoice.status === 'completed') {
+      return (
+        <Link 
+          color="inherit" 
+          underline="always" 
+          variant="body2" 
+          sx={{ cursor: 'pointer' }} 
+          onClick={(e) => {
+            e.stopPropagation();
+            orderService.getPDF(invoice._id);
+          }}
+        >
+          PDF
+        </Link>
+      );
+    }
+    
+    if (invoice.status === 'pending') {
+      return (
+        <Button
+          size="small"
+          variant="contained"
+          color="error"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleOpenConfirm(invoice);
+          }}
+          sx={{ minWidth: '80px' }}
+        >
+          撤销支付
+        </Button>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <Card>
@@ -31,6 +114,12 @@ export default function AccountBillingHistory({ invoices }) {
             <ListItemText
               primary={invoice.invoiceNumber || invoice.orderNumber}
               secondary={fDate(invoice.createdAt)}
+              onClick={() => {
+                router.push(`/order/${invoice._id}`);
+              }}
+              sx={{
+                cursor: 'pointer',
+              }}
               primaryTypographyProps={{
                 typography: 'body2',
               }}
@@ -46,29 +135,40 @@ export default function AccountBillingHistory({ invoices }) {
               {fCurrency(invoice.items?.reduce((total, item) => total + (Number(item.unitPrice) * item.quantity), 0) || 0)}
             </Typography>
 
-            {/* <Link color="inherit" underline="always" variant="body2" href="#">
-              PDF
-            </Link> */}
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: invoice.status === 'completed' ? 'success.main' : 'error.main',
+                mr: 2,
+                fontWeight: 'medium'
+              }}
+            >
+              {getStatusText(invoice.status)}
+            </Typography>
+
+            {renderStatusAction(invoice)}
           </Stack>
         ))}
 
         <Divider sx={{ borderStyle: 'dashed' }} />
       </Stack>
 
-      <Stack alignItems="flex-start" sx={{ p: 2 }}>
-        {/* <Button
-          size="small"
-          color="inherit"
-          startIcon={
-            <Iconify
-              icon={showMore.value ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
-            />
-          }
-          onClick={showMore.onToggle}
-        >
-          {showMore.value ? `隐藏更多` : `显示更多`}
-        </Button> */}
-      </Stack>
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={handleCloseConfirm}
+        title="撤销支付"
+        content="确定要撤销这笔支付吗？"
+        action={
+          <Button 
+            variant="contained" 
+            color="error" 
+            onClick={handleCancelPayment}
+            disabled={buttonLoading}
+          >
+            确定撤销
+          </Button>
+        }
+      />
     </Card>
   );
 }

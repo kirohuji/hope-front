@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 import { useSafeArea } from 'src/hooks/use-safe-area';
 import { useOffSetTop } from 'src/hooks/use-off-set-top';
 // config
+import { Capacitor } from '@capacitor/core';
 import { HEADER } from '../../config-global';
 // components
 import Header from './header';
@@ -30,7 +31,7 @@ export default function ReturnLayout() {
         component="main"
         className="return-main"
         sx={{
-          pt: `calc(${HEADER.H_MOBILE + SPACING}px + ${getSafeAreaTop()})`,
+          pt: Capacitor.getPlatform() === 'web' ? '0px' : `calc(${HEADER.H_MOBILE + SPACING}px + ${getSafeAreaTop()})`,
           // display: { lg: 'flex' },
           display: 'flex',
           // minHeight: 1,

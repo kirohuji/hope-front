@@ -26,7 +26,11 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 export default function OrderTableRow({ row, selected, onViewRow, onSelectRow, onDeleteRow }) {
-  const { items, status, orderNumber, createdAt, customer, totalQuantity, subTotal } = row;
+  const { items, status, orderNumber, createdAt, customer } = row;
+
+  // Calculate totalQuantity and totalAmount
+  const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalAmount = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
 
   const confirm = useBoolean();
 
@@ -80,7 +84,7 @@ export default function OrderTableRow({ row, selected, onViewRow, onSelectRow, o
 
       <TableCell align="center"> {totalQuantity} </TableCell>
 
-      <TableCell> {fCurrency(subTotal)} </TableCell>
+      <TableCell> {fCurrency(totalAmount)} </TableCell>
 
       <TableCell>
         <Label
@@ -200,7 +204,7 @@ export default function OrderTableRow({ row, selected, onViewRow, onSelectRow, o
           }}
         >
           <Iconify icon="solar:eye-bold" />
-          View
+          查看
         </MenuItem>
       </CustomPopover>
 
@@ -211,7 +215,7 @@ export default function OrderTableRow({ row, selected, onViewRow, onSelectRow, o
         content="Are you sure want to delete?"
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            删除
           </Button>
         }
       />

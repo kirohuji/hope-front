@@ -47,6 +47,8 @@ const FaqsPage = lazy(() => import('src/pages/faqs'));
 
 const PaymentPage = lazy(() => import('src/pages/payment'));
 
+const OrderDetailsPage = lazy(() => import('src/pages/dashboard/order/details'));
+
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -152,6 +154,7 @@ export default function Router() {
         { path: 'account', element: <UserAccountPage /> },
         { path: 'profile', element: <UserProfilePage /> },
         { path: 'system', element: <SystemGeneralPage /> },
+        { path: 'order/:id', element: <OrderDetailsPage /> },
       ],
     },
     // No match 404

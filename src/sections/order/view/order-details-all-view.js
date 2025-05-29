@@ -9,14 +9,12 @@ import { paths } from 'src/routes/paths';
 // components
 import { useParams } from 'src/routes/hook';
 import { useSettingsContext } from 'src/components/settings';
-// hooks
-import { useResponsive } from 'src/hooks/use-responsive';
 //
 import { orderService } from 'src/composables/context-provider';
 import OrderDetailsInfo from '../order-details-info';
 import OrderDetailsItems from '../order-details-item';
 import OrderDetailsToolbar from '../order-details-toolbar';
-// import OrderDetailsHistory from '../order-details-history';
+import OrderDetailsHistory from '../order-details-history';
 
 // ----------------------------------------------------------------------
 
@@ -24,12 +22,12 @@ const ORDER_STATUS_OPTIONS = [
   { value: 'pending', label: '处理中' },
   { value: 'completed', label: '已完成' },
   { value: 'cancelled', label: '已取消' },
-  // { value: 'refunded', label: '已退款' },
+  { value: 'refunded', label: '已退款' },
 ];
 
 export default function OrderDetailsView() {
   const settings = useSettingsContext();
-  const lgUp = useResponsive('up', 'lg');
+
   const params = useParams();
 
   const { id } = params;
@@ -39,17 +37,8 @@ export default function OrderDetailsView() {
   const [status, setStatus] = useState(order.status);
 
   const handleChangeStatus = useCallback((newValue) => {
-    if(newValue === 'completed'){
-      orderService.completeMembershipChange({
-        orderId: order._id,
-      });
-    } else if(newValue === 'cancelled'){
-      orderService.cancelOrder({
-        _id: order._id,
-      });
-    }
     setStatus(newValue);
-  }, [order._id]);
+  }, []);
 
   const getData = useCallback(async () => {
     try {
@@ -80,7 +69,6 @@ export default function OrderDetailsView() {
             status={status}
             onChangeStatus={handleChangeStatus}
             statusOptions={ORDER_STATUS_OPTIONS}
-            _id={order._id}
           />
 
           <Grid container spacing={3}>
@@ -95,7 +83,7 @@ export default function OrderDetailsView() {
                   totalAmount={order.totalAmount}
                 />
 
-                {/* <OrderDetailsHistory history={order.history} /> */}
+                <OrderDetailsHistory history={order.history} />
               </Stack>
             </Grid>
 
