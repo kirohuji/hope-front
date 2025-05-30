@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
+import { useCallback, useState, useEffect } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Switch from '@mui/material/Switch';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
@@ -10,78 +12,110 @@ import { useRouter } from 'src/routes/hook';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
-import { useState, useEffect } from 'react';
+import { useSnackbar } from 'src/components/snackbar';
 import { Capacitor } from '@capacitor/core';
 import { Purchases, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
+
 import { orderService } from 'src/composables/context-provider';
+
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
 export default function PaymentSummary({ sx, plan, ...other }) {
   const router = useRouter();
+
+  const { refresh } = useAuthContext();
+
   const [isYearly, setIsYearly] = useState(false);
+
+  const [orderId, setOrderId] = useState('');
+
+  const [loading, setLoading] = useState(false);
+
   const [monthlyPrice, setMonthlyPrice] = useState(0);
-  const yearlyDiscount = 0.15; // 10% discount for yearly plan
-  const yearlyPrice = monthlyPrice * 12 * (1 - yearlyDiscount);
 
-  useEffect(() => {
-    initPurchases();
-  }, []);
+  // const yearlyDiscount = 0.20; // 20% discount for yearly plan
 
-  const initPurchases = async () => {
+  const yearlyPrice = monthlyPrice * 10;
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const initPurchases = useCallback(async () => {
     if (Capacitor.getPlatform() === 'ios') {
       await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
       await Purchases.configure({
         apiKey: process.env.REACT_APP_REVENUECAT_API_KEY,
       });
     }
-  }
-  const handleUpgrade = async () => {
-    if (Capacitor.getPlatform() === 'ios') {
-      await handleUpgradeByIos();
-    }
-    await handleUpgradeByBackend();
-  }
+  }, []);
 
-  const handleUpgradeByBackend = async () => {
+  useEffect(() => {
+    initPurchases();
+  }, [initPurchases]);
+
+  const handleUpgradeByBackend = useCallback(async () => {
     try {
-      const response = await orderService.changeMembership({
+      const order = await orderService.changeMembership({
         planId: plan.id || plan._id,
         isYearly,
       });
-      router.back();
+      setOrderId(order.orderId);
     } catch (error) {
       console.error('Purchase failed:', error);
-      // Handle purchase error (show error message to user)
     }
-  }
-  const handleUpgradeByIos = async () => {
-    try {
-      // Get available packages
-      const offerings = await Purchases.getOfferings();
+  }, [isYearly, plan._id, plan.id]);
 
-      // Select the appropriate package based on the plan and billing period
-      const packageId = isYearly ? 'yearly_package' : 'monthly_package';
-      const selectedPackage = offerings.current.availablePackages.find(p => p.identifier === packageId);
+  const handleUpgradeByIos = useCallback(async () => {
+    const offerings = await Purchases.getOfferings();
+    console.log('offerings', offerings);
+    const currentOffering = offerings[plan.value];
+    const packageId = isYearly ? '$rc_annual' : '$rc_monthly';
+    const selectedPackage = currentOffering.availablePackages.find(p => p.identifier === packageId);
 
-      if (!selectedPackage) {
-        console.error('Package not found');
-        return;
+    if (!selectedPackage) {
+      console.error('Package not found');
+      return;
+    }
+    const { customerInfo } = await Purchases.purchasePackage({ aPackage: selectedPackage });
+
+    enqueueSnackbar('正在生成订单中...');
+
+    // Handle successful purchase
+    console.log('Purchase successful:', customerInfo);
+
+    await orderService.completeMembershipChange({
+      orderId,
+    });
+    refresh();
+    enqueueSnackbar('购买成功');
+    router.back();
+  }, [plan.value, isYearly, enqueueSnackbar, orderId, refresh, router]);
+
+  const handleUpgrade = useCallback(async () => {
+    setLoading(true);
+    await handleUpgradeByBackend();
+    if (Capacitor.getPlatform() === 'ios') {
+      try {
+        await handleUpgradeByIos();
+      } catch (error) {
+        console.error('Purchase failed:', error);
+        enqueueSnackbar('购买失败');
       }
-
-      // Make the purchase
-      const { customerInfo } = await Purchases.purchasePackage({ selectedPackage });
-
-      // Handle successful purchase
-      console.log('Purchase successful:', customerInfo);
-
-      // You might want to update your UI or show a success message here
-
-    } catch (error) {
-      console.error('Purchase failed:', error);
-      // Handle purchase error (show error message to user)
+    } else if(Capacitor.getPlatform() === 'web') {
+      try {
+        await orderService.completeMembershipChange({
+          orderId,
+        });
+        enqueueSnackbar('购买成功');
+        router.back();
+      } catch (error) {
+        console.error('Purchase failed:', error);
+        enqueueSnackbar('购买失败');
+      }
     }
-  };
+    setLoading(false);
+  }, [handleUpgradeByBackend, handleUpgradeByIos, enqueueSnackbar, router, orderId]);
 
   const renderPrice = (
     <Stack direction="row" justifyContent="flex-end">
@@ -158,9 +192,9 @@ export default function PaymentSummary({ sx, plan, ...other }) {
         * 不含适用税费
       </Typography> */}
 
-      <Button fullWidth size="large" variant="contained" sx={{ mt: 5, mb: 3 }} onClick={handleUpgrade}>
+      <LoadingButton loading={loading} fullWidth size="large" variant="contained" sx={{ mt: 5, mb: 3 }} onClick={handleUpgrade}>
         更新我的计划
-      </Button>
+      </LoadingButton>
 
       <Stack alignItems="center" spacing={1}>
         <Stack direction="row" alignItems="center" spacing={1}>

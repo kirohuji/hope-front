@@ -3943,16 +3943,7 @@
   resolved "https://registry.npmmirror.com/@remix-run/router/-/router-1.7.0.tgz"
   integrity sha512-Eu1V3kz3mV0wUpVTiFHuaT8UD1gj/0VnoFHQYX35xlslQUpe8CuYoKFn9d4WZFHm3yDywz6ALZuGdnUPKrNeAw==
 
-"@revenuecat/purchases-capacitor-ui@^10.3.0":
-  version "10.3.0"
-  resolved "https://registry.npmmirror.com/@revenuecat/purchases-capacitor-ui/-/purchases-capacitor-ui-10.3.0.tgz#88d150e092df7d372725b105639ca99e1a286c7c"
-  integrity sha512-tT6e9RcZeMTThtRbb/1YVIQ/djN9IETujJbNhMmpdPlpFM3rcjUi/Uls79yVBYYfXDNNeQGSYXLJjva8D6kePA==
-  dependencies:
-    "@capacitor/core" "^7.0.0"
-    "@revenuecat/purchases-capacitor" "^10.2.4"
-    "@revenuecat/purchases-typescript-internal-esm" "13.32.0"
-
-"@revenuecat/purchases-capacitor@^10.2.4", "@revenuecat/purchases-capacitor@^10.3.0":
+"@revenuecat/purchases-capacitor@^10.3.0":
   version "10.3.0"
   resolved "https://registry.npmmirror.com/@revenuecat/purchases-capacitor/-/purchases-capacitor-10.3.0.tgz#793be4315c3162ec07407a05fbbcf6c0a22a0565"
   integrity sha512-gJblBlaz5r2BgvAg3O7xBEQG+WU1QbH7jBNglAe9hHVTGiPF4hepGnKMaTMfDj1M+VMkCM80vul5oUtZLDJENg==

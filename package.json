@@ -81,7 +81,6 @@
     "@react-spring/web": "^9.7.3",
     "@reduxjs/toolkit": "^1.9.5",
     "@revenuecat/purchases-capacitor": "^10.3.0",
-    "@revenuecat/purchases-capacitor-ui": "^10.3.0",
     "@wavesurfer/react": "^1.0.11",
     "apexcharts": "^3.41.0",
     "assert": "^2.1.0",
