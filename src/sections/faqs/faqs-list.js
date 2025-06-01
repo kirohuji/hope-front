@@ -22,7 +22,7 @@ export default function FaqsList() {
       const response = await dictionaryService.dict({
         value: 'FAQ',
       });
-      setData(response.chidlren);
+      setData(response.children);
     } catch (error) {
       enqueueSnackbar(error.message);
     }

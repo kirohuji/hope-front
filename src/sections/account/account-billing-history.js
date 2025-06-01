@@ -21,7 +21,7 @@ import { useRouter } from 'src/routes/hook';
 
 // ----------------------------------------------------------------------
 
-export default function AccountBillingHistory({ invoices }) {
+export default function AccountBillingHistory({ invoices, onRefresh }) {
   const router = useRouter();
   const showMore = useBoolean();
   const { enqueueSnackbar } = useSnackbar();
@@ -47,6 +47,7 @@ export default function AccountBillingHistory({ invoices }) {
       });
       enqueueSnackbar('撤销成功');
       handleCloseConfirm();
+      onRefresh();
     } catch (error) {
       console.error('Failed to cancel payment:', error);
       enqueueSnackbar('撤销失败');
@@ -175,4 +176,5 @@ export default function AccountBillingHistory({ invoices }) {
 
 AccountBillingHistory.propTypes = {
   invoices: PropTypes.array,
+  onRefresh: PropTypes.func,
 };

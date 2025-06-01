@@ -143,6 +143,7 @@ export default function AccountView() {
             cards={_userPayment}
             invoices={orders}
             addressBook={_userAddressBook}
+            onRefresh={getOrders}
           />
         )}
 

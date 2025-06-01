@@ -10,7 +10,7 @@ import AccountBillingAddress from './account-billing-address';
 
 // ----------------------------------------------------------------------
 
-export default function AccountBilling({ cards, plans, invoices, addressBook }) {
+export default function AccountBilling({ cards, plans, invoices, addressBook, onRefresh }) {
   return (
     <Grid container spacing={5} disableEqualOverflow>
       <Grid xs={12} md={8}>
@@ -22,7 +22,7 @@ export default function AccountBilling({ cards, plans, invoices, addressBook }) 
       </Grid>
 
       <Grid xs={12} md={4}>
-        <AccountBillingHistory invoices={invoices} />
+        <AccountBillingHistory invoices={invoices} onRefresh={onRefresh} />
       </Grid>
     </Grid>
   );
@@ -33,4 +33,5 @@ AccountBilling.propTypes = {
   cards: PropTypes.array,
   invoices: PropTypes.array,
   plans: PropTypes.array,
+  onRefresh: PropTypes.func,
 };

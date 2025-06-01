@@ -29,7 +29,7 @@ export default function PaymentSummary({ sx, plan, ...other }) {
 
   const [isYearly, setIsYearly] = useState(false);
 
-  const [orderId, setOrderId] = useState('');
+  // const [order, setOrder] = useState({});
 
   const [loading, setLoading] = useState(false);
 
@@ -56,20 +56,30 @@ export default function PaymentSummary({ sx, plan, ...other }) {
 
   const handleUpgradeByBackend = useCallback(async () => {
     try {
-      const order = await orderService.changeMembership({
+      const result = await orderService.changeMembership({
         planId: plan.id || plan._id,
         isYearly,
       });
-      setOrderId(order.orderId);
+      return result;
     } catch (error) {
       console.error('Purchase failed:', error);
+      setLoading(false);
+      return null;
     }
   }, [isYearly, plan._id, plan.id]);
 
-  const handleUpgradeByIos = useCallback(async () => {
+  const handleUpgradeByIos = useCallback(async (result) => {
+    console.log('开始购买')
     const offerings = await Purchases.getOfferings();
-    console.log('offerings', offerings);
-    const currentOffering = offerings[plan.value];
+    const currentOffering = offerings.all[plan.value];
+    if (!currentOffering) {
+      enqueueSnackbar({
+        message: '当前套餐不存在,请稍后再试',
+        variant: 'error',
+      });
+      return;
+    }
+    console.log('获取套餐')
     const packageId = isYearly ? '$rc_annual' : '$rc_monthly';
     const selectedPackage = currentOffering.availablePackages.find(p => p.identifier === packageId);
 
@@ -77,35 +87,51 @@ export default function PaymentSummary({ sx, plan, ...other }) {
       console.error('Package not found');
       return;
     }
-    const { customerInfo } = await Purchases.purchasePackage({ aPackage: selectedPackage });
 
-    enqueueSnackbar('正在生成订单中...');
+    await Purchases.purchasePackage({ aPackage: selectedPackage })
+      .then(async ({ customerInfo }) => {
+        console.log('购买套餐')
+        console.log("_id", result.orderId)
+        enqueueSnackbar('正在生成订单中...');
 
-    // Handle successful purchase
-    console.log('Purchase successful:', customerInfo);
+        // Handle successful purchase
+        console.log('Purchase successful:', customerInfo);
 
-    await orderService.completeMembershipChange({
-      orderId,
-    });
-    refresh();
-    enqueueSnackbar('购买成功');
-    router.back();
-  }, [plan.value, isYearly, enqueueSnackbar, orderId, refresh, router]);
+        await orderService.completeMembershipChange({
+          orderId: result.orderId,
+        });
+        console.log('订单完成')
+        refresh();
+        enqueueSnackbar('购买成功');
+        router.back();
+      })
+      .catch(async (error) => {
+        console.log('购买套餐失败')
+        console.log("_id", result.orderId)
+        await orderService.cancelOrder({
+          _id: result.orderId,
+        }); 
+        console.error('Purchase failed:', error);
+        enqueueSnackbar({
+          message: '购买失败',
+          variant: 'error',
+        });
+      });
+  }, [plan.value, isYearly, enqueueSnackbar, refresh, router]);
 
   const handleUpgrade = useCallback(async () => {
     setLoading(true);
-    await handleUpgradeByBackend();
+    const result = await handleUpgradeByBackend();
+    if (!result) {
+      setLoading(false);
+      return;
+    }
     if (Capacitor.getPlatform() === 'ios') {
-      try {
-        await handleUpgradeByIos();
-      } catch (error) {
-        console.error('Purchase failed:', error);
-        enqueueSnackbar('购买失败');
-      }
-    } else if(Capacitor.getPlatform() === 'web') {
+      await handleUpgradeByIos(result);
+    } else if (Capacitor.getPlatform() === 'web') {
       try {
         await orderService.completeMembershipChange({
-          orderId,
+          orderId: result.orderId,
         });
         enqueueSnackbar('购买成功');
         router.back();
@@ -115,7 +141,7 @@ export default function PaymentSummary({ sx, plan, ...other }) {
       }
     }
     setLoading(false);
-  }, [handleUpgradeByBackend, handleUpgradeByIos, enqueueSnackbar, router, orderId]);
+  }, [handleUpgradeByBackend, handleUpgradeByIos, enqueueSnackbar, router]);
 
   const renderPrice = (
     <Stack direction="row" justifyContent="flex-end">
