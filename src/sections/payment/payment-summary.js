@@ -48,10 +48,9 @@ export default function PaymentSummary({ sx, plan, ...other }) {
       await Purchases.configure({
         apiKey: process.env.REACT_APP_REVENUECAT_API_KEY,
       });
-      const appUserId = await Purchases.getAppUserID();
-      console.log('appUserId', appUserId)
+      const result = await Purchases.getAppUserID();
       await revenueCatService.setUser({
-        appUserId,
+        appUserId: result.appUserId,
       });
       setLoading(false);
     }
