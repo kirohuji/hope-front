@@ -16,7 +16,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { Capacitor } from '@capacitor/core';
 import { Purchases, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
 
-import { orderService } from 'src/composables/context-provider';
+import { orderService, revenueCatService } from 'src/composables/context-provider';
 
 import { useAuthContext } from 'src/auth/hooks';
 
@@ -43,10 +43,17 @@ export default function PaymentSummary({ sx, plan, ...other }) {
 
   const initPurchases = useCallback(async () => {
     if (Capacitor.getPlatform() === 'ios') {
+      setLoading(true);
       await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
       await Purchases.configure({
         apiKey: process.env.REACT_APP_REVENUECAT_API_KEY,
       });
+      const appUserId = await Purchases.getAppUserID();
+      console.log('appUserId', appUserId)
+      await revenueCatService.setUser({
+        appUserId,
+      });
+      setLoading(false);
     }
   }, []);
 
@@ -103,7 +110,9 @@ export default function PaymentSummary({ sx, plan, ...other }) {
         console.log('订单完成')
         refresh();
         enqueueSnackbar('购买成功');
-        router.back();
+        setTimeout(() => {
+          router.back();
+        }, 1500);
       })
       .catch(async (error) => {
         console.log('购买套餐失败')

@@ -25,6 +25,7 @@ import PostService from '../modules/posts';
 import MembershipService from '../modules/memberships';
 import MembershipTypeService from '../modules/memberships_types';
 import OrderService from '../modules/order';
+import RevenueCatService from '../modules/revenueCat';
 
 export const authService = new AuthService({ api, model: '' });
 export const userService = new UserService({ api, model: 'users' });
@@ -54,5 +55,6 @@ export const postService = new PostService({ api, model: 'posts' });
 export const membershipService = new MembershipService({ api, model: 'memberships' });
 export const membershipTypeService = new MembershipTypeService({ api, model: 'memberships/types' });
 export const orderService = new OrderService({ api, model: 'orders' });
+export const revenueCatService = new RevenueCatService({ api, model: 'revenueCat' });
 
 export const fileService = new FlieService({ api: fileApi, model: '' });
