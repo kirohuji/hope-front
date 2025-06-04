@@ -25,7 +25,7 @@ import { useAuthContext } from 'src/auth/hooks';
 export default function PaymentSummary({ sx, plan, ...other }) {
   const router = useRouter();
 
-  const { refresh } = useAuthContext();
+  const { refresh, user } = useAuthContext();
 
   const [isYearly, setIsYearly] = useState(false);
 
@@ -47,14 +47,11 @@ export default function PaymentSummary({ sx, plan, ...other }) {
       await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
       await Purchases.configure({
         apiKey: process.env.REACT_APP_REVENUECAT_API_KEY,
-      });
-      const result = await Purchases.getAppUserID();
-      await revenueCatService.setUser({
-        appUserId: result.appUserId,
+        appUserID: user._id
       });
       setLoading(false);
     }
-  }, []);
+  }, [user._id]);
 
   useEffect(() => {
     initPurchases();
@@ -74,7 +71,7 @@ export default function PaymentSummary({ sx, plan, ...other }) {
     }
   }, [isYearly, plan._id, plan.id]);
 
-  const handleUpgradeByIos = useCallback(async (result) => {
+  const handleUpgradeByIos = useCallback(async () => {
     console.log('开始购买')
     const offerings = await Purchases.getOfferings();
     const currentOffering = offerings.all[plan.value];
@@ -95,18 +92,8 @@ export default function PaymentSummary({ sx, plan, ...other }) {
     }
 
     await Purchases.purchasePackage({ aPackage: selectedPackage })
-      .then(async ({ customerInfo }) => {
-        console.log('购买套餐')
-        console.log("_id", result.orderId)
+      .then(async () => {
         enqueueSnackbar('正在生成订单中...');
-
-        // Handle successful purchase
-        console.log('Purchase successful:', customerInfo);
-
-        await orderService.completeMembershipChange({
-          orderId: result.orderId,
-        });
-        console.log('订单完成')
         refresh();
         enqueueSnackbar('购买成功');
         setTimeout(() => {
@@ -114,14 +101,8 @@ export default function PaymentSummary({ sx, plan, ...other }) {
         }, 1500);
       })
       .catch(async (error) => {
-        console.log('购买套餐失败')
-        console.log("_id", result.orderId)
-        await orderService.cancelOrder({
-          _id: result.orderId,
-        }); 
-        console.error('Purchase failed:', error);
         enqueueSnackbar({
-          message: '购买失败',
+          message: error,
           variant: 'error',
         });
       });
@@ -129,27 +110,30 @@ export default function PaymentSummary({ sx, plan, ...other }) {
 
   const handleUpgrade = useCallback(async () => {
     setLoading(true);
-    const result = await handleUpgradeByBackend();
-    if (!result) {
-      setLoading(false);
-      return;
-    }
     if (Capacitor.getPlatform() === 'ios') {
-      await handleUpgradeByIos(result);
+      await handleUpgradeByIos();
     } else if (Capacitor.getPlatform() === 'web') {
       try {
-        await orderService.completeMembershipChange({
-          orderId: result.orderId,
+        const result = await orderService.changeSubscription({
+          membershipTypeId: plan._id,
+          billingCycle: isYearly ? 'yearly' : 'monthly',
+          paymentMethod: 'alipay',
         });
-        enqueueSnackbar('购买成功');
-        router.back();
+        enqueueSnackbar('生成账单中');
+        await orderService.completePayment({
+          _id: result.orderId,
+        });
+        refresh();
+        setTimeout(() => {
+          router.back();
+        }, 1500);
       } catch (error) {
         console.error('Purchase failed:', error);
         enqueueSnackbar('购买失败');
       }
     }
     setLoading(false);
-  }, [handleUpgradeByBackend, handleUpgradeByIos, enqueueSnackbar, router]);
+  }, [handleUpgradeByIos, plan._id, isYearly, enqueueSnackbar, refresh, router]);
 
   const renderPrice = (
     <Stack direction="row" justifyContent="flex-end">

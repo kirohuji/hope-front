@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 // @mui
 import Grid from '@mui/material/Unstable_Grid2';
-
+import { Capacitor } from '@capacitor/core';
 //
 import AccountBillingPlan from './account-billing-plan';
 import AccountBillingPayment from './account-billing-payment';
@@ -20,10 +20,13 @@ export default function AccountBilling({ cards, plans, invoices, addressBook, on
 
         <AccountBillingAddress addressBook={addressBook} /> */}
       </Grid>
-
-      <Grid xs={12} md={4}>
-        <AccountBillingHistory invoices={invoices} onRefresh={onRefresh} />
-      </Grid>
+      {
+        Capacitor.getPlatform() !== 'ios'
+        &&
+        <Grid xs={12} md={4}>
+          <AccountBillingHistory invoices={invoices} onRefresh={onRefresh} />
+        </Grid>
+      }
     </Grid>
   );
 }

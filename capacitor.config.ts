@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'lourd.hope.app',
+  appId: 'lourd.jiamai.app',
   appName: '佳麦',
   plugins: {
     CapacitorUpdater: {
@@ -26,7 +26,7 @@ const config: CapacitorConfig = {
       splashImmersive: false, // 关闭沉浸式启动画面
     },
   },
-  bundledWebRuntime: false,
+  // bundledWebRuntime: false,
   webDir: 'build',
   server: {
     androidScheme: 'https',

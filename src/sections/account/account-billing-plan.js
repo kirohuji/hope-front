@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
+import CircularProgress from '@mui/material/CircularProgress';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
@@ -16,12 +17,14 @@ import { useRouter } from 'src/routes/hook';
 import { useBoolean } from 'src/hooks/use-boolean';
 // assets
 import { PlanFreeIcon, PlanStarterIcon, PlanPremiumIcon } from 'src/assets/icons';
+import { Purchases, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
-
+import { useSnackbar } from 'notistack';
 import { useAuthContext } from 'src/auth/hooks';
-
+import { Capacitor } from '@capacitor/core';
+import { orderService } from 'src/composables/context-provider';
 //
 import { AddressListDialog } from '../address';
 import PaymentCardListDialog from '../payment/payment-card-list-dialog';
@@ -29,7 +32,9 @@ import PaymentCardListDialog from '../payment/payment-card-list-dialog';
 // ----------------------------------------------------------------------
 
 export default function AccountBillingPlan({ cardList, addressBook, plans }) {
-  const { user } = useAuthContext();
+  const { refresh, user } = useAuthContext();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const router = useRouter();
 
@@ -49,9 +54,11 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
 
   const [selectedCard, setSelectedCard] = useState(primaryCard);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const handleSelectPlan = useCallback(
     (newValue) => {
-      if(selectedPlan){
+      if (selectedPlan) {
         const currentPlan = plans.find((plan) => plan.label === selectedPlan);
         if (currentPlan && currentPlan.label !== newValue) {
           setSelectedPlan(newValue);
@@ -128,14 +135,52 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
     </Grid>
   ));
 
-  useEffect(() => {
-    if (plans.length > 0) {
-      const currentPlan = plans.find((plan) => plan._id === user.membership.membershipTypeId) || {};
-      setCurrentUserPlan(currentPlan);
-      setSelectedPlan(currentPlan.label);
+  const handleCancelMembership = useCallback(async () => {
+    try {
+      await orderService.cancelSubscription({
+        _id: currentUserPlan._id,
+      });
+      enqueueSnackbar('取消会员成功');
+      refresh();
+    } catch (error) {
+      console.error('Error canceling membership:', error);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plans]);
+  }, [currentUserPlan, enqueueSnackbar, refresh]);
+
+  const initEntitlements = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      if (Capacitor.getPlatform() === 'ios') {
+        await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
+        await Purchases.configure({
+          apiKey: process.env.REACT_APP_REVENUECAT_API_KEY,
+          appUserID: user._id
+        });
+
+        const { customerInfo } = await Purchases.getCustomerInfo();
+        console.log('customerInfo', customerInfo.activeSubscriptions);
+        const activeSubscriptions = customerInfo.activeSubscriptions.filter((subscription) => subscription.includes('lourd.jiamai.app.sub.member'))[0];
+        const currentPlan = plans.find((plan) => activeSubscriptions.includes(plan.value)) || {};
+        setCurrentUserPlan(currentPlan);
+        setSelectedPlan(currentPlan.label);
+
+      } else if (plans.length > 0) {
+        const currentPlan = plans.find((plan) => plan._id === user.membership.membershipTypeId) || {};
+        setCurrentUserPlan(currentPlan);
+        setSelectedPlan(currentPlan.label);
+      }
+    } catch (error) {
+      console.error('Error initializing entitlements:', error);
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+    }
+  }, [plans, user._id, user.membership.membershipTypeId]);
+
+  useEffect(() => {
+    initEntitlements();
+  }, [initEntitlements]);
 
   return (
     <>
@@ -145,6 +190,26 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
         <Grid container spacing={2} sx={{ p: 2 }}>
           {renderPlans}
         </Grid>
+
+        {isLoading && (
+          <Box
+            sx={{
+              zIndex: 10,
+              backgroundColor: '#ffffffc4',
+              paddingTop: '92px',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
 
         <Stack spacing={2} sx={{ p: 2, pt: 0, typography: 'body2' }}>
           <Grid container spacing={{ xs: 0.5, md: 2 }}>
@@ -208,7 +273,7 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack spacing={1.5} direction="row" justifyContent="flex-end" sx={{ p: 3 }}>
-          {/* <Button variant="outlined">取消 会员</Button> */}
+          <Button variant="outlined" color="error" disabled={currentUserPlan.label !== selectedPlan} onClick={() => handleCancelMembership()}>取消 会员</Button>
           <Button
             variant="contained"
             onClick={() => handleChangePlan()}
