@@ -65,6 +65,12 @@ export const getDeliveredNotifications = async () => {
 
 export const clearAllNotifications = async () => {
   try {
+    // 检查推送通知是否已注册
+    const permStatus = await PushNotifications.checkPermissions();
+    if (permStatus.receive !== 'granted') {
+      throw new Error('Push notifications not registered. Please register first.');
+    }
+
     await PushNotifications.removeAllDeliveredNotifications();
     console.log('所有通知已清空');
   } catch (error) {

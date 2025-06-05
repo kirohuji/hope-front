@@ -26,7 +26,9 @@ import { useAuthContext } from 'src/auth/hooks';
 
 export default function PaymentSummary({ sx, plan, ...other }) {
   const router = useRouter();
+  
   const { refresh, user } = useAuthContext();
+
   const { initRevenueCat } = useRevenueCat();
 
   const [isYearly, setIsYearly] = useState(false);

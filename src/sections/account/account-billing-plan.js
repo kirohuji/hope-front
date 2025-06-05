@@ -34,17 +34,13 @@ import PaymentCardListDialog from '../payment/payment-card-list-dialog';
 
 export default function AccountBillingPlan({ cardList, addressBook, plans }) {
   const { refresh, user } = useAuthContext();
-  const { initRevenueCat, isInitialized } = useRevenueCat();
-
+  const { getCurrentUserPlan } = useRevenueCat();
   const { enqueueSnackbar } = useSnackbar();
-
   const router = useRouter();
-
   const openAddress = useBoolean();
-
   const openCards = useBoolean();
-
   const [currentUserPlan, setCurrentUserPlan] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   const primaryAddress = addressBook.filter((address) => address.primary)[0];
 
@@ -55,8 +51,6 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
   const [selectedAddress, setSelectedAddress] = useState(primaryAddress);
 
   const [selectedCard, setSelectedCard] = useState(primaryCard);
-
-  const [isLoading, setIsLoading] = useState(true);
 
   const handleSelectPlan = useCallback(
     (newValue) => {
@@ -154,20 +148,13 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
       setIsLoading(true);
       
       if (Capacitor.getPlatform() === 'ios') {
-        // Initialize RevenueCat if not already initialized
-        if (!isInitialized) {
-          await initRevenueCat(user._id);
-        }
-
-        const { customerInfo } = await Purchases.getCustomerInfo();
-        const activeSubscriptions = customerInfo.activeSubscriptions.filter(
-          (subscription) => subscription.includes('lourd.jiamai.app.sub.member')
-        )[0];
-
-        if (activeSubscriptions) {
-          const currentPlan = plans.find((plan) => activeSubscriptions.includes(plan.value)) || {};
-          setCurrentUserPlan(currentPlan);
-          setSelectedPlan(currentPlan.label);
+        const plan = await getCurrentUserPlan({
+          providedPlans: plans,
+          userId: user._id,
+        });
+        if (plan) {
+          setCurrentUserPlan(plan);
+          setSelectedPlan(plan.label);
         } else {
           enqueueSnackbar('未找到有效的会员订阅', { variant: 'warning' });
         }
@@ -182,7 +169,7 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
     } finally {
       setIsLoading(false);
     }
-  }, [plans, user._id, user.membership.membershipTypeId, initRevenueCat, isInitialized, enqueueSnackbar]);
+  }, [plans, user._id, user.membership.membershipTypeId, getCurrentUserPlan, enqueueSnackbar]);
 
   useEffect(() => {
     initEntitlements();
