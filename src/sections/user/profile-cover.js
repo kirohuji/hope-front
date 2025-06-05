@@ -1,24 +1,52 @@
 import PropTypes from 'prop-types';
+import { useEffect } from 'react';
 // @mui
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 // routes
 import { useRouter } from 'src/routes/hook';
 import { paths } from 'src/routes/paths';
 import { useTheme, alpha } from '@mui/material/styles';
 // theme
 import { bgGradient } from 'src/theme/css';
+// hooks
+import { useRevenueCat } from 'src/composables/use-revenue-cat';
+import { useAuthContext } from 'src/auth/hooks';
+import { Capacitor } from '@capacitor/core';
 
 // ----------------------------------------------------------------------
 
 export default function ProfileCover({ name, username, photoURL, role, coverUrl }) {
   const theme = useTheme();
   const router = useRouter();
+  const { user } = useAuthContext();
+
+  const { getCurrentUserPlan, currentUserPlan } = useRevenueCat();
+
   const handleClickItem = () => {
     router.push(paths.user.account);
   };
+
+  const getMembershipLabel = () => {
+    if (Capacitor.getPlatform() === 'ios') {
+      return currentUserPlan?.label;
+    }
+    return user?.membership?.membershipType?.label;
+  };
+
+  useEffect(() => {
+    if (user._id && Capacitor.getPlatform() === 'ios') {
+      getCurrentUserPlan({
+        userId: user._id,
+      });
+    }
+  }, [user._id, getCurrentUserPlan]);
+
+  const membershipLabel = getMembershipLabel();
+
   return (
     <Box
       sx={{
@@ -40,23 +68,41 @@ export default function ProfileCover({ name, username, photoURL, role, coverUrl 
           position: { md: 'absolute' },
         }}
       >
-        <Avatar
-          src={photoURL}
-          alt={username}
-          onClick={handleClickItem}
-          sx={{
-            bgcolor: 'background.default',
-            mx: 'auto',
-            cursor: 'pointer',
-            width: { xs: 64, md: 128 },
-            height: { xs: 64, md: 128 },
-            border: `solid 2px ${theme.palette.common.white}`,
-          }}
-        />
+        <Stack alignItems="center" spacing={1}>
+          <Avatar
+            src={photoURL}
+            alt={username}
+            onClick={handleClickItem}
+            sx={{
+              bgcolor: 'background.default',
+              mx: 'auto',
+              cursor: 'pointer',
+              width: { xs: 64, md: 128 },
+              height: { xs: 64, md: 128 },
+              border: `solid 2px ${theme.palette.common.white}`,
+            }}
+          />
+          {membershipLabel && (
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'common.white',
+                bgcolor: theme.palette.primary.main,
+                px: 0.5,
+                py: 0.5,
+                marginTop: -3,
+                borderRadius: 1,
+                zIndex: 1,
+              }}
+            >
+              {membershipLabel}
+            </Typography>
+          )}
+        </Stack>
 
         <ListItemText
           sx={{
-            mt: 3,
+            mt: 1,
             ml: { md: 3 },
             textAlign: { xs: 'center', md: 'unset' },
           }}
