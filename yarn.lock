@@ -6117,6 +6117,11 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001464, caniuse-lite@^1.0.30001716:
   resolved "https://registry.npmmirror.com/caniuse-lite/-/caniuse-lite-1.0.30001717.tgz"
   integrity sha512-auPpttCq6BDEG8ZAuHJIplGw6GODhjw+/11e7IjpnYCxZcW/ONgPs0KVBJ0d1bY3e2+7PRe5RCLyP+PfwVgkYw==
 
+capacitor-plugin-wapay@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.npmjs.org/capacitor-plugin-wapay/-/capacitor-plugin-wapay-0.0.8.tgz#25e28219a9c354c17e499d6eeca173c1ef1968c8"
+  integrity sha512-EevdgyW71Jqnyaw9YKfipHrsdtKeKpPz7wLUTm0umc1HLJKYUDB4cibzh58z+FcqpH1WkT6tFm6rOSY4DBlAZA==
+
 case-sensitive-paths-webpack-plugin@^2.4.0:
   version "2.4.0"
   resolved "https://registry.npmmirror.com/case-sensitive-paths-webpack-plugin/-/case-sensitive-paths-webpack-plugin-2.4.0.tgz"

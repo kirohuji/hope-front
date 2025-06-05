@@ -99,6 +99,7 @@
     "browserify-zlib": "^0.2.0",
     "camunda-bpmn-js-behaviors": "^1.9.1",
     "camunda-bpmn-moddle": "^7.0.1",
+    "capacitor-plugin-wapay": "^0.0.8",
     "clipboard-js": "^0.3.6",
     "clsx": "^1.2.1",
     "crypto-browserify": "^3.12.0",

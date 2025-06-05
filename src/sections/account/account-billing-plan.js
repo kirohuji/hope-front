@@ -25,6 +25,7 @@ import { useSnackbar } from 'notistack';
 import { useAuthContext } from 'src/auth/hooks';
 import { Capacitor } from '@capacitor/core';
 import { orderService } from 'src/composables/context-provider';
+import { useRevenueCat } from 'src/composables/use-revenue-cat';
 //
 import { AddressListDialog } from '../address';
 import PaymentCardListDialog from '../payment/payment-card-list-dialog';
@@ -33,6 +34,7 @@ import PaymentCardListDialog from '../payment/payment-card-list-dialog';
 
 export default function AccountBillingPlan({ cardList, addressBook, plans }) {
   const { refresh, user } = useAuthContext();
+  const { initRevenueCat, isInitialized } = useRevenueCat();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -150,20 +152,25 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
   const initEntitlements = useCallback(async () => {
     try {
       setIsLoading(true);
+      
       if (Capacitor.getPlatform() === 'ios') {
-        await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
-        await Purchases.configure({
-          apiKey: process.env.REACT_APP_REVENUECAT_API_KEY,
-          appUserID: user._id
-        });
+        // Initialize RevenueCat if not already initialized
+        if (!isInitialized) {
+          await initRevenueCat(user._id);
+        }
 
         const { customerInfo } = await Purchases.getCustomerInfo();
-        console.log('customerInfo', customerInfo.activeSubscriptions);
-        const activeSubscriptions = customerInfo.activeSubscriptions.filter((subscription) => subscription.includes('lourd.jiamai.app.sub.member'))[0];
-        const currentPlan = plans.find((plan) => activeSubscriptions.includes(plan.value)) || {};
-        setCurrentUserPlan(currentPlan);
-        setSelectedPlan(currentPlan.label);
+        const activeSubscriptions = customerInfo.activeSubscriptions.filter(
+          (subscription) => subscription.includes('lourd.jiamai.app.sub.member')
+        )[0];
 
+        if (activeSubscriptions) {
+          const currentPlan = plans.find((plan) => activeSubscriptions.includes(plan.value)) || {};
+          setCurrentUserPlan(currentPlan);
+          setSelectedPlan(currentPlan.label);
+        } else {
+          enqueueSnackbar('未找到有效的会员订阅', { variant: 'warning' });
+        }
       } else if (plans.length > 0) {
         const currentPlan = plans.find((plan) => plan._id === user.membership.membershipTypeId) || {};
         setCurrentUserPlan(currentPlan);
@@ -171,12 +178,11 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
       }
     } catch (error) {
       console.error('Error initializing entitlements:', error);
+      enqueueSnackbar('获取会员信息失败', { variant: 'error' });
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1000);
+      setIsLoading(false);
     }
-  }, [plans, user._id, user.membership.membershipTypeId]);
+  }, [plans, user._id, user.membership.membershipTypeId, initRevenueCat, isInitialized, enqueueSnackbar]);
 
   useEffect(() => {
     initEntitlements();

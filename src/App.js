@@ -43,15 +43,14 @@ import { SettingsProvider, SettingsDrawer } from 'src/components/settings';
 // auth
 import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 import { MeteorProvider } from 'src/meteor/context';
+import { RevenueCatProvider } from 'src/composables/use-revenue-cat';
 
 const connectUrl =
   process.env.NODE_ENV === 'development'
     ? 'ws://localhost:3030/websocket'
     : 'wss://hope.lourd.top/websocket';
-// import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
-// import { AuthProvider, AuthConsumer } from 'src/auth/context/amplify';
-// import { AuthProvider, AuthConsumer } from 'src/auth/context/firebase';
 // ----------------------------------------------------------------------
+
 export default function App() {
   useScrollToTop();
   return (
@@ -72,11 +71,13 @@ export default function App() {
               <ThemeProvider>
                 <MotionLazy>
                   <SnackbarProvider>
-                    <SettingsDrawer />
-                    <ProgressBar />
-                    <AuthConsumer>
-                      <Router />
-                    </AuthConsumer>
+                    <RevenueCatProvider>
+                      <SettingsDrawer />
+                      <ProgressBar />
+                      <AuthConsumer>
+                        <Router />
+                      </AuthConsumer>
+                    </RevenueCatProvider>
                   </SnackbarProvider>
                 </MotionLazy>
               </ThemeProvider>

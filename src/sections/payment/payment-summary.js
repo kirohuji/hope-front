@@ -14,9 +14,11 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { Capacitor } from '@capacitor/core';
-import { Purchases, LOG_LEVEL } from '@revenuecat/purchases-capacitor';
+import { Purchases } from '@revenuecat/purchases-capacitor';
+import { WeAlipayPlugin } from 'capacitor-plugin-wapay';
 
-import { orderService, revenueCatService } from 'src/composables/context-provider';
+import { orderService, alipayService } from 'src/composables/context-provider';
+import { useRevenueCat } from 'src/composables/use-revenue-cat';
 
 import { useAuthContext } from 'src/auth/hooks';
 
@@ -24,8 +26,8 @@ import { useAuthContext } from 'src/auth/hooks';
 
 export default function PaymentSummary({ sx, plan, ...other }) {
   const router = useRouter();
-
   const { refresh, user } = useAuthContext();
+  const { initRevenueCat } = useRevenueCat();
 
   const [isYearly, setIsYearly] = useState(false);
 
@@ -44,14 +46,10 @@ export default function PaymentSummary({ sx, plan, ...other }) {
   const initPurchases = useCallback(async () => {
     if (Capacitor.getPlatform() === 'ios') {
       setLoading(true);
-      await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
-      await Purchases.configure({
-        apiKey: process.env.REACT_APP_REVENUECAT_API_KEY,
-        appUserID: user._id
-      });
+      await initRevenueCat(user._id);
       setLoading(false);
     }
-  }, [user._id]);
+  }, [user._id, initRevenueCat]);
 
   useEffect(() => {
     initPurchases();
@@ -70,6 +68,23 @@ export default function PaymentSummary({ sx, plan, ...other }) {
       return null;
     }
   }, [isYearly, plan._id, plan.id]);
+
+  const handleAlipay = useCallback(async (payUrlStr, result) => {
+    WeAlipayPlugin.aliPayRequest({ orderInfo: payUrlStr }).then(async res => {
+      console.log('zfb成功：', res)
+      await orderService.completePayment({
+        _id: result.orderId,
+      });
+      refresh();
+      setTimeout(() => {
+        router.back();
+      }, 1500);
+      enqueueSnackbar('支付成功');
+    }).catch(err => {
+      console.log('zfb失败：', err)
+      enqueueSnackbar('支付失败');
+    });
+  }, [enqueueSnackbar, refresh, router]);
 
   const handleUpgradeByIos = useCallback(async () => {
     console.log('开始购买')
@@ -100,9 +115,9 @@ export default function PaymentSummary({ sx, plan, ...other }) {
           router.back();
         }, 1500);
       })
-      .catch(async (error) => {
+      .catch(async () => {
         enqueueSnackbar({
-          message: error,
+          message: '购买失败',
           variant: 'error',
         });
       });
@@ -112,28 +127,30 @@ export default function PaymentSummary({ sx, plan, ...other }) {
     setLoading(true);
     if (Capacitor.getPlatform() === 'ios') {
       await handleUpgradeByIos();
-    } else if (Capacitor.getPlatform() === 'web') {
+    } else {
+      let result = null;
       try {
-        const result = await orderService.changeSubscription({
+        result = await orderService.changeSubscription({
           membershipTypeId: plan._id,
           billingCycle: isYearly ? 'yearly' : 'monthly',
           paymentMethod: 'alipay',
         });
         enqueueSnackbar('生成账单中');
-        await orderService.completePayment({
-          _id: result.orderId,
-        });
-        refresh();
-        setTimeout(() => {
-          router.back();
-        }, 1500);
+        if (Capacitor.getPlatform() === 'android') {
+          const alipayResult = await alipayService.createPayment(result);
+          await handleAlipay(alipayResult.data, result);
+        }
       } catch (error) {
         console.error('Purchase failed:', error);
+        await orderService.cancelPayment({
+          _id: result.orderId,
+        });
         enqueueSnackbar('购买失败');
       }
+
     }
     setLoading(false);
-  }, [handleUpgradeByIos, plan._id, isYearly, enqueueSnackbar, refresh, router]);
+  }, [handleUpgradeByIos, plan._id, isYearly, enqueueSnackbar, handleAlipay]);
 
   const renderPrice = (
     <Stack direction="row" justifyContent="flex-end">

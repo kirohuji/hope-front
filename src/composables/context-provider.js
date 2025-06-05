@@ -26,6 +26,7 @@ import MembershipService from '../modules/memberships';
 import MembershipTypeService from '../modules/memberships_types';
 import OrderService from '../modules/order';
 import RevenueCatService from '../modules/revenueCat';
+import AlipayService from '../modules/alipay';
 
 export const authService = new AuthService({ api, model: '' });
 export const userService = new UserService({ api, model: 'users' });
@@ -56,5 +57,6 @@ export const membershipService = new MembershipService({ api, model: 'membership
 export const membershipTypeService = new MembershipTypeService({ api, model: 'memberships/types' });
 export const orderService = new OrderService({ api, model: 'orders' });
 export const revenueCatService = new RevenueCatService({ api, model: 'revenueCat' });
+export const alipayService = new AlipayService({ api, model: 'alipay' });
 
 export const fileService = new FlieService({ api: fileApi, model: '' });

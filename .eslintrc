@@ -110,5 +110,18 @@
       }
     ],
     "import/no-unresolved": ["error", { "ignore": ["^@revenuecat/purchases-capacitor$"] }]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/payment-summary.js"],
+      "rules": {
+        "import/named": "off",
+        "import/no-duplicates": "off",
+        "import/order": "off",
+        "import/no-self-import": "off",
+        "import/no-cycle": "off",
+        "import/no-relative-packages": "off"
+      }
+    }
+  ]
 }

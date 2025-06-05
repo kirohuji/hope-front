@@ -38,8 +38,12 @@ export default class OrderService extends Service {
     return this.api.post(`${this.model}/${target._id}/subscriptions/complete-payment`);
   }
 
-  cancelayment(target) {
-    return this.api.post(`${this.model}/${target._id}/subscriptions/complete-payment`);
+  cancelPayment(target) {
+    return this.api.post(`${this.model}/${target._id}/subscriptions/cancel-payment`);
+  }
+
+  syncSubscription(target) {
+    return this.api.post(`${this.model}/${target._id}/subscriptions/sync`);
   }
 
 

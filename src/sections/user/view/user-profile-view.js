@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
@@ -49,7 +49,7 @@ const TABS = [
 export default function UserProfileView() {
   const settings = useSettingsContext();
 
-  const { user } = useAuthContext();
+  const { user, refresh } = useAuthContext();
 
   const [searchFriends, setSearchFriends] = useState('');
 
@@ -62,6 +62,10 @@ export default function UserProfileView() {
   const handleSearchFriends = useCallback((event) => {
     setSearchFriends(event.target.value);
   }, []);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
