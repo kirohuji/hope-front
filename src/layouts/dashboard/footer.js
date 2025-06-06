@@ -24,12 +24,12 @@ const navigations = [
     to: '/dashboard/chat',
     auth: ['Chat'],
   },
-  {
-    label: '文件',
-    icon: ICONS.file,
-    to: '/dashboard/file-manager',
-    // auth: ['FileManager'],
-  },
+  // {
+  //   label: '文件',
+  //   icon: ICONS.file,
+  //   to: '/dashboard/file-manager',
+  //   // auth: ['FileManager'],
+  // },
   // {
   //   label: '发现',
   //   icon: ICONS.tour,

@@ -116,7 +116,7 @@ export default function Header({ isOffset }) {
         {pathname === '/system' && <div>系统设置</div>}
         {pathname === '/account' && <div>账户设置</div>}
         {pathname === '/training/search' && <div>全部分类</div>}
-        {pathname.includes('/reading/') && <div>{renderToggleButtons}</div>}
+        {/* {pathname.includes('/reading/') && <div>{renderToggleButtons}</div>} */}
         {pathname === '/privacy/personal' && <div>个人信息保护政策</div>}
         {pathname === '/privacy/children' && <div>儿童信息保护政策</div>}
         {pathname === '/privacy/third-party' && <div>第三方数据共享说明</div>}
