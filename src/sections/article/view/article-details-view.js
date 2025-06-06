@@ -45,7 +45,7 @@ export default function ArticleDetailsView({ onClose, articleId }) {
   const searchParams = useSearchParams();
 
   const { id } = params;
-  const [type, setType] = useState(searchParams.get('type') || 'listening');
+  const [type, setType] = useState(searchParams.get('type') || 'reading');
 
   const [articleUser, setArticleUser] = useState({
     answers: [],
