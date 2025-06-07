@@ -36,11 +36,12 @@ export const systemNavData = [
     href: '/legal/permissions',
     icon: <Iconify icon="solar:key-minimalistic-bold-duotone" />,
   },
-  // {
-  //   label: 'ICP 备案信息',
-  //   href: '/legal/icp',
-  //   icon: <Iconify icon="solar:home-angle-bold-duotone" />,
-  // },
+  {
+    label: 'ICP 备案信息',
+    open: 'https://beian.miit.gov.cn/',
+    icon: <Iconify icon="solar:home-angle-bold-duotone" />,
+    info: '沪ICP备2025125408号-2A',
+  },
   // {
   //   label: 'SDK 列表',
   //   href: '/system/sdk-list',

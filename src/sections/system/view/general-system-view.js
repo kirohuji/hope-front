@@ -77,8 +77,12 @@ export default function SystemGeneralView() {
   );
 
   const handleClickItem = useCallback(
-    (path) => {
-      router.push(path);
+    (path, open) => {
+      if (open) {
+        window.open(open, '_blank');
+      } else {
+        router.push(path);
+      }
     },
     [router]
   );
@@ -147,19 +151,22 @@ export default function SystemGeneralView() {
             {systemNavData.map((option) => (
               <MenuItem
                 key={option.label}
-                onClick={() => handleClickItem(option.href)}
+                onClick={() => handleClickItem(option.href, option.open)}
                 sx={{
                   py: 1,
+                  display: 'flex',
+                  justifyContent: 'space-between',
                   color: 'text.secondary',
                   '& svg': { width: 24, height: 24 },
                   '&:hover': { color: 'text.primary' },
                 }}
               >
-                {option.icon}
-
-                <Box component="span" sx={{ ml: 2 }}>
-                  {option.label}
-                </Box>
+                <div>
+                  {option.icon}
+                  <Box component="span" sx={{ ml: 2 }}>
+                    {option.label}
+                  </Box>
+                </div>
                 {option.info && (
                   <Label color="error" sx={{ ml: 1 }}>
                     {option.info}

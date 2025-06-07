@@ -44,7 +44,7 @@ export default function DashboardLayout({ children }) {
 
   useEffect(() => {
     if (!lgUp && pathname === '/dashboard/training/dashboard') {
-      if(Capacitor.getPlatform() === 'web'){
+      if(Capacitor.getPlatform() === 'web' || Capacitor.getPlatform() === 'android'){
         const bookPlayerElement = bookPlayerRef.current;
         if (bookPlayerElement) {
           const navigationElement = document.getElementById('bottom-navigation');

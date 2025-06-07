@@ -20,6 +20,7 @@ export default function FaqsView() {
         sx={{
           pb: 10,
           // pt: { xs: 10, md: 15 },
+          pt: 2,
           position: 'relative',
         }}
       >
