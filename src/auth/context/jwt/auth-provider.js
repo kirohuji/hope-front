@@ -10,8 +10,10 @@ import { initializeAutoUpdate } from 'src/cap/auto-update';
 // import { registerNotificationsByHuawei } from 'src/huawei/push-notification';
 import { useMeteorContext } from 'src/meteor/hooks';
 import { StatusBar } from '@capacitor/status-bar';
+import { notificationsPublish, notificationsCollection } from 'src/meteor/context/meteor-provider';
 import { AuthContext } from './auth-context';
 import { setSession, setInfo } from './utils';
+
 
 const initialState = {
   isInitialized: false,
@@ -71,6 +73,30 @@ const reducer = (state, action) => {
 // ----------------------------------------------------------------------
 
 const STORAGE_KEY = 'accessToken';
+
+if (Capacitor.isNativePlatform()) {
+  initializeAutoUpdate();
+  const deviceId = await Device.getId();
+  messagingService.updateDeviceStatus({
+    deviceId: deviceId.deviceId,
+    status: 'active',
+  });
+}
+if (Capacitor.getPlatform() === 'ios') {
+  console.log('iOS!');
+  import('../../../ios.css');
+  await registerNotifications();
+  StatusBar.setOverlaysWebView({ overlay: true });
+
+} else if (Capacitor.getPlatform() === 'android') {
+  console.log('Android!');
+  import('../../../android.css');
+  // await registerNotificationsByHuawei();
+  StatusBar.setOverlaysWebView({ overlay: false });
+} else {
+  console.log('Web!');
+  import('../../../web.css');
+}
 
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -173,30 +199,6 @@ export function AuthProvider({ children }) {
 
     // subConversations();
     subNotifications();
-
-    if (Capacitor.isNativePlatform()) {
-      initializeAutoUpdate(); 
-      const deviceId = await Device.getId();
-      messagingService.updateDeviceStatus({
-        deviceId: deviceId.deviceId,
-        status: 'active',
-      });
-    }
-    if (Capacitor.getPlatform() === 'ios') {
-      console.log('iOS!');
-      import('../../../ios.css');
-      await registerNotifications();
-      StatusBar.setOverlaysWebView({ overlay: true });
-
-    } else if (Capacitor.getPlatform() === 'android') {
-      console.log('Android!');
-      import('../../../android.css');
-      // await registerNotificationsByHuawei();
-      StatusBar.setOverlaysWebView({ overlay: false });
-    } else {
-      console.log('Web!');
-      import('../../../web.css');
-    }
   }, [callWithMeteor, subNotifications]);
 
   useEffect(() => {
@@ -205,6 +207,10 @@ export function AuthProvider({ children }) {
       initialize();
     } else if (!meteor.isConnected && state.isInitialized) {
       console.log('因为Meteor 失去了连接,所以修改状态为未初始化');
+      if (notificationsPublish) {
+        notificationsPublish.stop();
+        notificationsCollection.stop();
+      }
       dispatch({
         type: 'DISCONNECTED',
         payload: {},
