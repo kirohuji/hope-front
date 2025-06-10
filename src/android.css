@@ -1,58 +1,14 @@
-.notistack-SnackbarContainer {
-  margin-top: 24px !important;
-}
-
-header,
-.header {
-  background-color: white;
-  padding-top: 24px !important;
-  height: unset !important;
-}
-
-.yarl__root,
-.history-content-drawer,
-.notification-popover,
-.calendar-filter-drawer,
-.post-dialog,
-.chat-room-group-drawer {
-  padding-top: 24px !important;
-}
-
-.book-scrollbar {
-  height: calc(100% - 24px) !important;
-}
-
 .book-player {
   background-color: none !important;
-  bottom: 80px !important;
 }
-
-.account-general-form {
-  padding-bottom: 24px !important;
-  overflow-x: hidden;
-}
-
 .bottom-navigation {
   background-color: white;
-  padding-bottom: 24px !important;
 }
-
 .bottom-navigation div a {
   height: 56px !important;
 }
-
 .bottom-chat {
   height: calc(100vh - 72px) !important;
-}
-
-/* 训练列表 */
-.training-list {
-  height: calc(100vh - 250px) !important;
-}
-
-/* 聊天历史 */
-.chat-room-history {
-  height: calc(100vh - 420px) !important;
 }
 
 .MuiBottomNavigationAction-label {
@@ -68,13 +24,4 @@ header,
 }
 .message-list {
   margin-bottom: 10px;
-}
-
-.sign-out-card {
-  margin-bottom: 24px !important;
-}
-
-/* 对话框 */
-.post-dialog {
-  padding-bottom: 35px;
 }

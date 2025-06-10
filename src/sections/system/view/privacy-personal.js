@@ -10,7 +10,7 @@ export default function PrivacyConcisePage() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Scrollbar sx={{ height: '100%' }}>
-        <Card sx={{ p: 1 }}>
+        <Card sx={{ p: 1, mt: 1 }}>
           <Markdown children={PrivacyPersonalContent} />
         </Card>
       </Scrollbar>

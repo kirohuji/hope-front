@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
 import { Device } from '@capacitor/device';
 
-import { userService, versionService, messagingService } from 'src/composables/context-provider';
+import { userService, messagingService } from 'src/composables/context-provider';
 import { Capacitor } from '@capacitor/core';
-import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { registerNotifications } from 'src/cap/push-notification';
+import { initializeAutoUpdate } from 'src/cap/auto-update';
 // import { registerNotificationsByHuawei } from 'src/huawei/push-notification';
-import { App } from '@capacitor/app';
 import { useMeteorContext } from 'src/meteor/hooks';
 import { StatusBar } from '@capacitor/status-bar';
 import { AuthContext } from './auth-context';
@@ -176,16 +175,16 @@ export function AuthProvider({ children }) {
     subNotifications();
 
     if (Capacitor.isNativePlatform()) {
-      console.log('isNativePlatform');
+      initializeAutoUpdate(); 
+      const deviceId = await Device.getId();
+      messagingService.updateDeviceStatus({
+        deviceId: deviceId.deviceId,
+        status: 'active',
+      });
     }
     if (Capacitor.getPlatform() === 'ios') {
       console.log('iOS!');
       import('../../../ios.css');
-      const deviceId = await Device.getId();
-      messagingService.updateDeviceStatus({
-        deviceId,
-        status: 'active',
-      });
       await registerNotifications();
       StatusBar.setOverlaysWebView({ overlay: true });
 
@@ -339,100 +338,6 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
 }
 
-// ----------------------------------------------------------------------
-
-// const data = { version: -1 };
-CapacitorUpdater.notifyAppReady();
-// App.addListener('appStateChange', async (state) => {
-//   if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
-//     const current = await CapacitorUpdater.current();
-//     if (state.isActive) {
-//       console.log('当前正在使用的安装包', current);
-//       const allVersion = await versionService.getAll();
-//       const config = _.maxBy(allVersion, 'value');
-//       // 当前版本不是最新版本时获取最新的版本
-//       if (current.bundle.version !== config.value) {
-//         console.log('从后台拿到的安装包URL开始下载', config);
-//         data = await CapacitorUpdater.download({
-//           version: config.value,
-//           url: config.file,
-//         });
-//         console.log('从后台下载好的安装包', data);
-//       } else {
-//         console.log('当前安装包已经是最新的了');
-//       }
-//     }
-//     // 确保在后台状态进行安装最新的安装包
-//     if (
-//       !state.isActive &&
-//       data.version !== '' &&
-//       data.version !== -1 &&
-//       current.version !== data.version
-//     ) {
-//       console.log('安装包安装状态');
-//       try {
-//         console.log('安装包bundle list', await CapacitorUpdater.list());
-//         await CapacitorUpdater.set(data);
-//         console.log('安装包安装安好了');
-//       } catch (err) {
-//         console.log('安装包安装失败了');
-//         console.log(err);
-//       }
-//     }
-//   }
-// });
-let data = { version: -1 };
-App.addListener('appStateChange', async (state) => {
-  if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
-    const current = await CapacitorUpdater.current();
-    const deviceId = await Device.getId();
-    if (state.isActive) {
-      messagingService.updateDeviceStatus({
-        deviceId,
-        status: 'active',
-      });
-      const config = await versionService.getActive();
-      const version = `${config.majorVersion}.${config.minorVersion}.${config.patchVersion}`;
-      // 当前版本不是最新版本时获取最新的版本
-      if (current.bundle.version !== version && config.majorVersion) {
-        console.log('从后台拿到的安装包URL开始下载', config);
-        if (config.file) {
-          data = await CapacitorUpdater.download({
-            version,
-            url: config.file,
-          });
-          console.log('从后台下载好的安装包', data);
-        } else {
-          console.log('后台没有配置安装包');
-        }
-      } else {
-        console.log('当前安装包已经是最新的了');
-      }
-    } else {
-      messagingService.updateDeviceStatus({
-        deviceId,
-        status: 'deactive',
-      });
-    }
-    // 确保在后台状态进行安装最新的安装包
-    if (
-      !state.isActive &&
-      data.version !== '' &&
-      data.version !== -1 &&
-      current.version !== data.version
-    ) {
-      console.log('安装包安装状态');
-      try {
-        console.log('安装包bundle list', await CapacitorUpdater.list());
-        await CapacitorUpdater.set(data);
-        console.log('安装包安装安好了');
-      } catch (err) {
-        console.log('安装包安装失败了');
-        console.log(err);
-      }
-    }
-  }
-});
 AuthProvider.propTypes = {
   children: PropTypes.node,
 };

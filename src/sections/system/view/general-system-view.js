@@ -161,12 +161,12 @@ export default function SystemGeneralView() {
                   '&:hover': { color: 'text.primary' },
                 }}
               >
-                <div>
+                <Box component="div" sx={{ display: 'flex', alignItems: 'center' }}>
                   {option.icon}
                   <Box component="span" sx={{ ml: 2 }}>
                     {option.label}
                   </Box>
-                </div>
+                </Box>
                 {option.info && (
                   <Label color="error" sx={{ ml: 1 }}>
                     {option.info}

@@ -10,7 +10,7 @@ export default function LegalICPView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Scrollbar sx={{ height: '100%' }}>
-        <Card sx={{ p: 3 }}>
+        <Card sx={{ p: 3, mt: 1 }}>
           <Markdown>{icpContent}</Markdown>
         </Card>
       </Scrollbar>
