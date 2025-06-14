@@ -31,7 +31,7 @@ import FormProvider, { RHFSelect, RHFTextField, RHFUploadAvatar } from 'src/comp
 import { profileService, userService, fileService } from 'src/composables/context-provider';
 // ----------------------------------------------------------------------
 
-export default function UserNewEditForm({ currentUser }) {
+export default function PersonaNewEditForm({ currentUser }) {
   const router = useRouter();
 
   const isEdit = !!currentUser;
@@ -291,6 +291,6 @@ export default function UserNewEditForm({ currentUser }) {
   );
 }
 
-UserNewEditForm.propTypes = {
+PersonaNewEditForm.propTypes = {
   currentUser: PropTypes.object
 };

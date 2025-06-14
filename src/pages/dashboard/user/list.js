@@ -7,7 +7,6 @@ import { usePathname } from 'src/routes/hook';
 
 export default function UserListPage() {
   const pathname = usePathname();
-  console.log(pathname);
   return (
     <>
       <Helmet>

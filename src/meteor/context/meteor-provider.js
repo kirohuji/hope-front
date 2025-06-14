@@ -33,7 +33,7 @@ export let conversationsCollection = null;
 export let conversationsCollectionChange = null;
 export let notificationsPublish = null;
 export let notificationsCollection = null;
-const messagesPublish = null;
+// const messagesPublish = null;
 
 export const bindConnect = async (server, dispatch) => {
   server.on('connected', () => {

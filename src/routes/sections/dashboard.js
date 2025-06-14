@@ -119,6 +119,7 @@ const AuditListPage = lazy(() => import('src/pages/dashboard/audit/list'));
 // Persona
 const PersonaListPage = lazy(() => import('src/pages/dashboard/user/list'));
 const PersonaDetailsPage = lazy(() => import('src/pages/dashboard/user/edit'));
+const PersonaCreatePage = lazy(() => import('src/pages/dashboard/user/new'));
 
 // Bpmn
 const BpmnListPage = lazy(() => import('src/pages/dashboard/bpmn/list'));
@@ -196,6 +197,7 @@ export const dashboardRoutes = [
           { element: <PersonaListPage />, index: true },
           { path: 'list', element: <PersonaListPage /> },
           { path: ':id/edit', element: <PersonaDetailsPage /> },
+          { path: 'new', element: <PersonaCreatePage /> },
         ],
       },
       {

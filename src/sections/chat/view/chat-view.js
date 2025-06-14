@@ -7,7 +7,6 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 // routes
 import { useRouter, useSearchParams, usePathname } from 'src/routes/hook';
@@ -20,7 +19,6 @@ import { useMeteorContext } from 'src/meteor/hooks';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import Iconify from 'src/components/iconify';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import { useDispatch, useSelector } from 'src/redux/store';
 import {
@@ -30,10 +28,8 @@ import {
   getConversationByConversationKey,
   getContacts,
   deleteConversation,
-  newMessageGet,
   pushMessage,
 } from 'src/redux/slices/chat';
-import _ from 'lodash';
 import { useSnackbar } from 'src/components/snackbar';
 import ChatOrganization from 'src/sections/chat/chat-organization';
 import ChatNav from '../chat-nav';
