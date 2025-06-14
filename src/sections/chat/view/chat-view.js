@@ -194,8 +194,10 @@ export default function ChatView() {
 
     return () => {
       if (getMessage) {
-        reactiveCollectionChange.stop();
         getMessage.stop();
+      }
+      if (reactiveCollectionChange) {
+        reactiveCollectionChange.stop();
       }
     };
   }, [

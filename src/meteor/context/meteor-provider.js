@@ -118,6 +118,8 @@ export function MeteorProvider({ endpoint, children }) {
       // 关闭上一次的监听
       if (conversationsPublish) {
         conversationsCollectionChange.stop();
+      }
+      if(conversationsCollection && conversationsPublish.stop){
         conversationsPublish.stop();
       }
       conversationsPublish = server.subscribe('newMessagesConversations', new Date());

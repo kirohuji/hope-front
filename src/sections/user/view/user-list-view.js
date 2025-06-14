@@ -109,14 +109,23 @@ export default function UserListView({ isPersona }) {
   const getTableData = useCallback(
     async (selector = {}, options = {}) => {
       try {
+        let params = {}
         setLoading(true);
-        const response = await userService.pagination(
-          {
+        if(isPersona){
+          params = {
             ...selector,
             scope: scope?.active?._id,
-            // isPersona,
+            isPersona,
             ..._.pickBy(_.omit(debouncedFilters, ['role'])),
-          },
+          }
+        } else {
+          params = {
+            ...selector,
+            scope: scope?.active?._id,
+            ..._.pickBy(_.omit(debouncedFilters, ['role'])),
+          }
+        }
+        const response = await userService.pagination(params,
           {
             ...options,
             fields: {

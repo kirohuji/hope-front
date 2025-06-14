@@ -209,6 +209,8 @@ export function AuthProvider({ children }) {
       console.log('因为Meteor 失去了连接,所以修改状态为未初始化');
       if (notificationsPublish) {
         notificationsPublish.stop();
+      }
+      if (notificationsCollection && notificationsCollection.stop) {
         notificationsCollection.stop();
       }
       dispatch({
