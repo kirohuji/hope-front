@@ -114,10 +114,15 @@ export function useNavData() {
             icon: ICONS.mail,
           },
           {
-            title: t('order'),
-            path: paths.dashboard.order.root,
-            icon: ICONS.order,
+            title: t('persona'),
+            path: paths.dashboard.persona.root,
+            icon: ICONS.chat,
           },
+          // {
+          //   title: t('order'),
+          //   path: paths.dashboard.order.root,
+          //   icon: ICONS.order,
+          // },
           {
             title: t('broadcast'),
             path: paths.dashboard.broadcast.root,

@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 import { useRef, useCallback, useEffect, useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
@@ -72,7 +73,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function UserListView() {
+export default function UserListView({ isPersona }) {
   const fileRef = useRef(null);
 
   const { enqueueSnackbar } = useSnackbar();
@@ -113,6 +114,7 @@ export default function UserListView() {
           {
             ...selector,
             scope: scope?.active?._id,
+            // isPersona,
             ..._.pickBy(_.omit(debouncedFilters, ['role'])),
           },
           {
@@ -140,7 +142,7 @@ export default function UserListView() {
         enqueueSnackbar(error.message);
       }
     },
-    [scope.active, debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
+    [scope?.active?._id, isPersona, debouncedFilters, table.page, table.rowsPerPage, enqueueSnackbar]
   );
 
   useEffect(() => {
@@ -254,17 +256,17 @@ export default function UserListView() {
       />
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="用户列表"
+          heading={isPersona ? '人设列表' : '用户列表'}
           links={[{ name: '' }]}
           action={
             <Restricted to={['UserListAdd']}>
               <Button
                 component={RouterLink}
-                href={paths.dashboard.user.new}
+                href={isPersona ? paths.dashboard.persona.new : paths.dashboard.user.new}
                 variant="contained"
                 startIcon={<Iconify icon="mingcute:add-line" />}
               >
-                新用户
+                新建
               </Button>
             </Restricted>
           }
@@ -417,3 +419,7 @@ export default function UserListView() {
     </>
   );
 }
+
+UserListView.propTypes = {
+  isPersona: PropTypes.bool,
+};

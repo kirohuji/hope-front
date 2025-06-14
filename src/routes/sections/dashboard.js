@@ -116,6 +116,10 @@ const TrainingPage = lazy(() => import('src/pages/dashboard/training/process'));
 // Audit
 const AuditListPage = lazy(() => import('src/pages/dashboard/audit/list'));
 
+// Persona
+const PersonaListPage = lazy(() => import('src/pages/dashboard/user/list'));
+const PersonaDetailsPage = lazy(() => import('src/pages/dashboard/user/edit'));
+
 // Bpmn
 const BpmnListPage = lazy(() => import('src/pages/dashboard/bpmn/list'));
 const BpmnEditPage = lazy(() => import('src/pages/dashboard/bpmn/edit'));
@@ -184,6 +188,14 @@ export const dashboardRoutes = [
           { element: <OrderListPage />, index: true },
           { path: 'list', element: <OrderListPage /> },
           { path: ':id', element: <OrderDetailsPage /> },
+        ],
+      },
+      {
+        path: 'persona',
+        children: [
+          { element: <PersonaListPage />, index: true },
+          { path: 'list', element: <PersonaListPage /> },
+          { path: ':id/edit', element: <PersonaDetailsPage /> },
         ],
       },
       {
