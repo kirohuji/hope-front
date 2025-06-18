@@ -187,7 +187,7 @@ export default function ChatNav({ loading, contacts, conversations, selectedConv
 
   const renderContent = (
     <>
-      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ p: 2.5, pb: 0 }}>
+      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ p: 2.5, pb: 0, h: 1 }}>
         {!collapseDesktop && (
           <>
             <ChatNavAccount />

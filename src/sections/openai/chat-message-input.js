@@ -27,6 +27,15 @@ import { openai } from 'src/redux/slices/openai';
 // components
 import Iconify from 'src/components/iconify';
 import { fileService, messagingService } from 'src/composables/context-provider';
+import { RTVIClient, RTVIEvent, RTVIMessage } from "@pipecat-ai/client-js";
+import {
+  RTVIClientVideo,
+  useRTVIClient,
+  useRTVIClientEvent,
+  useRTVIClientMediaTrack,
+  useRTVIClientTransportState,
+  VoiceVisualizer,
+} from "@pipecat-ai/client-react";
 import ChatClipboardDialog from './chat-clipboard-dialog';
 
 // ----------------------------------------------------------------------
@@ -63,6 +72,12 @@ export default function ChatMessageInput({
   const [message, setMessage] = useState('');
 
   const [type, setType] = useState('text');
+
+  const rtviClient = useRTVIClient();
+
+  const camTrack = useRTVIClientMediaTrack("video", "local");
+
+  const transportState = useRTVIClientTransportState();
 
   const myContact = useMemo(
     () => ({
@@ -136,6 +151,28 @@ export default function ChatMessageInput({
     return conversationKey;
   }, [recipients]);
 
+  const handleRTVIMessage = useCallback(async (currentMessage) => {
+    rtviClient.params.requestData = {
+      ...(rtviClient.params.requestData ?? {}),
+      conversation_id: '684fcc587556fc7d2f2a1e66',
+    };
+    await rtviClient.action({
+      service: "llm",
+      action: "append_to_messages",
+      arguments: [
+        {
+          name: "messages",
+          value: [
+            {
+              role: "user",
+              content: currentMessage,
+            },
+          ],
+        },
+      ],
+    });
+  }, [rtviClient]);
+
   const handleSendMessage = useCallback(
     async (event) => {
       try {
@@ -143,8 +180,9 @@ export default function ChatMessageInput({
           if (selectedConversationId) {
             setType('text');
             try {
-              await dispatch(sendMessage(selectedConversationId, messageData));
-              dispatch(openai(selectedConversationId, message));
+              // await dispatch(sendMessage(selectedConversationId, messageData));
+              // dispatch(openai(selectedConversationId, message));
+              await handleRTVIMessage(message);
               setMessage('');
             } catch (e) {
               enqueueSnackbar(e.message);
@@ -162,17 +200,7 @@ export default function ChatMessageInput({
         console.error(error);
       }
     },
-    [
-      message,
-      selectedConversationId,
-      dispatch,
-      messageData,
-      enqueueSnackbar,
-      createConversation,
-      conversationData,
-      router,
-      onAddRecipients,
-    ]
+    [message, selectedConversationId, handleRTVIMessage, enqueueSnackbar, createConversation, conversationData, router, onAddRecipients]
   );
   const handlePaste = useCallback(
     (event) => {

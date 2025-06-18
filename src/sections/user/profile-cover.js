@@ -38,12 +38,16 @@ export default function ProfileCover({ name, username, photoURL, role, coverUrl 
   };
 
   useEffect(() => {
-    if (user._id && Capacitor.getPlatform() === 'ios') {
-      getCurrentUserPlan({
-        userId: user._id,
-      });
+    try{
+      if (user?._id && Capacitor.getPlatform() === 'ios') {
+        getCurrentUserPlan({
+          userId: user?._id,
+        });
+      }
+    } catch(e){
+      console.log(e)
     }
-  }, [user._id, getCurrentUserPlan]);
+  }, [user, getCurrentUserPlan]);
 
   const membershipLabel = getMembershipLabel();
 

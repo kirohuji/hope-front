@@ -6,6 +6,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 // routes
 import { useSearchParams } from 'src/routes/hook';
@@ -23,10 +24,16 @@ import {
   getMessages,
   getConversationByConversationKey,
   deleteConversation,
-  newMessageGet,
+  // newMessageGet,
 } from 'src/redux/slices/chat';
+import {
+  SmallWebRTCTransport
+} from "@pipecat-ai/small-webrtc-transport";
+
 import _ from 'lodash';
 import { useSnackbar } from 'src/components/snackbar';
+import { RTVIClient } from "@pipecat-ai/client-js";
+import { RTVIClientProvider, RTVIClientAudio } from '@pipecat-ai/client-react';
 import ChatNav from '../chat-nav';
 import ChatRoom from '../chat-room';
 import ChatMessageList from '../chat-message-list';
@@ -64,6 +71,89 @@ const TABS = [
   },
 ];
 
+const transport = new SmallWebRTCTransport();
+const client = new RTVIClient({
+  params: {
+    baseUrl: "http://localhost:7860/api/bot",
+    endpoint: {
+      connect: "/bot/offer",
+      action: "/action",
+    },
+  },
+  transport,
+  enableMic: true,
+  customConnectHandler: () => Promise.resolve(),
+  callbacks: {
+    onTransportStateChanged: (state) => {
+      console.log(`Transport state: ${state}`)
+    },
+    onConnected: () => {
+      console.log("onConnected")
+    },
+    onBotReady: () => {
+      console.log("onBotReady")
+      console.log(transport)
+      transport.state = 'ready'
+      // client.action({
+      //   service: "llm",
+      //   action: "append_to_messages",
+      //   arguments: [
+      //     {
+      //       name: "messages",
+      //       value: [
+      //         {
+      //           role: "user",
+      //           content: '你好',
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // });
+    },
+    onDisconnected: () => {
+      console.log("onDisconnected")
+    },
+    onUserStartedSpeaking: () => {
+      console.log("User started speaking.")
+    },
+    onUserStoppedSpeaking: () => {
+      console.log("User stopped speaking.")
+    },
+    onBotStartedSpeaking: () => {
+      console.log("Bot started speaking.")
+    },
+    onBotStoppedSpeaking: () => {
+      console.log("Bot stopped speaking.")
+    },
+    onUserTranscript: async (transcript) => {
+      // await client.action({
+      //   service: "llm",
+      //   action: "append_to_messages",
+      //   arguments: [
+      //     {
+      //       name: "messages",
+      //       value: [
+      //         {
+      //           role: "user",
+      //           content: '你好',
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // });
+      if (transcript.final) {
+        console.log(`User transcript: ${transcript.text}`)
+      }
+    },
+    onBotTranscript: (transcript) => {
+      console.log(`Bot transcript: ${transcript.text}`)
+    },
+    onServerMessage: (msg) => {
+      console.log(`Server message: ${msg}`)
+    }
+  },
+});
+
 export default function ChatView() {
   const { server: ddpclient } = useMeteorContext();
   const { enqueueSnackbar } = useSnackbar();
@@ -73,6 +163,8 @@ export default function ChatView() {
   const [currentTab, setCurrentTab] = useState('conversations');
 
   const [loading, setLoading] = useState(true);
+
+  // const [client, setClient] = useState(null);
 
   const { conversations, messages, sendingMessage, contacts } = useSelector((state) => state.chat);
 
@@ -103,6 +195,22 @@ export default function ChatView() {
     setConversationsLoading(false);
   }, [dispatch, selectedConversationId]);
 
+  const startWebRTC = useCallback(async () => {
+    try {
+      // client.initDevices();
+
+      client.initDevices().then(async () => {
+        // const localMic = await client.getAllMics();
+        // console.log(localMic);
+        // client.updateMic(localMic[0].deviceId);
+        // transport.setAudioCodec(localMic[0].deviceId);
+        await client.connect()
+        // await transport.connect()
+      });
+    } catch (error) {
+      client.disconnect();
+    }
+  }, [])
   // 刷新 Conversations
   const onRefreshWithConversations = useCallback(async () => {
     setLoading(true);
@@ -111,7 +219,6 @@ export default function ChatView() {
   }, [dispatch]);
 
   useEffect(() => {
-    let sub = null;
     if (!selectedConversationId) {
       switch (currentTab) {
         case 'conversations':
@@ -122,32 +229,10 @@ export default function ChatView() {
       }
       dispatch(resetActiveConversation());
     } else {
-      if (user._id) {
-        sub = ddpclient.subscribe(
-          'socialize.messagesFor2',
-          selectedConversationId,
-          user._id,
-          new Date()
-        );
-        sub.ready().then(() => {
-          ddpclient.onChangeFuncs = ddpclient.onChangeFuncs.filter(
-            (item) => item.collection !== 'socialize:messages'
-          );
-          const collection = ddpclient.collection('socialize:messages');
-          collection.onChange((target) => {
-            if (target.added) {
-              dispatch(newMessageGet(selectedConversationId));
-            }
-          });
-        });
-      }
       getDetails();
+
+      // setClient(newClient);
     }
-    return () => {
-      if (sub) {
-        sub.stop();
-      }
-    };
   }, [
     currentTab,
     ddpclient,
@@ -246,42 +331,45 @@ export default function ChatView() {
         </Typography>
       )}
       {isDesktop && (
-        <Stack
-          component={Card}
-          direction="row"
-          className="bottom-chat"
-          sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
-        >
-          {renderNav}
-
+        <RTVIClientProvider client={client}>
           <Stack
-            sx={{
-              width: 1,
-              height: 1,
-              overflow: 'hidden',
-            }}
+            component={Card}
+            direction="row"
+            className="bottom-chat"
+            sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
           >
+            {renderNav}
+            <Button onClick={startWebRTC}>开始</Button>
             <Stack
-              direction="row"
               sx={{
                 width: 1,
                 height: 1,
                 overflow: 'hidden',
-                borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
               }}
             >
-              {renderMessages}
+              <Stack
+                direction="row"
+                sx={{
+                  width: 1,
+                  height: 1,
+                  overflow: 'hidden',
+                  borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
+                }}
+              >
+                {renderMessages}
 
-              {details && (
-                <ChatRoom
-                  conversation={conversation}
-                  messages={messages.byId[selectedConversationId]}
-                  participants={participants}
-                />
-              )}
+                {details && (
+                  <ChatRoom
+                    conversation={conversation}
+                    messages={messages.byId[selectedConversationId]}
+                    participants={participants}
+                  />
+                )}
+              </Stack>
             </Stack>
           </Stack>
-        </Stack>
+          <RTVIClientAudio />
+        </RTVIClientProvider>
       )}
       {!selectedConversationId && (
         <Stack>

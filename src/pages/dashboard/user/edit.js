@@ -13,7 +13,7 @@ export default function UserEditPage() {
         <title> 编辑用户</title>
       </Helmet>
 
-      <UserEditView isPersona={pathname === '/dashboard/persona/edit'} />
+      <UserEditView isPersona={pathname.includes('/dashboard/persona')} />
     </>
   );
 }

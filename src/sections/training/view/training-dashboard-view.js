@@ -22,18 +22,23 @@ export default function TrainingDashboardView() {
   const navigate = useNavigate();
 
   const getToday = useCallback(async () => {
-    const bookArticle = await bookService.startWithCurrentUser();
-    const getInfo = await broadcastService.getBook();
-    if (getInfo) {
-      setInfo(getInfo);
+    try{
+      const bookArticle = await bookService.startWithCurrentUser();
+      const getInfo = await broadcastService.getBook();
+      if (getInfo) {
+        setInfo(getInfo);
+      }
+      if (bookArticle) {
+        const response = await articleService.getArticleCurrentUser({
+          _id: bookArticle.article_id,
+        });
+        setArticleUser(response);
+      }
+    } catch(e){
+      enqueueSnackbar('获取失败')
+      console.log(e)
     }
-    if (bookArticle) {
-      const response = await articleService.getArticleCurrentUser({
-        _id: bookArticle.article_id,
-      });
-      setArticleUser(response);
-    }
-  }, []);
+  }, [enqueueSnackbar]);
 
   const onStart = async () => {
     const response = await bookService.startWithCurrentUser();

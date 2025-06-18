@@ -215,9 +215,13 @@ export default function UserListView({ isPersona }) {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.user.edit(id));
+      if(isPersona){
+        router.push(paths.dashboard.persona.edit(id));
+      } else {
+        router.push(paths.dashboard.user.edit(id));
+      }
     },
-    [router]
+    [isPersona, router]
   );
 
   const handleFilterStatus = useCallback(

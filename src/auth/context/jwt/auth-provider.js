@@ -77,15 +77,23 @@ const STORAGE_KEY = 'accessToken';
 if (Capacitor.isNativePlatform()) {
   initializeAutoUpdate();
   const deviceId = await Device.getId();
-  messagingService.updateDeviceStatus({
-    deviceId: deviceId.deviceId,
-    status: 'active',
-  });
+  try{
+    messagingService.updateDeviceStatus({
+      deviceId: deviceId.deviceId,
+      status: 'active',
+    });
+  } catch(e){
+    console.log(e)
+  }
 }
 if (Capacitor.getPlatform() === 'ios') {
   console.log('iOS!');
   import('../../../ios.css');
-  await registerNotifications();
+  try{
+    await registerNotifications();
+  } catch(e){
+    console.log("registerNotifications失败", e)
+  }
   StatusBar.setOverlaysWebView({ overlay: true });
 
 } else if (Capacitor.getPlatform() === 'android') {
