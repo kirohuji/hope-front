@@ -6,7 +6,6 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 // routes
 import { useSearchParams } from 'src/routes/hook';
@@ -30,7 +29,6 @@ import {
   SmallWebRTCTransport
 } from "@pipecat-ai/small-webrtc-transport";
 
-import _ from 'lodash';
 import { useSnackbar } from 'src/components/snackbar';
 import { RTVIClient } from "@pipecat-ai/client-js";
 import { RTVIClientProvider, RTVIClientAudio } from '@pipecat-ai/client-react';
@@ -133,13 +131,11 @@ export default function ChatView() {
 
   const [loading, setLoading] = useState(true);
 
-  // const [client, setClient] = useState(null);
-
   const { conversations, messages, sendingMessage, contacts } = useSelector((state) => state.chat);
 
   const conversation = useSelector((state) => conversationSelector(state));
 
-  const { active } = useSelector((state) => state.scope);
+  // const { active } = useSelector((state) => state.scope);
 
   const isDesktop = useResponsive('up', 'md');
 
@@ -164,22 +160,6 @@ export default function ChatView() {
     setConversationsLoading(false);
   }, [dispatch, selectedConversationId]);
 
-  const startWebRTC = useCallback(async () => {
-    try {
-      // client.initDevices();
-
-      client.initDevices().then(async () => {
-        // const localMic = await client.getAllMics();
-        // console.log(localMic);
-        // client.updateMic(localMic[0].deviceId);
-        // transport.setAudioCodec(localMic[0].deviceId);
-        await client.connect()
-        // await transport.connect()
-      });
-    } catch (error) {
-      client.disconnect();
-    }
-  }, [])
   // 刷新 Conversations
   const onRefreshWithConversations = useCallback(async () => {
     setLoading(true);
@@ -199,8 +179,6 @@ export default function ChatView() {
       dispatch(resetActiveConversation());
     } else {
       getDetails();
-
-      // setClient(newClient);
     }
   }, [
     currentTab,

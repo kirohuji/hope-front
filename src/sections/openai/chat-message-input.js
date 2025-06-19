@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
-import { useRef, useState, useCallback, useMemo, useEffect } from 'react';
+import { useRef, useState, useCallback, useMemo } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Editor from 'src/components/editor';
 import Button from '@mui/material/Button';
 import emitter from "src/utils/eventEmitter";
-import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
@@ -24,20 +23,14 @@ import uuidv4 from 'src/utils/uuidv4';
 // redux
 import { useDispatch } from 'src/redux/store';
 import { sendMessage } from 'src/redux/slices/chat';
-import { openai } from 'src/redux/slices/openai';
 // components
 import Iconify from 'src/components/iconify';
 import { fileService, messagingService } from 'src/composables/context-provider';
-import { RTVIClient, RTVIEvent, RTVIMessage } from "@pipecat-ai/client-js";
 import {
-  RTVIClientVideo,
   useRTVIClient,
-  useRTVIClientEvent,
   useRTVIClientMediaTrack,
   useRTVIClientTransportState,
-  VoiceVisualizer,
 } from "@pipecat-ai/client-react";
-import ChatClipboardDialog from './chat-clipboard-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -50,7 +43,6 @@ export default function ChatMessageInput({
   disabled,
   selectedConversationId,
 }) {
-  const { server: ddpclient } = useMeteorContext();
   const loading = useBoolean(false);
 
   const clipboardOpen = useBoolean(false);
@@ -76,10 +68,6 @@ export default function ChatMessageInput({
   const [type, setType] = useState('text');
 
   const rtviClient = useRTVIClient();
-
-  const camTrack = useRTVIClientMediaTrack("video", "local");
-
-  const transportState = useRTVIClientTransportState();
 
   const myContact = useMemo(
     () => ({
