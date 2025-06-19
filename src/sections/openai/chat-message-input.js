@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
-import { useRef, useState, useCallback, useMemo, useEffect } from 'react';
+import { useRef, useState, useCallback, useMemo } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Editor from 'src/components/editor';
 import Button from '@mui/material/Button';
-import InputBase from '@mui/material/InputBase';
+import emitter from "src/utils/eventEmitter";
 import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
@@ -23,11 +23,14 @@ import uuidv4 from 'src/utils/uuidv4';
 // redux
 import { useDispatch } from 'src/redux/store';
 import { sendMessage } from 'src/redux/slices/chat';
-import { openai } from 'src/redux/slices/openai';
 // components
 import Iconify from 'src/components/iconify';
 import { fileService, messagingService } from 'src/composables/context-provider';
-import ChatClipboardDialog from './chat-clipboard-dialog';
+import {
+  useRTVIClient,
+  useRTVIClientMediaTrack,
+  useRTVIClientTransportState,
+} from "@pipecat-ai/client-react";
 
 // ----------------------------------------------------------------------
 
@@ -35,11 +38,11 @@ export default function ChatMessageInput({
   recipients,
   onAddRecipients,
   sendMessageToOpenVidu,
+  participants,
   //
   disabled,
   selectedConversationId,
 }) {
-  const { server: ddpclient } = useMeteorContext();
   const loading = useBoolean(false);
 
   const clipboardOpen = useBoolean(false);
@@ -63,6 +66,8 @@ export default function ChatMessageInput({
   const [message, setMessage] = useState('');
 
   const [type, setType] = useState('text');
+
+  const rtviClient = useRTVIClient();
 
   const myContact = useMemo(
     () => ({
@@ -136,6 +141,38 @@ export default function ChatMessageInput({
     return conversationKey;
   }, [recipients]);
 
+  const handleRTVIMessage = useCallback(async (currentMessage) => {
+    // const content = [
+    //   {
+    //     type: "text",
+    //     text: message,
+    //   },
+    // ];
+
+    emitter.emit("userTextMessage", message);
+    rtviClient.params.requestData = {
+      ...(rtviClient.params.requestData ?? {}),
+      conversation_id: selectedConversationId,
+      user_id: user._id,
+      participant_id: participants[0]._id,
+    };
+    await rtviClient.action({
+      service: "llm",
+      action: "append_to_messages",
+      arguments: [
+        {
+          name: "messages",
+          value: [
+            {
+              role: "user",
+              content: currentMessage,
+            },
+          ],
+        },
+      ],
+    });
+  }, [message, participants, rtviClient, selectedConversationId, user._id]);
+
   const handleSendMessage = useCallback(
     async (event) => {
       try {
@@ -143,11 +180,12 @@ export default function ChatMessageInput({
           if (selectedConversationId) {
             setType('text');
             try {
-              await dispatch(sendMessage(selectedConversationId, messageData));
-              dispatch(openai(selectedConversationId, message));
+              // await dispatch(sendMessage(selectedConversationId, messageData));
+              // dispatch(openai(selectedConversationId, message));
+              await handleRTVIMessage(message);
               setMessage('');
             } catch (e) {
-              enqueueSnackbar(e.message);
+              enqueueSnackbar(e);
             }
           } else {
             setMessage('');
@@ -162,17 +200,7 @@ export default function ChatMessageInput({
         console.error(error);
       }
     },
-    [
-      message,
-      selectedConversationId,
-      dispatch,
-      messageData,
-      enqueueSnackbar,
-      createConversation,
-      conversationData,
-      router,
-      onAddRecipients,
-    ]
+    [message, selectedConversationId, handleRTVIMessage, enqueueSnackbar, createConversation, conversationData, router, onAddRecipients]
   );
   const handlePaste = useCallback(
     (event) => {
@@ -429,5 +457,6 @@ ChatMessageInput.propTypes = {
   onAddRecipients: PropTypes.func,
   recipients: PropTypes.array,
   sendMessageToOpenVidu: PropTypes.func,
+  participants: PropTypes.array,
   selectedConversationId: PropTypes.string,
 };

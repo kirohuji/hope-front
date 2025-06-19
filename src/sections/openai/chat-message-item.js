@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
+import CryptoJS from 'crypto-js';
 import { formatDistanceToNowStrict } from 'date-fns';
 // @mui
 import Box from '@mui/material/Box';
@@ -24,11 +25,12 @@ import { sendMessage } from 'src/redux/slices/chat';
 // hooks
 import { useGetMessage } from './hooks';
 
+const secretKey = 'future';
+
 // ----------------------------------------------------------------------
 
 export default function ChatMessageItem({ message, participants, onOpenLightbox, conversationId }) {
   const dispatch = useDispatch();
-
   const { user } = useAuthContext();
 
   const { me, senderDetails, hasImage } = useGetMessage({
@@ -39,9 +41,9 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
 
   const { generate } = useSelector((state) => state.openai);
 
-  const isGenerate =
-    message._id === generate.currentMessageId ||
-    (generate.byId[conversationId] && generate.byId[conversationId][message._id]);
+  // const isGenerate =
+  //   message._id === generate.currentMessageId ||
+  //   (generate.byId[conversationId] && generate.byId[conversationId][message._id]);
 
   const { username, photoURL, displayName, realName } = senderDetails;
 
@@ -90,7 +92,11 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
     }
     switch (type) {
       case 'text':
-        return <Markdown children={bodyContent} />;
+        if (bodyContent) {
+          return me ? <Markdown children={bodyContent} /> : <Markdown children={bodyContent} />;
+        }
+        return ''
+
       case 'mp3':
         return (
           <Stack spacing={1} direction="row" alignItems="center">
@@ -153,7 +159,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
         />
       ) : (
         renderBodyContent({
-          bodyContent: isGenerate ? generate.byId[conversationId][message._id] : body,
+          bodyContent: body,
           type: contentType,
         })
       )}
@@ -218,7 +224,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
 
         <Stack
           alignItems={me ? 'flex-end' : 'flex-start'}
-          // sx={{ position: 'absolute', marginLeft: '42px' }}
+        // sx={{ position: 'absolute', marginLeft: '42px' }}
         >
           {!isLoading && renderInfo}
 
@@ -229,17 +235,17 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
               position: 'relative',
               ...(!isFailure
                 ? {
-                    '&:hover': {
-                      '& .message-actions': {
-                        opacity: 1,
-                      },
-                    },
-                  }
-                : {
+                  '&:hover': {
                     '& .message-actions': {
                       opacity: 1,
                     },
-                  }),
+                  },
+                }
+                : {
+                  '& .message-actions': {
+                    opacity: 1,
+                  },
+                }),
             }}
           >
             {renderBody}

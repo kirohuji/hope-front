@@ -23,10 +23,15 @@ import {
   getMessages,
   getConversationByConversationKey,
   deleteConversation,
-  newMessageGet,
+  // newMessageGet,
 } from 'src/redux/slices/chat';
-import _ from 'lodash';
+import {
+  SmallWebRTCTransport
+} from "@pipecat-ai/small-webrtc-transport";
+
 import { useSnackbar } from 'src/components/snackbar';
+import { RTVIClient } from "@pipecat-ai/client-js";
+import { RTVIClientProvider, RTVIClientAudio } from '@pipecat-ai/client-react';
 import ChatNav from '../chat-nav';
 import ChatRoom from '../chat-room';
 import ChatMessageList from '../chat-message-list';
@@ -64,6 +69,62 @@ const TABS = [
   },
 ];
 
+const transport = new SmallWebRTCTransport();
+const connectUrl =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:7860/api/bot'
+    : 'http://hope.lourd.top:7860/api/bot';
+const client = new RTVIClient({
+  params: {
+    baseUrl: connectUrl,
+    endpoint: {
+      connect: "/bot/offer",
+      action: "/action",
+    },
+  },
+  transport,
+  enableMic: true,
+  customConnectHandler: () => Promise.resolve(),
+  callbacks: {
+    onTransportStateChanged: (state) => {
+      console.log(`Transport state: ${state}`)
+    },
+    onConnected: () => {
+      console.log("onConnected")
+    },
+    onBotReady: () => {
+      console.log("onBotReady")
+      transport.state = 'ready'
+    },
+    onDisconnected: () => {
+      console.log("onDisconnected")
+    },
+    onUserStartedSpeaking: () => {
+      console.log("User started speaking.")
+    },
+    onUserStoppedSpeaking: () => {
+      console.log("User stopped speaking.")
+    },
+    onBotStartedSpeaking: () => {
+      console.log("Bot started speaking.")
+    },
+    onBotStoppedSpeaking: () => {
+      console.log("Bot stopped speaking.")
+    },
+    onUserTranscript: async (transcript) => {
+      if (transcript.final) {
+        console.log(`User transcript: ${transcript.text}`)
+      }
+    },
+    onBotTranscript: (transcript) => {
+      console.log(`Bot transcript: ${transcript.text}`)
+    },
+    onServerMessage: (msg) => {
+      console.log(`Server message: ${msg}`)
+    }
+  },
+});
+
 export default function ChatView() {
   const { server: ddpclient } = useMeteorContext();
   const { enqueueSnackbar } = useSnackbar();
@@ -78,7 +139,7 @@ export default function ChatView() {
 
   const conversation = useSelector((state) => conversationSelector(state));
 
-  const { active } = useSelector((state) => state.scope);
+  // const { active } = useSelector((state) => state.scope);
 
   const isDesktop = useResponsive('up', 'md');
 
@@ -111,7 +172,6 @@ export default function ChatView() {
   }, [dispatch]);
 
   useEffect(() => {
-    let sub = null;
     if (!selectedConversationId) {
       switch (currentTab) {
         case 'conversations':
@@ -122,32 +182,8 @@ export default function ChatView() {
       }
       dispatch(resetActiveConversation());
     } else {
-      if (user._id) {
-        sub = ddpclient.subscribe(
-          'socialize.messagesFor2',
-          selectedConversationId,
-          user._id,
-          new Date()
-        );
-        sub.ready().then(() => {
-          ddpclient.onChangeFuncs = ddpclient.onChangeFuncs.filter(
-            (item) => item.collection !== 'socialize:messages'
-          );
-          const collection = ddpclient.collection('socialize:messages');
-          collection.onChange((target) => {
-            if (target.added) {
-              dispatch(newMessageGet(selectedConversationId));
-            }
-          });
-        });
-      }
       getDetails();
     }
-    return () => {
-      if (sub) {
-        sub.stop();
-      }
-    };
   }, [
     currentTab,
     ddpclient,
@@ -210,10 +246,12 @@ export default function ChatView() {
         sendingMessages={(sendingMessage.byId && sendingMessage.byId[selectedConversationId]) || []}
         participants={participants}
         onRefresh={onRefresh}
+        user={user}
       />
 
       <ChatMessageInput
         recipients={recipients}
+        participants={participants}
         selectedConversationId={selectedConversationId}
         disabled={!recipients.length && !selectedConversationId}
       />
@@ -245,43 +283,45 @@ export default function ChatView() {
           Chatgpt(AI 聊天)
         </Typography>
       )}
-      {isDesktop && (
-        <Stack
-          component={Card}
-          direction="row"
-          className="bottom-chat"
-          sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
-        >
-          {renderNav}
-
+      {(isDesktop || selectedConversationId) && (
+        <RTVIClientProvider client={client}>
           <Stack
-            sx={{
-              width: 1,
-              height: 1,
-              overflow: 'hidden',
-            }}
+            component={Card}
+            direction="row"
+            className="bottom-chat"
+            sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
           >
+            {renderNav}
             <Stack
-              direction="row"
               sx={{
                 width: 1,
                 height: 1,
                 overflow: 'hidden',
-                borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
               }}
             >
-              {renderMessages}
+              <Stack
+                direction="row"
+                sx={{
+                  width: 1,
+                  height: 1,
+                  overflow: 'hidden',
+                  borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
+                }}
+              >
+                {renderMessages}
 
-              {details && (
-                <ChatRoom
-                  conversation={conversation}
-                  messages={messages.byId[selectedConversationId]}
-                  participants={participants}
-                />
-              )}
+                {details && (
+                  <ChatRoom
+                    conversation={conversation}
+                    messages={messages.byId[selectedConversationId]}
+                    participants={participants}
+                  />
+                )}
+              </Stack>
             </Stack>
           </Stack>
-        </Stack>
+          <RTVIClientAudio />
+        </RTVIClientProvider>
       )}
       {!selectedConversationId && (
         <Stack>

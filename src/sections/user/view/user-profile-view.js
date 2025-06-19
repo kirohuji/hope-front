@@ -88,11 +88,11 @@ export default function UserProfileView() {
         }}
       >
         <ProfileCover
-          role={user.realName}
+          role={user?.realName}
           name={user?.displayName}
           username={user?.username}
           photoURL={user?.photoURL}
-          coverUrl={user.photoURL}
+          coverUrl={user?.photoURL}
         />
 {/* 
         <Tabs
@@ -120,7 +120,7 @@ export default function UserProfileView() {
         </Tabs> */}
       </Card>
 
-      {currentTab === 'profile' && <ProfileHome info={user} posts={_userFeeds} />}
+      {currentTab === 'profile' && user && <ProfileHome info={user} posts={_userFeeds} />}
 
       {currentTab === 'followers' && <ProfileFollowers followers={_userFollowers} />}
 

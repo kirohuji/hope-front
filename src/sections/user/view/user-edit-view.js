@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Container from '@mui/material/Container';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import PropTypes from 'prop-types';
 // routes
 import { useParams } from 'src/routes/hook';
 // components
@@ -11,10 +12,11 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 // redux
 import { userService } from 'src/composables/context-provider';
 import UserNewEditForm from '../user-new-edit-form';
+import PersonaNewEditForm from '../persona-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export default function UserEditView() {
+export default function UserEditView({ isPersona }) {
   const settings = useSettingsContext();
 
   const [user, setUser] = useState(null);
@@ -69,7 +71,11 @@ export default function UserEditView() {
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={!user}>
         <CircularProgress />
       </Backdrop>
-      {!!user && <UserNewEditForm currentUser={user} />}
+      {!!user && (isPersona ? <PersonaNewEditForm currentUser={user} /> : <UserNewEditForm currentUser={user} />)}
     </Container>
   );
 }
+
+UserEditView.propTypes = {
+  isPersona: PropTypes.bool,
+};

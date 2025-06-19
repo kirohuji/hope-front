@@ -95,7 +95,11 @@ export default function Main({ children, sx, ...other }) {
       case 'image':
         return '对方发送了一张图片给你';
       default:
-        return CryptoJS.AES.decrypt(message.body, secretKey).toString(CryptoJS.enc.Utf8);
+        if(message.body){
+          return CryptoJS.AES.decrypt(message.body, secretKey).toString(CryptoJS.enc.Utf8);
+        } 
+          return ''
+        
     }
   }
   const handleScope = useCallback(async () => {

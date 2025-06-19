@@ -128,7 +128,7 @@ export default function DashboardFooter() {
               <StyledBadge
                 color="error"
                 overlap="circular"
-                badgeContent={chat.conversations.unreadCount}
+                badgeContent={chat.conversations.unreadCount || 0 }
               >
                 {nav.icon}
               </StyledBadge>

@@ -109,14 +109,23 @@ export default function UserListView({ isPersona }) {
   const getTableData = useCallback(
     async (selector = {}, options = {}) => {
       try {
+        let params = {}
         setLoading(true);
-        const response = await userService.pagination(
-          {
+        if(isPersona){
+          params = {
             ...selector,
             scope: scope?.active?._id,
-            // isPersona,
+            isPersona,
             ..._.pickBy(_.omit(debouncedFilters, ['role'])),
-          },
+          }
+        } else {
+          params = {
+            ...selector,
+            scope: scope?.active?._id,
+            ..._.pickBy(_.omit(debouncedFilters, ['role'])),
+          }
+        }
+        const response = await userService.pagination(params,
           {
             ...options,
             fields: {
@@ -206,9 +215,13 @@ export default function UserListView({ isPersona }) {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.user.edit(id));
+      if(isPersona){
+        router.push(paths.dashboard.persona.edit(id));
+      } else {
+        router.push(paths.dashboard.user.edit(id));
+      }
     },
-    [router]
+    [isPersona, router]
   );
 
   const handleFilterStatus = useCallback(

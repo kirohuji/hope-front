@@ -33,7 +33,7 @@ export let conversationsCollection = null;
 export let conversationsCollectionChange = null;
 export let notificationsPublish = null;
 export let notificationsCollection = null;
-const messagesPublish = null;
+// const messagesPublish = null;
 
 export const bindConnect = async (server, dispatch) => {
   server.on('connected', () => {
@@ -118,6 +118,8 @@ export function MeteorProvider({ endpoint, children }) {
       // 关闭上一次的监听
       if (conversationsPublish) {
         conversationsCollectionChange.stop();
+      }
+      if(conversationsCollection && conversationsPublish.stop){
         conversationsPublish.stop();
       }
       conversationsPublish = server.subscribe('newMessagesConversations', new Date());
