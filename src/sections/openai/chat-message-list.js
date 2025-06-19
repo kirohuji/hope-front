@@ -8,6 +8,7 @@ import Lightbox, { useLightBox } from 'src/components/lightbox';
 //
 import { useMessagesScroll } from './hooks';
 import ChatMessageItem from './chat-message-item';
+import ChatLiveMessageList from './chat-live-message-list'
 // ----------------------------------------------------------------------
 
 export default function ChatMessageList({
@@ -16,6 +17,7 @@ export default function ChatMessageList({
   messages = [],
   conversationId,
   participants,
+  user,
 }) {
   const [isFetching, setIsFetching] = useState(false); // 是否正在加载更多消息
   const { messagesEndRef } = useMessagesScroll(messages);
@@ -68,13 +70,7 @@ export default function ChatMessageList({
               onOpenLightbox={() => lightbox.onOpen(message.body)}
             />
           ))}
-          {/* {
-            sendingMessage && sendingMessage._id && <ChatMessageItem
-              message={sendingMessage}
-              participants={participants}
-              onOpenLightbox={() => lightbox.onOpen(sendingMessage.body)}
-            />
-          } */}
+          <ChatLiveMessageList conversationId={conversationId} messages={messages} participants={participants} onOpenLightbox={(message) => lightbox.onOpen(message.body)} user={user} />
         </Box>
       </Scrollbar>
 
@@ -89,6 +85,7 @@ export default function ChatMessageList({
 }
 
 ChatMessageList.propTypes = {
+  user: PropTypes.object,
   conversationId: PropTypes.string,
   messages: PropTypes.array,
   onRefresh: PropTypes.func,

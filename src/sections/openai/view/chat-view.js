@@ -92,23 +92,7 @@ const client = new RTVIClient({
     },
     onBotReady: () => {
       console.log("onBotReady")
-      console.log(transport)
       transport.state = 'ready'
-      // client.action({
-      //   service: "llm",
-      //   action: "append_to_messages",
-      //   arguments: [
-      //     {
-      //       name: "messages",
-      //       value: [
-      //         {
-      //           role: "user",
-      //           content: '你好',
-      //         },
-      //       ],
-      //     },
-      //   ],
-      // });
     },
     onDisconnected: () => {
       console.log("onDisconnected")
@@ -126,21 +110,6 @@ const client = new RTVIClient({
       console.log("Bot stopped speaking.")
     },
     onUserTranscript: async (transcript) => {
-      // await client.action({
-      //   service: "llm",
-      //   action: "append_to_messages",
-      //   arguments: [
-      //     {
-      //       name: "messages",
-      //       value: [
-      //         {
-      //           role: "user",
-      //           content: '你好',
-      //         },
-      //       ],
-      //     },
-      //   ],
-      // });
       if (transcript.final) {
         console.log(`User transcript: ${transcript.text}`)
       }
@@ -295,10 +264,12 @@ export default function ChatView() {
         sendingMessages={(sendingMessage.byId && sendingMessage.byId[selectedConversationId]) || []}
         participants={participants}
         onRefresh={onRefresh}
+        user={user}
       />
 
       <ChatMessageInput
         recipients={recipients}
+        participants={participants}
         selectedConversationId={selectedConversationId}
         disabled={!recipients.length && !selectedConversationId}
       />
@@ -330,7 +301,7 @@ export default function ChatView() {
           Chatgpt(AI 聊天)
         </Typography>
       )}
-      {isDesktop && (
+      {(isDesktop || selectedConversationId) && (
         <RTVIClientProvider client={client}>
           <Stack
             component={Card}
@@ -339,7 +310,6 @@ export default function ChatView() {
             sx={{ height: calcHeight(isDesktop, selectedConversationId) }}
           >
             {renderNav}
-            <Button onClick={startWebRTC}>开始</Button>
             <Stack
               sx={{
                 width: 1,

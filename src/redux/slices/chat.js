@@ -298,7 +298,6 @@ export const { addRecipients, onSendMessage, resetActiveConversation } = slice.a
 export function sendMessage(conversationKey, body) {
   return async (dispatch) => {
     dispatch(slice.actions.startSending());
-    console.log(body);
     if (body.sendingMessageId) {
       dispatch(slice.actions.onClearMessage({ conversationId: conversationKey }));
     }

@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Editor from 'src/components/editor';
 import Button from '@mui/material/Button';
+import emitter from "src/utils/eventEmitter";
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -44,6 +45,7 @@ export default function ChatMessageInput({
   recipients,
   onAddRecipients,
   sendMessageToOpenVidu,
+  participants,
   //
   disabled,
   selectedConversationId,
@@ -152,9 +154,19 @@ export default function ChatMessageInput({
   }, [recipients]);
 
   const handleRTVIMessage = useCallback(async (currentMessage) => {
+    // const content = [
+    //   {
+    //     type: "text",
+    //     text: message,
+    //   },
+    // ];
+
+    emitter.emit("userTextMessage", message);
     rtviClient.params.requestData = {
       ...(rtviClient.params.requestData ?? {}),
-      conversation_id: '684fcc587556fc7d2f2a1e66',
+      conversation_id: selectedConversationId,
+      user_id: user._id,
+      participant_id: participants[0]._id,
     };
     await rtviClient.action({
       service: "llm",
@@ -171,7 +183,7 @@ export default function ChatMessageInput({
         },
       ],
     });
-  }, [rtviClient]);
+  }, [message, participants, rtviClient, selectedConversationId, user._id]);
 
   const handleSendMessage = useCallback(
     async (event) => {
@@ -185,7 +197,7 @@ export default function ChatMessageInput({
               await handleRTVIMessage(message);
               setMessage('');
             } catch (e) {
-              enqueueSnackbar(e.message);
+              enqueueSnackbar(e);
             }
           } else {
             setMessage('');
@@ -457,5 +469,6 @@ ChatMessageInput.propTypes = {
   onAddRecipients: PropTypes.func,
   recipients: PropTypes.array,
   sendMessageToOpenVidu: PropTypes.func,
+  participants: PropTypes.array,
   selectedConversationId: PropTypes.string,
 };
