@@ -73,7 +73,7 @@ const transport = new SmallWebRTCTransport();
 const connectUrl =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:7860/api/bot'
-    : 'http://hope.lourd.top:7860/api/bot';
+    : 'https://hope.lourd.top:7860/api/bot';
 const client = new RTVIClient({
   params: {
     baseUrl: connectUrl,
