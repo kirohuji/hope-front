@@ -1,8 +1,6 @@
 import keyBy from 'lodash/keyBy';
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { fetchEventSource } from '@microsoft/fetch-event-source';
 // utils
 import uuidv4 from 'src/utils/uuidv4';
 import { friendService, roleService, messagingService } from 'src/composables/context-provider';
@@ -10,6 +8,7 @@ import CryptoJS from 'crypto-js';
 // ----------------------------------------------------------------------
 
 const secretKey = 'future';
+
 function objFromArray(array, key = '_id') {
   return array.reduce((accumulator, current) => {
     accumulator[current[key]] = current;
@@ -694,66 +693,6 @@ export function clearActiveConversation() {
     dispatch(slice.actions.startLoading());
     try {
       await dispatch(slice.actions.clearActiveConversation());
-    } catch (error) {
-      dispatch(
-        slice.actions.hasError({
-          code: error.code,
-          message: error.message,
-        })
-      );
-    }
-  };
-}
-
-// 合并会话
-export function openai(selectedConversationId, message) {
-  return async (dispatch) => {
-    dispatch(slice.actions.startLoading());
-    try {
-      const text = '';
-      const requestData = {
-        conversationId: selectedConversationId,
-        prompt: message,
-      };
-      const requestOptions = {
-        method: 'POST',
-        body: JSON.stringify(requestData),
-        headers: {
-          'X-Auth-Token': localStorage.getItem('accessToken'),
-          'Content-Type': 'application/json',
-        },
-      };
-      fetchEventSource('http://localhost:3030/openai', {
-        ...requestOptions,
-        // signal: ctrl.signal,
-        async onmessage(msg) {
-          if (msg.data !== '[DONE]') {
-            const msgData = JSON.parse(msg.data);
-            if (msgData?.choices) {
-              await dispatch(
-                slice.actions.setGenerate({
-                  conversationId: selectedConversationId,
-                  message: msgData.choices[0].delta.content,
-                })
-              );
-            } else if (msgData.messageId) {
-              await dispatch(
-                slice.actions.setGenerate({
-                  conversationId: selectedConversationId,
-                  messageId: msgData.messageId,
-                  message: '...',
-                  isSet: true,
-                })
-              );
-            }
-          }
-        },
-        onclose() {
-          console.log(text);
-        },
-      }).catch((e) => {
-        console.log(e);
-      });
     } catch (error) {
       dispatch(
         slice.actions.hasError({
