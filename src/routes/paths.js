@@ -66,7 +66,7 @@ export const paths = {
     },
   },
   chat: '/chat',
-  // openai: '/openai',
+  openai: '/openai',
   training: {
     root: `/training`,
     dashboard: `${ROOTS.DASHBOARD}/training/dashboard`,

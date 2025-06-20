@@ -29,7 +29,7 @@ const secretKey = 'future';
 
 // ----------------------------------------------------------------------
 
-export default function ProfilePostItem({ post, user, onClick }) {
+export default function ProfilePostItem({ post, user, onClick, onSetting }) {
   const { poster } = post;
 
   const renderHead = (
@@ -47,7 +47,7 @@ export default function ProfilePostItem({ post, user, onClick }) {
         </Box>
       }
       action={
-        <IconButton>
+        <IconButton onClick={() => onSetting(post)}>
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
       }
@@ -143,6 +143,7 @@ export default function ProfilePostItem({ post, user, onClick }) {
 }
 
 ProfilePostItem.propTypes = {
+  onSetting: PropTypes.func,
   post: PropTypes.object,
   user: PropTypes.object,
   onClick: PropTypes.func,

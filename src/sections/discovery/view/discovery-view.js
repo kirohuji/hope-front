@@ -3,32 +3,44 @@ import { useState, useCallback, useEffect } from 'react';
 import { Container, Stack, Divider, Tabs, Tab } from '@mui/material';
 import { useSelector } from 'src/redux/store';
 import { useSnackbar } from 'src/components/snackbar';
+import MenuItem from '@mui/material/MenuItem';
 import InfiniteScroll from 'react-infinite-scroller';
 import { postService, broadcastService } from 'src/composables/context-provider';
 import Scrollbar from 'src/components/scrollbar';
-import { _ecommerceNewProducts } from 'src/_mock';
+// import { _ecommerceNewProducts } from 'src/_mock';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import Iconify from 'src/components/iconify';
+import Restricted from 'src/auth/guard/restricted';
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
+import ConfirmDialog from 'src/components/confirm-dialog';
+import Button from '@mui/material/Button';
 import DiscoveryPostItem from '../discovery-post-item';
 import DiscoveryKanban from '../discovery-kanban';
 
 const TABS = [
   { value: 'Offcial', label: '社区' },
   { value: 'Following', label: '你的关注' },
-  { value: 'Recommendation', label: '为你推荐' },
+  { value: 'Recommendation', label: '最近的发生' },
 ];
 
 export default function DiscoveryView() {
   const { enqueueSnackbar } = useSnackbar();
+
+  const popover = usePopover();
+
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   const { themeStretch } = useSettingsContext();
 
   const router = useRouter();
 
   const scope = useSelector((state) => state.scope);
+
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const { user, logout } = useAuthContext();
 
@@ -37,8 +49,17 @@ export default function DiscoveryView() {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [currentPost, setCurrentPost] = useState(null);
   const [hasMore, setHasMore] = useState(true); // 控制是否继续加载
   const [total, setTotal] = useState(0);
+
+  const handleOpenConfirm = useCallback(() => {
+    setOpenConfirm(true);
+  }, []);
+
+  const handleCloseConfirm = useCallback(() => {
+    setOpenConfirm(false);
+  }, []);
 
   const handleChangeTab = useCallback((event, newValue) => {
     setCurrentTab(newValue);
@@ -54,6 +75,31 @@ export default function DiscoveryView() {
     [router]
   );
 
+  const handleDelete = async () => {
+    try {
+      setButtonLoading(true);
+      await postService.delete({
+        _id: currentPost._id,
+      });
+      enqueueSnackbar('删除成功');
+      setButtonLoading(false);
+      handleCloseConfirm();
+    } catch (e) {
+      enqueueSnackbar('删除失败');
+      setButtonLoading(false);
+    }
+  };
+
+  const handleSetting = useCallback(
+    (selectedPost) => {
+      console.log('打开');
+      setCurrentPost(selectedPost);
+      handleOpenConfirm()
+    },
+    [handleOpenConfirm]
+  );
+
+
   const refresh = useCallback(
     async () => {
       if (loading) return; // 防止并发加载
@@ -62,7 +108,7 @@ export default function DiscoveryView() {
 
       try {
         const response = await postService.pagination(
-          { scope: scope.active._id, status: 'published' },
+          { scope: scope.active._id },
           {
             skip: page * 10,
             limit: 10,
@@ -111,7 +157,7 @@ export default function DiscoveryView() {
       </Tabs>
       <Divider />
       <Stack spacing={3} sx={{ mt: 1 }}>
-        <Scrollbar sx={{ p: 0, pb: 2, height: 'calc(100vh - 120px)' }}>
+        <Scrollbar sx={{ p: 0, pb: 2, height: 'calc(100% - 120px)' }}>
           {currentTab === 'Offcial' && <DiscoveryKanban list={broadcasts} />}
           <InfiniteScroll
             loadMore={refresh}
@@ -127,12 +173,43 @@ export default function DiscoveryView() {
                 key={post._id}
                 post={post}
                 user={user}
+                onSetting={() => handleSetting(post)}
                 onClick={() => handleClickPost(post)}
               />
             ))}
           </InfiniteScroll>
         </Scrollbar>
       </Stack>
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow="right-top"
+        sx={{ width: 140 }}
+      >
+          <Restricted to={['BroadcastListDelete']}>
+            <MenuItem
+              onClick={() => {
+                popover.onClose();
+                handleDelete();
+              }}
+              sx={{ color: 'error.main' }}
+            >
+              <Iconify icon="solar:trash-bin-trash-bold" />
+              删除
+            </MenuItem>
+          </Restricted>
+      </CustomPopover>
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={handleCloseConfirm}
+        title="删除"
+        content="你确定删除吗?"
+        action={
+          <Button variant="contained" color="error" onClick={handleDelete} loading={buttonLoading}>
+            删除
+          </Button>
+        }
+      />
     </Container>
   );
 }

@@ -185,7 +185,7 @@ export default function DiscoveryCompose({ onCloseCompose }) {
           />
 
           <Stack direction="row" alignItems="center">
-            <Stack direction="row" alignItems="center" flexGrow={1}>
+            {/* <Stack direction="row" alignItems="center" flexGrow={1}>
               <IconButton>
                 <Iconify icon="solar:gallery-add-bold" />
               </IconButton>
@@ -193,7 +193,7 @@ export default function DiscoveryCompose({ onCloseCompose }) {
               <IconButton>
                 <Iconify icon="eva:attach-2-fill" />
               </IconButton>
-            </Stack>
+            </Stack> */}
 
             <Button
               variant="contained"

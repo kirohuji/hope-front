@@ -12,6 +12,7 @@ import ChatLiveMessageList from './chat-live-message-list'
 // ----------------------------------------------------------------------
 
 export default function ChatMessageList({
+  autoscroll,
   onRefresh,
   sendingMessages = [],
   messages = [],
@@ -50,7 +51,7 @@ export default function ChatMessageList({
 
   return (
     <>
-      <Scrollbar ref={messagesEndRef} sx={{ px: 3, py: 5, height: 1 }}>
+      <Scrollbar ref={messagesEndRef} sx={{ px: 3, py: 5, height: 1 }} className="chat-openai-message-list">
         <Box sx={{ height: 1 }}>
           {messages.map((message, index) => (
             <ChatMessageItem
@@ -85,6 +86,7 @@ export default function ChatMessageList({
 }
 
 ChatMessageList.propTypes = {
+  autoscroll: PropTypes.bool,
   user: PropTypes.object,
   conversationId: PropTypes.string,
   messages: PropTypes.array,

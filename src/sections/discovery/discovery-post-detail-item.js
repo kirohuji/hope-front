@@ -21,6 +21,11 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { postService } from 'src/composables/context-provider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AvatarGroup, { avatarGroupClasses } from '@mui/material/AvatarGroup';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import ConfirmDialog from 'src/components/confirm-dialog';
+import Restricted from 'src/auth/guard/restricted';
 
 // utils
 import { fDateTime } from 'src/utils/format-time';
@@ -34,10 +39,15 @@ import CryptoJS from 'crypto-js';
 
 const secretKey = 'future';
 
-export default function DiscoveryPostDetailItem({ post, user, notify, isLike, onLike }) {
+export default function DiscoveryPostDetailItem({ post, user, notify, isLike, onLike, onDelete }) {
   const { poster } = post;
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const popover = usePopover();
+
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const commentRef = useRef(null);
 
@@ -49,6 +59,32 @@ export default function DiscoveryPostDetailItem({ post, user, notify, isLike, on
   const [comments, setComments] = useState([]);
   const [hasMore, setHasMore] = useState(true); // 控制是否继续加载
   const [total, setTotal] = useState(0);
+
+  const handleOpenConfirm = useCallback(() => {
+    setOpenConfirm(true);
+  }, []);
+
+  const handleCloseConfirm = useCallback(() => {
+    setOpenConfirm(false);
+  }, []);
+
+  const handleDelete = async () => {
+    try {
+      setButtonLoading(true);
+      if (onDelete) {
+        await onDelete();
+      }
+      setButtonLoading(false);
+      handleCloseConfirm();
+    } catch (e) {
+      enqueueSnackbar('删除失败');
+      setButtonLoading(false);
+    }
+  };
+
+  const handleSetting = useCallback(() => {
+    popover.onOpen();
+  }, [popover]);
 
   const handleChangeMessage = useCallback((event) => {
     setMessage(event.target.value);
@@ -130,7 +166,7 @@ export default function DiscoveryPostDetailItem({ post, user, notify, isLike, on
         </Box>
       }
       action={
-        <IconButton>
+        <IconButton onClick={popover.onOpen}>
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
       }
@@ -266,6 +302,38 @@ export default function DiscoveryPostDetailItem({ post, user, notify, isLike, on
           {renderCommentList}
         </InfiniteScroll>
       </Scrollbar>
+
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow="right-top"
+        sx={{ width: 140 }}
+      >
+        <Restricted to={['BroadcastListDelete']}>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              handleOpenConfirm();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            删除
+          </MenuItem>
+        </Restricted>
+      </CustomPopover>
+
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={handleCloseConfirm}
+        title="删除"
+        content="你确定删除吗?"
+        action={
+          <Button variant="contained" color="error" onClick={handleDelete} loading={buttonLoading}>
+            删除
+          </Button>
+        }
+      />
     </Stack>
   );
 }
@@ -276,4 +344,5 @@ DiscoveryPostDetailItem.propTypes = {
   user: PropTypes.object,
   notify: PropTypes.number,
   isLike: PropTypes.bool,
+  onDelete: PropTypes.func,
 };

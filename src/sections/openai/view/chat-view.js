@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback,useLayoutEffect } from 'react';
 // @mui
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -10,6 +10,7 @@ import Divider from '@mui/material/Divider';
 // routes
 import { useSearchParams } from 'src/routes/hook';
 // hooks
+import Live2DCanvas from 'src/components/live2d';
 import { useAuthContext } from 'src/auth/hooks';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useMeteorContext } from 'src/meteor/hooks';
@@ -72,8 +73,9 @@ const TABS = [
 const transport = new SmallWebRTCTransport();
 const connectUrl =
   process.env.NODE_ENV === 'development'
-    ? 'http://localhost:7860/api/bot'
-    : 'https://hope.lourd.top:7860/api/bot';
+    ? 'http://192.168.110.137:7860/api/bot'
+    : 'http://192.168.110.137:7860/api/bot';
+    // : 'https://hope.lourd.top:7860/api/bot';
 const client = new RTVIClient({
   params: {
     baseUrl: connectUrl,
@@ -131,6 +133,8 @@ export default function ChatView() {
 
   const dispatch = useDispatch();
 
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  
   const [currentTab, setCurrentTab] = useState('conversations');
 
   const [loading, setLoading] = useState(true);
@@ -170,6 +174,23 @@ export default function ChatView() {
     await dispatch(getSessions());
     setLoading(false);
   }, [dispatch]);
+
+  // useLayoutEffect(() => {
+  //   const handleScroll = () => {
+  //     console.log('handleScroll');
+  //     const scroller = document.scrollingElement;
+  //     if (!scroller) return;
+  //     const scrollBottom =
+  //       scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop;
+  //     setShowScrollToBottom(
+  //       scroller.scrollHeight > scroller.clientHeight && scrollBottom > 150,
+  //     );
+  //   };
+  //   document.addEventListener("scroll", handleScroll);
+  //   return () => {
+  //     document.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (!selectedConversationId) {
@@ -240,7 +261,9 @@ export default function ChatView() {
         overflow: 'hidden',
       }}
     >
-      <ChatMessageList
+      <Live2DCanvas />
+      <ChatMessageList  
+        autoscroll={showScrollToBottom}
         conversationId={selectedConversationId}
         messages={messages.byId[selectedConversationId]}
         sendingMessages={(sendingMessage.byId && sendingMessage.byId[selectedConversationId]) || []}

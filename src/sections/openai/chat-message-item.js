@@ -23,7 +23,11 @@ import { zhCN } from 'date-fns/locale';
 import { useDispatch, useSelector } from 'src/redux/store';
 import { sendMessage } from 'src/redux/slices/chat';
 // hooks
+import {
+  useRTVIClient,
+} from "@pipecat-ai/client-react";
 import { useGetMessage } from './hooks';
+
 
 const secretKey = 'future';
 
@@ -38,6 +42,8 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
     participants,
     currentUserId: user._id,
   });
+
+  const rtviClient = useRTVIClient();
 
   const { generate } = useSelector((state) => state.openai);
 
@@ -68,6 +74,26 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
       })}
     </Typography>
   );
+
+  const handleSendAudio = useCallback(async () => {
+    rtviClient.params.requestData = {
+      ...(rtviClient.params.requestData ?? {}),
+      conversation_id: conversationId,
+      user_id: user._id,
+      participant_id: participants[0]._id,
+    };
+    console.log('send audio');
+    await rtviClient.action({
+      service: "tts",
+      action: "say",
+      arguments: [
+        {
+          name: "text",
+          value: message.body,
+        },
+      ],
+    });
+  }, [conversationId, message, participants, rtviClient, user._id]);
 
   const handleSendMessage = useCallback(async () => {
     try {
@@ -186,6 +212,13 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
         }),
       }}
     >
+      {
+        !me && (
+          <IconButton size="small" onClick={() => handleSendAudio()}>
+          <Iconify icon="solar:soundwave-broken" width={16} />
+        </IconButton>
+        )
+      }
       {me && (
         <IconButton size="small" onClick={() => handleSendMessage()}>
           <Iconify icon="solar:reply-bold" width={16} />

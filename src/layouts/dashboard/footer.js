@@ -25,16 +25,23 @@ const navigations = [
     auth: ['Chat'],
   },
   // {
+  //   label: '聊天',
+  //   icon: ICONS.chat2,
+  //   to: '/dashboard/chat',
+  //   auth: ['Chat'],
+  // },
+  // {
   //   label: '文件',
   //   icon: ICONS.file,
   //   to: '/dashboard/file-manager',
   //   // auth: ['FileManager'],
   // },
-  // {
-  //   label: '发现',
-  //   icon: ICONS.tour,
-  //   to: '/dashboard/discovery',
-  // },
+  {
+    label: '发现',
+    icon: ICONS.tour,
+    to: '/dashboard/discovery',
+    auth: ['Broadcast'],
+  },
   // {
   //   label: '活动',
   //   icon: ICONS.tour,

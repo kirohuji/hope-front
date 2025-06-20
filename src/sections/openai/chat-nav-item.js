@@ -57,9 +57,9 @@ export default function ChatNavItem({
             sessionId: conversation.sessionId,
             isSession: true,
           });
-          router.push(`${paths.dashboard.openai}?id=${newConversation._id}`);
+          router.push(`${paths.openai}?id=${newConversation._id}`);
         } else {
-          router.push(`${paths.dashboard.openai}?id=${conversation._id}`);
+          router.push(`${paths.openai}?id=${conversation._id}`);
         }
       }
     } catch (error) {
