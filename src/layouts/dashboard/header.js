@@ -27,6 +27,7 @@ import {
   ChatPopover,
   DiscoveryPopover,
   ScopePopover,
+  CalenderButton,
   SettingsButton,
 } from '../_common';
 
@@ -85,6 +86,7 @@ export default function Header({ onOpenNav }) {
         {/* <ContactsPopover /> */}
         {pathname === '/dashboard/chat' && <ChatPopover />}
         {pathname === '/dashboard/discovery' && <DiscoveryPopover />}
+        {pathname === '/dashboard/discovery' && <CalenderButton onClick={() => router.push(paths.calender)} />}
         {/* {pathname === '/dashboard/user' && <AccountPopover />} */}
         {pathname === '/dashboard/user' && <SettingsButton onClick={handleClick} />}
         {/* <SettingsButton /> */}

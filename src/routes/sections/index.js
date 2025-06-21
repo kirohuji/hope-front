@@ -43,6 +43,9 @@ const LegalICPPage = lazy(() => import('src/sections/system/view/legal-icp'));
 const SDKListPage = lazy(() => import('src/sections/system/view/sdk-list'));
 const CollectInfoListPage = lazy(() => import('src/sections/system/view/collect-info-list'));
 
+const CalendarPage = lazy(() => import('src/pages/dashboard/calendar'));
+
+
 const FaqsPage = lazy(() => import('src/pages/faqs'));
 
 const PaymentPage = lazy(() => import('src/pages/payment'));
@@ -155,6 +158,7 @@ export default function Router() {
         { path: 'profile', element: <UserProfilePage /> },
         { path: 'system', element: <SystemGeneralPage /> },
         { path: 'order/:id', element: <OrderDetailsPage /> },
+        { path: 'calender', element: <CalendarPage /> }
       ],
     },
     // No match 404

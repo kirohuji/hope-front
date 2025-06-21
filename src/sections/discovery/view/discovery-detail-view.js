@@ -22,11 +22,6 @@ import { useAuthContext } from 'src/auth/hooks';
 import DiscoveryPostDetailItem from '../discovery-post-detail-item';
 import DiscoveryKanban from '../discovery-kanban';
 
-const TABS = [
-  { value: 'Offcial', label: '社区' },
-  { value: 'Following', label: '你的关注' },
-  { value: 'Recommendation', label: '为你推荐' },
-];
 
 export default function DiscoveryDetailView() {
   const { enqueueSnackbar } = useSnackbar();

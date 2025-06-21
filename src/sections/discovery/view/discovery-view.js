@@ -23,9 +23,9 @@ import DiscoveryPostItem from '../discovery-post-item';
 import DiscoveryKanban from '../discovery-kanban';
 
 const TABS = [
-  { value: 'Offcial', label: '社区' },
-  { value: 'Following', label: '你的关注' },
-  { value: 'Recommendation', label: '最近的发生' },
+  { value: 'Offcial', label: '社区活动' },
+  // { value: 'Following', label: '你的关注' },
+  // { value: 'Recommendation', label: '最近的发生' },
 ];
 
 export default function DiscoveryView() {

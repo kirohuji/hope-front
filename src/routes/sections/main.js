@@ -27,6 +27,7 @@ const PostListPage = lazy(() => import('src/pages/post/list'));
 const PostDetailsPage = lazy(() => import('src/pages/post/details'));
 
 const ReadingPage = lazy(() => import('src/pages/dashboard/reading'));
+
 // ----------------------------------------------------------------------
 
 export const mainRoutes = [
