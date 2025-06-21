@@ -26,6 +26,7 @@ import Button from '@mui/material/Button';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import ConfirmDialog from 'src/components/confirm-dialog';
 import Restricted from 'src/auth/guard/restricted';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 // utils
 import { fDateTime } from 'src/utils/format-time';
@@ -72,6 +73,9 @@ export default function DiscoveryPostDetailItem({ post, user, notify, isLike, on
     try {
       setButtonLoading(true);
       if (onDelete) {
+        await postService.delete({
+          _id: post._id,
+        });
         await onDelete();
       }
       setButtonLoading(false);
@@ -329,9 +333,9 @@ export default function DiscoveryPostDetailItem({ post, user, notify, isLike, on
         title="删除"
         content="你确定删除吗?"
         action={
-          <Button variant="contained" color="error" onClick={handleDelete} loading={buttonLoading}>
+          <LoadingButton variant="contained" color="error" onClick={handleDelete} loading={buttonLoading}>
             删除
-          </Button>
+          </LoadingButton>
         }
       />
     </Stack>

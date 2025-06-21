@@ -11,13 +11,14 @@ import Scrollbar from 'src/components/scrollbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import Iconify from 'src/components/iconify';
 import Restricted from 'src/auth/guard/restricted';
+import emitter from "src/utils/eventEmitter";
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
 import ConfirmDialog from 'src/components/confirm-dialog';
-import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import DiscoveryPostItem from '../discovery-post-item';
 import DiscoveryKanban from '../discovery-kanban';
 
@@ -75,33 +76,20 @@ export default function DiscoveryView() {
     [router]
   );
 
-  const handleDelete = async () => {
-    try {
-      setButtonLoading(true);
-      await postService.delete({
-        _id: currentPost._id,
-      });
-      enqueueSnackbar('删除成功');
-      setButtonLoading(false);
-      handleCloseConfirm();
-    } catch (e) {
-      enqueueSnackbar('删除失败');
-      setButtonLoading(false);
-    }
-  };
-
   const handleSetting = useCallback(
-    (selectedPost) => {
+    (e, selectedPost) => {
       console.log('打开');
       setCurrentPost(selectedPost);
-      handleOpenConfirm()
+      // handleOpenConfirm()
+      popover.onOpen(e)
     },
-    [handleOpenConfirm]
+    [popover]
   );
 
 
   const refresh = useCallback(
     async () => {
+      console.log('刷新')
       if (loading) return; // 防止并发加载
 
       setLoading(true);
@@ -136,6 +124,30 @@ export default function DiscoveryView() {
     [enqueueSnackbar, loading, page, scope.active._id, total] // 注意：去掉 loading 作为依赖
   );
 
+  const filterData = useCallback(() => {
+    if (currentPost) {
+      setPosts((prev) => prev.filter(post => post._id !== currentPost._id))
+    }
+    refresh()
+  }, [currentPost, refresh])
+
+  const handleDelete = useCallback(async () => {
+    try {
+      setButtonLoading(true);
+      await postService.delete({
+        _id: currentPost?._id,
+      });
+      filterData()
+      enqueueSnackbar('删除成功');
+      setButtonLoading(false);
+      handleCloseConfirm();
+    } catch (e) {
+      enqueueSnackbar('删除失败');
+      setButtonLoading(false);
+    }
+  }, [currentPost, enqueueSnackbar, filterData, handleCloseConfirm]);
+
+
   const getBroadcasts = useCallback(async () => {
     try {
       const response = await broadcastService.recent();
@@ -147,7 +159,13 @@ export default function DiscoveryView() {
 
   useEffect(() => {
     getBroadcasts();
+    emitter.on("refreshBroadcastsMessage", filterData);
+    return () => {
+      emitter.off("refreshBroadcastsMessage", filterData);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getBroadcasts]);
+
   return (
     <Container maxWidth={themeStretch ? false : 'xl'}>
       <Tabs value={currentTab} onChange={handleChangeTab}>
@@ -173,7 +191,7 @@ export default function DiscoveryView() {
                 key={post._id}
                 post={post}
                 user={user}
-                onSetting={() => handleSetting(post)}
+                onSetting={(e) => handleSetting(e, post)}
                 onClick={() => handleClickPost(post)}
               />
             ))}
@@ -186,18 +204,18 @@ export default function DiscoveryView() {
         arrow="right-top"
         sx={{ width: 140 }}
       >
-          <Restricted to={['BroadcastListDelete']}>
-            <MenuItem
-              onClick={() => {
-                popover.onClose();
-                handleDelete();
-              }}
-              sx={{ color: 'error.main' }}
-            >
-              <Iconify icon="solar:trash-bin-trash-bold" />
-              删除
-            </MenuItem>
-          </Restricted>
+        <Restricted to={['BroadcastListDelete']}>
+          <MenuItem
+            onClick={() => {
+              popover.onClose();
+              handleOpenConfirm();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            删除
+          </MenuItem>
+        </Restricted>
       </CustomPopover>
       <ConfirmDialog
         open={openConfirm}
@@ -205,9 +223,9 @@ export default function DiscoveryView() {
         title="删除"
         content="你确定删除吗?"
         action={
-          <Button variant="contained" color="error" onClick={handleDelete} loading={buttonLoading}>
+          <LoadingButton variant="contained" color="error" onClick={()=> handleDelete()} loading={buttonLoading}>
             删除
-          </Button>
+          </LoadingButton>
         }
       />
     </Container>

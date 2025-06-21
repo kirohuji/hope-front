@@ -16,6 +16,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { Capacitor } from '@capacitor/core';
 import { useSnackbar } from 'src/components/snackbar';
 import { Keyboard } from '@capacitor/keyboard';
+import emitter from "src/utils/eventEmitter";
 // components
 import Iconify from 'src/components/iconify';
 import Editor from 'src/components/editor';
@@ -64,6 +65,7 @@ export default function DiscoveryCompose({ onCloseCompose }) {
       });
       onCloseCompose();
       enqueueSnackbar('创建成功!');
+      emitter.emit("refreshBroadcastsMessage");
     } catch(e){
       enqueueSnackbar('创建失败!');
       console.error(e);
