@@ -33,6 +33,7 @@ export let conversationsCollection = null;
 export let conversationsCollectionChange = null;
 export let notificationsPublish = null;
 export let notificationsCollection = null;
+export let notificationsCollectionChange = null;
 // const messagesPublish = null;
 
 export const bindConnect = async (server, dispatch) => {
@@ -119,7 +120,7 @@ export function MeteorProvider({ endpoint, children }) {
       if (conversationsPublish) {
         conversationsCollectionChange.stop();
       }
-      if(conversationsCollection && conversationsPublish.stop){
+      if (conversationsCollection && conversationsPublish.stop) {
         conversationsPublish.stop();
       }
       conversationsPublish = server.subscribe('newMessagesConversations', new Date());
@@ -138,11 +139,18 @@ export function MeteorProvider({ endpoint, children }) {
 
   const subNotifications = useCallback(async () => {
     const { server } = state;
+    // 关闭上一次的监听
+    if (notificationsPublish) {
+      notificationsCollectionChange.stop();
+    }
+    if (notificationsCollection && notificationsPublish.stop) {
+      notificationsPublish.stop();
+    }
     notificationsPublish = await server.subscribe('userUnreadNotifications');
     notificationsPublish.ready();
     notificationsCollection = server.collection('notifications');
     reducerDispatch(getOverview());
-    notificationsCollection.onChange((target) => {
+    notificationsCollectionChange = notificationsCollection.onChange((target) => {
       console.log('target.added', target.added);
       reducerDispatch(getOverview());
       // if (target.added) {

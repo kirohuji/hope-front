@@ -4,6 +4,7 @@ import { useRef, useState, useCallback, useMemo } from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Editor from 'src/components/editor';
+import InputBase from '@mui/material/InputBase';
 import Button from '@mui/material/Button';
 import emitter from "src/utils/eventEmitter";
 import IconButton from '@mui/material/IconButton';
@@ -56,6 +57,8 @@ export default function ChatMessageInput({
   const { enqueueSnackbar } = useSnackbar();
 
   const { user } = useAuthContext();
+
+  const [sendingType, setSendingType] = useState('send');
 
   const fileRef = useRef(null);
 
@@ -140,6 +143,13 @@ export default function ChatMessageInput({
     }
     return conversationKey;
   }, [recipients]);
+
+  const handleSendAudio = useCallback(async () => {
+    console.log('send audio');
+    await rtviClient.connect()
+    enqueueSnackbar("连接成功");
+    // await rtviClient.
+  }, [rtviClient, enqueueSnackbar]);
 
   const handleRTVIMessage = useCallback(async (currentMessage) => {
     // const content = [
@@ -336,7 +346,33 @@ export default function ChatMessageInput({
           </Box>
         )}
         <Stack spacing={2} flexGrow={1} sx={{ p: 2 }}>
-          <Editor
+          <InputBase
+            type="search"
+            className="message-input"
+            inputProps={{ enterKeyHint: sendingType }}
+            value={message}
+            // onKeyUp={handleSendMessage}
+            onPaste={handlePaste}
+            onChange={handleChangeMessage}
+            placeholder="请输入内容"
+            disabled={disabled || loading.value}
+            maxRows={3}
+            multiline
+            startAdornment={
+              false && (
+                <IconButton>
+                  <Iconify icon="eva:smiling-face-fill" />
+                </IconButton>
+              )
+            }
+            sx={{
+              px: 1,
+              margin: '4px 0',
+              flexShrink: 0,
+              borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
+            }}
+          />
+          {/* <Editor
             simple
             value={message}
             onChange={setMessage}
@@ -353,10 +389,13 @@ export default function ChatMessageInput({
                 },
               }),
             }}
-          />
+          /> */}
 
           <Stack direction="row" alignItems="center">
             <Stack direction="row" alignItems="center" flexGrow={1}>
+              <IconButton onClick={handleSendAudio}>
+                <Iconify icon="solar:soundwave-broken" />
+              </IconButton>
               <IconButton>
                 <Iconify icon="solar:gallery-add-bold" />
               </IconButton>

@@ -19,6 +19,8 @@ import { notificationService, fileManagerService } from 'src/composables/context
 // redux
 import { useDispatch } from 'src/redux/store';
 import { getFiles } from 'src/redux/slices/file';
+import { useRouter } from 'src/routes/hook';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +36,7 @@ function category(notification) {
 }
 export default function NotificationItem({ notification, onRefresh }) {
   const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
   const dispatch = useDispatch();
 
   const onShareFile = async () => {
@@ -255,6 +258,10 @@ export default function NotificationItem({ notification, onRefresh }) {
       if (notification.isUnRead && notification.type !== 'share') {
         await notificationService.checkRead(notification);
         onRefresh();
+      }
+      console.log(notification);
+      if(notification.sourceId && notification.category === 'post'){
+        router.push(paths.dashboard.discovery.details(notification.sourceId));
       }
     } catch (e) {
       console.log(e);

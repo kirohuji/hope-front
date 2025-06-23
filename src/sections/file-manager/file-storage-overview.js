@@ -48,7 +48,7 @@ export default function FileStorageOverview({ data, total, chart, ...other }) {
             offsetY: -40,
           },
           total: {
-            label: `已经使用 ${fData(total)} / 150MB`,
+            label: `已经使用 ${fData(total)} / 500G`,
             color: theme.palette.text.disabled,
             fontSize: theme.typography.body2.fontSize,
             fontWeight: theme.typography.body2.fontWeight,

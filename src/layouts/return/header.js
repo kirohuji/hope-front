@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 // @mui
 import { useTheme, styled } from '@mui/material/styles';
 import { AppBar, Toolbar, Box } from '@mui/material';
@@ -46,6 +46,20 @@ export default function Header({ isOffset }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [type, setType] = useState(searchParams.get('type') || 'listening');
+
+
+  const renderConversationUnreadCount = useCallback(() => {
+    const { activeConversation } = chat;
+    if (activeConversation) {
+      return chat.conversations.unreadCount - (activeConversation.unreadCount || 0);
+    }
+    return chat.conversations.unreadCount;
+  }, [chat]);
+
+  const unreadCount = renderConversationUnreadCount();
+
+  const shouldShowUnread = pathname === '/chat' && unreadCount > 0;
+
 
   const renderConversationTitle = () => {
     const { activeConversation } = chat;
@@ -141,8 +155,8 @@ export default function Header({ isOffset }) {
           >
             <Iconify icon="eva:arrow-ios-back-fill" />
           </IconButtonAnimate>
-          {pathname === '/chat' && chat.conversations.unreadCount > 0 && (
-            <CircleText>{chat.conversations.unreadCount}</CircleText>
+          {shouldShowUnread && (
+            <CircleText>{unreadCount}</CircleText>
           )}
         </div>
       </Toolbar>

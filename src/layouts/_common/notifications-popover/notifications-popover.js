@@ -128,6 +128,7 @@ export default function NotificationsPopover() {
     },
     [dispatch]
   );
+  
   const renderHead = (
     <Stack direction="row" alignItems="center" sx={{ py: 2, pl: 2.5, pr: 1, minHeight: 68 }} className='notification-popover'>
       <Typography variant="h6" sx={{ flexGrow: 1 }}>

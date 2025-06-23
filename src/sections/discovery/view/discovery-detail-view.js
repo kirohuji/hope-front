@@ -15,18 +15,13 @@ import Scrollbar from 'src/components/scrollbar';
 import Iconify from 'src/components/iconify';
 // routes
 import { paths } from 'src/routes/paths';
-import { useParams } from 'src/routes/hook';
+import { useParams, useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
 // auth
 import { useAuthContext } from 'src/auth/hooks';
 import DiscoveryPostDetailItem from '../discovery-post-detail-item';
 import DiscoveryKanban from '../discovery-kanban';
 
-const TABS = [
-  { value: 'Offcial', label: '社区' },
-  { value: 'Following', label: '你的关注' },
-  { value: 'Recommendation', label: '为你推荐' },
-];
 
 export default function DiscoveryDetailView() {
   const { enqueueSnackbar } = useSnackbar();
@@ -49,6 +44,8 @@ export default function DiscoveryDetailView() {
   const fileRef = useRef(null);
 
   const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   const handleAttach = useCallback(() => {
     if (fileRef.current) {
@@ -127,6 +124,11 @@ export default function DiscoveryDetailView() {
     [message, id, enqueueSnackbar]
   );
 
+  const handleDelete = useCallback(() => {
+    // 删除后返回上一页
+    router.back();
+  }, [router]);
+
   const renderInput = (
     <Stack
       direction="row"
@@ -194,6 +196,7 @@ export default function DiscoveryDetailView() {
             notify={notify}
             isLike={isLike}
             onLike={handleLike}
+            onDelete={handleDelete}
           />
         )}
       </Scrollbar>

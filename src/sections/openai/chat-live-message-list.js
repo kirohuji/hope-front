@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect, useRef, useState } from "react";
 import emitter from "src/utils/eventEmitter";
 import { useRTVIClient, useRTVIClientEvent } from "@pipecat-ai/client-react";
+import { getScrollableParent } from 'src/utils/dom';
 import {
   RTVIEvent,
 } from "@pipecat-ai/client-js";
@@ -11,7 +12,7 @@ import { normalizeMessageText, addNewLinesBeforeCodeblocks } from 'src/utils/mes
 import { v4 as uuidv4 } from "uuid";
 import ChatMessageItem from './chat-message-item'
 
-export default function ChatListMessageList({ user, onOpenLightbox, participants, isBotSpeaking, messages, interactionMode = "informational", conversationId }) {
+export default function ChatListMessageList({ autoscroll, user, onOpenLightbox, participants, isBotSpeaking, messages, interactionMode = "informational", conversationId }) {
   
   const [liveMessages, setLiveMessages] = useState([]);
 
@@ -316,6 +317,18 @@ export default function ChatListMessageList({ user, onOpenLightbox, participants
     };
   }, [handleUserTextMessage]);
 
+  useEffect(() => {
+    // if (!autoscroll) return;
+    const scroller = getScrollableParent(document.querySelector(".chat-openai-message-list"));
+    if (!scroller) return;
+    const isScrollLocked = document.body.hasAttribute("data-scroll-locked");
+    if (!liveMessages.length) return;
+    scroller.scrollTo({
+      behavior: isScrollLocked ? "instant" : "smooth",
+      top: scroller.scrollHeight,
+    });
+  }, [liveMessages]);
+
   return liveMessages.map((m, i) => (
     <ChatMessageItem
       key={i}
@@ -329,6 +342,7 @@ export default function ChatListMessageList({ user, onOpenLightbox, participants
           m.content.role === "assistant" &&
           isBotSpeaking
       }}
+      conversationId={conversationId}
       participants={participants}
       onOpenLightbox={() => onOpenLightbox(m)}
     />
@@ -338,6 +352,7 @@ export default function ChatListMessageList({ user, onOpenLightbox, participants
 ChatListMessageList.propTypes = {
   user: PropTypes.object,
   conversationId: PropTypes.string,
+  autoscroll: PropTypes.bool,
   messages: PropTypes.array,
   isBotSpeaking: PropTypes.bool,
   interactionMode: PropTypes.string,

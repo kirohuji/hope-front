@@ -79,24 +79,26 @@ export default function AuditOperationForm({ item, onClose, onCancel, onSubmitDa
 
   const onSubmit = async (data) => {
     try {
-      if (data.status==='1') {
+      // if (data.status==='1') {
+      //   await auditService.moderation({
+      //     _id: item._id,
+      //     status: 'approved',
+      //     reason: data.reason,
+      //     reviewerId: user._id,
+      //     sourceId: item.sourceId,
+      //     category: item.category
+      //   });
+      // } else {
         await auditService.moderation({
           _id: item._id,
-          status: 'approved',
-          reviewerId: user._id,
-          sourceId: item.sourceId,
-          category: item.category
-        });
-      } else {
-        await auditService.moderation({
-          _id: item._id,
-          status: 'rejected',
+          status: data.status,
           reason: data.reason,
           reviewerId: user._id,
           sourceId: item.sourceId,
-          category: item.category
+          category: item.category,
+          createdBy: item.createdBy,
         });
-      }
+      // }
       reset();
       onClose()
       enqueueSnackbar('更新成功');
@@ -121,8 +123,8 @@ export default function AuditOperationForm({ item, onClose, onCancel, onSubmitDa
             >
               <RHFTextField name="reviewerName" label="审核人" disabled />
               <RHFSelect name="status" label="结果" placeholder="请选择状态">
-                <MenuItem value="1">通过</MenuItem>
-                <MenuItem value="2">反驳</MenuItem>
+                <MenuItem value="approved">通过</MenuItem>
+                <MenuItem value="rejected">反驳</MenuItem>
               </RHFSelect>
             </Box>
             <Stack sx={{ pt: 3, pb: 3 }}>

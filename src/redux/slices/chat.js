@@ -100,6 +100,11 @@ const slice = createSlice({
         if (!state.conversations.allIds.includes(conversation._id)) {
           state.conversations.allIds.push(conversation._id);
         }
+        state.conversations.allIds.sort((a, b) => {
+          const aTime = new Date(state.conversations.byId[a]?.updatedAt || 0).getTime();
+          const bTime = new Date(state.conversations.byId[b]?.updatedAt || 0).getTime();
+          return bTime - aTime; // 最新的排前面
+        });
       } else {
         state.activeConversationId = null;
         state.activeConversation = {};
@@ -158,6 +163,11 @@ const slice = createSlice({
       if (!state.sendingMessage.byId[message.conversationId]) {
         state.sendingMessage.byId[message.conversationId] = [];
       }
+
+      if (!state.sendingMessage.byId[message.conversationId]) {
+        state.sendingMessage.byId[message.conversationId] = [];
+      }
+      
       if (
         state.sendingMessage.byId[message.conversationId].filter(
           (m) => m.sendingMessageId === message.sendingMessageId

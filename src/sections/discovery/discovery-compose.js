@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Portal from '@mui/material/Portal';
 import Backdrop from '@mui/material/Backdrop';
 import IconButton from '@mui/material/IconButton';
@@ -16,6 +17,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { Capacitor } from '@capacitor/core';
 import { useSnackbar } from 'src/components/snackbar';
 import { Keyboard } from '@capacitor/keyboard';
+import emitter from "src/utils/eventEmitter";
 // components
 import Iconify from 'src/components/iconify';
 import Editor from 'src/components/editor';
@@ -34,6 +36,9 @@ export default function DiscoveryCompose({ onCloseCompose }) {
 
   const smUp = useResponsive('up', 'sm');
 
+  const [loading, setLoading] = useState(false);
+
+  
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const scope = useSelector((state) => state.scope);
@@ -56,6 +61,7 @@ export default function DiscoveryCompose({ onCloseCompose }) {
 
   const onSend = useCallback (async ()=>{
     try{
+      setLoading(true);
       await postService.post({
         body: message,
         scope: scope.active._id,
@@ -64,9 +70,12 @@ export default function DiscoveryCompose({ onCloseCompose }) {
       });
       onCloseCompose();
       enqueueSnackbar('创建成功!');
+      emitter.emit("refreshBroadcastsMessage");
     } catch(e){
       enqueueSnackbar('创建失败!');
       console.error(e);
+    } finally {
+      setLoading(false);
     }
   },[enqueueSnackbar, message, onCloseCompose, scope.active._id])
   useEffect(() => {
@@ -185,7 +194,7 @@ export default function DiscoveryCompose({ onCloseCompose }) {
           />
 
           <Stack direction="row" alignItems="center">
-            <Stack direction="row" alignItems="center" flexGrow={1}>
+            {/* <Stack direction="row" alignItems="center" flexGrow={1}>
               <IconButton>
                 <Iconify icon="solar:gallery-add-bold" />
               </IconButton>
@@ -193,16 +202,17 @@ export default function DiscoveryCompose({ onCloseCompose }) {
               <IconButton>
                 <Iconify icon="eva:attach-2-fill" />
               </IconButton>
-            </Stack>
+            </Stack> */}
 
-            <Button
+            <LoadingButton
               variant="contained"
               color="primary"
               onClick={()=> onSend()}
+              loading={loading}
               endIcon={<Iconify icon="iconamoon:send-fill" />}
             >
               发送
-            </Button>
+            </LoadingButton>
           </Stack>
         </Stack>
       </Paper>

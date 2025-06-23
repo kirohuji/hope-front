@@ -169,66 +169,68 @@ function BookerItem({ isOwner, participant, selected, onDelete, onSelected, onCh
           }}
         />
         <Restricted to={['BroadcastListPersonSignOrDelete']}>
-          <Stack spacing={1} direction="row">
-            {true && (
+          {
+            isOwner && <Stack spacing={1} direction="row">
+              {true && (
+                <LoadingButton
+                  size="small"
+                  onClick={onSelected}
+                  loading={loading}
+                  color="error"
+                  sx={{
+                    borderRadius: 1,
+                    bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+                    '&:hover': {
+                      bgcolor: (theme) => alpha(theme.palette.error.main, 0.16),
+                    },
+                  }}
+                >
+                  <Iconify
+                    width={18}
+                    icon={
+                      selected
+                        ? 'streamline:interface-logout-arrow-exit-frame-leave-logout-rectangle-right'
+                        : 'ph:hand'
+                    }
+                  />
+                </LoadingButton>
+              )}
+
+              {!isOwner && false && (
+                <LoadingButton
+                  onClick={onChat}
+                  size="small"
+                  loading={loading}
+                  color="info"
+                  sx={{
+                    borderRadius: 1,
+                    bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
+                    '&:hover': {
+                      bgcolor: (theme) => alpha(theme.palette.info.main, 0.16),
+                    },
+                  }}
+                >
+                  <Iconify width={18} icon="solar:chat-round-dots-bold" />
+                </LoadingButton>
+              )}
+
               <LoadingButton
+                onClick={onDelete}
                 size="small"
-                onClick={onSelected}
                 loading={loading}
-                color="error"
+                color="primary"
                 sx={{
                   borderRadius: 1,
-                  bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
                   '&:hover': {
-                    bgcolor: (theme) => alpha(theme.palette.error.main, 0.16),
+                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.16),
                   },
                 }}
               >
-                <Iconify
-                  width={18}
-                  icon={
-                    selected
-                      ? 'streamline:interface-logout-arrow-exit-frame-leave-logout-rectangle-right'
-                      : 'ph:hand'
-                  }
-                />
+                <Iconify width={18} icon="fluent:delete-24-filled" />
               </LoadingButton>
-            )}
-
-            {!isOwner && false && (
-              <LoadingButton
-                onClick={onChat}
-                size="small"
-                loading={loading}
-                color="info"
-                sx={{
-                  borderRadius: 1,
-                  bgcolor: (theme) => alpha(theme.palette.info.main, 0.08),
-                  '&:hover': {
-                    bgcolor: (theme) => alpha(theme.palette.info.main, 0.16),
-                  },
-                }}
-              >
-                <Iconify width={18} icon="solar:chat-round-dots-bold" />
-              </LoadingButton>
-            )}
-
-            <LoadingButton
-              onClick={onDelete}
-              size="small"
-              loading={loading}
-              color="primary"
-              sx={{
-                borderRadius: 1,
-                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-                '&:hover': {
-                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.16),
-                },
-              }}
-            >
-              <Iconify width={18} icon="fluent:delete-24-filled" />
-            </LoadingButton>
-          </Stack>
+            </Stack>
+          }
         </Restricted>
       </Stack>
       <Restricted to={['BroadcastListPersonSignOrDelete']}>

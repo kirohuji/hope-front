@@ -112,7 +112,6 @@ export function AuthProvider({ children }) {
     useLogin: loginWithMeteor,
     useLogout: logoutWithMeteor,
     useMethod: callWithMeteor,
-    // subConversations,
     subNotifications,
   } = useMeteorContext();
   const meteor = useMeteorContext();
@@ -205,7 +204,6 @@ export function AuthProvider({ children }) {
       });
     }
 
-    // subConversations();
     subNotifications();
   }, [callWithMeteor, subNotifications]);
 
@@ -252,7 +250,6 @@ export function AuthProvider({ children }) {
         membership,
       });
       subNotifications();
-      // subConversations();
       dispatch({
         type: 'LOGIN',
         payload: {
