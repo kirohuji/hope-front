@@ -118,11 +118,11 @@ export function useNavData() {
             path: paths.dashboard.persona.root,
             icon: ICONS.chat,
           },
-          // {
-          //   title: t('order'),
-          //   path: paths.dashboard.order.root,
-          //   icon: ICONS.order,
-          // },
+          {
+            title: t('notification'),
+            path: paths.dashboard.notification.root,
+            icon: ICONS.notification,
+          },
           {
             title: t('broadcast'),
             path: paths.dashboard.broadcast.root,

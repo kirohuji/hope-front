@@ -82,7 +82,9 @@ export default function Header({ onOpenNav }) {
           <ScopePopover />
         </Restricted> */}
         {/* <LanguagePopover /> */}
-        <NotificationsPopover />
+        <Restricted to={['Broadcast']}>
+          <NotificationsPopover />
+        </Restricted>
         {/* { lgUp && <ScopePopover /> } */}
         {/* <ContactsPopover /> */}
         {pathname === '/dashboard/chat' && <ChatPopover />}

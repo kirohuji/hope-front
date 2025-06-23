@@ -117,7 +117,7 @@ export function MeteorProvider({ endpoint, children }) {
     async (callback) => {
       const { server } = state;
       // 关闭上一次的监听
-      if (conversationsPublish) {
+      if (conversationsPublish && conversationsCollectionChange) {
         conversationsCollectionChange.stop();
       }
       if (conversationsCollection && conversationsPublish.stop) {
@@ -140,12 +140,12 @@ export function MeteorProvider({ endpoint, children }) {
   const subNotifications = useCallback(async () => {
     const { server } = state;
     // 关闭上一次的监听
-    if (notificationsPublish) {
-      notificationsCollectionChange.stop();
-    }
-    if (notificationsCollection && notificationsPublish.stop) {
-      notificationsPublish.stop();
-    }
+    // if (notificationsPublish && notificationsCollectionChange && notificationsCollectionChange.stop) {
+    //   notificationsCollectionChange.stop();
+    // }
+    // if (notificationsCollection && notificationsPublish && notificationsPublish.stop) {
+    //   notificationsPublish.stop();
+    // }
     notificationsPublish = await server.subscribe('userUnreadNotifications');
     notificationsPublish.ready();
     notificationsCollection = server.collection('notifications');

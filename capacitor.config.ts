@@ -6,6 +6,7 @@ const config: CapacitorConfig = {
   plugins: {
     CapacitorUpdater: {
       autoUpdate: false,
+      version: '1.0.1',
     },
     // CordovaPlugins: [
     //   "cordova-plugin-purchase"

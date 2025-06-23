@@ -20,7 +20,7 @@ const updateDeviceStatus = async (deviceId, status) => {
 };
 
 // 检查并下载新版本
-const checkAndDownloadUpdate = async (currentVersion, config) => {
+export const checkAndDownloadUpdate = async (currentVersion, config) => {
   const version = `${config.majorVersion}.${config.minorVersion}.${config.patchVersion}`;
   
   if (currentVersion.bundle.version === version || !config.majorVersion) {
@@ -56,7 +56,7 @@ const installUpdate = async (data, currentVersion) => {
   console.log('安装包安装状态');
   try {
     console.log('安装包bundle list', await CapacitorUpdater.list());
-    await CapacitorUpdater.set(data);
+    await CapacitorUpdater.next(data);
     console.log('安装包安装安好了');
   } catch (error) {
     console.error('安装包安装失败:', error);
@@ -86,9 +86,9 @@ const handleAppStateChange = async (state) => {
 };
 
 // 初始化自动更新功能
-export const initializeAutoUpdate = () => {
+export const initializeAutoUpdate = async () => {
   try {
-    CapacitorUpdater.notifyAppReady();
+    await CapacitorUpdater.notifyAppReady();
     App.addListener('appStateChange', handleAppStateChange);
   } catch (error) {
     console.error('初始化自动更新失败:', error);
