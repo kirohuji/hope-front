@@ -24,11 +24,14 @@ import EmptyContent from 'src/components/empty-content';
 import { useSnackbar } from 'src/components/snackbar';
 //
 import { postService } from 'src/composables/context-provider';
+import CryptoJS from 'crypto-js';
 import PostDetailsHero from '../post-details-hero';
 import PostCommentList from '../post-comment-list';
 import PostCommentForm from '../post-comment-form';
 import { PostDetailsSkeleton } from '../post-skeleton';
 
+
+const secretKey = 'future';
 // ----------------------------------------------------------------------
 
 PostDetailsView.propTypes = {
@@ -96,7 +99,7 @@ export default function PostDetailsView({ postId }) {
 
   const renderPost = post && (
     <>
-      <PostDetailsHero title={post.title} coverUrl={post.coverUrl || post.cover} />
+      {(post.coverUrl || post.cover) && <PostDetailsHero title={post.title} coverUrl={post.coverUrl || post.cover} />}
 
       <Stack
         sx={{
@@ -109,7 +112,9 @@ export default function PostDetailsView({ postId }) {
           {post.description}
         </Typography>
 
-        <Markdown children={post.body} />
+        <Markdown
+          children={CryptoJS.AES.decrypt(post.body, secretKey).toString(CryptoJS.enc.Utf8)}
+        />
 
         <Stack
           spacing={3}

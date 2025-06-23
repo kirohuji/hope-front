@@ -29,6 +29,7 @@ import {
   ScopePopover,
   CalenderButton,
   SettingsButton,
+  NotificationsPopover,
 } from '../_common';
 
 // ----------------------------------------------------------------------
@@ -81,7 +82,7 @@ export default function Header({ onOpenNav }) {
           <ScopePopover />
         </Restricted> */}
         {/* <LanguagePopover /> */}
-        {/* <NotificationsPopover /> */}
+        <NotificationsPopover />
         {/* { lgUp && <ScopePopover /> } */}
         {/* <ContactsPopover /> */}
         {pathname === '/dashboard/chat' && <ChatPopover />}

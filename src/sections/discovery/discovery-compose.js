@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Portal from '@mui/material/Portal';
 import Backdrop from '@mui/material/Backdrop';
 import IconButton from '@mui/material/IconButton';
@@ -35,6 +36,9 @@ export default function DiscoveryCompose({ onCloseCompose }) {
 
   const smUp = useResponsive('up', 'sm');
 
+  const [loading, setLoading] = useState(false);
+
+  
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const scope = useSelector((state) => state.scope);
@@ -57,6 +61,7 @@ export default function DiscoveryCompose({ onCloseCompose }) {
 
   const onSend = useCallback (async ()=>{
     try{
+      setLoading(true);
       await postService.post({
         body: message,
         scope: scope.active._id,
@@ -69,6 +74,8 @@ export default function DiscoveryCompose({ onCloseCompose }) {
     } catch(e){
       enqueueSnackbar('创建失败!');
       console.error(e);
+    } finally {
+      setLoading(false);
     }
   },[enqueueSnackbar, message, onCloseCompose, scope.active._id])
   useEffect(() => {
@@ -197,14 +204,15 @@ export default function DiscoveryCompose({ onCloseCompose }) {
               </IconButton>
             </Stack> */}
 
-            <Button
+            <LoadingButton
               variant="contained"
               color="primary"
               onClick={()=> onSend()}
+              loading={loading}
               endIcon={<Iconify icon="iconamoon:send-fill" />}
             >
               发送
-            </Button>
+            </LoadingButton>
           </Stack>
         </Stack>
       </Paper>

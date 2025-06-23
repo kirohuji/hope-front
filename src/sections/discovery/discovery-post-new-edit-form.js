@@ -143,7 +143,7 @@ export default function DiscoveryPostNewEditForm({ currentPost }) {
         });
       }
       reset();
-      enqueueSnackbar(currentPost ? '更新成功!' : '创建成功!');
+      enqueueSnackbar(currentPost ? '更新成功!' : '创建成功,正在审核中!');
       router.push(paths.dashboard.post.root);
       console.info('DATA', data);
     } catch (error) {

@@ -119,6 +119,9 @@ export default function AuditListView() {
     setOpenAudit(false);
     getTableData();
   };
+  const handleCloseAuditModalWithCancel = () => {
+    setOpenAudit(false);
+  };
 
   const handleOpenAuditModal = (row) => {
     setOpenAudit(true);
@@ -354,16 +357,16 @@ export default function AuditListView() {
                 value={tab.value}
                 label={tab.label}
                 iconPosition="end"
-                // icon={
-                //   <Label
-                //     variant={
-                //       ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                //     }
-                //     color={tab.color}
-                //   >
-                //     {tab.count}
-                //   </Label>
-                // }
+              // icon={
+              //   <Label
+              //     variant={
+              //       ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
+              //     }
+              //     color={tab.color}
+              //   >
+              //     {tab.count}
+              //   </Label>
+              // }
               />
             ))}
           </Tabs>
@@ -514,8 +517,8 @@ export default function AuditListView() {
       </Dialog>
 
       <Dialog maxWidth="lg" open={openAudit} onClose={handleCloseAuditModal}>
-        <DialogTitle>审核操作页面</DialogTitle>
-        <AuditOperationForm item={currentRow} onCancel={handleCloseAuditModal} onClose={handleCloseAuditModal}/>
+        <DialogTitle>审核操作界面</DialogTitle>
+        <AuditOperationForm item={currentRow} onCancel={handleCloseAuditModalWithCancel} onClose={handleCloseAuditModal} />
       </Dialog>
     </>
   );

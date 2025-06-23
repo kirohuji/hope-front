@@ -96,7 +96,7 @@ export default function DiscoveryView() {
 
       try {
         const response = await postService.pagination(
-          { scope: scope.active._id },
+          { scope: scope.active._id, status: "published" },
           {
             skip: page * 10,
             limit: 10,
