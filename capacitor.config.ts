@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'lourd.jiamai.app',
-  appName: '佳麦',
+  appId: 'lourd.echoon.app',
+  appName: 'Echoon',
   plugins: {
     CapacitorUpdater: {
       autoUpdate: false,
