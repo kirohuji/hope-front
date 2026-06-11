@@ -1,11 +1,19 @@
 # build environment
 FROM node:20.18.3 as build
 WORKDIR /app
-COPY . .
+
+# Copy package files first to leverage Docker cache
+COPY package.json yarn.lock ./
 RUN npm config set registry "https://registry.npmmirror.com"
 # RUN npm config set sharp_binary_host "https://npmmirror.com/mirrors/sharp"
 # RUN npm config set sharp_libvips_binary_host "https://npmmirror.com/mirrors/sharp-libvips"
 RUN yarn
+
+# Copy the rest of the application code
+COPY . .
+
+RUN sed -i 's#"main": "dist/plugin.cjs.js"#"main": "dist/esm/index.js"#' /app/node_modules/@revenuecat/purchases-capacitor/package.json
+
 RUN yarn build
 
 # production environment
