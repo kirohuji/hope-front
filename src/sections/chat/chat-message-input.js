@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useRef, useState, useCallback, useMemo, useEffect } from 'react';
+import { useRef, useState, useCallback, useMemo } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
@@ -29,6 +29,7 @@ import { sendMessage } from 'src/redux/slices/chat';
 import Iconify from 'src/components/iconify';
 import { fileService, messagingService } from 'src/composables/context-provider';
 import ChatClipboardDialog from './chat-clipboard-dialog';
+import ChatVoiceRecorder from './chat-voice-recorder';
 
 // ----------------------------------------------------------------------
 
@@ -65,6 +66,7 @@ export default function ChatMessageInput({
   const [sendingType, setSendingType] = useState('send');
 
   const [type, setType] = useState('text');
+  const [inputMode, setInputMode] = useState('text');
 
   const myContact = useMemo(
     () => ({
@@ -231,6 +233,76 @@ export default function ChatMessageInput({
     return conversationKey;
   }, [recipients]);
 
+  const uploadAudio = useCallback(
+    async (file) => {
+      try {
+        if (!file) {
+          return false;
+        }
+
+        loading.onTrue();
+
+        let conversationKey = selectedConversationId;
+        if (!conversationKey) {
+          conversationKey = await createConversation();
+          router.push(`${paths.chat}?id=${conversationKey}`);
+          onAddRecipients([]);
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        const { link } = await fileService.uploadToMessage(formData);
+
+        await dispatch(
+          sendMessage(conversationKey, {
+            ...messageData,
+            conversationId: conversationKey,
+            body: link,
+            message: link,
+            contentType: 'audio',
+            attachments: [
+              {
+                name: file.name,
+                preview: link,
+                type: 'audio',
+                createdAt: new Date()?.toISOString(),
+              },
+            ],
+          })
+        );
+
+        enqueueSnackbar('录音发送成功');
+        return true;
+      } catch (e) {
+        enqueueSnackbar(e?.response?.data?.message || e?.message || '录音发送失败');
+        return false;
+      } finally {
+        loading.onFalse();
+      }
+    },
+    [
+      createConversation,
+      dispatch,
+      enqueueSnackbar,
+      loading,
+      messageData,
+      onAddRecipients,
+      router,
+      selectedConversationId,
+    ]
+  );
+
+  const handleSendAudio = useCallback(
+    async (file) => {
+      const sent = await uploadAudio(file);
+      if (sent) {
+        setInputMode('text');
+      }
+      return sent;
+    },
+    [uploadAudio]
+  );
+
   const handleSendMessage = useCallback(
     async (event) => {
       try {
@@ -243,21 +315,21 @@ export default function ChatMessageInput({
               setType('text');
               try {
                 await dispatch(sendMessage(selectedConversationId, sendingMessage));
-                setSendingType('send')
+                setSendingType('send');
               } catch (e) {
-                setSendingType('send')
+                setSendingType('send');
                 enqueueSnackbar(e.message);
               }
             } else {
               setMessage('');
-              setSendingType('send')
+              setSendingType('send');
               const conversationKey = await createConversation(conversationData);
               router.push(`${paths.chat}?id=${conversationKey}`);
               onAddRecipients([]);
             }
           } else {
             setMessage('');
-            setSendingType('send')
+            setSendingType('send');
           }
         }
       } catch (error) {
@@ -395,51 +467,59 @@ export default function ChatMessageInput({
             </Box>
           </Box>
         )}
-        <InputBase
-          type="search"
-          className="message-input"
-          inputProps={{ enterKeyHint: sendingType }}
-          value={message}
-          onKeyUp={handleSendMessage}
-          onPaste={handlePaste}
-          onChange={handleChangeMessage}
-          placeholder="请输入内容"
-          disabled={disabled || loading.value}
-          maxRows={3}
-          multiline
-          startAdornment={
-            false && (
-              <IconButton>
-                <Iconify icon="eva:smiling-face-fill" />
-              </IconButton>
-            )
-          }
-          endAdornment={
-            <Stack direction="row" sx={{ flexShrink: 0 }}>
-              {/* <IconButton onClick={triggerPasteEvent}>
+        {inputMode === 'voice' ? (
+          <ChatVoiceRecorder
+            disabled={disabled || loading.value}
+            onClose={() => setInputMode('text')}
+            onSend={handleSendAudio}
+          />
+        ) : (
+          <InputBase
+            type="search"
+            className="message-input"
+            inputProps={{ enterKeyHint: sendingType }}
+            value={message}
+            onKeyUp={handleSendMessage}
+            onPaste={handlePaste}
+            onChange={handleChangeMessage}
+            placeholder="请输入内容"
+            disabled={disabled || loading.value}
+            maxRows={3}
+            multiline
+            startAdornment={
+              false && (
+                <IconButton>
+                  <Iconify icon="eva:smiling-face-fill" />
+                </IconButton>
+              )
+            }
+            endAdornment={
+              <Stack direction="row" sx={{ flexShrink: 0 }}>
+                {/* <IconButton onClick={triggerPasteEvent}>
                 <Iconify icon="streamline:copy-paste" />
               </IconButton> */}
-              <IconButton onClick={handleImage}>
-                <Iconify icon="solar:gallery-add-bold" />
-              </IconButton>
-              <IconButton onClick={handleCamera}>
-                <Iconify icon="mdi:camera" />
-              </IconButton>
-              {/* <IconButton onClick={handleAttach}>
+                <IconButton onClick={handleImage}>
+                  <Iconify icon="solar:gallery-add-bold" />
+                </IconButton>
+                <IconButton onClick={handleCamera}>
+                  <Iconify icon="mdi:camera" />
+                </IconButton>
+                {/* <IconButton onClick={handleAttach}>
                 <Iconify icon="eva:attach-2-fill" />
               </IconButton> */}
-              {/* <IconButton>
+                <IconButton onClick={() => setInputMode('voice')} disabled={disabled || loading.value}>
                   <Iconify icon="solar:microphone-bold" />
-                </IconButton> */}
-            </Stack>
-          }
-          sx={{
-            px: 1,
-            margin: '4px 0',
-            flexShrink: 0,
-            borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
-          }}
-        />
+                </IconButton>
+              </Stack>
+            }
+            sx={{
+              px: 1,
+              margin: '4px 0',
+              flexShrink: 0,
+              borderTop: (theme) => `solid 1px ${theme.palette.divider}`,
+            }}
+          />
+        )}
       </Box>
       <input
         onChange={() => uploadImage()}

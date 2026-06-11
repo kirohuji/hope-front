@@ -28,8 +28,8 @@ export default class FilesManagerService extends Service {
     return this.api.delete(`${this.model}/${target.file_id}/shared/${target.user_id}`, target);
   }
 
-  accpetShareFile(target) {
-    return this.api.post(`${this.model}/current/accpetShareFile`, target);
+  acceptShareFile(target) {
+    return this.api.post(`${this.model}/current/acceptShareFile`, target);
   }
 
   denyShareFile(target) {

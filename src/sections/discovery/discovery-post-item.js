@@ -47,13 +47,15 @@ export default function ProfilePostItem({ post, user, onClick, onSetting }) {
         </Box>
       }
       action={
-        <IconButton onClick={(e) => {
-          e.stopPropagation()
-          e.preventDefault()
-          onSetting(e, post)
-        }}>
-          <Iconify icon="eva:more-vertical-fill" />
-        </IconButton>
+        poster?._id === user?._id ? (
+          <IconButton onClick={(e) => {
+            e.stopPropagation()
+            e.preventDefault()
+            onSetting(e, post)
+          }}>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
+        ) : null
       }
     />
   );

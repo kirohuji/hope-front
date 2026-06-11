@@ -41,7 +41,7 @@ export default function NotificationItem({ notification, onRefresh }) {
 
   const onShareFile = async () => {
     try {
-      await fileManagerService.accpetShareFile(notification);
+      await fileManagerService.acceptShareFile(notification);
       enqueueSnackbar('接受成功');
       onRefresh();
       dispatch(getFiles());

@@ -80,6 +80,10 @@ export default class MessagingService extends Service {
     return this.api.post(`${this.model}/conversations/delete/${target._id}`, target);
   }
 
+  deleteMessage(target) {
+    return this.api.post(`${this.model}/messages/${target._id}/delete`, target);
+  }
+
   savePushNotificationToken(target) {
     // return this.api.delete(`${this.model}/conversations/${target._id}`, target)
     return this.api.post(`${this.model}/conversations/savePushNotificationToken`, target);

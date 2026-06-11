@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import CryptoJS from 'crypto-js';
 import { formatDistanceToNowStrict } from 'date-fns';
 // @mui
@@ -21,7 +21,7 @@ import { zhCN } from 'date-fns/locale';
 
 // redux
 import { useDispatch } from 'src/redux/store';
-import { sendMessage } from 'src/redux/slices/chat';
+import { sendMessage, deleteMessage } from 'src/redux/slices/chat';
 import { useGetMessage } from './hooks';
 
 const secretKey = 'future';
@@ -29,6 +29,11 @@ const secretKey = 'future';
 // ----------------------------------------------------------------------
 
 export default function ChatMessageItem({ message, participants, onOpenLightbox, conversationId }) {
+  const audioRef = useRef(null);
+
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const [audioEnded, setAudioEnded] = useState(false);
+
   const dispatch = useDispatch();
 
   const { user } = useAuthContext();
@@ -75,6 +80,49 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
       console.error();
     }
   }, [conversationId, dispatch, message]);
+
+  const handleDeleteMessage = useCallback(async () => {
+    try {
+      await dispatch(deleteMessage(conversationId, message._id));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [conversationId, dispatch, message._id]);
+
+  const handleToggleAudio = useCallback(async () => {
+    if (!audioRef.current) {
+      return;
+    }
+
+    if (audioPlaying) {
+      audioRef.current.pause();
+      setAudioPlaying(false);
+      return;
+    }
+
+    if (audioEnded) {
+      audioRef.current.currentTime = 0;
+    }
+
+    await audioRef.current.play();
+    setAudioPlaying(true);
+    setAudioEnded(false);
+  }, [audioEnded, audioPlaying]);
+
+  const handleAudioEnded = useCallback(() => {
+    setAudioPlaying(false);
+    setAudioEnded(true);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    },
+    []
+  );
+
   const isExpired = (target) => {
     if (target.createAt) {
       const createAt = new Date(target.createAt);
@@ -85,21 +133,57 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
     return false;
   };
   const renderBodyContent = ({ bodyContent, type }) => {
+    const decryptedBody = CryptoJS.AES.decrypt(bodyContent, secretKey).toString(CryptoJS.enc.Utf8);
+    let audioActionIcon = 'solar:play-bold';
+
+    if (audioPlaying) {
+      audioActionIcon = 'solar:pause-bold';
+    } else if (audioEnded) {
+      audioActionIcon = 'solar:restart-bold';
+    }
+
     switch (type) {
       case 'text':
         return (
           <div
             style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
             dangerouslySetInnerHTML={{
-              __html: CryptoJS.AES.decrypt(bodyContent, secretKey).toString(CryptoJS.enc.Utf8),
+              __html: decryptedBody,
             }}
           />
         );
+      case 'audio':
       case 'mp3':
+      case 'wav':
+      case 'aac':
+      case 'm4a':
+      case 'ogg':
+      case 'webm':
         return (
-          <Stack spacing={1} direction="row" alignItems="center">
-            <FileThumbnail file="audio" />
-            <Typography variant="body2">{attachments[0]?.name}</Typography>
+          <Stack direction="row" alignItems="center">
+            <Box
+              component="audio"
+              ref={audioRef}
+              preload="metadata"
+              src={decryptedBody}
+              onEnded={handleAudioEnded}
+              sx={{ display: 'none' }}
+            />
+            <IconButton
+              size="small"
+              onClick={handleToggleAudio}
+              sx={{
+                width: 32,
+                height: 32,
+                bgcolor: me ? 'primary.main' : 'text.primary',
+                color: me ? 'primary.contrastText' : 'background.paper',
+                '&:hover': {
+                  bgcolor: me ? 'primary.dark' : 'text.secondary',
+                },
+              }}
+            >
+              <Iconify width={18} icon={audioActionIcon} />
+            </IconButton>
           </Stack>
         );
       default:
@@ -212,13 +296,13 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
           <Iconify icon="solar:reply-bold" width={16} />
         </IconButton>
       )}
-      {false && (
+      {/* {false && (
         <IconButton size="small">
           <Iconify icon="eva:smiling-face-fill" width={16} />
         </IconButton>
-      )}
-      {false && (
-        <IconButton size="small">
+      )} */}
+      {me && (
+        <IconButton size="small" onClick={handleDeleteMessage}>
           <Iconify icon="solar:trash-bin-trash-bold" width={16} />
         </IconButton>
       )}

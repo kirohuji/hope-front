@@ -129,7 +129,7 @@ export default function FileManagerNewFolderDialog({
           />
         )}
 
-        <Upload multiple files={files} onDrop={handleDrop} onRemove={handleRemoveFile} />
+        <Upload multiple files={files} onDrop={handleDrop} onRemove={handleRemoveFile} maxSize={1073741824} />
       </DialogContent>
 
       <DialogActions>

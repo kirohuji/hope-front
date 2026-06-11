@@ -163,11 +163,12 @@ const slice = createSlice({
       if (!state.sendingMessage.byId[message.conversationId]) {
         state.sendingMessage.byId[message.conversationId] = [];
       }
-
       if (!state.sendingMessage.byId[message.conversationId]) {
         state.sendingMessage.byId[message.conversationId] = [];
       }
-      
+      if (!state.messages.byId[message.conversationId]) {
+        state.messages.byId[message.conversationId] = [];
+      }
       if (
         state.sendingMessage.byId[message.conversationId].filter(
           (m) => m.sendingMessageId === message.sendingMessageId
@@ -182,6 +183,9 @@ const slice = createSlice({
     },
     onSendMessageSuccess(state, action) {
       const { conversationId, messageId, message } = action.payload;
+      if (!state.messages.byId[conversationId]) {
+        state.messages.byId[conversationId] = [];
+      }
       const orderedData = _.unionBy(
         _.orderBy([...state.messages.byId[conversationId], message], ['createdAt'], ['asc']),
         '_id'
@@ -247,6 +251,19 @@ const slice = createSlice({
     clearActiveConversation(state) {
       state.activeConversationId = null;
       state.activeConversation = {};
+    },
+    deleteMessageSuccess(state, action) {
+      const { conversationId, messageId } = action.payload;
+      if (state.messages.byId[conversationId]) {
+        state.messages.byId[conversationId] = state.messages.byId[conversationId].filter(
+          (item) => item._id !== messageId
+        );
+      }
+      if (state.sendingMessage.byId[conversationId]) {
+        state.sendingMessage.byId[conversationId] = state.sendingMessage.byId[conversationId].filter(
+          (item) => item._id !== messageId
+        );
+      }
     },
     markConversationAsReadSuccess(state, action) {
       const { conversationId } = action.payload;
@@ -396,6 +413,27 @@ export function pushMessage(message) {
     );
     try {
       /**  */
+    } catch (error) {
+      dispatch(
+        slice.actions.hasError({
+          code: error.code,
+          message: error.message,
+        })
+      );
+    }
+  };
+}
+
+export function deleteMessage(conversationId, messageId) {
+  return async (dispatch) => {
+    try {
+      await messagingService.deleteMessage({ _id: messageId });
+      dispatch(
+        slice.actions.deleteMessageSuccess({
+          conversationId,
+          messageId,
+        })
+      );
     } catch (error) {
       dispatch(
         slice.actions.hasError({
