@@ -205,7 +205,7 @@ export default function ChatRoom({ participants, conversation, messages }) {
       sx={{
         top: 48,
         right: 0,
-        zIndex: 9,
+        zIndex: 99,
         width: 32,
         height: 32,
         borderRight: 0,
@@ -243,7 +243,7 @@ export default function ChatRoom({ participants, conversation, messages }) {
       sx={{
         top: 84,
         right: 0,
-        zIndex: 9,
+        zIndex: 99,
         width: 32,
         height: 32,
         borderRight: 0,
@@ -279,7 +279,7 @@ export default function ChatRoom({ participants, conversation, messages }) {
       sx={{
         top: 12,
         right: 0,
-        zIndex: 9,
+        zIndex: 99,
         width: 32,
         height: 32,
         borderRight: 0,
@@ -336,6 +336,7 @@ export default function ChatRoom({ participants, conversation, messages }) {
             flexShrink: 0,
             width: NAV_WIDTH,
             borderLeft: `solid 1px ${theme.palette.divider}`,
+            overflow: 'hidden',
             transition: theme.transitions.create(['width'], {
               duration: theme.transitions.duration.shorter,
             }),

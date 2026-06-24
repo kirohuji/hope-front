@@ -118,7 +118,7 @@ export default function ChatRoomGroup({ conversation, participants }) {
           </Badge>
 
           <ListItemText
-            sx={{ ml: 2 }}
+            sx={{ ml: 2, minWidth: 0, flex: '1 1 auto' }}
             primary={`${participant.displayName}(${participant.realName})`}
             secondary={participant.role}
             primaryTypographyProps={{

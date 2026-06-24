@@ -216,9 +216,7 @@ export default function ChatMessageInput({
   }, [openPhotoLibrary]);
 
   const handleChangeMessage = useCallback((event) => {
-    if (event.key !== 'Enter' || !event.shiftKey) {
-      setMessage(event.target.value.replace(/\n/g, ''));
-    }
+    setMessage(event.target.value);
   }, []);
 
   const createConversation = useCallback(async () => {
@@ -306,8 +304,9 @@ export default function ChatMessageInput({
   const handleSendMessage = useCallback(
     async (event) => {
       try {
-        if (event.key === 'Enter') {
-          if (message && message !== '\n') {
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault();
+          if (message && message.trim()) {
             if (selectedConversationId) {
               const sendingMessage = messageData;
               setMessage('');
@@ -443,6 +442,52 @@ export default function ChatMessageInput({
     }
   };
 
+  const isGroup = recipients.length > 1;
+  const hasMentionAll = message.includes('@全体');
+
+  const handleMentionAll = useCallback(() => {
+    setMessage((prev) => (prev ? `${prev}@全体 ` : '@全体 '));
+    // Focus the input after inserting
+    setTimeout(() => {
+      const inputEl = document.querySelector('.message-input input, .message-input textarea');
+      if (inputEl) {
+        inputEl.focus();
+      }
+    }, 0);
+  }, []);
+
+  const handleClickSend = useCallback(async () => {
+    if (!message || !message.trim()) return;
+    if (selectedConversationId) {
+      const sendingMessage = messageData;
+      setMessage('');
+      setType('text');
+      try {
+        await dispatch(sendMessage(selectedConversationId, sendingMessage));
+        setSendingType('send');
+      } catch (e) {
+        setSendingType('send');
+        enqueueSnackbar(e.message);
+      }
+    } else {
+      setMessage('');
+      setSendingType('send');
+      const conversationKey = await createConversation(conversationData);
+      router.push(`${paths.chat}?id=${conversationKey}`);
+      onAddRecipients([]);
+    }
+  }, [
+    message,
+    selectedConversationId,
+    dispatch,
+    messageData,
+    enqueueSnackbar,
+    createConversation,
+    conversationData,
+    router,
+    onAddRecipients,
+  ]);
+
   return (
     <>
       <Box sx={{ width: '100%' }}>
@@ -479,12 +524,12 @@ export default function ChatMessageInput({
             className="message-input"
             inputProps={{ enterKeyHint: sendingType }}
             value={message}
-            onKeyUp={handleSendMessage}
+            onKeyDown={handleSendMessage}
             onPaste={handlePaste}
             onChange={handleChangeMessage}
             placeholder="请输入内容"
             disabled={disabled || loading.value}
-            maxRows={3}
+            maxRows={5}
             multiline
             startAdornment={
               false && (
@@ -507,9 +552,34 @@ export default function ChatMessageInput({
                 {/* <IconButton onClick={handleAttach}>
                 <Iconify icon="eva:attach-2-fill" />
               </IconButton> */}
+                {isGroup && (
+                  <IconButton
+                    onClick={handleMentionAll}
+                    size="small"
+                    sx={{
+                      fontSize: 12,
+                      fontWeight: 800,
+                      color: 'warning.contrastText',
+                      bgcolor: hasMentionAll ? 'warning.dark' : 'warning.main',
+                      borderRadius: 1.5,
+                      px: 1,
+                      minWidth: 44,
+                      '&:hover': {
+                        bgcolor: 'warning.dark',
+                      },
+                    }}
+                  >
+                    @全体
+                  </IconButton>
+                )}
                 <IconButton onClick={() => setInputMode('voice')} disabled={disabled || loading.value}>
                   <Iconify icon="solar:microphone-bold" />
                 </IconButton>
+                {message && (
+                  <IconButton onClick={handleClickSend} color="primary" disabled={disabled || loading.value}>
+                    <Iconify icon="solar:plain-bold" />
+                  </IconButton>
+                )}
               </Stack>
             }
             sx={{

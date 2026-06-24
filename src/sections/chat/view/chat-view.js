@@ -1,4 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import CryptoJS from 'crypto-js';
+import { formatDistanceToNowStrict } from 'date-fns';
+import { zhCN } from 'date-fns/locale';
 // @mui
 import Card from '@mui/material/Card';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -8,17 +11,21 @@ import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
+import IconButton from '@mui/material/IconButton';
 // routes
 import { useRouter, useSearchParams, usePathname } from 'src/routes/hook';
 import { paths } from 'src/routes/paths';
 // hooks
 import { useAuthContext } from 'src/auth/hooks';
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useBoolean } from 'src/hooks/use-boolean';
 // import { useMessageQueue } from 'src/hooks/use-message-queue';
 import { useMeteorContext } from 'src/meteor/hooks';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import Iconify from 'src/components/iconify';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import { useDispatch, useSelector } from 'src/redux/store';
 import {
@@ -112,6 +119,39 @@ export default function ChatView() {
   const [recipients, setRecipients] = useState([]);
 
   const [conversationsLoading, setConversationsLoading] = useState(true);
+
+  // @全体 广播滚动条
+  const mentionDialog = useBoolean();
+  const [selectedMention, setSelectedMention] = useState(null);
+  const secretKey = 'future';
+
+  const mentionAllMessages = useMemo(() => {
+    const msgs = messages.byId[selectedConversationId] || [];
+    return msgs
+      .filter((m) => m.contentType === 'text')
+      .map((m) => {
+        try {
+          const decrypted = CryptoJS.AES.decrypt(m.body, secretKey).toString(CryptoJS.enc.Utf8);
+          if (decrypted.includes('@全体')) {
+            return { ...m, decryptedBody: decrypted, senderId: m.senderId };
+          }
+          return null;
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+  }, [messages.byId, selectedConversationId]);
+
+  const latestMention = mentionAllMessages[mentionAllMessages.length - 1];
+
+  const handleOpenMention = useCallback(
+    (msg) => {
+      setSelectedMention(msg);
+      mentionDialog.onTrue();
+    },
+    [mentionDialog]
+  );
 
   // 会话获取详情
   const getDetails = useCallback(async () => {
@@ -273,6 +313,37 @@ export default function ChatView() {
       }}
       className="chat-message-list"
     >
+      {latestMention && conversation?.type === 'GROUP' && (
+        <Alert
+          severity="warning"
+          icon={<Iconify icon="solar:bell-bing-bold" />}
+          sx={{
+            borderRadius: 0,
+            cursor: 'pointer',
+            '& .MuiAlert-message': {
+              overflow: 'hidden',
+              flex: 1,
+            },
+          }}
+          onClick={() => handleOpenMention(latestMention)}
+          action={
+            <IconButton size="small" color="warning">
+              <Iconify icon="eva:arrow-ios-forward-fill" />
+            </IconButton>
+          }
+        >
+          <Typography
+            variant="caption"
+            noWrap
+            sx={{
+              display: 'block',
+              fontWeight: 600,
+            }}
+          >
+            {latestMention.decryptedBody}
+          </Typography>
+        </Alert>
+      )}
       <ChatMessageList
         conversationId={selectedConversationId}
         messages={messages.byId[selectedConversationId]}
@@ -304,7 +375,8 @@ export default function ChatView() {
   );
 
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
+    <>
+      <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       {isDesktop && (
         <Typography
           variant="h4"
@@ -471,5 +543,26 @@ export default function ChatView() {
         </Stack>
       )}
     </Container>
+    <ConfirmDialog
+      open={mentionDialog.value}
+      onClose={mentionDialog.onFalse}
+      title="全体通知"
+      content={
+        selectedMention && (
+          <Stack spacing={1}>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              {formatDistanceToNowStrict(new Date(selectedMention.createdAt), {
+                addSuffix: true,
+                locale: zhCN,
+              })}
+            </Typography>
+            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+              {selectedMention.decryptedBody}
+            </Typography>
+          </Stack>
+        )
+      }
+    />
+    </>
   );
 }

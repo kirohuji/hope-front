@@ -8,7 +8,8 @@
   height: 56px !important;
 }
 .bottom-chat {
-  height: calc(100vh - 72px) !important;
+  height: calc(100vh - 140px) !important;
+  overflow: hidden;
 }
 
 .MuiBottomNavigationAction-label {

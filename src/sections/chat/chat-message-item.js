@@ -22,6 +22,7 @@ import { zhCN } from 'date-fns/locale';
 // redux
 import { useDispatch } from 'src/redux/store';
 import { sendMessage, deleteMessage } from 'src/redux/slices/chat';
+import { loadAndCacheAudio } from 'src/utils/audio-cache';
 import { useGetMessage } from './hooks';
 
 const secretKey = 'future';
@@ -29,10 +30,12 @@ const secretKey = 'future';
 // ----------------------------------------------------------------------
 
 export default function ChatMessageItem({ message, participants, onOpenLightbox, conversationId }) {
-  const audioRef = useRef(null);
+  const audioObjRef = useRef(null);
+  const containerRef = useRef(null);
 
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [audioEnded, setAudioEnded] = useState(false);
+  const [audioLoaded, setAudioLoaded] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -47,6 +50,12 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
   const { username, photoURL, displayName, realName } = senderDetails;
 
   const { body, attachments, contentType, createdAt, isLoading, isFailure } = message;
+
+  const decryptedBody =
+    contentType === 'text'
+      ? CryptoJS.AES.decrypt(message.body, secretKey).toString(CryptoJS.enc.Utf8)
+      : '';
+  const hasMentionAll = decryptedBody.includes('@全体');
 
   const renderInfo = (
     <Typography
@@ -90,23 +99,29 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
   }, [conversationId, dispatch, message._id]);
 
   const handleToggleAudio = useCallback(async () => {
-    if (!audioRef.current) {
+    const audio = audioObjRef.current;
+    if (!audio) {
       return;
     }
 
     if (audioPlaying) {
-      audioRef.current.pause();
+      audio.pause();
       setAudioPlaying(false);
       return;
     }
 
     if (audioEnded) {
-      audioRef.current.currentTime = 0;
+      audio.currentTime = 0;
     }
 
-    await audioRef.current.play();
-    setAudioPlaying(true);
-    setAudioEnded(false);
+    try {
+      await audio.play();
+      setAudioPlaying(true);
+      setAudioEnded(false);
+    } catch (e) {
+      // 用户手势不足或加载失败时静默处理
+      console.warn('Audio play failed:', e);
+    }
   }, [audioEnded, audioPlaying]);
 
   const handleAudioEnded = useCallback(() => {
@@ -114,14 +129,85 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
     setAudioEnded(true);
   }, []);
 
-  useEffect(
-    () => () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
+  // 使用 IntersectionObserver + IndexedDB 缓存在消息进入视口时预加载音频
+  useEffect(() => {
+    const isAudioType = ['audio', 'mp3', 'wav', 'aac', 'm4a', 'ogg', 'webm'].includes(contentType);
+    if (!isAudioType || !message?.body) {
+      return undefined;
+    }
+
+    const decryptedUrl = CryptoJS.AES.decrypt(message.body, secretKey).toString(CryptoJS.enc.Utf8);
+    if (!decryptedUrl) {
+      return undefined;
+    }
+
+    let observer = null;
+    let currentAudio = null;
+    let objectUrl = null;
+    let cancelled = false;
+
+    const startLoading = async () => {
+      if (audioObjRef.current || cancelled) return;
+
+      try {
+        // 从 IndexedDB 缓存加载（命中则秒播，未命中则下载并缓存）
+        objectUrl = await loadAndCacheAudio(decryptedUrl);
+        if (cancelled) {
+          URL.revokeObjectURL(objectUrl);
+          return;
+        }
+
+        currentAudio = new Audio(objectUrl);
+        currentAudio.preload = 'auto';
+        audioObjRef.current = currentAudio;
+
+        currentAudio.addEventListener('ended', handleAudioEnded);
+        currentAudio.addEventListener('error', () => {
+          setAudioLoaded(false);
+        });
+        currentAudio.addEventListener('canplay', () => {
+          setAudioLoaded(true);
+        });
+
+        currentAudio.load();
+      } catch {
+        // 加载失败，静默处理
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
       }
-    },
-    []
-  );
+    };
+
+    // 用 IntersectionObserver 检测消息是否进入视口
+    if (containerRef.current) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            startLoading();
+            observer.disconnect();
+          }
+        },
+        { rootMargin: '200px' } // 提前 200px 开始加载
+      );
+      observer.observe(containerRef.current);
+    } else {
+      // fallback: 立即加载
+      startLoading();
+    }
+
+    return () => {
+      cancelled = true;
+      if (observer) observer.disconnect();
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.removeEventListener('ended', handleAudioEnded);
+        currentAudio.src = '';
+      }
+      if (objectUrl && !currentAudio) {
+        // 如果 Audio 对象还没创建但已经拿到了 objectUrl
+        URL.revokeObjectURL(objectUrl);
+      }
+      audioObjRef.current = null;
+    };
+  }, [contentType, message?.body, handleAudioEnded]);
 
   const isExpired = (target) => {
     if (target.createAt) {
@@ -132,8 +218,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
     }
     return false;
   };
-  const renderBodyContent = ({ bodyContent, type }) => {
-    const decryptedBody = CryptoJS.AES.decrypt(bodyContent, secretKey).toString(CryptoJS.enc.Utf8);
+  const renderBodyContent = ({ type }) => {
     let audioActionIcon = 'solar:play-bold';
 
     if (audioPlaying) {
@@ -148,7 +233,10 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
           <div
             style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
             dangerouslySetInnerHTML={{
-              __html: decryptedBody,
+              __html: decryptedBody.replace(
+                /@全体/g,
+                '<span style="color: #B76E00; font-weight: 700; font-size: 1.05em;">@全体</span>'
+              ),
             }}
           />
         );
@@ -160,18 +248,11 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
       case 'ogg':
       case 'webm':
         return (
-          <Stack direction="row" alignItems="center">
-            <Box
-              component="audio"
-              ref={audioRef}
-              preload="metadata"
-              src={decryptedBody}
-              onEnded={handleAudioEnded}
-              sx={{ display: 'none' }}
-            />
+          <Stack direction="row" alignItems="center" spacing={1}>
             <IconButton
               size="small"
               onClick={handleToggleAudio}
+              disabled={!audioLoaded}
               sx={{
                 width: 32,
                 height: 32,
@@ -180,9 +261,16 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
                 '&:hover': {
                   bgcolor: me ? 'primary.dark' : 'text.secondary',
                 },
+                ...(!audioLoaded && {
+                  opacity: 0.5,
+                }),
               }}
             >
-              <Iconify width={18} icon={audioActionIcon} />
+              {!audioLoaded ? (
+                <CircularProgress size={16} sx={{ color: 'inherit' }} />
+              ) : (
+                <Iconify width={18} icon={audioActionIcon} />
+              )}
             </IconButton>
           </Stack>
         );
@@ -240,13 +328,27 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
         borderRadius: 1,
         typography: 'body2',
         bgcolor: 'background.neutral',
+        ...(hasMentionAll && {
+          borderLeft: '3px solid',
+          borderColor: 'warning.main',
+          bgcolor: (theme) => theme.palette.warning.lighter,
+          boxShadow: (theme) => `0 1px 4px ${theme.palette.warning.main}40`,
+        }),
         ...(me && {
           color: 'grey.800',
           bgcolor: 'primary.lighter',
         }),
+        ...(me &&
+          hasMentionAll && {
+            color: 'grey.800',
+            bgcolor: (theme) => theme.palette.warning.lighter,
+            borderColor: 'warning.main',
+          }),
         ...(hasImage && {
           p: 0,
           bgcolor: 'transparent',
+          borderLeft: 'none',
+          boxShadow: 'none',
         }),
       }}
     >
@@ -266,7 +368,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
           }}
         />
       ) : (
-        renderBodyContent({ bodyContent: body, type: contentType })
+        renderBodyContent({ type: contentType })
       )}
     </Stack>
   );
@@ -310,6 +412,7 @@ export default function ChatMessageItem({ message, participants, onOpenLightbox,
   );
   return (
     <Stack
+      ref={containerRef}
       direction="row"
       justifyContent={me ? 'flex-end' : 'unset'}
       sx={{ mb: 5 }}

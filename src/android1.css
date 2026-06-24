@@ -42,7 +42,8 @@ header,
 }
 
 .bottom-chat {
-  height: calc(100vh - 72px) !important;
+  height: calc(100vh - 140px) !important;
+  overflow: hidden;
 }
 
 /* 训练列表 */

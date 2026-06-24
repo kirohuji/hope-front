@@ -30,6 +30,12 @@ const config: CapacitorConfig = {
   // bundledWebRuntime: false,
   webDir: 'build',
   server: {
+    // 局域网 Live Reload 配置：
+    // 1. 先运行 yarn dev:host 启动开发服务器
+    // 2. 将下方 url 改为你电脑的局域网 IP（如 http://192.168.x.x:3000）
+    // 3. 运行 npx cap run android 或 npx cap run ios
+    // url: 'http://192.168.x.x:3000',
+    cleartext: true,
     androidScheme: 'https',
   }
 };

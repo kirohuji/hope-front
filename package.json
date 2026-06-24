@@ -8,12 +8,16 @@
   "scripts": {
     "start": "react-app-rewired start",
     "dev": "NODE_ENV=development react-app-rewired start",
+    "dev:host": "HOST=0.0.0.0 DANGEROUSLY_DISABLE_HOST_CHECK=true react-app-rewired start",
     "build": "NODE_ENV=production react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
     "prettier": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
+    "cap:dev:android": "npx cap run android --live-reload",
+    "cap:dev:ios": "npx cap run ios --live-reload",
+    "cap:sync": "npx cap sync",
     "clear-all": "rm -rf node_modules .next out dist build",
     "re-start": "rm -rf node_modules .next out dist build && yarn install && yarn start",
     "re-build": "rm -rf node_modules .next out dist build && yarn install && yarn build"
